@@ -59,4 +59,9 @@ public class User extends BaseEntity {
         this.coin = 0L;
     }
 
+    public void updateNameAndEmail(UserLoginUpdateRequestDto userLoginUpdateRequestDto) {
+        this.name = userLoginUpdateRequestDto.getName();
+        this.email = userLoginUpdateRequestDto.getEmail();
+    }
+
 }
