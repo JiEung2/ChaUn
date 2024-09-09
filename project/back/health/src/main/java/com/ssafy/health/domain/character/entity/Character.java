@@ -9,6 +9,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
+@Table(name = "characters")
 public class Character extends BaseEntity {
 
     @Id
