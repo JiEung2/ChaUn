@@ -1,7 +1,8 @@
 package com.ssafy.health.domain.account.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import com.ssafy.health.domain.account.dto.request.UserRegisterDto;
+import com.ssafy.health.domain.account.dto.request.UserLoginUpdateRequestDto;
+import com.ssafy.health.domain.account.dto.request.UserRegisterRequestDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,7 +31,6 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String nickname;
 
-    @NotNull
     private String email;
 
     private Date birthday;
@@ -50,11 +50,11 @@ public class User extends BaseEntity {
     private UserRole role;
 
     @Builder
-    public User(UserRegisterDto userRegisterDto) {
-        this.name = userRegisterDto.getUsername();
-        this.email = userRegisterDto.getEmail();
-        this.sso = userRegisterDto.getSso();
-        this.role = userRegisterDto.getRole();
+    public User(UserRegisterRequestDto userRegisterRequestDto) {
+        this.name = userRegisterRequestDto.getName();
+        this.email = userRegisterRequestDto.getEmail();
+        this.sso = userRegisterRequestDto.getSso();
+        this.role = userRegisterRequestDto.getRole();
         this.surveyCompleted = false;
         this.coin = 0L;
     }
