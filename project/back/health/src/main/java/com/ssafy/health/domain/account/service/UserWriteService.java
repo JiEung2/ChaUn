@@ -31,6 +31,11 @@ public class UserWriteService {
                 .build();
     }
 
+    public void updateNameAndEmail(UserLoginUpdateRequestDto userLoginUpdateRequestDto) {
+        User user = findUserById(userLoginUpdateRequestDto.getUserId());
+        user.updateNameAndEmail(userLoginUpdateRequestDto);
+    }
+
     private User findUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
