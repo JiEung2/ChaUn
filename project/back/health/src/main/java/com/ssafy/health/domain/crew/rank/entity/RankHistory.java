@@ -25,7 +25,7 @@ public class RankHistory extends BaseEntity {
     private Long id;
 
     private Float score;
-    private Integer rank;
+    private Integer ranking;
     private LocalDateTime endDate;
 
     @ManyToOne
