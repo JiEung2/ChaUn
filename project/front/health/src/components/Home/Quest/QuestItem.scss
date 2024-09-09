@@ -1,0 +1,39 @@
+@use '../../../styles/constants/colors.scss' as colors;
+
+.questItem {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin: 5px 0;
+  background-color: colors.$lightGray;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .checkBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    margin-right: 10px;
+    background-color: colors.$white;
+
+    .checkIcon {
+      display: none;
+    }
+  }
+
+  .questTitle {
+    font-weight: bold;
+  }
+
+  &.completed {
+    .checkBox {
+      .checkIcon {
+        display: block;
+        color: colors.$blue;
+      }
+    }
+  }
+}
