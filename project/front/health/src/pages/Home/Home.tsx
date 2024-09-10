@@ -116,7 +116,7 @@ export default function HomePage () {
         <StyledButton
           title="운동 추천"
           icon={HomeIcon1}
-          onClick={() => navigate('/recommend')}
+          onClick={() => navigate('/exercise/recommend')}
           backgroundColor="styledButton1" // SASS에서 정의한 클래스 사용
         />
         <StyledButton
@@ -125,6 +125,7 @@ export default function HomePage () {
           onClick={() => navigate('/crew')}
           backgroundColor="styledButton2"
         />
+
       </div>
     </div>
   );

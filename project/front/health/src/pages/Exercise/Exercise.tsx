@@ -49,13 +49,19 @@ export default function Exercise() {
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <GeneralButton buttonStyle={{ style: 'semiOutlined', size: 'mini' }} onClick={() => navigate('/recommendation')}>
+      <GeneralButton
+        buttonStyle={{ style: 'semiOutlined', size: 'mini' }}
+        onClick={() => navigate('/exercise/recommend')}>
         운동 추천
       </GeneralButton>
       <div>{/* Image placeholder */}</div>
-      {/* <GeneralButton buttonStyle={{ style: 'primary', size: 'large' }} onClick={() => setShowModal(true)}> */}
-      운동 선택
-      {/* </GeneralButton> */}
+      <GeneralButton
+        buttonStyle={{ style: 'primary', size: 'large' }}
+        // onClick={() => setShowModal(true)}
+      >
+        운동 선택
+      </GeneralButton>
+
       {!isFinished ? (
         <>
           {/* {showModal && <Modal onClose={() => setShowModal(false)} />} */}
