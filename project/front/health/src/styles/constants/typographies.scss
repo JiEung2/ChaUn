@@ -75,3 +75,9 @@
   font-weight: 400;
   line-height: 12px;
 }
+
+@mixin navbar {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 16px;
+}
