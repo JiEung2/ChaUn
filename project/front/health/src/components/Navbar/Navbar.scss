@@ -1,0 +1,59 @@
+@use '../../styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.navbar {
+  display: flex;
+  align-items: center;
+  height: 95px;
+  //   padding: 10px 0;
+  //   background-color: #fff;
+
+  &__white {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-around;
+    background-color: colors.$white;
+    border-top: 1px solid colors.$littleDarkGray;
+  }
+  &__icon {
+    display: flex;
+    width: 50px;
+    height: 50px;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    @include typo.navbar;
+    text-decoration: none;
+
+    &-img {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 5px;
+    }
+
+    &--center {
+      position: relative;
+    }
+  }
+
+  &__center-icon {
+    background-color: colors.$blue;
+    border-radius: 50%;
+    padding: 15px;
+    display: flex;
+    margin-top: -35px;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+
+    .navbar__icon-img--center {
+      width: 32px;
+      height: 32px;
+      color: #fff;
+    }
+  }
+  &__title {
+    color: colors.$littleDarkGray;
+  }
+}
