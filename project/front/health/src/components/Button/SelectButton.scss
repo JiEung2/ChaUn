@@ -1,0 +1,21 @@
+@use '@/styles/constants/colors' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.selectButton {
+  width: 140px;
+  height: 48px;
+  border: 1px solid colors.$lightGray;
+  border-radius: 5px;
+  background-color: colors.$white;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.1s, border-color 0.1s;
+  color: colors.$darkGray;
+  @include typo.input;
+
+  &.selected {
+    background-color: colors.$white;
+    border-color: colors.$blue;
+    color:colors.$blue;
+  }
+}

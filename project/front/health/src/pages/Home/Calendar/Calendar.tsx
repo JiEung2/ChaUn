@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import GeneralButton from '../../../components/Button/GeneralButton';
 import DailyRecord from '../../../components/Home/Calendar/DailyRecord';
 import CustomCalendar from '../../../components/Home/Calendar/CustomCalendar';
 import './Calendar.scss';
 
-const CalendarPage: React.FC = () => {
+export default function CalendarPage () {
   // 기본값을 오늘 날짜로 설정
   const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식으로 오늘 날짜를 얻음
   const [selectedDate, setSelectedDate] = useState<string | null>(today); // 기본값을 오늘 날짜로 설정
@@ -62,5 +62,3 @@ const CalendarPage: React.FC = () => {
     </div>
   );
 };
-
-export default CalendarPage;

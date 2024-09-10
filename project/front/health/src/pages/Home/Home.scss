@@ -1,101 +1,74 @@
-@use './../../styles/constants/colors.scss' as colors;
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
 
 .homeContainer {
-    padding: 20px;
+    padding: 0 30px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 20px;
   }
   
-  .carouselContainer {
+  .avatarContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #f5f9ff;
+    width: 100%;
+    background-color: colors.$base;
     border-radius: 15px;
-    padding: 20px;
+    padding: 20px 0;
+    margin: 0 10px;
     position: relative;
+
+    .title {
+      display: flex;
+      justify-content: space-between;
+      gap: 140px;
+    }
+
+    .avatar {
+      @include typo.button;
+    }
   }
   
-  .carouselContent {
-    text-align: center;
-  }
-  
-  .characterImage {
-    width: 100px;
-    height: auto;
-    margin-bottom: 10px;
-  }
-  
-  .iconContainer {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 10px;
-  }
   
   .iconWrapper {
     display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .navIcon {
+    display: flex;
     justify-content: center;
     align-items: center;
-    width: 32px; 
-    height: 32px; 
+    width: 35px; 
+    height: 35px; 
     border: 1px solid colors.$darkGray;  
     background-color: none;  
     border-radius: 50%; 
   }
   
   .icon {
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
   }
 
-  .arrowButton {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-  
-  .arrowButton.left {
-    left: 10px;
-  }
-  
-  .arrowButton.right {
-    right: 10px;
-  }
   
   .time {
-    font-size: 24px;
+    @include typo.subtitle;
+    
+    span {
     color: colors.$pink;
+    @include typo.time;
+    
+    }
   }
   
-  .character-img {
-    width: 100px;
-    height: auto;
-    margin: 10px 0;
-  }
-  
-  .name {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .today-time {
-    margin: 5px 0;
-    color: #888;
-  }
-  
-  .time {
-    color: colors.$pink;
-    font-size: 32px;
-    font-weight: bold;
-  }
+
   
   .chartSection {
     width: 100%;
@@ -118,12 +91,10 @@
   }
   
   .recommendButton {
-    // background-color: #4db6ac;
     color: colors.$black;
   }
   
   .crewButton {
-    // background-color: #ff8a65;
     color: colors.$black;
   }
   

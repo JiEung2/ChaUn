@@ -19,6 +19,12 @@ interface Primary {
     };
   }
   
+  interface SemiOutlined {
+    buttonStyle: {
+      style: 'semiOutlined';
+      size: 'mini';
+    };
+  }
   
   interface Floating {
     buttonStyle: {
@@ -36,5 +42,5 @@ interface Primary {
 
   
   
-  type ButtonStyle = Primary | SemiPrimary | Outlined | Floating | SemiFloating;
+  type ButtonStyle = Primary | SemiPrimary | Outlined | SemiOutlined | Floating | SemiFloating;
   

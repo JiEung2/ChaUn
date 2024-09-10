@@ -1,10 +1,7 @@
 @use '@/styles/constants/colors' as colors;
-// @use '@/styles/constants/typographies' as typographies;
-
 
 .button {
-//   @include typographies.button;
-
+  padding: 5px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -46,15 +43,28 @@
 }
 
 .outlined {
-  color: colors.$blue;
+  color: colors.$darkGray;
   background-color: transparent;
-  border: 1px solid colors.$blue;
+  border: 2px solid colors.$darkGray;
   border-radius: 35px;
+  transition: color 0.1s, border-color 0.1s;
+
+  &.active {
+    color: colors.$blue; 
+    border-color: colors.$blue;
+  }
 
   &.disabled {
     color: colors.$darkGray;
     background-color: transparent;
   }
+}
+
+.semiOutlined {
+  color: colors.$blue;
+  background-color: transparent;
+  border: 1px solid colors.$blue;
+  border-radius: 10px;
 }
 
 .floating {
@@ -123,6 +133,11 @@
 .select {
     width: 65px;
     height: 30px;
+}
+
+.mini {
+    width: 99px;
+    height: 33px; 
 }
 
 
