@@ -1,4 +1,4 @@
-@use './../../styles/constants/colors.scss' as colors;
+@use '@/styles/constants/colors.scss' as colors;
 
 .homeContainer {
     padding: 20px;
@@ -118,12 +118,10 @@
   }
   
   .recommendButton {
-    // background-color: #4db6ac;
     color: colors.$black;
   }
   
   .crewButton {
-    // background-color: #ff8a65;
     color: colors.$black;
   }
   

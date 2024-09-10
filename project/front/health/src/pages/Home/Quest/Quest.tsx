@@ -1,7 +1,7 @@
 import QuestItem from '../../../components/Home/Quest/QuestItem';
 import './Quest.scss';
 
-export default function Quest () {
+export default function QuestPage () {
   const todayQuests = [
     { title: '[개인] 매일 몸무게 입력하기', completed: true },
     { title: '[개인] 하루 한 번 운동하기', completed: true },
