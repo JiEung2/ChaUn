@@ -52,7 +52,7 @@ export default function Exercise() {
     <div style={{ textAlign: 'center' }}>
         <GeneralButton
             buttonStyle={{ style: 'semiOutlined', size: 'mini' }}
-            onClick={() => navigate('/recommendation')}
+            onClick={() => navigate('/exercise/recommend')}
         >
         운동 추천
         </GeneralButton>
