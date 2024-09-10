@@ -1,7 +1,55 @@
-/* _fonts.scss */
 @font-face {
-  font-family: 'Pretendard';
-  src: url('../assets/fonts/Pretendard-Regular.woff2') format('woff2');
-  font-weight: 400; /* Regular 굵기만 사용 */
+  font-family: pretendard;
   font-style: normal;
+  font-weight: 100;
+  src: url('../assets/fonts/Pretendard-Thin.woff2') format('font-woff2');
+}
+
+@font-face {
+  font-family: pretendard;
+  font-style: normal;
+  font-weight: 200;
+  src: url('../assets/fonts/Pretendard-ExtraLight.woff2') format('font-woff2');
+}
+
+@font-face {
+  font-family: pretendard;
+  font-style: normal;
+  font-weight: 300;
+  src: url('../assets/fonts/Pretendard-Light.woff2') format('font-woff2');
+}
+
+@font-face {
+  font-family: pretendard;
+  font-style: normal;
+  font-weight: 500;
+  src: url('../assets/fonts/Pretendard-Medium.woff2') format('font-woff2');
+}
+
+@font-face {
+  font-family: pretendard;
+  font-style: normal;
+  font-weight: 600;
+  src: url('../assets/fonts/Pretendard-SemiBold.woff2') format('font-woff2');
+}
+
+@font-face {
+  font-family: pretendard;
+  font-style: normal;
+  font-weight: 700;
+  src: url('../assets/fonts/Pretendard-Bold.woff2') format('font-woff2');
+}
+
+@font-face {
+  font-family: pretendard;
+  font-style: normal;
+  font-weight: 800;
+  src: url('../assets/fonts/Pretendard-ExtraBold.woff2') format('font-woff2');
+}
+
+@font-face {
+  font-family: pretendard;
+  font-style: normal;
+  font-weight: 900;
+  src: url('../assets/fonts/Pretendard-Black.woff2') format('font-woff2');
 }

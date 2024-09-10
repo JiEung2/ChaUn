@@ -1,7 +1,7 @@
 import classnames from 'classnames/bind';
 import type {ButtonHTMLAttributes, PropsWithChildren} from 'react';
 
-import style from './button.module.scss';
+import style from './Button.module.scss';
 
 type GeneralButtonProps = PropsWithChildren<
   ButtonHTMLAttributes<HTMLButtonElement>
