@@ -1,6 +1,7 @@
 @use '@/styles/constants/colors' as colors;
 
 .button {
+  padding: 5px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,11 +43,11 @@
 }
 
 .outlined {
-  color: colors.$darkGray; // 기본 색상 설정
+  color: colors.$darkGray;
   background-color: transparent;
-  border: 1px solid colors.$darkGray; // 기본 테두리 색상
+  border: 2px solid colors.$darkGray;
   border-radius: 35px;
-  transition: color 0.3s, border-color 0.3s;
+  transition: color 0.1s, border-color 0.1s;
 
   &.active {
     color: colors.$blue; 
