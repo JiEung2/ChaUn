@@ -1,31 +1,35 @@
-@use '../../../styles/constants/colors.scss' as colors;
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
 
 .questItem {
   display: flex;
   align-items: center;
-  padding: 10px;
-  margin: 5px 0;
+  padding-left: 20px;
+  margin: 20px 0;
   background-color: colors.$lightGray;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 4px 4px rgba(39, 39, 39, 0.25);
 
   .checkBox {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    margin-right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    border: 1px solid white;
+    margin-right: 30px;
     background-color: colors.$white;
 
     .checkIcon {
       display: none;
+      width: 20px;
+      height: 20px
     }
   }
 
   .questTitle {
-    font-weight: bold;
+    @include typo.subtitle;
   }
 
   &.completed {
