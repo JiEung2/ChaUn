@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import Modal from '../../components/Exercise/ExerciseList'; 
+// import Modal from '../../components/Exercise/ExerciseList'; 
 import GeneralButton from '../../components/Button/GeneralButton';
 import Start from '../../assets/svg/start.svg';
 import Stop from '../../assets/svg/stop.svg';
 import Finish from '../../assets/svg/finish.svg';
 
 export default function Exercise() {
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
   const [timer, setTimer] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
@@ -61,14 +61,14 @@ export default function Exercise() {
         </div>
         <GeneralButton
             buttonStyle={{ style: 'primary', size: 'large' }}
-            onClick={() => setShowModal(true)}
+            // onClick={() => setShowModal(true)}
         >
         운동 선택
         </GeneralButton>
         
         {!isFinished ? (
         <>
-          {showModal && <Modal onClose={() => setShowModal(false)} />}
+          {/* {showModal && <Modal onClose={() => setShowModal(false)} />} */}
           <div>{new Date(timer * 1000).toISOString().substr(11, 8)}</div>
           {!isRunning ? (
             <button onClick={startTimer}>

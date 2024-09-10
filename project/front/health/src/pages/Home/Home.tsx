@@ -125,6 +125,7 @@ export default function HomePage () {
           onClick={() => navigate('/crew')}
           backgroundColor="styledButton2"
         />
+
       </div>
     </div>
   );

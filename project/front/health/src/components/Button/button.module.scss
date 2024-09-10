@@ -1,6 +1,5 @@
 @use '@/styles/constants/colors' as colors;
 
-
 .button {
   display: flex;
   align-items: center;
@@ -49,13 +48,8 @@
   border-radius: 35px;
   transition: color 0.3s, border-color 0.3s;
 
-  &:hover {
-    color: colors.$blue; // 호버 시 색상 변경
-    border-color: colors.$blue;
-  }
-
   &.active {
-    color: colors.$blue; // active 상태에서 색상 변경
+    color: colors.$blue; 
     border-color: colors.$blue;
   }
 
@@ -66,21 +60,10 @@
 }
 
 .semiOutlined {
-  color: colors.$darkGray; // 기본 색상 설정
+  color: colors.$blue;
   background-color: transparent;
-  border: 1px solid colors.$darkGray; // 기본 테두리 색상
+  border: 1px solid colors.$blue;
   border-radius: 10px;
-  transition: color 0.3s, border-color 0.3s;
-
-  &:hover {
-    color: colors.$blue; // 호버 시 색상 변경
-    border-color: colors.$blue;
-  }
-
-  &.active {
-    color: colors.$blue; // active 상태에서 색상 변경
-    border-color: colors.$blue;
-  }
 }
 
 .floating {
