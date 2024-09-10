@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import './Navbar.scss';
 
 import HomeIcon from '../../assets/svg/home.svg';
@@ -9,14 +9,20 @@ import RecordIcon from '../../assets/svg/record.svg';
 import MyPageIcon from '../../assets/svg/mypage.svg';
 
 const Navbar: React.FC = () => {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const isActive = (path: string) => currentPath.startsWith(path);
+  const activateIcon = (path: string) => (isActive(path) ? 'navbar__icon--active' : '');
+
   return (
     <nav className="navbar">
       <div className="navbar__white">
-        <Link to="/home" className="navbar__icon">
+        <Link to="/home" className={`navbar__icon ${activateIcon('/home')}`}>
           <img src={HomeIcon} alt="Home" className="navbar__icon-img" />
           <div className="navbar__title">홈</div>
         </Link>
-        <Link to="/crew" className="navbar__icon">
+        <Link to="/crew" className={`navbar__icon ${activateIcon('/crew')}`}>
           <img src={CrewIcon} alt="Crew" className="navbar__icon-img" />
           <div className="navbar__title">크루</div>
         </Link>
@@ -25,11 +31,11 @@ const Navbar: React.FC = () => {
             <img src={ExerciseIcon} alt="Center" className="navbar__icon-img--center" />
           </div>
         </div>
-        <Link to="/record" className="navbar__icon">
+        <Link to="/record" className={`navbar__icon ${activateIcon('/record')}`}>
           <img src={RecordIcon} alt="Records" className="navbar__icon-img" />
           <div className="navbar__title">기록</div>
         </Link>
-        <Link to="/mypage" className="navbar__icon">
+        <Link to="/mypage" className={`navbar__icon ${activateIcon('/mypage')}`}>
           <img src={MyPageIcon} alt="My Page" className="navbar__icon-img" />
           <div className="navbar__title">마이페이지</div>
         </Link>

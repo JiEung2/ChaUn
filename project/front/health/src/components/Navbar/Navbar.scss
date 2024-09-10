@@ -5,8 +5,6 @@
   display: flex;
   align-items: center;
   height: 95px;
-  //   padding: 10px 0;
-  //   background-color: #fff;
 
   &__white {
     width: 100%;
@@ -30,6 +28,16 @@
       width: 24px;
       height: 24px;
       margin-bottom: 5px;
+    }
+
+    &--active {
+      .navbar__icon-img {
+        filter: invert(69%) sepia(10%) saturate(5719%) hue-rotate(165deg) brightness(103%) contrast(101%);
+      }
+
+      .navbar__title {
+        color: colors.$blue;
+      }
     }
 
     &--center {
