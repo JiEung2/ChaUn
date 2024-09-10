@@ -1,38 +1,82 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GeneralButton from '../../../components/Button/GeneralButton';
+import ExerciseItem from '@/components/Exercise/ExerciseItem';
 import DailyRecord from '../../../components/Home/Calendar/DailyRecord';
 import CustomCalendar from '../../../components/Home/Calendar/CustomCalendar';
 import './Calendar.scss';
 
-export default function CalendarPage () {
-  // 기본값을 오늘 날짜로 설정
-  const today = new Date().toISOString().split('T')[0]; // 'YYYY-MM-DD' 형식으로 오늘 날짜를 얻음
-  const [selectedDate, setSelectedDate] = useState<string | null>(today); // 기본값을 오늘 날짜로 설정
-  const [records, _] = useState<Record<string, { time: string; calories: number } | null>>({
-    '2024-09-10': { time: '01:23:02', calories: 596 },
-    // 추가적인 날짜와 기록을 여기 추가할 수 있습니다.
+export default function CalendarPage() {
+  const today = new Date();
+  today.setHours(12, 0, 0, 0); // 시간을 정오로 설정하여 UTC 변환 시 날짜 오류 방지
+  const todayString = today.toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState<string | null>(todayString);
+  
+  const [records] = useState<
+    Record<
+      string,
+      {
+        types: { [key: string]: { time: string; calories: number } };
+      } | null
+    >
+  >({
+    '2024-09-10': {
+      types: {
+        전체: { time: '01:23:02', calories: 596 },
+        요가: { time: '00:30:00', calories: 150 },
+        필라테스: { time: '00:53:02', calories: 446 },
+      },
+    },
   });
-  const [highlightDates, __] = useState<Date[]>([
-    new Date('2024-09-10'), // 운동 기록이 있는 날짜 예시
-    // 추가적인 강조 날짜를 여기에 추가할 수 있습니다.
+
+  const [exerciseDates] = useState<Date[]>([
+    new Date('2024-09-10'),
+    new Date('2024-09-09'),
+    new Date('2024-09-07'),
   ]);
 
+  const [attendanceDates, setAttendanceDates] = useState<Date[]>([]);
+  const [isAttendance, setIsAttendance] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>('전체');
+
+  useEffect(() => {
+    const storedAttendance = JSON.parse(localStorage.getItem('attendanceDates') || '[]');
+    const storedLastAttendance = localStorage.getItem('lastAttendanceDate');
+    setAttendanceDates(storedAttendance.map((date: string) => new Date(date)));
+
+    const todayDate = new Date();
+    todayDate.setHours(12, 0, 0, 0); // 시간을 정오로 설정하여 정확히 오늘 날짜가 되도록
+    const todayDateString = todayDate.toISOString().split('T')[0];
+    setIsAttendance(storedLastAttendance === todayDateString);
+
+    setSelectedDate(todayDateString); // 렌더링 시 오늘 날짜로 설정
+  }, []);
+
   const handleDateClick = (date: Date) => {
-    date.setHours(12, 0, 0, 0); // 시간 오차 방지를 위해 날짜를 정오로 설정
-    setSelectedDate(date.toISOString().split('T')[0]); // 'YYYY-MM-DD' 형식으로 변환하여 설정
+    date.setHours(12, 0, 0, 0); // 선택된 날짜의 시간을 정오로 설정
+    setSelectedDate(date.toISOString().split('T')[0]);
   };
 
-  const handleMonthYearChange = (year: number, month: number) => {
-    // 선택한 년, 월이 바뀔 때 추가적인 로직을 처리할 수 있음
-    console.log(`Year: ${year}, Month: ${month}`);
+  const handleAttendance = () => {
+    if (!isAttendance) {
+      const todayDate = new Date();
+      todayDate.setHours(12, 0, 0, 0); // 시간을 정오로 설정하여 정확한 날짜로 기록
+      const todayDateString = todayDate.toISOString().split('T')[0];
+      const newAttendanceDates = [...attendanceDates, todayDate];
+      setAttendanceDates(newAttendanceDates);
+      localStorage.setItem(
+        'attendanceDates',
+        JSON.stringify(newAttendanceDates.map((date) => date.toISOString().split('T')[0]))
+      );
+      localStorage.setItem('lastAttendanceDate', todayDateString);
+      setIsAttendance(true);
+    }
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ko-KR', {
-      month: 'long',
-      day: 'numeric',
-    });
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${month}월 ${day}일`;
   };
 
   const record = records[selectedDate || ''];
@@ -40,25 +84,49 @@ export default function CalendarPage () {
   return (
     <div className="calendarPage">
       <div className="calendar">
-        <CustomCalendar 
-          onDateChange={handleDateClick} 
-          onMonthYearChange={handleMonthYearChange} 
-          highlightDates={highlightDates} 
-          selectedDate={new Date(selectedDate!)} // 선택된 날짜를 Date 객체로 전달
+        <CustomCalendar
+          onDateChange={handleDateClick}
+          onMonthYearChange={(year, month) => console.log(`Year: ${year}, Month: ${month}`)}
+          exerciseDates={exerciseDates}
+          attendanceDates={attendanceDates}
+          selectedDate={new Date(selectedDate!)}
         />
       </div>
-      <GeneralButton buttonStyle={{ style: 'semiPrimary', size: 'large' }}>출석하기</GeneralButton>
+      <GeneralButton
+        buttonStyle={{ style: 'semiPrimary', size: 'large' }}
+        onClick={handleAttendance}
+        disabled={isAttendance}
+      >
+        출석하기
+      </GeneralButton>
+      <hr />
       {selectedDate && (
-        <div className="dailyRecordSection">
+        <>
           <div>{formatDate(selectedDate)}</div>
-          <div>일일 운동 기록</div>
-          {record ? (
-            <DailyRecord time={record.time} calories={record.calories} />
-          ) : (
-            <p>해당 날짜에 운동 기록이 없습니다.</p>
-          )}
-        </div>
+          <div className="recordTitle">일일 운동 기록</div>
+          <div className="dailyRecordSection">
+            <div className="tabButtons">
+              {record &&
+                Object.keys(record.types).map((type) => (
+                  <ExerciseItem
+                    key={type}
+                    label={type}
+                    selected={activeTab === type}
+                    onClick={() => setActiveTab(type)}
+                  />
+                ))}
+            </div>
+            {record && record.types[activeTab] ? (
+              <DailyRecord
+                time={record.types[activeTab].time}
+                calories={record.types[activeTab].calories}
+              />
+            ) : (
+              <p>해당 날짜에 운동 기록이 없습니다.</p>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
-};
+}

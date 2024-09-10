@@ -13,7 +13,7 @@
 @mixin button {
   font-size: 20px;
   font-weight: 700;
-  line-height: auto;
+  line-height: 10px;
 }
 
 @mixin nickname {
@@ -25,7 +25,7 @@
 @mixin sub {
   font-size: 18px;
   font-weight: 700;
-  line-height: auto;
+  // line-height: auto;
 }
 
 @mixin time {
@@ -48,14 +48,14 @@
 
 @mixin title {
   font-size: 26px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 27px;
 }
 
 @mixin login {
   font-size: 16px;
   font-weight: 400;
-  line-height: auto;
+  // line-height: auto;
 }
 
 @mixin smallButton {

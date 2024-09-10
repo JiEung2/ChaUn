@@ -1,0 +1,36 @@
+@use '@/styles/constants/colors' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.calendarPage {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 30px;
+  
+    @include typo.login;
+  }
+  
+  hr {
+    border: 0.6px solid colors.$lightGray;
+    margin: 2px;
+  }
+  
+  .recordTitle {
+    @include typo.input;
+  }
+  
+  .dailyRecordSection {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background-color: colors.$lightGray;
+    border-radius: 20px;
+  
+    .tabButtons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1px; // 버튼 간의 간격
+    }
+
+  }
+  
