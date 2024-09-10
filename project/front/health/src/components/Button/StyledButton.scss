@@ -1,0 +1,72 @@
+@use '@/styles/constants/colors' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.styledButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  width: 154px;
+  height: 90px;
+  text-align: left;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &.styledButton1 {
+    background-color: colors.$styledButton1;
+  }
+
+  &.styledButton2 {
+    background-color: colors.$styledButton2;
+  }
+
+  &.styledButton3 {
+    background-color: colors.$styledButton3;
+  }
+}
+
+.styledButtonText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.styledButtonTitle {
+  margin: 0;
+  color: colors.$black;
+
+  @include typo.sub;
+}
+
+.styledButtonDescription {
+  margin: 0;
+  color: colors.$darkGray;
+
+  @include typo.description2;
+}
+
+.styledButtonIcon {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end; // 아이콘이 오른쪽에 위치하도록 설정
+  margin-left: auto; // 아이콘을 오른쪽 끝으로 밀어내기
+//   img {
+//     width: 43px;
+//     height: 43px;
+//   }
+}

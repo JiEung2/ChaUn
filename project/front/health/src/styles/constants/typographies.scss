@@ -1,6 +1,6 @@
 @mixin input {
   font-size: 16px;
-  font-weight: 400; // 기본 폰트 두께 설정
+  font-weight: 600;
   line-height: 40px;
 }
 
@@ -12,25 +12,25 @@
 
 @mixin button {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: auto;
 }
 
 @mixin nickname {
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 40px;
 }
 
 @mixin sub {
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: auto;
 }
 
 @mixin time {
   font-size: 30px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 40px;
 }
 
@@ -42,7 +42,7 @@
 
 @mixin subtitle {
   font-size: 18px;
-  font-weight: 400;
+  font-weight: 700;
   line-height: 20px;
 }
 
@@ -60,13 +60,13 @@
 
 @mixin smallButton {
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 120px;
 }
 
 @mixin mediumButton {
   font-size: 22px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 120px;
 }
 

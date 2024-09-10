@@ -1,10 +1,7 @@
 @use '@/styles/constants/colors' as colors;
-// @use '@/styles/constants/typographies' as typographies;
 
 
 .button {
-//   @include typographies.button;
-
   display: flex;
   align-items: center;
   justify-content: center;

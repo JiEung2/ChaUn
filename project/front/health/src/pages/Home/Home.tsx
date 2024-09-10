@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
-import Quest from '../../assets/svg/quest.svg';
-import Calendar from '../../assets/svg/calendar.svg';
+import QuestIcon from '../../assets/svg/quest.svg';
+import CalendarIcon from '../../assets/svg/calendar.svg';
+import StyledButton from '../../components/Button/StyledButton';
+import HomeIcon1 from '../../assets/svg/homeIcon1.svg';
+import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
 import 'chart.js/auto';
 import './Home.scss';
 
@@ -25,7 +28,7 @@ interface SlideContent {
     },
   ];
 
-export default function Home () {
+export default function HomePage () {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -86,11 +89,11 @@ export default function Home () {
             </button>
 
             <div className="iconWrapper" onClick={() => navigate('/home/quest')}>
-                <img src={Quest} alt="Quest Icon" className="icon" />
+                <img src={QuestIcon} alt="Quest Icon" className="icon" />
             </div>
 
             <div className="iconWrapper" onClick={() => navigate('/home/calendar')}>
-                <img src={Calendar} alt="Calendar Icon" className="icon" />
+                <img src={CalendarIcon} alt="Calendar Icon" className="icon" />
             </div>
 
             <h2>{slides[currentSlide].name}</h2>
@@ -110,12 +113,18 @@ export default function Home () {
       </div>
 
       <div className="buttonSection">
-        <button className="recommendButton" onClick={() => navigate('/recommend')}>
-          운동 추천
-        </button>
-        <button className="crewButton" onClick={() => navigate('/crew')}>
-          내 크루 보러가기
-        </button>
+        <StyledButton
+          title="운동 추천"
+          icon={HomeIcon1}
+          onClick={() => navigate('/recommend')}
+          backgroundColor="styledButton1" // SASS에서 정의한 클래스 사용
+        />
+        <StyledButton
+          title="내 크루 보러가기"
+          icon={HomeIcon2}
+          onClick={() => navigate('/crew')}
+          backgroundColor="styledButton2"
+        />
       </div>
     </div>
   );
