@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import Modal from '../../components/Exercise/ExerciseList';
+// import ExerciseModal from '../../components/Exercise/ExerciseModal';
 import GeneralButton from '../../components/Button/GeneralButton';
 import Start from '../../assets/svg/start.svg';
 import Stop from '../../assets/svg/stop.svg';
@@ -64,7 +64,7 @@ export default function Exercise() {
 
       {!isFinished ? (
         <>
-          {/* {showModal && <Modal onClose={() => setShowModal(false)} />} */}
+          {/* {showModal && <ExerciseModal onClose={() => setShowModal(false)} />} */}
           <div>{new Date(timer * 1000).toISOString().substr(11, 8)}</div>
           {!isRunning ? (
             <button onClick={startTimer}>
