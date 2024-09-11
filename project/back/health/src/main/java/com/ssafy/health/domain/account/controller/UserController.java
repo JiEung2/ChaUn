@@ -31,4 +31,9 @@ public class UserController implements UserControllerApi{
         return ApiResponse.success(userWriteService.saveInfoSurvey(infoSurveyRequestDto));
     }
 
+    @PostMapping("/survey/body")
+    public ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto) {
+        return ApiResponse.success(bodyHistoryWriteService.saveBodyHistory(bodySurveyRequestDto));
+    }
+
 }
