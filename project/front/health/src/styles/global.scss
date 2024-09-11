@@ -12,11 +12,11 @@ body {
 }
 
 /* 390px 이상일 때 고정 너비 */
+
 #root {
   width: 390px;
-  padding-left: 30px;
-  padding-right: 30px;
   margin: 0 auto;
+  // padding: 0 20px;
   height: 100vh;
   background-color: white;
 }

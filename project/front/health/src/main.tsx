@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import './styles/base/global.scss'; // Sass 파일 경로에 맞게 수정
+import './styles/global.scss';
 createRoot(document.getElementById('root')!).render(<App />);
 
 // 서비스 워커 등록 코드 추가
