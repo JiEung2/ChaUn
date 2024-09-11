@@ -1,10 +1,7 @@
 package com.ssafy.health.domain.quest.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
@@ -17,6 +14,7 @@ public class Quest extends BaseEntity {
     private Long id;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private QuestType type;
 
     @NotNull
