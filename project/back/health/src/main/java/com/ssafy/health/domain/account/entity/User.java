@@ -3,11 +3,7 @@ package com.ssafy.health.domain.account.entity;
 import com.ssafy.health.common.entity.BaseEntity;
 import com.ssafy.health.domain.account.dto.request.UserLoginUpdateRequestDto;
 import com.ssafy.health.domain.account.dto.request.UserRegisterRequestDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -35,6 +31,7 @@ public class User extends BaseEntity {
 
     private Date birthday;
 
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @NotNull
@@ -47,7 +44,10 @@ public class User extends BaseEntity {
     private Long coin;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    private Integer dailyCaloricIntake;
 
     @Builder
     public User(UserRegisterRequestDto userRegisterRequestDto) {
@@ -62,6 +62,12 @@ public class User extends BaseEntity {
     public void updateNameAndEmail(UserLoginUpdateRequestDto userLoginUpdateRequestDto) {
         this.name = userLoginUpdateRequestDto.getName();
         this.email = userLoginUpdateRequestDto.getEmail();
+    }
+
+    public void saveUserInfo(String nickname, Date birthday, Gender gender) {
+        this.nickname = nickname;
+        this.birthday = birthday;
+        this.gender = gender;
     }
 
 }
