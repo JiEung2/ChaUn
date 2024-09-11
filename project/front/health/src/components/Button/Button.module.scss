@@ -1,7 +1,9 @@
-@use '@/styles/constants/colors' as colors;
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
 
 .button {
-  padding: 5px 0;
+  padding: 10px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,26 +28,30 @@
 }
 
 .primary {
+  padding: 10px 0;
   color: colors.$white;
   background-color: colors.$blue;
   border-radius: 5px;
+  @include typo.mediumButton;
 }
 
 .semiPrimary {
-    color: colors.$white;
-    background-color: colors.$blue;
-    border-radius: 28px;
+  padding: 10px 0;
+  color: colors.$white;
+  background-color: colors.$blue;
+  border-radius: 28px;
 
     &.disabled {
-        color: colors.$darkGray;
-        background-color: transparent;
+        color: colors.$white;
+        background-color: colors.$darkGray;
       }
 }
 
 .outlined {
+  padding: 5px 0;
   color: colors.$darkGray;
   background-color: transparent;
-  border: 2px solid colors.$darkGray;
+  border: 2px solid colors.$moreDarkGray;
   border-radius: 35px;
   transition: color 0.1s, border-color 0.1s;
 
@@ -61,6 +67,7 @@
 }
 
 .semiOutlined {
+  padding: 10px 0;
   color: colors.$blue;
   background-color: transparent;
   border: 1px solid colors.$blue;
@@ -68,9 +75,10 @@
 }
 
 .floating {
-    color: colors.$white;
-    background-color: colors.$blue;
-    border-radius: 35px;
+  padding: 10px 0;
+  color: colors.$white;
+  background-color: colors.$blue;
+  border-radius: 35px;
 
     &.disabled {
         color: colors.$darkGray;
@@ -79,9 +87,10 @@
 }
 
 .semiFloating {
-    color: colors.$white;
-    background-color: colors.$blue;
-    border-radius: 20px;
+  padding: 10px 0;
+  color: colors.$white;
+  background-color: colors.$blue;
+  border-radius: 20px;
 
     &.disabled {
         color: colors.$darkGray;
@@ -171,5 +180,4 @@
       width: 26px;
       height: 21px;
     }
-  }
-  
+}
