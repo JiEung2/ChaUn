@@ -7,7 +7,7 @@ import Exercise from './pages/Exercise/Exercise';
 import Login from './pages/Login/Login';
 import CommonLayout from './components/Common/CommonLayout';
 
-const App: React.FC = () => {
+export default function App() {
   return (
     <Router>
       <div id="root">
@@ -26,4 +26,3 @@ const App: React.FC = () => {
   );
 };
 
-export default App;

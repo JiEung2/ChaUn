@@ -7,15 +7,13 @@ interface QuestItemProps {
     completed: boolean;
   }
   
-  const QuestItem: React.FC<QuestItemProps> = ({ title, completed }) => {
+export default function QuestItem({ title, completed }: QuestItemProps) {
     return (
       <div className={`questItem ${completed ? 'completed' : ''}`}>
-      <span className='checkBox'>
-        {completed && <FontAwesomeIcon icon={faCheck} className="checkIcon" />}
-      </span>
-        <span className="questTitle">{title}</span>
+        <span className='checkBox'>
+          {completed && <FontAwesomeIcon icon={faCheck} className="checkIcon" />}
+        </span>
+        <p className="questTitle">{title}</p>
       </div>
     );
-  };
-  
-  export default QuestItem;
+};

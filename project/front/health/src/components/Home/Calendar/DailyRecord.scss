@@ -1,0 +1,20 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.recordItem {
+    @include typo.sub;
+
+    span {
+        @include typo.title;
+
+        &.time {
+            color: colors.$blue;
+        }
+
+        &.kcal {
+            color: colors.$pink;
+        }
+    }
+}
+
+

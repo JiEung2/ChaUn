@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import QuestIcon from '../../assets/svg/quest.svg';
@@ -9,36 +8,20 @@ import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
 import 'chart.js/auto';
 import './Home.scss';
 
-interface SlideContent {
-    name: string;
-    time: string;
-    description: string;
-  }
+interface avatarContent {
+  nickname: string;
+  todayTime: string;
+  weeklyTime: string;
+}
   
-  const slides: SlideContent[] = [
-    {
-      name: '민영',
-      time: '7h 48m',
-      description: '오늘 운동 시간',
-    },
-    {
-      name: '민영',
-      time: '30h 20m',
-      description: '이번 주 운동 시간',
-    },
-  ];
+const avatarContent: avatarContent = {
+    nickname: '민영',
+    todayTime: '1h 48m',
+    weeklyTime: '16h 45m',
+};
 
 export default function HomePage () {
   const navigate = useNavigate();
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const handleNext = () => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
-  };
-
-  const handlePrev = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
 
   // 그래프 데이터 예시
   const chartData = {
@@ -82,29 +65,25 @@ export default function HomePage () {
 
   return (
     <div className="homeContainer">
-        <div className="carouselContainer">
-
-            <button className="arrowButton left" onClick={handlePrev}>
-                &lt;
-            </button>
-
-            <div className="iconWrapper" onClick={() => navigate('/home/quest')}>
+        <div className="avatarContainer">
+          <div className="title">
+            <p className="avatar">{avatarContent.nickname}님의 아바타</p>   
+            <div className="iconWrapper">
+              <div className="navIcon" onClick={() => navigate('/home/quest')}>
                 <img src={QuestIcon} alt="Quest Icon" className="icon" />
-            </div>
-
-            <div className="iconWrapper" onClick={() => navigate('/home/calendar')}>
+              </div>
+              <div className="navIcon" onClick={() => navigate('/home/calendar')}>
                 <img src={CalendarIcon} alt="Calendar Icon" className="icon" />
+              </div>
             </div>
-
-            <h2>{slides[currentSlide].name}</h2>
-            <p>{slides[currentSlide].description}</p>
-            <span className="time">{slides[currentSlide].time}</span>
-
-            <button className="arrowButton right" onClick={handleNext}>
-                &gt;
-            </button>            
+          </div>
+          <div className="time">
+            <p>오늘 운동 시간</p>
+            <span>{avatarContent.todayTime}</span>
+            <p>이번 주 운동 시간</p>
+            <span>{avatarContent.weeklyTime}</span>
+          </div>
         </div>
-
 
 
       <div className="chartSection">

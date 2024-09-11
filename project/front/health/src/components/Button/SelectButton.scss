@@ -10,6 +10,7 @@
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   transition: background-color 0.1s, border-color 0.1s;
+  color: colors.$darkGray;
   @include typo.input;
 
   &.selected {

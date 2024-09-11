@@ -1,4 +1,3 @@
-import React from 'react';
 import './DailyRecord.scss';
 
 interface DailyRecordProps {
@@ -6,19 +5,17 @@ interface DailyRecordProps {
   calories: number;
 }
 
-const DailyRecord: React.FC<DailyRecordProps> = ({ time, calories }) => {
+export default function DailyRecord({ time, calories }:DailyRecordProps) {
   return (
     <div className="dailyRecord">
       <div className="recordItem">
-        <span>⏰ 운동 시간</span>
-        <span>{time}</span>
+        <p>⏱ 운동 시간</p>
+        <span className="time">{time}</span>
       </div>
       <div className="recordItem">
-        <span>🔥 칼로리</span>
-        <span>{calories}kcal</span>
+        <p>🔥 칼로리</p>
+        <span className="kcal">{calories} kcal</span>
       </div>
     </div>
   );
 };
-
-export default DailyRecord;

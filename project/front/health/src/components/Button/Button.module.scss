@@ -1,6 +1,9 @@
-@use '@/styles/constants/colors' as colors;
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
 
 .button {
+  padding: 10px 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,28 +28,32 @@
 }
 
 .primary {
+  padding: 10px 0;
   color: colors.$white;
   background-color: colors.$blue;
   border-radius: 5px;
+  @include typo.mediumButton;
 }
 
 .semiPrimary {
-    color: colors.$white;
-    background-color: colors.$blue;
-    border-radius: 28px;
+  padding: 10px 0;
+  color: colors.$white;
+  background-color: colors.$blue;
+  border-radius: 28px;
 
     &.disabled {
-        color: colors.$darkGray;
-        background-color: transparent;
+        color: colors.$white;
+        background-color: colors.$darkGray;
       }
 }
 
 .outlined {
-  color: colors.$darkGray; // 기본 색상 설정
+  padding: 5px 0;
+  color: colors.$darkGray;
   background-color: transparent;
-  border: 1px solid colors.$darkGray; // 기본 테두리 색상
+  border: 1px solid colors.$moreDarkGray;
   border-radius: 35px;
-  transition: color 0.3s, border-color 0.3s;
+  transition: color 0.1s, border-color 0.1s;
 
   &.active {
     color: colors.$blue; 
@@ -55,11 +62,12 @@
 
   &.disabled {
     color: colors.$darkGray;
-    background-color: transparent;
+    background-color: colors.$darkGray;
   }
 }
 
 .semiOutlined {
+  padding: 10px 0;
   color: colors.$blue;
   background-color: transparent;
   border: 1px solid colors.$blue;
@@ -67,20 +75,22 @@
 }
 
 .floating {
-    color: colors.$white;
-    background-color: colors.$blue;
-    border-radius: 35px;
+  padding: 10px 0;
+  color: colors.$white;
+  background-color: colors.$blue;
+  border-radius: 35px;
 
     &.disabled {
-        color: colors.$darkGray;
-        background-color: transparent;
+        color: colors.$white;
+        background-color: colors.$darkGray;
       }
 }
 
 .semiFloating {
-    color: colors.$white;
-    background-color: colors.$blue;
-    border-radius: 20px;
+  padding: 10px 0;
+  color: colors.$white;
+  background-color: colors.$blue;
+  border-radius: 20px;
 
     &.disabled {
         color: colors.$darkGray;
@@ -170,5 +180,4 @@
       width: 26px;
       height: 21px;
     }
-  }
-  
+}
