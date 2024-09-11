@@ -14,15 +14,21 @@ export default function QuestPage () {
 
   return (
     <div className="questList">
-      <h3>오늘의 퀘스트</h3>
-      {todayQuests.map((quest, index) => (
-        <QuestItem key={index} title={quest.title} completed={quest.completed} />
-      ))}
+      <div className="todayQuest">
+        <p>오늘의 퀘스트</p>        
+        {todayQuests.map((quest, index) => (
+          <QuestItem key={index} title={quest.title} completed={quest.completed} />
+        ))}        
+      </div>
 
-      <h3>월간 퀘스트</h3>
-      {monthlyQuests.map((quest, index) => (
-        <QuestItem key={index} title={quest.title} completed={quest.completed} />
-      ))}
+
+      <div className="monthlyQuest">
+        <p>월간 퀘스트</p>
+        {monthlyQuests.map((quest, index) => (
+          <QuestItem key={index} title={quest.title} completed={quest.completed} />
+        ))}        
+      </div>
+
     </div>
   );
 };

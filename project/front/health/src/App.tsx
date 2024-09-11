@@ -5,7 +5,7 @@ import Quest from './pages/Home/Quest/Quest';
 import ExerciseRecommend from './pages/Exercise/Recommend/Recommend';
 import Exercise from './pages/Exercise/Exercise';
 
-const App: React.FC = () => {
+export default function App() {
   return (
     <Router>
       <div className="container">
@@ -21,4 +21,3 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
