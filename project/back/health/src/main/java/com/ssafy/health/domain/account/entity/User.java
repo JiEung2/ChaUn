@@ -70,4 +70,8 @@ public class User extends BaseEntity {
         this.gender = gender;
     }
 
+    public void saveDailyCaloricIntake(Integer dailyCaloricIntake) {
+        this.dailyCaloricIntake = dailyCaloricIntake;
+    }
+
 }
