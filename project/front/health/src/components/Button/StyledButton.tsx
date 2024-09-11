@@ -18,7 +18,7 @@ export default function StyledButton({
 }: StyledButtonProps) {
   return (
     <button
-      className={`styledButton ${backgroundColor}`} // 클래스명을 전달
+      className={`styledButton ${backgroundColor}`}
       onClick={onClick}
     >
       <div className="styledButtonText">

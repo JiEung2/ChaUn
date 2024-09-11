@@ -62,7 +62,7 @@
 
   &.disabled {
     color: colors.$darkGray;
-    background-color: transparent;
+    background-color: colors.$darkGray;
   }
 }
 

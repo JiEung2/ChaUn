@@ -6,6 +6,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  padding: 20px;
   border-radius: 20px;
   border: none;
   cursor: pointer;
@@ -44,10 +45,15 @@
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+
+  @include typo.sub;
 }
 
 .styledButtonTitle {
   margin: 0;
+  max-width: 70px; // 너비 제한 설정
+  word-break: break-word; // 너비 초과 시 줄바꿈
+  overflow-wrap: break-word; // 단어가 길어질 경우 강제로 줄바꿈
   color: colors.$black;
 
   @include typo.sub;
@@ -55,6 +61,9 @@
 
 .styledButtonDescription {
   margin: 0;
+  max-width: 128px; // 너비 제한 설정
+  word-break: break-word; // 너비 초과 시 줄바꿈
+  overflow-wrap: break-word; // 단어가 길어질 경우 강제로 줄바꿈
   color: colors.$darkGray;
 
   @include typo.description2;
@@ -65,8 +74,4 @@
   align-items: flex-end;
   justify-content: flex-end; // 아이콘이 오른쪽에 위치하도록 설정
   margin-left: auto; // 아이콘을 오른쪽 끝으로 밀어내기
-//   img {
-//     width: 43px;
-//     height: 43px;
-//   }
 }

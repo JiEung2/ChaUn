@@ -108,9 +108,17 @@ export default function Exercise() {
         </>
       ) : (
         <div>
-          <h2>운동이 종료되었습니다.</h2>
-          <p>총 운동 시간: {new Date(timer * 1000).toISOString().substr(11, 8)}</p>
-          <p>소모 칼로리: {calculateCalories(timer)} kcal</p>
+          <p className="finishMent">운동이 종료되었습니다!</p>
+          <div className="recordContainer">
+            <div className="recordItem">
+              <p>⏱ 운동 시간</p>
+              <span className="time">{new Date(timer * 1000).toISOString().substr(11, 8)}</span>
+            </div>
+            <div className="recordItem">
+              <p>🔥 칼로리</p>
+              <span className="kcal">{calculateCalories(timer)} kcal</span>
+            </div>            
+          </div>
         </div>
       )}
     </div>

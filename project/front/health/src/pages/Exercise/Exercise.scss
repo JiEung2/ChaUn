@@ -6,7 +6,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 100px;
+    gap: 20px;
+    padding: 0 30px;
 
     .exerciseRecommendButton {
         margin-left: auto;
@@ -27,4 +28,21 @@
         cursor: pointer;
         outline: none;
     }
+}
+
+.finishMent {
+    text-align: center;
+    @include typo.title;
+}
+.recordContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 327px;
+    background-color: colors.$record;
+    border-radius: 15px;
+    padding: 2px 0 20px 0;
+    margin: 0 10px;
+    position: relative;
 }

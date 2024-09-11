@@ -9,7 +9,7 @@ export default function DailyRecord({ time, calories }:DailyRecordProps) {
   return (
     <div className="dailyRecord">
       <div className="recordItem">
-        <p>⏰ 운동 시간</p>
+        <p>⏱ 운동 시간</p>
         <span className="time">{time}</span>
       </div>
       <div className="recordItem">
