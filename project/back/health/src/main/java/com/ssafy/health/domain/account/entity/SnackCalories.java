@@ -1,25 +1,26 @@
-package com.ssafy.health.domain.body.BodyHistory.entity;
+package com.ssafy.health.domain.account.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Entity
 @Getter
-public class MealCalories {
+public class SnackCalories {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
+    private CaloriesType type;
+
+    @NotNull
     private int mealCount;
 
     @NotNull
-    private int mealType;
+    private int frequency;
 
     @NotNull
     private int calories;
