@@ -25,13 +25,13 @@ export default function Header() {
   };
 
   // back 버튼을 숨길 경로 목록
-  const hiddenBackButtonPaths = ['/home', '/login', '/settings'];
+  const hiddenBackButtonPaths = ['/home'];
 
   // 현재 경로가 숨길 경로 목록에 있는지 확인
   const showBackBtn = !hiddenBackButtonPaths.includes(location.pathname);
 
   // alarm 버튼을 숨길 경로 목록
-  const hiddenAlarmButtonPaths = ['/alarm']; //TODO -  알람 페이지 경로 수정 예정
+  const hiddenAlarmButtonPaths = ['/exercise/recommend']; //TODO -  알람 페이지 경로 수정 예정
 
   const showAlarmBtn = !hiddenAlarmButtonPaths.includes(location.pathname);
 

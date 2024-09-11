@@ -6,7 +6,7 @@ import ExerciseRecommend from './pages/Exercise/Recommend/Recommend';
 import Exercise from './pages/Exercise/Exercise';
 import Login from './pages/Login/Login';
 import CommonLayout from './components/Common/CommonLayout';
-
+import Survey from './pages/Survey/Survey';
 export default function App() {
   return (
     <Router>
@@ -14,6 +14,7 @@ export default function App() {
         <Routes>
           <Route element={<CommonLayout />}>
             <Route path="/" element={<Login />} />
+            <Route path="/survey" element={<Survey />} />
             <Route path="/home" element={<Home />} />
             <Route path="/home/calendar" element={<Calendar />} />
             <Route path="/home/quest" element={<Quest />} />
@@ -24,5 +25,4 @@ export default function App() {
       </div>
     </Router>
   );
-};
-
+}

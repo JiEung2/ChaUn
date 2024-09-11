@@ -1,3 +1,3 @@
-export default function Three() {
-  return <div>{/* Your component code here */}</div>;
-}
+// export default function Three({ handleNext, handlePrev }) {
+//   return <div>{/* Your component code here */}</div>;
+// }

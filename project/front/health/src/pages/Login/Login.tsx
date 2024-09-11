@@ -9,7 +9,7 @@ export default function LoginPage() {
     // window.location.href = "카카오 로그인 페이지 URL";
 
     // 임시로 servey 페이지로 이동
-    navigate('/servey');
+    navigate('/survey');
   };
   const moveGoogle = () => {
     //TODO : 구글 로그인 페이지로 이동
