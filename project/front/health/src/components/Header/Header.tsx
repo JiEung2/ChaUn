@@ -30,8 +30,13 @@ export default function Header() {
   // 현재 경로가 숨길 경로 목록에 있는지 확인
   const showBackBtn = !hiddenBackButtonPaths.includes(location.pathname);
 
+  // alarm 버튼을 숨길 경로 목록
+  const hiddenAlarmButtonPaths = ['/alarm']; //TODO -  알람 페이지 경로 수정 예정
+
+  const showAlarmBtn = !hiddenAlarmButtonPaths.includes(location.pathname);
+
   // 특정 경로에서는 헤더를 숨기도록 설정
-  const hideHeaderPaths = ['/', '/login'];
+  const hideHeaderPaths = ['/', '/survey'];
 
   if (hideHeaderPaths.includes(location.pathname)) {
     return null;
@@ -45,7 +50,12 @@ export default function Header() {
         </button>
         <h1 className="title">{getHeaderTitle()}</h1>
       </div>
-      <img src={alarmIcon} alt="알림" className="icon bell-icon" />
+      <img
+        src={alarmIcon}
+        alt="알림"
+        className="icon bell-icon"
+        style={{ visibility: showAlarmBtn ? 'visible' : 'hidden' }}
+      />
     </div>
   );
 }
