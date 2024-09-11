@@ -28,6 +28,4 @@ public class BodyType extends BaseEntity {
     @NotNull
     private String description;
 
-    @NotNull
-    private Boolean isMuscle;
 }
