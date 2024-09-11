@@ -16,11 +16,18 @@ public class CustomOAuth2User implements OAuth2User {
         this.userRegisterResponseDto = userRegisterResponseDto;
     }
 
+    public Long getId() {
+        return userRegisterResponseDto.getId();
+    }
 
     @Override
     public Map<String, Object> getAttributes() {
-
-        return null;
+        return Map.of(
+                "id", userRegisterResponseDto.getId(),
+                "name", userRegisterResponseDto.getName(),
+                "sso", userRegisterResponseDto.getSso(),
+                "role", userRegisterResponseDto.getRole().name()
+        );
     }
 
     @Override
