@@ -1,0 +1,30 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.exerciseContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+
+    .exerciseRecommendButton {
+        margin-left: auto;
+    }
+}
+
+.timer {
+    @include typo.timer;
+}
+
+.timerButton {
+    display: flex;
+    gap: 20px;
+
+    button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        outline: none;
+    }
+}
