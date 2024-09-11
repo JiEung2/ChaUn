@@ -1,6 +1,5 @@
-package com.ssafy.health.domain.body.BodyType.entity;
+package com.ssafy.health.domain.body.BodyHistory.entity;
 
-import com.ssafy.health.common.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,22 +9,18 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class BodyType extends BaseEntity {
+public class MealCalories {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @NotNull
-    private String name;
+    private int mealCount;
 
     @NotNull
-    private Float minFatRatio;
+    private int mealType;
 
     @NotNull
-    private Float maxFatRatio;
-
-    @NotNull
-    private String description;
-
+    private int calories;
 }

@@ -1,7 +1,8 @@
 package com.ssafy.health.domain.account.service;
 
-import com.ssafy.health.domain.account.dto.request.UserLoginUpdateRequestDto;
-import com.ssafy.health.domain.account.dto.request.UserRegisterRequestDto;
+import com.ssafy.health.common.security.SecurityUtil;
+import com.ssafy.health.domain.account.dto.request.*;
+import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.UserRegisterResponseDto;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
@@ -21,7 +22,6 @@ public class UserWriteService {
 
         user = userRepository.save(user);
 
-
         return UserRegisterResponseDto.builder()
                 .id(user.getId())
                 .sso(user.getSso())
@@ -36,7 +36,16 @@ public class UserWriteService {
         user.updateNameAndEmail(userLoginUpdateRequestDto);
     }
 
+    public InfoSurveySuccessDto saveInfoSurvey(InfoSurveyRequestDto infoSurveyRequestDto){
+        User user = findUserById(SecurityUtil.getCurrentUserId());
+        user.saveUserInfo(infoSurveyRequestDto.getNickname(), infoSurveyRequestDto.getBirthday(), infoSurveyRequestDto.getGender());
+        userRepository.save(user);
+
+        return new InfoSurveySuccessDto();
+    }
+
     private User findUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
     }
+
 }
