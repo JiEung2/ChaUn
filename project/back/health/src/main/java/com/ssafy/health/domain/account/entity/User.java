@@ -49,6 +49,8 @@ public class User extends BaseEntity {
 
     private Integer dailyCaloricIntake;
 
+    private String deviceToken;
+
     @Builder
     public User(UserRegisterRequestDto userRegisterRequestDto) {
         this.name = userRegisterRequestDto.getName();
