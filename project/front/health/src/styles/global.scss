@@ -16,11 +16,10 @@ body {
 #root {
   width: 390px;
   margin: 0 auto;
-  // padding: 0 20px;
+  background-color: white;
   height: 100vh;
 }
 .outlet {
-  background-color: white;
   padding: 30px;
 }
 /* 390px 미만일 때 풀스크린 적용 */

@@ -15,6 +15,12 @@ const Navbar: React.FC = () => {
   const isActive = (path: string) => currentPath.startsWith(path);
   const activateIcon = (path: string) => (isActive(path) ? 'navbar__icon--active' : '');
 
+  //navbar를 숨길 경로 목록
+  const hideNavbarPaths = ['/', '/survey'];
+
+  if (hideNavbarPaths.includes(location.pathname)) {
+    return null;
+  }
   return (
     <nav className="navbar">
       <div className="navbar__white">

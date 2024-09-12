@@ -7,17 +7,17 @@ import Exercise from './pages/Exercise/Exercise';
 import Login from './pages/Login/Login';
 import CommonLayout from './components/Common/CommonLayout';
 import Survey from './pages/Survey/Survey';
-import Record from './pages/Record/Record'
-import BodyDetail from './pages/Record/BodyDetail'
+import Record from './pages/Record/Record';
+import BodyDetail from './pages/Record/BodyDetail';
 
 export default function App() {
   return (
     <Router>
       <div id="root">
         <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/survey" element={<Survey />} />
           <Route element={<CommonLayout />}>
-            <Route path="/" element={<Login />} />
-            <Route path="/survey" element={<Survey />} />
             <Route path="/home" element={<Home />} />
             <Route path="/home/calendar" element={<Calendar />} />
             <Route path="/home/quest" element={<Quest />} />
