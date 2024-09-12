@@ -85,3 +85,9 @@
   font-weight: 700;
   line-height: 40px;
 }
+
+@mixin graph {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 10px;
+}

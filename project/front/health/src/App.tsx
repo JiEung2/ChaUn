@@ -7,6 +7,9 @@ import Exercise from './pages/Exercise/Exercise';
 import Login from './pages/Login/Login';
 import CommonLayout from './components/Common/CommonLayout';
 import Survey from './pages/Survey/Survey';
+import Record from './pages/Record/Record'
+import BodyDetail from './pages/Record/BodyDetail'
+
 export default function App() {
   return (
     <Router>
@@ -20,6 +23,8 @@ export default function App() {
             <Route path="/home/quest" element={<Quest />} />
             <Route path="/exercise/recommend" element={<ExerciseRecommend />} />
             <Route path="/exercise" element={<Exercise />} />
+            <Route path="/record" element={<Record />} />
+            <Route path="/record/bodyDetail" element={<BodyDetail />} />
           </Route>
         </Routes>
       </div>
