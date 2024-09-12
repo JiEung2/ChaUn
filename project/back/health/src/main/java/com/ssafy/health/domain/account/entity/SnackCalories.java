@@ -17,10 +17,8 @@ public class SnackCalories {
     private CaloriesType type;
 
     @NotNull
-    private int mealCount;
-
-    @NotNull
-    private int frequency;
+    @Enumerated(EnumType.STRING)
+    private Frequency frequency;
 
     @NotNull
     private int calories;
