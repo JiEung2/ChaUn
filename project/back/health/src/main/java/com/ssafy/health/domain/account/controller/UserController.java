@@ -2,8 +2,10 @@ package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
+import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.CaloriesSurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.ValidateNicknameSuccessDto;
 import com.ssafy.health.domain.account.service.UserValidator;
@@ -34,6 +36,11 @@ public class UserController implements UserControllerApi{
     @PostMapping("/survey/body")
     public ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto) {
         return ApiResponse.success(bodyHistoryWriteService.saveBodyHistory(bodySurveyRequestDto));
+    }
+
+    @PostMapping("/survey/eating-habits")
+    public ApiResponse<CaloriesSurveySuccessDto> saveCaloriesSurvey(@RequestBody CaloriesSurveyRequestDto caloriesSurveyRequestDto) {
+        return ApiResponse.success(userWriteService.saveDailyCalories(caloriesSurveyRequestDto));
     }
 
 }
