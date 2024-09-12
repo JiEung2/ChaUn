@@ -2,12 +2,15 @@ package com.ssafy.health.common.oauth.jwt;
 
 import com.ssafy.health.common.oauth.dto.CustomOAuth2User;
 import com.ssafy.health.domain.account.dto.response.UserRegisterResponseDto;
+import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserRole;
+import com.ssafy.health.domain.account.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,12 +19,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+@RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
-    private final JWTUtil jwtUtil;
 
-    public JWTFilter(JWTUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
+    private final JWTUtil jwtUtil;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -68,12 +70,20 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //토큰에서 username과 role 획득
         String sso = jwtUtil.getUsername(accessToken);
+        System.out.println("SSO from JWT: " + sso);
+
         UserRole role = jwtUtil.getRole(accessToken);
+        System.out.println("Role from JWT: " + role);
+
+        User user = userRepository.findBySso(sso);
 
         //userDTO를 생성하여 값 set
         UserRegisterResponseDto userRegisterResponseDto = UserRegisterResponseDto.builder()
                 .sso(sso)
                 .role(UserRole.USER)
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
                 .build();
 
         //UserDetails에 회원 정보 객체 담기
