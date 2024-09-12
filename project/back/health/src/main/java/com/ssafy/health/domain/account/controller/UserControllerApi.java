@@ -2,8 +2,10 @@ package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
+import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.CaloriesSurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.ValidateNicknameSuccessDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -79,4 +81,30 @@ public interface UserControllerApi {
     })
     ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto);
 
+    @Operation(
+            summary = "회원 식습관 설문조사",
+            description = "회원 식습관을 입력받아 평균 하루 섭취 칼로리를 계산합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 식습관 설문조사 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"회원 식습관 설문조사를 완료했습니다.\",\n" +
+                                    "  \"data\": {\n" +
+                                    "  }\n" +
+                                    "}"
+                            ))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "설문조사에서 지정된 값이 아닌 다른 값이 넘어왔을 때",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 404,\n" +
+                                    "  \"message\": \"해당 식사에 대한 기준표가 존재하지 않습니다.\",\n" +
+                                    "  \"data\": {}\n" +
+                                    "}"
+                            ))
+            ),
+    })
+    ApiResponse<CaloriesSurveySuccessDto> saveCaloriesSurvey(@RequestBody CaloriesSurveyRequestDto caloriesSurveyRequestDto);
 }
