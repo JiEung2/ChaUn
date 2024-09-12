@@ -5,7 +5,7 @@ export default function CommonLayout() {
   return (
     <div>
       <Header />
-      <main>
+      <main className="outlet">
         <Outlet />
       </main>
     </div>

@@ -18,9 +18,11 @@ body {
   margin: 0 auto;
   // padding: 0 20px;
   height: 100vh;
-  background-color: white;
 }
-
+.outlet {
+  background-color: white;
+  padding: 30px;
+}
 /* 390px 미만일 때 풀스크린 적용 */
 @media screen and (max-width: 390px) {
   #root {
