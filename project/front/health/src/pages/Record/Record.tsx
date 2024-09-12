@@ -5,6 +5,7 @@ import InputField from '@/components/Input/Input';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseModal from '@/components/Exercise/ExerciseModal';
+import DropDown from '@/assets/svg/dropDown.svg'
 
 export default function RecordPage() {
   const navigate = useNavigate();
@@ -26,6 +27,11 @@ export default function RecordPage() {
     // selected가 string 배열일 경우 첫 번째 항목을 사용
     const exercise = Array.isArray(selected) ? selected[0] : selected;
     setExerciseType(exercise);
+    setShowExerciseModal(false);
+  };
+
+  // 모달을 닫는 함수
+  const handleCloseModal = () => {
     setShowExerciseModal(false);
   };
 
@@ -60,48 +66,53 @@ export default function RecordPage() {
         </div>
       </div>
 
-      <p className="predictionText">
-        <strong>민영님</strong>의 운동 강도를 높였을 때, 체형 예측 결과를 조회해보세요
-      </p>
-
       <div className="exercisePrediction">
+        <p className="predictionText">
+          <strong>민영님</strong>의 운동 강도를 높였을 때, 체형 예측 결과를 조회해보세요
+        </p>
         <div className="exerciseInput">
-          {/* 운동 종목 버튼 */}
-          <button
-            className="inputField semiMedium"
-            onClick={() => setShowExerciseModal(true)}
-          >
-            {exerciseType || '운동 종목'}
-          </button>
-          {showExerciseModal && (
-            <ExerciseModal onSelectExercise={handleExerciseSelect} multiple={false} />
-          )}
+          <div className="inputBox">
+            <button
+              className="inputField semiMedium"
+              onClick={() => setShowExerciseModal(true)}
+            >
+              {exerciseType || '운동 종목'}
+            </button>
+            {showExerciseModal && (
+              <ExerciseModal 
+                onSelectExercise={handleExerciseSelect} 
+                multiple={false} 
+                onClose={handleCloseModal}
+              />
+            )}
 
-          {/* 일 드롭다운 버튼 */}
-          <button
-            className="inputField semiSmall"
-            onClick={() => setShowDayDropdown(!showDayDropdown)}
-          >
-            {day || '일'}
-          </button>
-          {showDayDropdown && (
-            <div className="dayDropdown">
-              <div onClick={() => setDay('1')}>1일</div>
-              <div onClick={() => setDay('2')}>2일</div>
-            </div>
-          )}
+            <button
+              className="inputField semiSmall"
+              onClick={() => setShowDayDropdown(!showDayDropdown)}
+            >
+              {day || ''}
+              <img src={DropDown} alt="dropDown" className="dropDown"/>
+            </button>
+            {showDayDropdown && (
+              <div className="dayDropdown">
+                <div onClick={() => setDay('1')}>1</div>
+                <div onClick={() => setDay('2')}>2</div>
+              </div>
+            )}
+            일
 
-          {/* 입력 필드 */}
-          <InputField
-            placeholder="30분"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            size="semiTiny"
-          />
+            <InputField
+              placeholder=""
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              size="semiTiny"
+            />
+            분
         </div>
         <GeneralButton buttonStyle={{ style: 'primary', size: 'medium' }}>
           체형 예측
-        </GeneralButton>
+        </GeneralButton>          
+        </div>
       </div>
     </div>
   );

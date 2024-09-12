@@ -1,12 +1,46 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
 .recordsContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
 .exerciseInput {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+  padding: 70px 20px;
+  border: 1px solid colors.$lightGray;
+  border-radius: 20px;
+  background-color: colors.$white;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.1s, border-color 0.1s;
+  text-align: center;
+  
+  
+  .inputBox {
     display: flex;
     gap: 10px;
+    color: colors.$darkGray;
+
+    @include typo.input;
+  }
+}
+
+.dayDropdown {
+  position: absolute; 
+  top: 100%;
+  left: 0; 
+  background-color: white; 
+  border: 1px solid #ccc;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10; 
 }

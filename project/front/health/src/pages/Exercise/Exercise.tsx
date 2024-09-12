@@ -51,6 +51,10 @@ export default function Exercise() {
     setShowModal(false); 
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   useEffect(() => {
     return () => {
       if (intervalId) {
@@ -79,11 +83,15 @@ export default function Exercise() {
 
       <Modal
         isOpen={showModal}
-        onRequestClose={() => setShowModal(false)}
+        onRequestClose={handleCloseModal}
         className="modalContent"
         overlayClassName="modalOverlay"
       >
-        <ExerciseModal onSelectExercise={handleSelectExercise} multiple={false} />
+        <ExerciseModal 
+          onSelectExercise={handleSelectExercise} 
+          multiple={false} 
+          onClose={handleCloseModal}
+        />
       </Modal>
 
       {!isFinished ? (
