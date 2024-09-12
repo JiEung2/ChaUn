@@ -1,9 +1,6 @@
 package com.ssafy.health.domain.account.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
@@ -19,7 +16,8 @@ public class MealCalories {
     private int mealCount;
 
     @NotNull
-    private int mealType;
+    @Enumerated(EnumType.STRING)
+    private MealType mealType;
 
     @NotNull
     private int calories;
