@@ -86,7 +86,6 @@ export default function HomePage () {
         </div>
 
 
-
       <div className="chartSection">
         <h2>이번 주 운동 그래프</h2>
         <Line data={chartData} options={chartOptions} />

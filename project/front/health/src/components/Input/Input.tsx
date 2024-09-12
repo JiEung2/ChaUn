@@ -4,7 +4,7 @@ interface InputFieldProps {
   placeholder: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  size: 'large' | 'medium' | 'small' | 'tiny';
+  size: 'large' | 'medium' | 'small' | 'tiny' | 'semiMedium' | 'semiSmall' | 'semiTiny' ;
 }
 
 export default function InputField({

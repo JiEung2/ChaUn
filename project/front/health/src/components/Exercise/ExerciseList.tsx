@@ -1,19 +1,24 @@
 import ExerciseItem from './ExerciseItem';
 import './ExerciseList.scss';
-import { useState } from 'react'
+
 interface ExerciseListProps {
   title: string;
   items: string[];
+  selectedItems: string[];
+  onSelect: (items: string[]) => void;
+  multiple?: boolean;
 }
 
-export default function ExerciseList({ title, items }: ExerciseListProps) {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-
+export default function ExerciseList({ title, items, selectedItems, onSelect, multiple = false }: ExerciseListProps) {
   const handleItemClick = (item: string) => {
-    if (selectedItems.includes(item)) {
-      setSelectedItems(selectedItems.filter((selected) => selected !== item));
+    if (multiple) {
+      if (selectedItems.includes(item)) {
+        onSelect(selectedItems.filter((selected) => selected !== item));
+      } else {
+        onSelect([...selectedItems, item]);
+      }
     } else {
-      setSelectedItems([...selectedItems, item]);
+      onSelect([item]);
     }
   };
 

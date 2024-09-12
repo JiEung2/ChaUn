@@ -51,7 +51,7 @@
   padding: 5px 0;
   color: colors.$darkGray;
   background-color: transparent;
-  border: 2px solid colors.$moreDarkGray;
+  border: 1px solid colors.$moreDarkGray;
   border-radius: 35px;
   transition: color 0.1s, border-color 0.1s;
 
@@ -62,7 +62,7 @@
 
   &.disabled {
     color: colors.$darkGray;
-    background-color: transparent;
+    background-color: colors.$darkGray;
   }
 }
 
@@ -81,8 +81,8 @@
   border-radius: 35px;
 
     &.disabled {
-        color: colors.$darkGray;
-        background-color: transparent;
+        color: colors.$white;
+        background-color: colors.$darkGray;
       }
 }
 
