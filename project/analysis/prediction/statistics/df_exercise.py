@@ -54,7 +54,7 @@ def generate_data(row_data, N):
                 'BMR': 0  # Placeholder for future calculation
             }
 
-            user_data['consumed_cal'] = 150 + np.random.normal(100, 1)
+            user_data['consumed_cal'] = 200 + np.random.normal(300, 25)
             user_data['intake_cal'] = np.random.choice([1500, 1800, 2400, 3000, 3300], p=[0.2, 0.25, 0.4, 0.1, 0.05])
 
             result_data.append(user_data)
@@ -72,8 +72,8 @@ def generate_data(row_data, N):
                 'BMR': 0  # Placeholder for future calculation
             }
 
-            user_data['consumed_cal'] = 70 + np.random.normal(20, 4)  # 운동량 적음
-            user_data['intake_cal'] = np.random.choice([2000, 2300, 2700, 3200, 3500], p=[0.1, 0.2, 0.3, 0.3, 0.1])  # 섭취량 더 많음
+            user_data['consumed_cal'] = 150 + np.random.normal(50, 10)  # 운동량 적음
+            user_data['intake_cal'] = np.random.choice([2000, 2300, 2700, 3200, 3500], p=[0.2, 0.2, 0.3, 0.2 , 0.1])  # 섭취량 더 많음
 
             result_data.append(user_data)
 
