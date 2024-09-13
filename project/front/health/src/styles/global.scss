@@ -16,7 +16,7 @@ body {
 #root {
   width: 390px;
   margin: 0 auto;
-  // padding: 0 20px;
+  // padding: 20px;
   height: 100vh;
   background-color: white;
 }
@@ -28,4 +28,8 @@ body {
     height: 100vh;
     margin: 0;
   }
+}
+
+.outletPadding {
+  padding: 30px;
 }

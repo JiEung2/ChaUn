@@ -1,5 +1,5 @@
-import alarmIcon from '@/assets/icons/alarm.png';
-import back from '@/assets/icons/navigate_before.png';
+import alarmIcon from '@/assets/svg/bell.svg';
+import back from '@/assets/svg/back.svg';
 import './Header.scss';
 import { useLocation } from 'react-router-dom';
 

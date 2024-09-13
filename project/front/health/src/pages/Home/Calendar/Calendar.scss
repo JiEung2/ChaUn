@@ -5,14 +5,21 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 0 30px;
   
     @include typo.login;
   }
+
+  .attendance {
+    @include typo.mediumButton;
+  }
   
-  hr {
-    border: 0.6px solid colors.$lightGray;
+  .attendanceHr {
+    border: 0.3px solid colors.$lightGray;
     margin: 2px;
+    width: 330px !important;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .recordTitle {
