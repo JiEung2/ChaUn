@@ -23,14 +23,14 @@ def generate_height_weight(total_state_data, bmi_data):
                 height = np.random.normal(height_avg, height_std) if height_avg > 0 and height_std > 0 else height_avg
                 height_in_m = round(height / 100, 2)  # cm -> m
                 
-                # 상태에 따른 BMI 생성 (여기서는 임의로 정했지만 상태에 맞게 조정 가능)
-                if state == 'state1':  # 예: 상태 1은 정상 체중
+                # 상태에 따른 BMI 생성 (여기서는 임의로 설정)
+                if state == 'state1':  # 정상 체중
                     bmi = np.random.uniform(17.0, 18.5)
-                elif state == 'state2':  # 예: 상태 2는 과체중
+                elif state == 'state2':  # 과체중
                     bmi = np.random.uniform(18.5, 22.9)
-                elif state == 'state3':  # 예: 상태 3은 비만
+                elif state == 'state3':  # 비만
                     bmi = np.random.uniform(23.0, 24.9)
-                else:  # 상태 4는 고도 비만
+                else:  # 고도 비만
                     bmi = np.random.uniform(25.0, 40.0)
                 
                 bmi = round(bmi, 2)
@@ -99,15 +99,22 @@ def generate_data(row_data, stat_obese):
 
     return generated_data
 
-# output.csv를 받아와서 BMI를 반영한 데이터 덮어쓰기를 진행하자.
+# output.csv를 받아와서 BMI를 반영한 데이터 덮어쓰기를 진행
 file_path = './output.csv'
 data = pd.read_csv(file_path)
+
 # 통계 파일 불러오기
 file_path = './국민 건강 통계/obesity.csv'
 stats = pd.read_csv(file_path)
 
-# 데이터 출력 이후, 나이와 성별로 정렬
-result = generate_data(data, stats)
+# 신장과 체중 생성
+generated_data = generate_data(data, stats)
 
-result.to_csv('updated_output.csv', index=False)
-print(f'{len(result)}개의 개인 체형 정보 DB가 수정됐습니다!')
+# 기존 데이터에 신장, 체중, BMI 덮어쓰기
+data['height'] = generated_data['height']
+data['weight'] = generated_data['weight']
+data['BMI'] = generated_data['BMI']
+
+# 결과를 CSV 파일로 저장
+data.to_csv('updated_output.csv', index=False)
+print(f'{len(data)}개의 개인 체형 정보 DB가 수정됐습니다!')
