@@ -1,5 +1,6 @@
 import GeneralButton from '../Button/GeneralButton';
 interface FourProps {
+  //TODO - 성공 화면으로 이동
   finishServey: () => void;
   handlePrev: () => void;
 }
