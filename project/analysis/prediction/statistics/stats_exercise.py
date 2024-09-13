@@ -12,7 +12,7 @@ result = pd.read_csv(csv_path)
 grouped_data = result.groupby(['age', 'sex']).size().unstack()
 
 # 나이대별로 운동 잘하는 사람만 필터링
-active_only = result[result['consumed_cal'] >= 200].groupby(['age', 'sex']).size().unstack()
+active_only = result[result['consumed_cal'] >= 250].groupby(['age', 'sex']).size().unstack()
 
 # 전체 인원에 대한 남자, 여자 막대 그래프
 fig, ax = plt.subplots(figsize=(10, 6))  # Axes 객체 생성
