@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import ExerciseCategories from './ExerciseCategories';
 import GeneralButton from '../Button/GeneralButton';
+import XCircle from '@/assets/svg/xCircle.svg';
 import './ExerciseModal.scss';
 
 interface ExerciseModalProps {
   onSelectExercise: (selected: string | string[]) => void;
+  onClose: () => void;
   multiple?: boolean;
 }
 
-export default function ExerciseModal({ onSelectExercise, multiple = false }: ExerciseModalProps) {
+export default function ExerciseModal({ onSelectExercise, onClose, multiple = false }: ExerciseModalProps) {
   const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
 
   const handleSelectExercises = (exercises: string | string[]) => {
@@ -28,6 +30,12 @@ export default function ExerciseModal({ onSelectExercise, multiple = false }: Ex
   return (
     <div className="exerciseModal">
       <hr />
+      <img 
+        src={XCircle}
+        alt="xCircle"
+        className="xCircle"
+        onClick={onClose}
+      />
       <div className="scrollableContent">
         <ExerciseCategories onSelect={handleSelectExercises} multiple={multiple} />
       </div>

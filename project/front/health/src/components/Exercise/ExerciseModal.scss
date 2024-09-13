@@ -17,14 +17,25 @@
   max-width: 350px; // 모달의 최대 너비 설정
   width: 100%;
   max-height: 70vh; // 모달의 최대 높이 설정
-  overflow-y: scroll; // 내용이 넘칠 경우 스크롤 활성화
+  overflow-y: auto; // 스크롤 활성화 (스크롤바는 항상 표시되지 않음)
+
+  .xCircle {
+    position: absolute; 
+    top: 40px;
+    right: 30px; 
+    cursor: pointer; 
+  }
 
   .scrollableContent {
     max-height: 70vh;
-    overflow-y: scroll; // 스크롤 가능한 부분 활성화
+    overflow-y: auto; // 스크롤 활성화 (스크롤바는 항상 표시되지 않음)
     -ms-overflow-style: none; // IE와 Edge에서 스크롤바 숨기기
     scrollbar-width: none; // Firefox에서 스크롤바 숨기기
+  }
 
+  // 모든 웹킷 브라우저에서 스크롤바 숨기기
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 
