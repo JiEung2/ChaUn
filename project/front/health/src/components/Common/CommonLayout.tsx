@@ -1,6 +1,7 @@
 import Header from '@/components/Header/Header';
 import Navbar from '@/components/Navbar/Navbar';
-import { Outlet } from 'react-router-dom'; // Outlet 추가
+import './CommonLayout.scss';
+import { Outlet } from 'react-router-dom';
 
 export default function CommonLayout() {
   return (

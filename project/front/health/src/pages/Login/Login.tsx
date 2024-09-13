@@ -1,7 +1,7 @@
-import kakao from '@/assets/image/Login/kakaoLogin.png';
-import google from '@/assets/image/Login/googleLogin.png';
 import './Login.scss'; // SCSS 파일 임포트
 import { useNavigate } from 'react-router-dom';
+import KakaoButton from '@/components/Button/LoginButton/KakaoButtom';
+import GoogleButton from '@/components/Button/LoginButton/Google';
 export default function LoginPage() {
   const navigate = useNavigate();
   const moveKakao = () => {
@@ -14,14 +14,15 @@ export default function LoginPage() {
   const moveGoogle = () => {
     //TODO : 구글 로그인 페이지로 이동
     // window.location.href = "구글 로그인 페이지 URL";
+    navigate('/survey');
   };
   return (
     <div className="login-container">
-      <h1 className="login-title">제목</h1>
+      <h1 className="login-title">캐운</h1>
       <div className="login-buttons">
-        <img src={kakao} alt="kakao" onClick={moveKakao} />
-
-        <img src={google} alt="google" onClick={moveGoogle} />
+        {/* TODO - 카카오, 구글 로그인 버튼 수정 예정 */}
+        <KakaoButton onClick={moveKakao} />
+        <GoogleButton onClick={moveGoogle} />
       </div>
     </div>
   );

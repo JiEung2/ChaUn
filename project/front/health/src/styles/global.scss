@@ -12,16 +12,14 @@ body {
 }
 
 /* 390px 이상일 때 고정 너비 */
-
 #root {
   width: 390px;
   margin: 0 auto;
   background-color: white;
   height: 100vh;
 }
-.outlet {
-  padding: 30px;
-}
+// #root .outlet {
+// }
 /* 390px 미만일 때 풀스크린 적용 */
 @media screen and (max-width: 390px) {
   #root {
