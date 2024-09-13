@@ -88,7 +88,7 @@ data = pd.read_csv(file_path)
 # 테스트 데이터
 n = 500
 
-# 데이터를 각각 출력하여 데이터 병합
+# 데이터 출력 이후, 나이와 성별로 정렬
 result = generate_data(data, n)
 result = result.sort_values(by=['age', 'sex'])
 
