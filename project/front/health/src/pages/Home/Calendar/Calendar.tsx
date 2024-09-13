@@ -96,10 +96,11 @@ export default function CalendarPage() {
         buttonStyle={{ style: 'semiPrimary', size: 'large' }}
         onClick={handleAttendance}
         disabled={isAttendance}
+        className='attendance'
       >
         출석하기
       </GeneralButton>
-      <hr />
+      <hr className='attendanceHr'/>
       {selectedDate && (
         <>
           <div>{formatDate(selectedDate)}</div>

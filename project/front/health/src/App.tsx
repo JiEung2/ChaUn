@@ -13,7 +13,7 @@ import BodyDetail from './pages/Record/BodyDetail'
 export default function App() {
   return (
     <Router>
-      <div id="root">
+      <div>
         <Routes>
           <Route element={<CommonLayout />}>
             <Route path="/" element={<Login />} />
