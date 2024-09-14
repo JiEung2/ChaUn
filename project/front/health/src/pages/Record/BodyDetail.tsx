@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import GeneralButton from "@/components/Button/GeneralButton";
+import BodyAddModal from '@/components/Record/BodyAddModal';
 import './BodyDetail.scss';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
@@ -17,6 +18,7 @@ export default function BodyDetailPage() {
   const [pivotDate, setPivotDate] = useState<Date>(new Date());
   const [year, setYear] = useState<number>(pivotDate.getFullYear());
   const [month, setMonth] = useState<number>(pivotDate.getMonth() + 1);
+  const [showModal, setShowModal] = useState(false); 
 
   // 현재 선택된 달의 데이터 필터링
   const filteredData = sampleData.filter((item) => {
@@ -39,6 +41,14 @@ export default function BodyDetailPage() {
     setPivotDate(newDate);
     setYear(newDate.getFullYear());
     setMonth(newDate.getMonth() + 1);
+  };
+
+  const handleOpenModal = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
   };
 
   // 그래프 데이터와 옵션 설정
@@ -84,7 +94,7 @@ export default function BodyDetailPage() {
   };
 
   // 날짜 형식 변환 함수
-  const formatDate = (dateString) => {
+  const formatDate = (dateString:any) => {
     const date = new Date(dateString);
     const formattedDate = date
       .toLocaleDateString('ko-KR', {
@@ -102,6 +112,7 @@ export default function BodyDetailPage() {
       <GeneralButton
         buttonStyle={{ style: 'semiOutlined', size: 'mini' }}
         className="bodyAdd"
+        onClick={handleOpenModal}
       >
         체형 입력
       </GeneralButton>
@@ -141,6 +152,7 @@ export default function BodyDetailPage() {
           </div>
         </>
       )}
+      {showModal && <BodyAddModal onClose={handleCloseModal} />}
     </div>
   );
 }
