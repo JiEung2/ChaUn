@@ -1,46 +1,57 @@
-.predictionCard {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
 
-  .predictionImage {
+.bodyWeightRecord {
+  .predictionCards {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    border-radius: 15px;
-    padding: 10px;
-    width: 100px;
-    height: 200px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    gap: 10px;
 
-    .time {
-      margin-top: 8px;
-      background-color: #f2f2f2;
-      border-radius: 5px;
-      padding: 5px;
-      text-align: center;
-      font-size: 14px;
-      width: fit-content;
+    .predictionCard {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      .predictionImage {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 200px;
+
+        &__1 {
+          border-radius: 18px;
+          padding: 5px;
+          background-color: colors.$card1;
+        }
+
+        &__2 {
+          border-radius: 18px;
+          padding: 5px;
+          background-color: colors.$card2;
+        }
+
+        &__3 {
+          border-radius: 18px;
+          padding: 5px;
+          background-color: colors.$blue;
+        }
+
+      .time {
+        background-color: colors.$lightGray;
+        border-radius: 5px;
+        padding: 5px;
+        text-align: center;
+        width: fit-content;
+      }
+      }
     }
   }
 
-  .predictionImage1 {
-    background-color: #cce7ff;
+  .predictionGraph {
+    width: 100%;
   }
-
-  .predictionImage2 {
-    background-color: #99d0ff;
-  }
-
-  .predictionImage3 {
-    background-color: #66b8ff;
-  }
-}
-
-.predictionGraph {
-  margin-top: 20px;
-  width: 100%;
 }
