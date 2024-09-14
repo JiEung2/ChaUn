@@ -1,0 +1,61 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.bodyRecordContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .bodyAdd {
+        display: flex;
+        margin-left: auto; // 요소 오른쪽 정렬
+    }
+
+    .monthNavigation {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    
+        button {
+          background: none;
+          border: none;
+          font-size: 20px;
+          cursor: pointer;
+        }
+      }
+    
+      .graphContainer {
+        width: 90%;
+        max-width: 800px;
+        margin-top: 20px;
+      }
+    
+      .timeline {
+        width: 90%;
+        max-width: 800px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 0;
+    
+        .timelineItem {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+    
+          .timelineDate {
+            min-width: 80px;
+            font-weight: bold;
+            color: #36a2eb;
+          }
+    
+          .timelineContent {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+          }
+        }
+      }
+}
