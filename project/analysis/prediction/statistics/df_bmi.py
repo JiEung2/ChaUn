@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 # 신장과 체중을 상태별 인원수에 맞게 생성하는 함수
-def generate_height_weight(total_state_data, bmi_data):
+def generate_height_weight(bmi_data, total_state_data):
     result_data = []
 
     for (age, sex), state_info in total_state_data.items():
@@ -95,7 +95,7 @@ def generate_data(row_data, stat_obese):
     height_data = stat_obese.set_index(['age', 'sex'])[['height_avg', 'height_std']].to_dict('index')
 
     # 신장과 체중을 생성
-    generated_data = generate_height_weight(total_state_data, height_data)
+    generated_data = generate_height_weight(height_data, total_state_data)
 
     return generated_data
 
