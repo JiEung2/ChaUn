@@ -2,14 +2,13 @@
 @use '@/styles/constants/typographies' as typo;
 
 .coinContainer {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 8px;
   
     &.styled {
-        // width: 30%;
         background-color: colors.$white;
-        padding: 10px 15px;
+        padding: 5px 10px;
         border-radius: 25px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   
@@ -31,7 +30,7 @@
         }
   
         .coinAmount {
-        @include typo.button;
+        @include typo.coin;
         }
     }
 }

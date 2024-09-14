@@ -1,0 +1,29 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.customItemContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;    
+}
+
+.customItem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: colors.$littleDarkGray;
+    border-radius: 10px;
+    width: 60px;
+    height: 60px;
+
+    .lockIcon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px;
+        height: 20px;
+    }
+}
+  

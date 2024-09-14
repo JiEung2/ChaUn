@@ -1,0 +1,48 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.myProfileContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    .subtitle {
+        margin-right: auto;
+        @include typo.sub;
+    }
+
+    .info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 110px;
+
+    }
+
+    .character {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: colors.$base;
+        border-radius: 15px;
+        padding: 20px 0;
+        position: relative;
+
+        .snapshotButton {
+            margin-left: auto;
+            margin-right: 10px;
+        }
+    }
+}
+
+.customBox {
+    display: flex;
+    flex-direction: column;
+    background-color: colors.$lightGray;
+    padding: 15px;
+    border-radius: 10px;
+    gap: 10px
+}

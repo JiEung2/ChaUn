@@ -15,7 +15,7 @@ interface Primary {
   interface Outlined {
     buttonStyle: {
       style: 'outlined';
-      size: 'semiTiny';
+      size: 'semiTiny' | 'customTag';
     };
   }
   
