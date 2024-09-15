@@ -42,7 +42,7 @@ public class ExerciseHistoryReadService {
         LocalDateTime startTime = today.with(firstDayOfMonth()).with(LocalTime.MIN);
         LocalDateTime endTime = today.with(lastDayOfMonth()).with(LocalTime.MAX);
 
-        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdAAndAndExerciseStartTimeBetween(
+        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdAndAndExerciseStartTimeBetween(
                 userId, startTime, endTime);
 
         return exerciseHistories.stream()
