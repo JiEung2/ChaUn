@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BodyHistoryRepository extends JpaRepository<BodyHistory, Long> {
     List<BodyHistory> findByUserIdAndCreatedAtAfter(Long userId, LocalDateTime startTime);
+    List<BodyHistory> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime startTime, LocalDateTime endTime);
 
 }
