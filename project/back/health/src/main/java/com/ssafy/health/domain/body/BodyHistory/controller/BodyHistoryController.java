@@ -27,4 +27,9 @@ public class BodyHistoryController implements BodyHistoryControllerApi{
         return ApiResponse.success(bodyHistoryWriteService.saveBodyHistory(bodySurveyRequestDto));
     }
 
+    @GetMapping("/{user_id}/weight")
+    public ApiResponse<WeightHistoryResponseDto> getWeightData(@PathVariable("user_id") Long userId) {
+        return ApiResponse.success(bodyHistoryReadService.getWeightData(userId));
+    }
+
 }
