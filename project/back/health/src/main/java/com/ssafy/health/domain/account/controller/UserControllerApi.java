@@ -6,6 +6,7 @@ import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.ExerciseTimeResponseDto;
 import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.UserDetailDto;
 import com.ssafy.health.domain.account.dto.response.ValidateNicknameSuccessDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -67,18 +68,56 @@ public interface UserControllerApi {
             description = "특정 회원의 총 운동시간과 이번 달 운동시간을 조회합니다."
     )
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 운동 시간 조회 완료",
-                    content = @Content(mediaType = "application/json",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "회원 운동 시간 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
                                     "  \"status\": 200,\n" +
-                                    "  \"message\": \n" +
+                                    "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
                                     "    \"totalExerciseTime\": 0,\n" +
                                     "    \"monthlyAccumulatedExerciseTime\": 0\n" +
                                     "  }\n" +
                                     "}"
+                            )
+                    )
+            )
+    })
+    ApiResponse<ExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId);
+
+    @Operation(
+            summary = "회원 디테일 조회",
+            description = "특정 회원의 닉네임과 코인 수를 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "회원 디테일 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"nickname\": \"JiEung2\",\n" +
+                                    "    \"coin\": 999999\n" +
+                                    "  }\n" +
+                                    "}"
+                            )
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "존재하지 않는 회원",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 404,\n" +
+                                    "  \"message\": \"해당 유저가 존재하지 않습니다.\",\n" +
+                                    "  \"data\": {}\n" +
+                                    "}"
                             ))
             ),
     })
-    ApiResponse<ExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId);
+    ApiResponse<UserDetailDto> getUserDetail(@PathVariable("user_id") Long userId);
+
 }
