@@ -34,11 +34,6 @@ public class UserController implements UserControllerApi{
         return ApiResponse.success(userWriteService.saveInfoSurvey(infoSurveyRequestDto));
     }
 
-    @PostMapping("/survey/body")
-    public ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto) {
-        return ApiResponse.success(bodyHistoryWriteService.saveBodyHistory(bodySurveyRequestDto));
-    }
-
     @GetMapping("/{user_id}/exercise-time")
     public ApiResponse<ExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId) {
         return ApiResponse.success(exerciseHistoryReadService.getExerciseTime(userId));
