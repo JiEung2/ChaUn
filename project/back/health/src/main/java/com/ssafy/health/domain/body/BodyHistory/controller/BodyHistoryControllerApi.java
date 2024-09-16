@@ -3,6 +3,8 @@ package com.ssafy.health.domain.body.BodyHistory.controller;
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
+import com.ssafy.health.domain.body.BodyHistory.dto.request.BodyHistoryRequestDto;
+import com.ssafy.health.domain.body.BodyHistory.dto.response.BodyHistoryResponseDto;
 import com.ssafy.health.domain.body.BodyHistory.dto.response.WeightHistoryResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -60,5 +62,41 @@ public interface BodyHistoryControllerApi {
             )
     })
     ApiResponse<WeightHistoryResponseDto> getWeightData(@PathVariable("user_id") Long userId);
+
+    @Operation(
+            summary = "나의 특정 달의 체형 기록 조회",
+            description = "나의 특정 달의 체형 기록을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "나의 특정 달의 체형 기록 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"Success\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"bodyHistoryDataList\": [\n" +
+                                    "      {\n" +
+                                    "        \"date\": \"2024-09-16T15:00:00\",\n" +
+                                    "        \"weight\": 75.5,\n" +
+                                    "        \"skeletalMuscleMass\": 30.0,\n" +
+                                    "        \"bodyFatRatio\": 20.0\n" +
+                                    "      },\n" +
+                                    "      {\n" +
+                                    "        \"date\": \"2024-09-23T15:00:00\",\n" +
+                                    "        \"weight\": 74.0,\n" +
+                                    "        \"skeletalMuscleMass\": 29.5,\n" +
+                                    "        \"bodyFatRatio\": 21.0\n" +
+                                    "      }\n" +
+                                    "    ]\n" +
+                                    "  }\n" +
+                                    "}"
+                            )
+                    )
+            )
+    })
+    ApiResponse<BodyHistoryResponseDto> getBodyHistory(BodyHistoryRequestDto bodyHistoryRequestDto);
 
 }
