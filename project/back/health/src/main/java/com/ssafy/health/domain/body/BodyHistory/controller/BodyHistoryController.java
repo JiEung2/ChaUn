@@ -3,6 +3,8 @@ package com.ssafy.health.domain.body.BodyHistory.controller;
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
+import com.ssafy.health.domain.body.BodyHistory.dto.request.BodyHistoryRequestDto;
+import com.ssafy.health.domain.body.BodyHistory.dto.response.BodyHistoryResponseDto;
 import com.ssafy.health.domain.body.BodyHistory.dto.response.WeightHistoryResponseDto;
 import com.ssafy.health.domain.body.BodyHistory.service.BodyHistoryReadService;
 import com.ssafy.health.domain.body.BodyHistory.service.BodyHistoryWriteService;
@@ -30,6 +32,11 @@ public class BodyHistoryController implements BodyHistoryControllerApi{
     @GetMapping("/{user_id}/weight")
     public ApiResponse<WeightHistoryResponseDto> getWeightData(@PathVariable("user_id") Long userId) {
         return ApiResponse.success(bodyHistoryReadService.getWeightData(userId));
+    }
+
+    @GetMapping("/body")
+    public ApiResponse<BodyHistoryResponseDto> getBodyHistory(BodyHistoryRequestDto bodyHistoryRequestDto) {
+        return ApiResponse.success(bodyHistoryReadService.getBodyHistory(bodyHistoryRequestDto));
     }
 
 }
