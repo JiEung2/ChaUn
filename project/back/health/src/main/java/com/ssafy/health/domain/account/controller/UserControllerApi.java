@@ -63,24 +63,6 @@ public interface UserControllerApi {
     ApiResponse<InfoSurveySuccessDto> saveInfoSurvey(@RequestBody InfoSurveyRequestDto infoSurveyRequestDto);
 
     @Operation(
-            summary = "회원 체형 설문조사",
-            description = "체형 입력받고 회원정보에 저장합니다."
-    )
-    @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 체형 설문조사 완료",
-                    content = @Content(mediaType = "application/json",
-                            examples = @ExampleObject(value = "{\n" +
-                                    "  \"status\": 200,\n" +
-                                    "  \"message\": \"회원 체형 설문조사를 완료했습니다.\",\n" +
-                                    "  \"data\": {\n" +
-                                    "  }\n" +
-                                    "}"
-                            ))
-            ),
-    })
-    ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto);
-
-    @Operation(
             summary = "회원 운동 시간 조회",
             description = "특정 회원의 총 운동시간과 이번 달 운동시간을 조회합니다."
     )
