@@ -1,7 +1,7 @@
 package com.ssafy.health.domain.crew.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import com.ssafy.health.domain.crew.dto.request.CrewRegisterDto;
+import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,11 +33,11 @@ public class Crew extends BaseEntity {
     private Integer crewCoin;
 
     @Builder
-    public Crew(CrewRegisterDto crewRegisterDto) {
-        this.name = crewRegisterDto.getName();
-        this.profileImage = crewRegisterDto.getProfileImage();
-        this.averageAge = crewRegisterDto.getAverageAge();
-        this.description = crewRegisterDto.getDescription();
+    public Crew(CreateCrewRequestDto createCrewRequestDto) {
+        this.name = createCrewRequestDto.getName();
+        this.profileImage = createCrewRequestDto.getProfileImage();
+        this.averageAge = createCrewRequestDto.getAverageAge();
+        this.description = createCrewRequestDto.getDescription();
         this.memberLimit = 10;
         this.crewCoin = 0;
     }
