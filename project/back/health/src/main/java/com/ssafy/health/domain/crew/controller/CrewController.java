@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class CrewController {
+public class CrewController implements CrewControllerApi{
 
     private final CrewWriteService crewWriteService;
 
     @PostMapping("/crew")
-    public ApiResponse<CreateCrewSuccessDto> saveInfoSurvey(@RequestBody CreateCrewRequestDto createCrewRequestDto) {
+    public ApiResponse<CreateCrewSuccessDto> createCrew(@RequestBody CreateCrewRequestDto createCrewRequestDto) {
         return ApiResponse.success(crewWriteService.createCrew(createCrewRequestDto));
     }
 }
