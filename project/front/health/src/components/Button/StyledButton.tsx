@@ -1,4 +1,3 @@
-// StyledButton.tsx
 import './StyledButton.scss';
 
 interface StyledButtonProps {
