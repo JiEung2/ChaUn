@@ -1,4 +1,4 @@
-import CustomItem from './customItem';
+import CustomItem from './CustomItem';
 import './CustomList.scss';
 
 interface CustomListProps {
