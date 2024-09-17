@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import GeneralButton from '@/components/Button/GeneralButton';
 import CustomList from './CustomList';
 import './CustomCategories.scss';
@@ -7,30 +6,16 @@ interface CustomTabProps {
   selectedTab: string;
   setSelectedTab: (tab: string) => void;
   userCoin: number;
+  onPurchase: (item: any) => void;
+  onApply: (item: any) => void;
+  items: { category: string; price: number; isLocked: boolean; image: string }[];
 }
 
-const items = [
-  { category: '헤어', price: 120, isLocked: true, image: '@/asset/image/model.png' },
-  { category: '헤어', price: 150, isLocked: true, image: '/path/to/image2.png' },
-  { category: '헤어', price: 180, isLocked: false, image: '/path/to/image3.png' },
-  { category: '헤어', price: 180, isLocked: false, image: '/path/to/image3.png' },
-  { category: '헤어', price: 180, isLocked: false, image: '/path/to/image3.png' },
-  { category: '하의', price: 200, isLocked: true, image: '/path/to/image4.png' },
-  { category: '하의', price: 200, isLocked: true, image: '/path/to/image4.png' },
-  { category: '하의', price: 200, isLocked: true, image: '/path/to/image4.png' },
-];
-
-export default function CustomCategories({ selectedTab, setSelectedTab, userCoin }: CustomTabProps) {
+export default function CustomCategories({ selectedTab, setSelectedTab, userCoin, onPurchase, onApply, items }: CustomTabProps) {
   const tabs = ['헤어', '상의', '하의', '아이템'];
-  const [filteredItems, setFilteredItems] = useState(items);
-
-  useEffect(() => {
-    const filtered = items.filter((item) => item.category === selectedTab);
-    setFilteredItems(filtered);
-  }, [selectedTab]);
 
   return (
-    <div className="customCategorisContainer">
+    <div className="customCategoriesContainer">
       <div className="customTab">
         {tabs.map((tab) => (
           <GeneralButton
@@ -41,13 +26,12 @@ export default function CustomCategories({ selectedTab, setSelectedTab, userCoin
           >
             {tab}
           </GeneralButton>
-        ))}        
+        ))}
       </div>
 
       <div className="customList">
-        <CustomList items={filteredItems} coinAmount={userCoin} />        
+        <CustomList items={items} coinAmount={userCoin} onPurchase={onPurchase} onApply={onApply} />
       </div>
-
     </div>
   );
 }

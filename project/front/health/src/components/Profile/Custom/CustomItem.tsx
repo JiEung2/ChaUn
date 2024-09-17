@@ -8,13 +8,18 @@ interface CustomItemProps {
   item: { category: string; price: number; isLocked: boolean; image: string };
   coinAmount: number;
   onPurchase: (item: any) => void;
+  onApply: (item: any) => void;
 }
 
-export default function CustomItem({ item, coinAmount, onPurchase }: CustomItemProps) {
+export default function CustomItem({ item, coinAmount, onPurchase, onApply }: CustomItemProps) {
   const [showModal, setShowModal] = useState(false);
 
   const handleItemClick = () => {
-    setShowModal(true);
+    if (!item.isLocked) {
+      onApply(item);
+    } else {
+      setShowModal(true);
+    }
   };
 
   const handlePurchaseSuccess = () => {
@@ -26,10 +31,13 @@ export default function CustomItem({ item, coinAmount, onPurchase }: CustomItemP
     <div className="customItemContainer">
       <div className="customItem" onClick={handleItemClick}>
         <img
-          src={item.isLocked ? lockIcon : item.image}
+          src={item.image}
           alt="CustomItem"
-          className={`itemImage ${item.isLocked ? 'locked' : 'purchasable'}`}
+          className={`itemImage ${item.isLocked ? 'blurred' : ''}`}
         />
+        {item.isLocked && (
+          <img src={lockIcon} alt="LockIcon" className="lockIcon" />
+        )}
       </div>
       <div>
         <Coin amount={item.price} style="basic" />
