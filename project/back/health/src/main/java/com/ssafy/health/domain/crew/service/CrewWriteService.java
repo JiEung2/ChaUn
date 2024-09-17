@@ -23,6 +23,7 @@ public class CrewWriteService {
     private final UserCrewRepository userCrewRepository;
 
     public CreateCrewSuccessDto createCrew(CreateCrewRequestDto requestDto) {
+        // Todo: 코인 감소와 코인 감소에 대한 예외처리 추가
 
         Crew crew = Crew.builder()
                 .createCrewRequestDto(requestDto).build();
