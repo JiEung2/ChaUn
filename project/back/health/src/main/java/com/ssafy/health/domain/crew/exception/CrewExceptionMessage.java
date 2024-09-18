@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum CrewExceptionMessage {
-    CREW_NOT_FOUND("해당 유저가 존재하지 않습니다.", HttpStatus.CONFLICT.value()),
+    CREW_NOT_FOUND("해당 크루가 존재하지 않습니다.", HttpStatus.NOT_FOUND.value()),
     ;
 
     private final String message;
