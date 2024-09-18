@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,11 +50,18 @@ public class CrewReadService {
 
     public CrewMembersResponseDto getCrewMembers(Long crewId) {
         List<UserCrew> userCrewList = userCrewRepository.findByCrewId(crewId);
+
+        List<Long> userIdList = userCrewList.stream()
+                .map(userCrew -> userCrew.getUser().getId())
+                .collect(Collectors.toList());
+
+        Map<Long, Long> userExerciseTimes = getUsersThisWeekExerciseTime(userIdList);
+
         List<CrewMemberInfo> memberInfoList = userCrewList.stream()
                 .map(userCrew -> {
                     User user = userCrew.getUser();
 
-                    Long thisWeekExerciseTime = getThisWeekExerciseTime(user.getId());
+                    Long thisWeekExerciseTime = userExerciseTimes.getOrDefault(user.getId(), 0L);
 
                     return CrewMemberInfo.builder()
                             .userId(user.getId())
@@ -69,7 +77,7 @@ public class CrewReadService {
                 .build();
     }
 
-    private Long getThisWeekExerciseTime(Long userId) {
+    private Map<Long, Long> getUsersThisWeekExerciseTime(List<Long> userIdList) {
         LocalDateTime now = LocalDateTime.now();
 
         LocalDateTime startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -77,12 +85,14 @@ public class CrewReadService {
 
         LocalDateTime endOfWeek = now;
 
-        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdAndExerciseStartTimeBetween(
-                userId, startOfWeek, endOfWeek);
+        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdInAndExerciseStartTimeBetween(
+                userIdList, startOfWeek, endOfWeek);
 
         return exerciseHistories.stream()
-                .mapToLong(ExerciseHistory::getExerciseDuration)
-                .sum();
+                .collect(Collectors.groupingBy(
+                        exerciseHistory -> exerciseHistory.getUser().getId(),
+                        Collectors.summingLong(ExerciseHistory::getExerciseDuration)
+                ));
     }
 
 }
