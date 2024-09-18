@@ -19,25 +19,32 @@ def generate_height_weight(bmi_data, total_state_data):
 
         for state, count in state_counts.items():
             # 해당 상태별로 인원수만큼 신장과 체중 생성
+
             for _ in range(count):
-                height = np.random.normal(height_avg, height_std) if height_avg > 0 and height_std > 0 else height_avg
+                height = np.random.normal(height_avg, height_std)
                 height_in_m = round(height / 100, 2)  # cm -> m
                 
-                # 상태에 따른 BMI 생성 (여기서는 임의로 설정)
-                if state == 'state1':  # 정상 체중
+                # 상태에 따른 BMI 생성
+                if state == 'state1':  # 저체중
                     bmi = np.random.uniform(17.0, 18.5)
-                elif state == 'state2':  # 과체중
+                elif state == 'state2':  # 정상체중
                     bmi = np.random.uniform(18.5, 22.9)
-                elif state == 'state3':  # 비만
+                elif state == 'state3':  # 과체중
                     bmi = np.random.uniform(23.0, 24.9)
-                else:  # 고도 비만
-                    bmi = np.random.uniform(25.0, 40.0)
-                
+                else:  # 비만 (3단계로 나눠져   있는데,)
+                    n = np.random.choice([1,2,3], 1, p =[0.82, 0.15, 0.03])
+                    if n == 1:
+                        bmi = np.random.uniform(25.0, 29.9)
+                    elif n == 2:
+                        bmi = np.random.uniform(30.0, 34.9)
+                    else:
+                        bmi = np.random.uniform(35.0, 38.0)
+
                 bmi = round(bmi, 2)
 
                 # BMI를 기반으로 체중 계산
                 weight = round(bmi * (height_in_m ** 2), 2)
-                
+
                 result_data.append({
                     'age': age,
                     'sex': sex,
@@ -99,6 +106,30 @@ def generate_data(row_data, stat_obese):
 
     return generated_data
 
+# 체중, 키, BMI를 입력한 데이터는 나이를 균등분포로 넣어준다.
+def age_generation(age):
+    if '-' in age:
+        # 문자열 -를 기준으로 분리
+        min_age, max_age = map(int, age.split('-'))
+        return int(np.random.uniform(min_age, max_age))
+    else:
+        return int(np.random.uniform(70, 85))
+
+# BMR을 계산하는 함수
+def calculate_bmr(row):
+    weight = row['weight']
+    height = row['height']
+    age = row['age']
+    sex = row['sex']
+    
+    if sex == 1:
+        # 남성용 Mifflin-St Jeor 공식
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5
+    else:
+        # 여성용 Mifflin-St Jeor 공식
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161
+    return int(bmr)
+
 # output.csv를 받아와서 BMI를 반영한 데이터 덮어쓰기를 진행
 file_path = './output.csv'
 data = pd.read_csv(file_path)
@@ -114,6 +145,12 @@ generated_data = generate_data(data, stats)
 data['height'] = generated_data['height']
 data['weight'] = generated_data['weight']
 data['BMI'] = generated_data['BMI']
+
+# 나이 균등분포 기입
+data['age'] = data['age'].apply(age_generation)
+
+# 기초 대사량 기입
+data['BMR'] = data.apply(calculate_bmr, axis=1)
 
 # 결과를 CSV 파일로 저장
 data.to_csv('updated_output.csv', index=False)
