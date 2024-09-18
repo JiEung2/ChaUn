@@ -1,10 +1,19 @@
 package com.ssafy.health.domain.crew.service;
 
+import com.ssafy.health.domain.account.entity.ExerciseHistory;
+import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
+import com.ssafy.health.domain.account.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto.CrewInfo;
+import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
+import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto.CrewMemberInfo;
 import com.ssafy.health.domain.crew.entity.Crew;
+import java.time.DayOfWeek;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CrewReadService {
 
-    private UserCrewRepository userCrewRepository;
+    private final UserCrewRepository userCrewRepository;
+    private final ExerciseHistoryRepository exerciseHistoryRepository;
 
     public CrewListResponseDto getJoinedCrewList(Long userId) {
         List<UserCrew> userCrewList = userCrewRepository.findByUserId(userId);
@@ -36,4 +46,43 @@ public class CrewReadService {
                 .crewList(crewList)
                 .build();
     }
+
+    public CrewMembersResponseDto getCrewMembers(Long crewId) {
+        List<UserCrew> userCrewList = userCrewRepository.findByCrewId(crewId);
+        List<CrewMemberInfo> memberInfoList = userCrewList.stream()
+                .map(userCrew -> {
+                    User user = userCrew.getUser();
+
+                    Long thisWeekExerciseTime = getThisWeekExerciseTime(user.getId());
+
+                    return CrewMemberInfo.builder()
+                            .userId(user.getId())
+                            .userProfileImage(user.getProfileImage())
+                            .nickname(user.getNickname())
+                            .thisWeekExerciseTime(thisWeekExerciseTime)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return CrewMembersResponseDto.builder()
+                .memberList(memberInfoList)
+                .build();
+    }
+
+    private Long getThisWeekExerciseTime(Long userId) {
+        LocalDateTime now = LocalDateTime.now();
+
+        LocalDateTime startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .with(LocalTime.MIN);
+
+        LocalDateTime endOfWeek = now;
+
+        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdAndExerciseStartTimeBetween(
+                userId, startOfWeek, endOfWeek);
+
+        return exerciseHistories.stream()
+                .mapToLong(ExerciseHistory::getExerciseDuration)
+                .sum();
+    }
+
 }
