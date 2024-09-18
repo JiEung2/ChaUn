@@ -1,11 +1,10 @@
 package com.ssafy.health.domain.crew.controller;
 
 import com.ssafy.health.common.ApiResponse;
-import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
-import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
+import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import com.ssafy.health.domain.crew.service.CrewReadService;
@@ -45,5 +44,10 @@ public class CrewController implements CrewControllerApi {
     public ApiResponse<SendCoinSuccessDto> sendCoin(@PathVariable("crew_id") Long crewId,
                                                     @PathVariable("coin_count") Integer coin) throws InterruptedException{
         return ApiResponse.success(crewWriteService.sendCoin(crewId, coin));
+    }
+
+    @GetMapping("/crew/{crew_id}/members")
+    public ApiResponse<CrewMembersResponseDto> getCrewMembers(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(crewReadService.getCrewMembers(crewId));
     }
 }
