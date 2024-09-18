@@ -44,7 +44,7 @@ public interface BodyHistoryControllerApi {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
                                     "  \"status\": 200,\n" +
-                                    "  \"message\": \"Success\",\n" +
+                                    "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
                                     "    \"weightDataList\": [\n" +
                                     "      {\n" +
@@ -75,7 +75,7 @@ public interface BodyHistoryControllerApi {
                             mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
                                     "  \"status\": 200,\n" +
-                                    "  \"message\": \"Success\",\n" +
+                                    "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
                                     "    \"bodyHistoryDataList\": [\n" +
                                     "      {\n" +
