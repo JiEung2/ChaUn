@@ -5,6 +5,7 @@ import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -85,4 +86,25 @@ public interface CrewControllerApi {
     })
     ApiResponse<JoinCrewSuccessDto> joinCrew(@PathVariable("crew_id") Long crewId);
 
+    @Operation(
+            summary = "코인 전송",
+            description = "크루에 코인을 전송합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "코인 전송 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"message\": \"코인을 전송하였습니다.\",\n" +
+                                    "    \"crewCoin\": 1000,\n" +
+                                    "    \"myCoin\": 900\n" +
+                                    "  }\n" +
+                                    "}"
+                            ))
+            ),
+    })
+    ApiResponse<SendCoinSuccessDto> sendCoin(@PathVariable("crew_id") Long crewId,
+                                                    @PathVariable("coin_count") Integer coin) throws InterruptedException;
 }
