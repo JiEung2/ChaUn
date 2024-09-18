@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,6 +31,9 @@ public class Crew extends BaseEntity {
     @NotNull
     private Integer memberLimit;
 
+    @Version
+    private Integer version;
+
     private String profileImage;
     private Float averageAge;
     private String description;
@@ -47,6 +51,7 @@ public class Crew extends BaseEntity {
         this.description = createCrewRequestDto.getDescription();
         this.memberLimit = 10;
         this.crewCoin = 0;
+        this.version = 1;
     }
 
     public void increaseCoin(Integer coin) {
