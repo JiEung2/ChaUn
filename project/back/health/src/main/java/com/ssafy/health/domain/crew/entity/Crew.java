@@ -48,4 +48,8 @@ public class Crew extends BaseEntity {
         this.memberLimit = 10;
         this.crewCoin = 0;
     }
+
+    public void increaseCoin(Integer coin) {
+        this.crewCoin += coin;
+    }
 }
