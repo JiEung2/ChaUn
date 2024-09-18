@@ -41,7 +41,7 @@ public class User extends BaseEntity {
     private String sso;
 
     @NotNull
-    private Long coin;
+    private Integer coin;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -58,7 +58,7 @@ public class User extends BaseEntity {
         this.sso = userRegisterRequestDto.getSso();
         this.role = userRegisterRequestDto.getRole();
         this.surveyCompleted = false;
-        this.coin = 0L;
+        this.coin = 0;
     }
 
     public void updateNameAndEmail(UserLoginUpdateRequestDto userLoginUpdateRequestDto) {
@@ -72,4 +72,7 @@ public class User extends BaseEntity {
         this.gender = gender;
     }
 
+    public void decreaseCoin(Integer coin) {
+        this.coin -= coin;
+    }
 }
