@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GeneralButton from "@/components/Button/GeneralButton";
 import BodyAddModal from '@/components/Record/BodyAddModal';
+import BodyDetailGraph from '@/components/Record/BodyDetailGraph';
 import './BodyDetail.scss';
-import { Line } from 'react-chartjs-2';
-import 'chart.js/auto';
 
-// 예시 데이터
 const sampleData = [
   { date: '2024-09-01', weight: 62.5, fat: 20.1, muscle: 30.2 },
   { date: '2024-09-10', weight: 61.8, fat: 19.8, muscle: 30.4 },
   { date: '2024-09-20', weight: 61.5, fat: 19.5, muscle: 30.6 },
-  { date: '2024-08-15', weight: 63.0, fat: 20.5, muscle: 30.1 }, // 8월 데이터 예시
+  { date: '2024-09-22', weight: 61.5, fat: 19.3, muscle: 30.6 },
+  { date: '2024-09-25', weight: 60.5, fat: 18.5, muscle: 30.6 },
+  { date: '2024-09-26', weight: 59.5, fat: 17.5, muscle: 30.6 },
+  { date: '2024-09-29', weight: 59.5, fat: 16.5, muscle: 30.6 },
+  { date: '2024-08-15', weight: 63.0, fat: 20.5, muscle: 30.1 },
   // ... 다른 데이터 추가 가능
 ];
 
@@ -18,16 +20,18 @@ export default function BodyDetailPage() {
   const [pivotDate, setPivotDate] = useState<Date>(new Date());
   const [year, setYear] = useState<number>(pivotDate.getFullYear());
   const [month, setMonth] = useState<number>(pivotDate.getMonth() + 1);
-  const [showModal, setShowModal] = useState(false); 
+  const [showModal, setShowModal] = useState(false);
+  const [filteredData, setFilteredData] = useState<{ date: string; weight: number; fat: number; muscle: number }[]>([]);
 
-  // 현재 선택된 달의 데이터 필터링
-  const filteredData = sampleData.filter((item) => {
-    const itemDate = new Date(item.date);
-    return (
-      itemDate.getFullYear() === year &&
-      itemDate.getMonth() + 1 === month
-    );
-  });
+  useEffect(() => {
+    // 현재 선택된 달의 데이터만 필터링
+    const monthData = sampleData.filter(item => {
+      const itemDate = new Date(item.date);
+      return itemDate.getFullYear() === year && itemDate.getMonth() + 1 === month;
+    });
+
+    setFilteredData(monthData);
+  }, [year, month]);
 
   const onDecreaseMonth = () => {
     const newDate = new Date(pivotDate.getFullYear(), pivotDate.getMonth() - 1);
@@ -51,59 +55,10 @@ export default function BodyDetailPage() {
     setShowModal(false);
   };
 
-  // 그래프 데이터와 옵션 설정
-  const graphData = {
-    labels: ['1일', '10일', '20일', '31일'], // x축 라벨 설정
-    datasets: [
-      {
-        label: '몸무게',
-        data: filteredData.map((item) => item.weight),
-        borderColor: '#4bc0c0',
-        fill: false,
-      },
-      {
-        label: '체지방량',
-        data: filteredData.map((item) => item.fat),
-        borderColor: '#ff6384',
-        fill: false,
-      },
-      {
-        label: '골격근량',
-        data: filteredData.map((item) => item.muscle),
-        borderColor: '#36a2eb',
-        fill: false,
-      },
-    ],
-  };
-
-  const graphOptions = {
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: '일',
-        },
-        ticks: {
-          autoSkip: false, // 자동으로 스킵하지 않고 모든 라벨 표시
-        },
-      },
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
-
-  // 날짜 형식 변환 함수
-  const formatDate = (dateString:any) => {
+  // 날짜 형식을 변경하는 함수
+  const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const formattedDate = date
-      .toLocaleDateString('ko-KR', {
-        year: '2-digit',
-        month: '2-digit',
-        day: '2-digit',
-      })
-      .replace(/\./g, '')
-      .replace(/\s/g, '.');
+    const formattedDate = `${String(date.getFullYear()).slice(2)}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
     return formattedDate;
   };
 
@@ -125,33 +80,34 @@ export default function BodyDetailPage() {
         <button onClick={onIncreaseMonth}>&gt;</button>
       </div>
 
-      {/* 데이터가 없는 경우 문구 표시 */}
-      {filteredData.length === 0 ? (
-        <p className="noDataMessage">
-          해당 월에 입력된 체형 정보가 없습니다. 체형 입력 버튼을 눌러 추가해주세요.
-        </p>
-      ) : (
-        <>
-          {/* 그래프 추가 */}
-          <div className="graphContainer">
-            <Line data={graphData} options={graphOptions} />
-          </div>
+      <div className="graphContainer">
+        <BodyDetailGraph filteredData={filteredData} />
+      </div>
 
-          {/* 타임라인 추가 */}
-          <div className="timeline">
-            {filteredData.map((item) => (
-              <div className="timelineItem" key={item.date}>
-                <div className="timelineDate">{formatDate(item.date)}</div>
-                <div className="timelineContent">
-                  <p>몸무게: {item.weight}kg</p>
-                  <p>골격근량: {item.muscle}kg</p>
-                  <p>체지방량: {item.fat}kg</p>
-                </div>
+      {filteredData.length === 0 ? (
+        <div className="noDataMessage">
+          <p>해당 월에 입력된 체형 정보가 없습니다.</p>
+          <p>체형 입력 버튼을 눌러 추가해주세요.</p>
+        </div>
+      ) : (
+        filteredData.map(item => (
+          <div className="timeline" key={item.date}>
+            <div className="timelineItem">
+              <div className="timelineDate">
+                <span className="dateIcon" />
+                {formatDate(item.date)}
               </div>
-            ))}
+
+              <div className="timelineContent">
+                <p>몸무게: {item.weight}kg</p>
+                <p>골격근량: {item.muscle}kg</p>
+                <p>체지방량: {item.fat}kg</p>
+              </div>
+            </div>
           </div>
-        </>
+        ))
       )}
+
       {showModal && <BodyAddModal onClose={handleCloseModal} />}
     </div>
   );

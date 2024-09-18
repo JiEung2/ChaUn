@@ -1,5 +1,5 @@
 import PredictionGraph from '@/components/Record/PredictionGraph';
-import './BodyWeihtRecord.scss';
+import './BodyWeightRecord.scss';
 import predictionImage1 from '@/assets/image/model.png'
 
 interface BodyWeightRecordProps {

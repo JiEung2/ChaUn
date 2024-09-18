@@ -6,56 +6,82 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 10px;
 
     .bodyAdd {
         display: flex;
-        margin-left: auto; // 요소 오른쪽 정렬
+        margin-left: auto;
     }
 
     .monthNavigation {
         display: flex;
         align-items: center;
-        gap: 10px;
-    
+        gap: 30px;
+
+        @include typo.subtitle;
+
         button {
-          background: none;
-          border: none;
-          font-size: 20px;
-          cursor: pointer;
+            background: none;
+            border: none;
+            cursor: pointer;
+            @include typo.subtitle;
         }
-      }
-    
-      .graphContainer {
-        width: 90%;
-        max-width: 800px;
-        margin-top: 20px;
-      }
-    
-      .timeline {
-        width: 90%;
-        max-width: 800px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        padding: 10px 0;
-    
+    }
+
+    .noDataMessage {
+      @include typo.basic;
+    }
+
+    .timeline {
+      margin-right: auto;
+      width: 100%;
+
         .timelineItem {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-    
-          .timelineDate {
-            min-width: 80px;
-            font-weight: bold;
-            color: #36a2eb;
-          }
-    
-          .timelineContent {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-          }
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+            position: relative;
+            gap: 10px;
+            margin-bottom: 20px;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                bottom: -15px; 
+                width: 2px;
+                background-color: colors.$littleDarkGray;
+                z-index: 1;
+            }
+
+            .timelineDate {
+                display: flex;
+                position: relative;
+                z-index: 2;
+                @include typo.subtitle;
+                
+                .dateIcon {
+                    width: 20px;
+                    height: 20px;
+                    background-color: colors.$blue;
+                    border-radius: 50%;
+                    margin-right: 10px;
+                    position: relative;
+                    z-index: 3;
+                }
+            }
+
+            .timelineContent {
+                padding: 5px 20px;
+                margin-left: 40px;
+                border: 1px solid colors.$lightGray;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                background-color: colors.$white;
+
+                @include typo.basic;
+            }
         }
-      }
+    }
 }
