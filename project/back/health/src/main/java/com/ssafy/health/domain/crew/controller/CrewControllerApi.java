@@ -4,6 +4,7 @@ import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
+import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -64,7 +65,24 @@ public interface CrewControllerApi {
                     )
             )
     })
-
     ApiResponse<CrewListResponseDto> getJoinedCrewList(@PathVariable("user_id") Long userId);
+
+    @Operation(
+            summary = "크루 가입",
+            description = "크루에 가입합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 가입 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"크루에 가입되었습니다.\",\n" +
+                                    "  \"data\": {\n" +
+                                    "  }\n" +
+                                    "}"
+                            ))
+            ),
+    })
+    ApiResponse<JoinCrewSuccessDto> joinCrew(@PathVariable("crew_id") Long crewId);
 
 }
