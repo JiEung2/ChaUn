@@ -6,6 +6,7 @@ import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
+import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
 import com.ssafy.health.domain.crew.service.CrewReadService;
 import com.ssafy.health.domain.crew.service.CrewWriteService;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +33,10 @@ public class CrewController implements CrewControllerApi {
     @GetMapping("/users/{user_id}/crew-list")
     public ApiResponse<CrewListResponseDto> getJoinedCrewList(@PathVariable("user_id") Long userId) {
         return ApiResponse.success(crewReadService.getJoinedCrewList(userId));
+    }
+
+    @PostMapping("/crew/{crew_id}/join")
+    public ApiResponse<JoinCrewSuccessDto> joinCrew(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(crewWriteService.joinCrew(crewId));
     }
 }
