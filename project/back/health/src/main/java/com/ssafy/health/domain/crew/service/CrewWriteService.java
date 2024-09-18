@@ -15,6 +15,7 @@ import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.entity.CrewRole;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -59,14 +60,12 @@ public class CrewWriteService {
         return new JoinCrewSuccessDto();
     }
 
-    public SendCoinSuccessDto sendCoin(Long crewId, Integer coin) {
-        Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+    public SendCoinSuccessDto sendCoin(Long crewId, Integer coin) throws InterruptedException {
         User user = findUserById(SecurityUtil.getCurrentUserId());
-
         userValidator.validateSufficientCoins(user.getCoin(), coin);
 
         user.decreaseCoin(coin);
-        crew.increaseCoin(coin);
+        Crew crew = updateCoinsWithLock(crewId, coin);
 
         userRepository.save(user);
         crewRepository.save(crew);
@@ -75,6 +74,18 @@ public class CrewWriteService {
                 .crewCoin(crew.getCrewCoin())
                 .myCoin(user.getCoin())
                 .build();
+    }
+
+    private Crew updateCoinsWithLock(Long crewId, Integer coin) throws InterruptedException {
+        while (true) {
+            try {
+                Crew crew = crewRepository.findByIdWithOptimisticLock(crewId);
+                crew.increaseCoin(coin);
+                return crew;
+            } catch (OptimisticLockException e) {
+                Thread.sleep(50);
+            }
+        }
     }
 
     private User findUserById(Long userId) {
