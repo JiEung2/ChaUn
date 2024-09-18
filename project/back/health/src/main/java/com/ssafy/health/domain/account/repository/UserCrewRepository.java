@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserCrewRepository extends JpaRepository<UserCrew, Long> {
     List<UserCrew> findByUserId(Long userId);
+
+    List<UserCrew> findByCrewId(Long crewId);
 }
