@@ -14,7 +14,7 @@ import CrewRecommend from './pages/Crew/CrewRecommend/CrewRecommend';
 export default function App() {
   return (
     <Router>
-      <div id="root">
+      <div>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/survey" element={<Survey />} />

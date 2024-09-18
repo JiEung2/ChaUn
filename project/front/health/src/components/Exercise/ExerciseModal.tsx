@@ -29,7 +29,7 @@ export default function ExerciseModal({ onSelectExercise, onClose, multiple = fa
 
   return (
     <div className="exerciseModal">
-      <hr />
+      <hr className='hr' />
       <img 
         src={XCircle}
         alt="xCircle"
