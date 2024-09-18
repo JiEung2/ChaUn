@@ -8,5 +8,5 @@ import lombok.Getter;
 public class UserDetailDto {
 
     private String nickname;
-    private Long coin;
+    private Integer coin;
 }
