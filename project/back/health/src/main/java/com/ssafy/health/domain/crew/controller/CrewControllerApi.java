@@ -4,6 +4,7 @@ import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
+import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -107,4 +108,41 @@ public interface CrewControllerApi {
     })
     ApiResponse<SendCoinSuccessDto> sendCoin(@PathVariable("crew_id") Long crewId,
                                                     @PathVariable("coin_count") Integer coin) throws InterruptedException;
+
+    @Operation(
+            summary = "크루 멤버 조회",
+            description = "크루의 멤버를 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "크루 멤버 조회 성공",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"memberList\": [\n" +
+                                    "      {\n" +
+                                    "        \"nickname\": \"달리기 왕자\",\n" +
+                                    "        \"userId\": 20,\n" +
+                                    "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
+                                    "        \"thisWeekExerciseTime\": 123123\n" +
+                                    "      },\n" +
+                                    "      {\n" +
+                                    "        \"nickname\": \"달리기 공주\",\n" +
+                                    "        \"userId\": 21,\n" +
+                                    "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
+                                    "        \"thisWeekExerciseTime\": 123123\n" +
+                                    "      }\n" +
+                                    "    ]\n" +
+                                    "  }\n" +
+                                    "}"
+                            )
+                    )
+            )
+    })
+    ApiResponse<CrewMembersResponseDto> getCrewMembers(@PathVariable("crew_id") Long crewId);
+
 }
