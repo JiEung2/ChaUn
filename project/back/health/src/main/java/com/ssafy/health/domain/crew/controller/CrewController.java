@@ -7,6 +7,7 @@ import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import com.ssafy.health.domain.crew.service.CrewReadService;
 import com.ssafy.health.domain.crew.service.CrewWriteService;
 import lombok.RequiredArgsConstructor;
@@ -38,5 +39,11 @@ public class CrewController implements CrewControllerApi {
     @PostMapping("/crew/{crew_id}/join")
     public ApiResponse<JoinCrewSuccessDto> joinCrew(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(crewWriteService.joinCrew(crewId));
+    }
+
+    @PostMapping("/crew/{crew_id}/coin/{coin_count}")
+    public ApiResponse<SendCoinSuccessDto> sendCoin(@PathVariable("crew_id") Long crewId,
+                                                    @PathVariable("coin_count") Integer coin) throws InterruptedException{
+        return ApiResponse.success(crewWriteService.sendCoin(crewId, coin));
     }
 }
