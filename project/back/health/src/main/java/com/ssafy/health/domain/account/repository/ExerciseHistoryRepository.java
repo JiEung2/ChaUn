@@ -10,5 +10,6 @@ public interface ExerciseHistoryRepository extends JpaRepository<ExerciseHistory
 
     List<ExerciseHistory> findByUserIdAndExerciseStartTimeBetween(Long userId, LocalDateTime startTime,
                                                                      LocalDateTime endTime);
+    List<ExerciseHistory> findByUserIdInAndExerciseStartTimeBetween(List<Long> userIds, LocalDateTime start, LocalDateTime end);
 
 }
