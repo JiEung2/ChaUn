@@ -20,7 +20,6 @@ export default function LoginPage() {
     <div className="login-container">
       <h1 className="login-title">캐운</h1>
       <div className="login-buttons">
-        {/* TODO - 카카오, 구글 로그인 버튼 수정 예정 */}
         <KakaoButton onClick={moveKakao} />
         <GoogleButton onClick={moveGoogle} />
       </div>
