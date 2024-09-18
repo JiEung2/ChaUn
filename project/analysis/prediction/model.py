@@ -50,7 +50,7 @@ for df in df_list:
     all_y.append(y)
 
 # X의 shape: (샘플 수, timesteps, features), y의 shape: (샘플 수, forecast_steps)
-print("X shape:", X.shape)  # 예: (883, 7, 14)
+print("X shape:", X.shape)  # 예: (883, 7, 5)
 print("y shape:", y.shape)  # 예: (883, 7)
 
 # 모든 사용자 데이터를 합치기
