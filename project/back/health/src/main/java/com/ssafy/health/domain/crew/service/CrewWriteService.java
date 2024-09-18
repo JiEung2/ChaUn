@@ -6,9 +6,11 @@ import com.ssafy.health.domain.account.entity.UserCrew;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
+import com.ssafy.health.domain.account.service.UserValidator;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.entity.CrewRole;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CrewWriteService {
 
+    private final UserValidator userValidator;
     private final UserRepository userRepository;
     private final CrewRepository crewRepository;
     private final UserCrewRepository userCrewRepository;
@@ -54,6 +57,24 @@ public class CrewWriteService {
                 .build());
 
         return new JoinCrewSuccessDto();
+    }
+
+    public SendCoinSuccessDto sendCoin(Long crewId, Integer coin) {
+        Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+        User user = findUserById(SecurityUtil.getCurrentUserId());
+
+        userValidator.validateSufficientCoins(user.getCoin(), coin);
+
+        user.decreaseCoin(coin);
+        crew.increaseCoin(coin);
+
+        userRepository.save(user);
+        crewRepository.save(crew);
+
+        return SendCoinSuccessDto.builder()
+                .crewCoin(crew.getCrewCoin())
+                .myCoin(user.getCoin())
+                .build();
     }
 
     private User findUserById(Long userId) {
