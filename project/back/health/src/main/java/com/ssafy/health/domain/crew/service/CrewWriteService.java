@@ -8,8 +8,10 @@ import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.entity.CrewRole;
+import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,19 @@ public class CrewWriteService {
                 .build());
 
         return new CreateCrewSuccessDto();
+    }
+
+    public JoinCrewSuccessDto joinCrew(Long crewId) {
+        Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+        User user = findUserById(SecurityUtil.getCurrentUserId());
+
+        userCrewRepository.save(UserCrew.builder()
+                .user(user)
+                .crew(crew)
+                .role(CrewRole.MEMBER)
+                .build());
+
+        return new JoinCrewSuccessDto();
     }
 
     private User findUserById(Long userId) {
