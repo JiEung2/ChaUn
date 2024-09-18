@@ -1,7 +1,7 @@
 package com.ssafy.health.domain.account.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import com.ssafy.health.common.fcm.dto.DeviceRegisterRequestDto;
+import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.UserLoginUpdateRequestDto;
 import com.ssafy.health.domain.account.dto.request.UserRegisterRequestDto;
 import jakarta.persistence.*;
@@ -73,7 +73,7 @@ public class User extends BaseEntity {
         this.gender = gender;
     }
 
-    public void updateUserDevice(DeviceRegisterRequestDto deviceRegisterRequestDto) {
-        this.deviceToken = deviceRegisterRequestDto.getDeviceToken();
+    public void updateUserDevice(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 }

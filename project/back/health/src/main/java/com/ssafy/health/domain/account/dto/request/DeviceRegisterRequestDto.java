@@ -1,4 +1,4 @@
-package com.ssafy.health.common.fcm.dto;
+package com.ssafy.health.domain.account.dto.request;
 
 import lombok.Getter;
 
