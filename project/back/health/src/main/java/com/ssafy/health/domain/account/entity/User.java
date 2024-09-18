@@ -31,6 +31,8 @@ public class User extends BaseEntity {
 
     private Date birthday;
 
+    private String profileImage;
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
