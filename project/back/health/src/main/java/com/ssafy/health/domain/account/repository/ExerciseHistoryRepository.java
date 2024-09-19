@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ExerciseHistoryRepository extends JpaRepository<ExerciseHistory, Long> {
     List<ExerciseHistory> findByUserId(Long userId);
 
-    List<ExerciseHistory> findByUserIdAndAndExerciseStartTimeBetween(Long userId, LocalDateTime startTime,
+    List<ExerciseHistory> findByUserIdAndExerciseStartTimeBetween(Long userId, LocalDateTime startTime,
                                                                      LocalDateTime endTime);
+    List<ExerciseHistory> findByUserIdInAndExerciseStartTimeBetween(List<Long> userIds, LocalDateTime start, LocalDateTime end);
 
 }
