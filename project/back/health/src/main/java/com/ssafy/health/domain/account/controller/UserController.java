@@ -1,14 +1,15 @@
 package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
-import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
-import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.ExerciseTimeResponseDto;
 import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.UserDetailDto;
 import com.ssafy.health.domain.account.dto.response.ValidateNicknameSuccessDto;
+import com.ssafy.health.domain.account.service.ExerciseHistoryReadService;
+import com.ssafy.health.domain.account.service.UserReadService;
 import com.ssafy.health.domain.account.service.UserValidator;
 import com.ssafy.health.domain.account.service.UserWriteService;
-import com.ssafy.health.domain.body.BodyHistory.service.BodyHistoryWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +19,9 @@ import org.springframework.web.bind.annotation.*;
 public class UserController implements UserControllerApi{
 
     private final UserWriteService userWriteService;
+    private final UserReadService userReadService;
     private final UserValidator userValidator;
-    private final BodyHistoryWriteService bodyHistoryWriteService;
+    private final ExerciseHistoryReadService exerciseHistoryReadService;
 
     @GetMapping("/validate-nickname/{nickname}")
     public ApiResponse<ValidateNicknameSuccessDto> validateNickname(@PathVariable("nickname") String nickname) {
@@ -31,9 +33,14 @@ public class UserController implements UserControllerApi{
         return ApiResponse.success(userWriteService.saveInfoSurvey(infoSurveyRequestDto));
     }
 
-    @PostMapping("/survey/body")
-    public ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto) {
-        return ApiResponse.success(bodyHistoryWriteService.saveBodyHistory(bodySurveyRequestDto));
+    @GetMapping("/{user_id}/exercise-time")
+    public ApiResponse<ExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId) {
+        return ApiResponse.success(exerciseHistoryReadService.getExerciseTime(userId));
+    }
+
+    @GetMapping("{user_id}")
+    public ApiResponse<UserDetailDto> getUserDetail(@PathVariable("user_id") Long userId) {
+        return ApiResponse.success(userReadService.getUserDetail(userId));
     }
 
 }
