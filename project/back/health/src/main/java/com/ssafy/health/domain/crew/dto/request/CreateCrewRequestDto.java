@@ -10,4 +10,5 @@ public class CreateCrewRequestDto {
     private String profileImage;
     private Float averageAge;
     private String description;
+    private Long exerciseId;
 }
