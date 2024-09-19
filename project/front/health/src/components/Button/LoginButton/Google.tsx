@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes } from 'react';
 
 import IconGoogle from '@/assets/svg/google.svg';
 
-import styles from '../button.module.scss';
+import styles from '../Button.module.scss';
 
 const cx = classnames.bind(styles);
 
