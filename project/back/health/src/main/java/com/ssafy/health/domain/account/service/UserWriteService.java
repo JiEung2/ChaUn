@@ -11,8 +11,10 @@ import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserWriteService {
 
