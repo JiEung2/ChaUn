@@ -1,0 +1,70 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.myProfileContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+    .subtitle {
+        margin-right: auto;
+        @include typo.sub;
+    }
+
+    .profileSection {
+        width: 300px;
+
+        .info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .character {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: colors.$base;
+            border-radius: 15px;
+            padding: 20px 0;
+            position: relative;
+
+            img {
+                position: relative;
+                z-index: 1;
+            }
+
+            .snapshotButton {
+                position: absolute;
+                bottom: 10px;
+                right: 10px; 
+                z-index: 2;
+                @include typo.coin;
+            }
+        }
+    }
+}
+
+.customBox {
+    display: flex;
+    flex-direction: column;
+    background-color: colors.$lightGray;
+    padding: 15px;
+    border-radius: 10px;
+    gap: 10px;
+    width: 300px;
+}
+
+.snapshotBox {
+    display: flex;
+    flex-direction: column;
+    background-color: colors.$lightGray;
+    padding: 15px;
+    border-radius: 10px;
+    gap: 10px
+}
+
+.logout {
+    @include typo.mediumButton;
+}

@@ -61,7 +61,11 @@
 @mixin login {
   font-size: 16px;
   font-weight: 400;
-  // line-height: auto;
+}
+
+@mixin coin {
+  font-size: 16px;
+  font-weight: 700;
 }
 
 @mixin smallButton {
