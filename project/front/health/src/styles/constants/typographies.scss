@@ -4,6 +4,12 @@
   line-height: 40px;
 }
 
+@mixin basic {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
 @mixin description {
   font-size: 14px;
   font-weight: 400;
@@ -55,7 +61,11 @@
 @mixin login {
   font-size: 16px;
   font-weight: 400;
-  // line-height: auto;
+}
+
+@mixin coin {
+  font-size: 16px;
+  font-weight: 700;
 }
 
 @mixin smallButton {
@@ -91,3 +101,4 @@
   font-weight: 700;
   line-height: 10px;
 }
+

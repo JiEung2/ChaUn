@@ -15,7 +15,7 @@ interface Primary {
   interface Outlined {
     buttonStyle: {
       style: 'outlined';
-      size: 'semiTiny';
+      size: 'semiTiny' | 'customTag';
     };
   }
   
@@ -29,7 +29,7 @@ interface Primary {
   interface Floating {
     buttonStyle: {
       style: 'floating';
-      size: 'semiTiny';
+      size: 'medium' | 'semiTiny';
     };
   }
 
