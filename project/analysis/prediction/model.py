@@ -24,7 +24,7 @@ all_X, all_y = [], []
 # print('DF_LIST_LENGTH', len(df_list))
 
 # 주요 features 설정
-features = ['sex', 'age', 'BMI', 'weight', 'consumed_cal'] # 체중, 체중 연산 변경치 (기초 대사 + 활동 대사 > 섭취 칼로리 = 체중 증가)
+features = ['age', 'sex', 'BMI', 'weight', 'consumed_cal', 'fat', 'muscle'] # 체중, 체중 연산 변경치 (기초 대사 + 활동 대사 > 섭취 칼로리 = 체중 증가)
 
 # 타임스텝 설정, 앞선 타임스텝을 가지고, 90일까지의 예측을 진행할 예정...
 timesteps = 7
