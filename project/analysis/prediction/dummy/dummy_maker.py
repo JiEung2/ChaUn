@@ -22,12 +22,9 @@ for sample_id in range(len(people_data)):
         'fat' : person_data['fat'],
         'muscle' : person_data['muscle'],
         'consumed_cal' : np.random.normal(person_data['consumed_cal'], 3, 980),
-        'intake_cal' : np.random.choice([1500, 1800, 2400, 3000, 3300],
-                                        size=980,
-                                        replace=True,
-                                        p=[0.2, 0.25, 0.4, 0.1, 0.05]),
-        'day_variable': 0,
+        'intake_cal' : 0,
         'BMR': person_data['BMR'],
+        'day_variable' : 0,
         'est_weight': np.zeros(980)
     }
     df = pd.DataFrame(data)
@@ -35,6 +32,7 @@ for sample_id in range(len(people_data)):
     # 운동을 안 하는 날도 존재, 20% 확률로 설정, 80에서 180 칼로리는 기본 활동으로 소모한다 가정
     no_exercise_days = np.random.choice([0, 1], size=980, p=[0.2, 0.8])
     df['consumed_cal'] = np.where(no_exercise_days == 0, np.random.uniform(100, 240), df['consumed_cal'])
+    df['intake_cal'] = np.where(df['sex'] == 1, np.random.choice([1500, 1800, 2400, 3000, 3300],size=980,replace=True,p=[0.2, 0.25, 0.4, 0.1, 0.05]), np.random.choice([1200, 1500, 1800, 2400, 2700],size=980,replace=True,p=[0.2, 0.25, 0.4, 0.1, 0.05]))
 
     # 기초 대사량 채워 넣기
     equation = (10 * df['weight']) + (6.25 * df['height']) - (5 * df['age'])
@@ -56,17 +54,24 @@ for sample_id in range(len(people_data)):
     # 연산으로 얻어낸 몸무게 변화라고 가정
     df.loc[0, 'est_weight'] = df.loc[0, 'weight'] + df.loc[0, 'day_variable']
 
+    # 랜덤한 패턴 추가
+    random_period_effect = np.random.normal(0, 0.1, size=980)  # 소량의 랜덤 노이즈
+    seasonal_effect = np.random.uniform(-0.08, 0.03, size=980)  # 불규칙한 계절성 효과 추가
+    random_effect_combined = random_period_effect + seasonal_effect
+
+    # 체중 유지되는 구간을 추가 (15% 확률로 체중 변화 없음)
+    df['weight_change_effect'] = np.where(np.random.rand(980) < 0.85, random_effect_combined, 0)
+
+
     # 이후 체중 변화 및 추정 체중을 weight에 반영
     for i in range(1, len(df)):
-        # 기존 체중(weight)과 칼로리 변화를 반영한 체중 변화 공식
-        # 하루 동안 체중이 +- 1~2kg 변동하는 자연스러운 단기 변동 추가
-        daily_fluctuation = np.random.uniform(-0.5, 0.5)  # 하루 중 +-1.5kg 변동 가능
-        
+        # 하루 동안 체중이 주기적으로 체중을 쟀다고 했을 경우, 자연스러운 단기 변동 추가 (-0.2 ~ 0.2)
+        daily_fluctuation = np.random.uniform(-0.05, 0.05)
         # 기존 체중(weight) + 변화량에 단기 변동 반영
         df.loc[i, 'weight'] = df.loc[i-1, 'est_weight'] + daily_fluctuation
 
-        # 오늘의 est_weight 계산
-        df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + df.loc[i, 'day_variable'] + np.random.uniform(-0.1 ,0.1)
+        # 몸무게 랜덤 패턴 반영한 오늘의 est_weight 계산
+        df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + df.loc[i, 'day_variable'] + df.loc[i, 'weight_change_effect']
 
         # BMI 계산해서 df에 넣기
         df['BMI'] = round(df['weight'] / ((df['height']/100) ** 2), 2)
