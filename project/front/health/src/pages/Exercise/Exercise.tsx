@@ -77,6 +77,8 @@ export default function Exercise() {
       <GeneralButton
         buttonStyle={{ style: 'primary', size: 'large' }}
         onClick={() => setShowModal(true)}
+        className="selectExercise"
+        disabled={isRunning || isFinished}
       >
         {Array.isArray(selectedExercise) ? selectedExercise.join(', ') : selectedExercise}
       </GeneralButton>
@@ -101,7 +103,7 @@ export default function Exercise() {
           </div>
           <div className='timerButton'>
             {!isRunning ? (
-              <button onClick={startTimer}>
+              <button onClick={startTimer} disabled={selectedExercise === '운동 선택'}>
                 <img src={Start} alt="start" />
               </button>
             ) : (
