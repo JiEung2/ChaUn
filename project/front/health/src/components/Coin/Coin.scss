@@ -1,0 +1,37 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.coinContainer {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  
+    &.styled {
+        // width: 30%;
+        background-color: colors.$white;
+        padding: 10px 15px;
+        border-radius: 25px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  
+        .coinIcon {
+            width: 24px;
+            height: 24px;
+        }
+  
+        .coinAmount {
+            white-space: nowrap;
+            @include typo.button;
+        }
+        }
+  
+    &.basic {
+        .coinIcon {
+            width: 20px;
+            height: 20px;
+        }
+  
+        .coinAmount {
+        @include typo.button;
+        }
+    }
+}
