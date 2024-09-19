@@ -1,11 +1,9 @@
 package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
-import com.ssafy.health.domain.account.dto.response.ExerciseTimeResponseDto;
-import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
-import com.ssafy.health.domain.account.dto.response.UserDetailDto;
-import com.ssafy.health.domain.account.dto.response.ValidateNicknameSuccessDto;
+import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.account.service.ExerciseHistoryReadService;
 import com.ssafy.health.domain.account.service.UserReadService;
 import com.ssafy.health.domain.account.service.UserValidator;
@@ -41,6 +39,11 @@ public class UserController implements UserControllerApi{
     @GetMapping("{user_id}")
     public ApiResponse<UserDetailDto> getUserDetail(@PathVariable("user_id") Long userId) {
         return ApiResponse.success(userReadService.getUserDetail(userId));
+    }
+
+    @PatchMapping("/register-device")
+    public ApiResponse<DeviceRegisterResponseDto> registerDevice(@RequestBody DeviceRegisterRequestDto deviceRegisterRequestDto) {
+        return ApiResponse.success(userWriteService.regiesterDevice(deviceRegisterRequestDto));
     }
 
 }

@@ -1,5 +1,7 @@
 package com.ssafy.health.domain.account.service;
 
+import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
+import com.ssafy.health.domain.account.dto.response.DeviceRegisterResponseDto;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.dto.request.*;
 import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
@@ -36,12 +38,18 @@ public class UserWriteService {
         user.updateNameAndEmail(userLoginUpdateRequestDto);
     }
 
-    public InfoSurveySuccessDto saveInfoSurvey(InfoSurveyRequestDto infoSurveyRequestDto){
+    public InfoSurveySuccessDto saveInfoSurvey(InfoSurveyRequestDto infoSurveyRequestDto) {
         User user = findUserById(SecurityUtil.getCurrentUserId());
         user.saveUserInfo(infoSurveyRequestDto.getNickname(), infoSurveyRequestDto.getBirthday(), infoSurveyRequestDto.getGender());
         userRepository.save(user);
 
         return new InfoSurveySuccessDto();
+    }
+
+    public DeviceRegisterResponseDto regiesterDevice(DeviceRegisterRequestDto deviceRegisterRequestDto) {
+        User user = findUserById(SecurityUtil.getCurrentUserId());
+        user.updateUserDevice(deviceRegisterRequestDto.getDeviceToken());
+        return new DeviceRegisterResponseDto();
     }
 
     private User findUserById(Long userId) {
