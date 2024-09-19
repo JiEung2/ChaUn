@@ -21,10 +21,12 @@ import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.ssafy.health.domain.coin.CoinCost.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CrewWriteService {
 
