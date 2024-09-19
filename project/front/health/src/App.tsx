@@ -9,6 +9,8 @@ import CommonLayout from './components/Common/CommonLayout';
 import Survey from './pages/Survey/Survey';
 import Record from './pages/Record/Record';
 import BodyDetail from './pages/Record/BodyDetail';
+import SurveyResult from './pages/Survey/Result';
+import CrewRecommend from './pages/Crew/CrewRecommend/CrewRecommend';
 import Crew from './pages/Crew/Crew';
 import Alarm from './pages/Alarm/Alarm';
 import MyProfile from './pages/Profle/MyProfile/MyProfile'
@@ -18,9 +20,10 @@ export default function App() {
     <Router>
       <div>
         <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/survey" element={<Survey />} />
+          <Route path="/surveyResult" element={<SurveyResult />} />
           <Route element={<CommonLayout />}>
-            <Route path="/" element={<Login />} />
-            <Route path="/survey" element={<Survey />} />
             <Route path="/home" element={<Home />} />
             <Route path="/home/calendar" element={<Calendar />} />
             <Route path="/home/quest" element={<Quest />} />
@@ -29,6 +32,7 @@ export default function App() {
             <Route path="/record" element={<Record />} />
             <Route path="/record/bodyDetail" element={<BodyDetail />} />
             <Route path="/crew" element={<Crew />} />
+            <Route path="/crew/recommend" element={<CrewRecommend />} />
             <Route path="/myProfile" element={<MyProfile />} />
             <Route path="/alarm" element={<Alarm />} />
           </Route>

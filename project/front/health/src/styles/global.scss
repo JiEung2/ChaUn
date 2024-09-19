@@ -12,15 +12,19 @@ body {
 }
 
 /* 390px 이상일 때 고정 너비 */
-
 #root {
   width: 390px;
   margin: 0 auto;
+<<<<<<< HEAD
+=======
   // padding: 20px;
   height: 100vh;
+>>>>>>> 9f7a2d30aaae4e68636ef103065769c5486013b4
   background-color: white;
+  height: 100vh;
 }
-
+// #root .outlet {
+// }
 /* 390px 미만일 때 풀스크린 적용 */
 @media screen and (max-width: 390px) {
   #root {
