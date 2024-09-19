@@ -16,6 +16,7 @@ export default function Exercise() {
   const [timer, setTimer] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const [isStopped, setIsStopped] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const navigate = useNavigate();
 
@@ -32,6 +33,7 @@ export default function Exercise() {
     if (intervalId) {
       clearInterval(intervalId);
       setIntervalId(null);
+      setIsStopped(true);
     }
   };
 
@@ -78,7 +80,7 @@ export default function Exercise() {
         buttonStyle={{ style: 'primary', size: 'large' }}
         onClick={() => setShowModal(true)}
         className="selectExercise"
-        disabled={isRunning || isFinished}
+        disabled={isRunning || isFinished || isStopped}
       >
         {Array.isArray(selectedExercise) ? selectedExercise.join(', ') : selectedExercise}
       </GeneralButton>
@@ -103,7 +105,7 @@ export default function Exercise() {
           </div>
           <div className='timerButton'>
             {!isRunning ? (
-              <button onClick={startTimer} disabled={selectedExercise === '운동 선택'}>
+              <button onClick={startTimer} disabled={Array.isArray(selectedExercise) || selectedExercise === '운동 선택'}>
                 <img src={Start} alt="start" />
               </button>
             ) : (
