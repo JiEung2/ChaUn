@@ -1,9 +1,9 @@
 package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
-import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
+import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
+import com.ssafy.health.domain.account.dto.response.DeviceRegisterResponseDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
-import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.ExerciseTimeResponseDto;
 import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.UserDetailDto;
@@ -120,4 +120,25 @@ public interface UserControllerApi {
     })
     ApiResponse<UserDetailDto> getUserDetail(@PathVariable("user_id") Long userId);
 
+    @Operation(
+            summary = "알림 수신 기기 등록",
+            description = "Firebase Cloud Messaging을 이용한 알림을 받을 기기를 등록합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "기기 등록 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "기기가 등록되었습니다.",
+                                      "data": {}
+                                    }"""
+                            )
+                    )
+            )
+    })
+    ApiResponse<DeviceRegisterResponseDto> registerDevice(DeviceRegisterRequestDto deviceRegisterRequestDto);
 }
