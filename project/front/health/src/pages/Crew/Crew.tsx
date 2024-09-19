@@ -8,12 +8,12 @@ import rankingIcon from '../../assets/svg/crewRanking.svg';
 import '../Crew/Crew.scss';
 
 export default function CrewPage() {
-  const crews = [
-    { id: 1, name: '달리는 번개', tag: '#러닝' },
-    { id: 2, name: '달리는 번개', tag: '#러닝' },
-    { id: 3, name: '달리는 번개', tag: '#러닝' },
-    { id: 4, name: '달리는 번개', tag: '#러닝' },
-  ];
+  // const crews = [
+  //   { id: 1, name: '달리는 번개', tag: '#러닝' },
+  //   { id: 2, name: '달리는 번개', tag: '#러닝' },
+  //   { id: 3, name: '달리는 번개', tag: '#러닝' },
+  //   { id: 4, name: '달리는 번개', tag: '#러닝' },
+  // ];
   const navigate = useNavigate();
   return (
     <>
