@@ -32,7 +32,9 @@ for sample_id in range(len(people_data)):
     # 운동을 안 하는 날도 존재, 20% 확률로 설정, 80에서 180 칼로리는 기본 활동으로 소모한다 가정
     no_exercise_days = np.random.choice([0, 1], size=980, p=[0.2, 0.8])
     df['consumed_cal'] = np.where(no_exercise_days == 0, np.random.uniform(100, 240), df['consumed_cal'])
-    df['intake_cal'] = np.where(df['sex'] == 1, np.random.choice([1500, 1800, 2400, 3000, 3300],size=980,replace=True,p=[0.2, 0.25, 0.4, 0.1, 0.05]), np.random.choice([1200, 1500, 1800, 2400, 2700],size=980,replace=True,p=[0.2, 0.25, 0.4, 0.1, 0.05]))
+    df['intake_cal'] = np.where(df['sex'] == 1,
+        np.random.choice([1500, 1800, 2400, 3000, 3300],size=980,replace=True,p=[0.2, 0.25, 0.4, 0.1, 0.05]),
+        np.random.choice([1200, 1500, 1800, 2400, 2700],size=980,replace=True,p=[0.2, 0.25, 0.4, 0.1, 0.05]))
 
     # 기초 대사량 채워 넣기
     equation = (10 * df['weight']) + (6.25 * df['height']) - (5 * df['age'])
