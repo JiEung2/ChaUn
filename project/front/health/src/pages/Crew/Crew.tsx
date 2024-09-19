@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import createIcon from '../../assets/svg/crewCreate.svg';
 import recommendIcon from '../../assets/svg/crewRecommend.svg';
 import rankingIcon from '../../assets/svg/crewRanking.svg';
+import '../Crew/Crew.scss';
 
 export default function CrewPage() {
   const crews = [
