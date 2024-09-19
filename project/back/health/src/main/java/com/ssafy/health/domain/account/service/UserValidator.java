@@ -17,10 +17,4 @@ public class UserValidator {
         if(userRepository.existsByNickname(nickname)) throw new NicknameDuplicateException();
         return new ValidateNicknameSuccessDto();
     }
-
-    public void validateSufficientCoins(Integer userCoin, Integer coin) {
-        if (userCoin < coin) {
-            throw new InsufficientCoinsException();
-        }
-    }
 }
