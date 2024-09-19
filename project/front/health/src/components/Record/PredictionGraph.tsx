@@ -9,7 +9,7 @@ interface PredictionGraphProps {
 export default function PredictionGraph({ data }: PredictionGraphProps) {
   return (
     <div className="predictionGraphContainer">
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={250}>
         <BarChart data={data} margin={{ top: 20, right: 30, left: -30, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="time" tick={<CustomTick />} />

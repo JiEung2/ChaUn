@@ -10,6 +10,8 @@ import Survey from './pages/Survey/Survey';
 import Record from './pages/Record/Record';
 import BodyDetail from './pages/Record/BodyDetail';
 import Crew from './pages/Crew/Crew';
+import Alarm from './pages/Alarm/Alarm';
+import MyProfile from './pages/Profle/MyProfile/MyProfile'
 
 export default function App() {
   return (
@@ -27,6 +29,8 @@ export default function App() {
             <Route path="/record" element={<Record />} />
             <Route path="/record/bodyDetail" element={<BodyDetail />} />
             <Route path="/crew" element={<Crew />} />
+            <Route path="/myProfile" element={<MyProfile />} />
+            <Route path="/alarm" element={<Alarm />} />
           </Route>
         </Routes>
       </div>

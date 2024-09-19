@@ -1,0 +1,52 @@
+@use '@/styles/constants/colors' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.snapshotListContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 300px;
+}
+    
+.filters {
+    display: flex;
+    gap: 5px;
+    button {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: colors.$white;
+        cursor: pointer;
+    }
+}
+
+.snapshotGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.snapshotItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: colors.$white;
+    padding: 10px 10px 0;
+    border-radius: 8px;
+
+    img {
+    width: 65px;
+    height: 100px;
+    object-fit: cover;
+    }
+
+    p {
+    @include typo.description;
+    }
+}
+
+.notSnapshot {
+    @include typo.coin;
+}
