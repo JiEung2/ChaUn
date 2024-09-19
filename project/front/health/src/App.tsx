@@ -7,8 +7,9 @@ import Exercise from './pages/Exercise/Exercise';
 import Login from './pages/Login/Login';
 import CommonLayout from './components/Common/CommonLayout';
 import Survey from './pages/Survey/Survey';
-import Record from './pages/Record/Record'
-import BodyDetail from './pages/Record/BodyDetail'
+import Record from './pages/Record/Record';
+import BodyDetail from './pages/Record/BodyDetail';
+import Crew from './pages/Crew/Crew';
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
             <Route path="/exercise" element={<Exercise />} />
             <Route path="/record" element={<Record />} />
             <Route path="/record/bodyDetail" element={<BodyDetail />} />
+            <Route path="/crew" element={<Crew />} />
           </Route>
         </Routes>
       </div>
