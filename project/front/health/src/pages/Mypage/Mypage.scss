@@ -14,7 +14,7 @@
     }
 
     .profileSection {
-        width: 300px;
+        width: 100%;
 
         .info {
             display: flex;
@@ -53,7 +53,6 @@
     padding: 15px;
     border-radius: 10px;
     gap: 10px;
-    width: 300px;
 }
 
 .snapshotBox {
@@ -66,5 +65,6 @@
 }
 
 .logout {
-    @include typo.mediumButton;
+    margin-top: 20px;
+    @include typo.coin;
 }

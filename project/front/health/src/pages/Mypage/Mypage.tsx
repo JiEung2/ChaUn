@@ -6,26 +6,26 @@ import CustomItem from '@/assets/image/customItem.jpg';
 import CustomCategories from '@/components/Profile/Custom/CustomCategories';
 import SnapshotList from '@/components/Profile/Snapshot/SnapshotList';
 import html2canvas from 'html2canvas';
-import './MyProfile.scss';
+import './Mypage.scss';
 
-export default function MyProfilePage() {
+export default function MypagePage() {
     const characterRef = useRef<HTMLImageElement | null>(null);
     const [selectedTab, setSelectedTab] = useState('헤어');
     const [userCoin, setUserCoin] = useState(1000);
     const [items, setItems] = useState([
         { id: 1, category: '헤어', price: 100, isLocked: true, image: CustomItem, isApplied: false },
         { id: 2, category: '헤어', price: 120, isLocked: true, image: CustomItem, isApplied: false },
+        { id: 3, category: '하의', price: 1200, isLocked: true, image: CustomItem, isApplied: false },
         // 추가 아이템 ...
     ]);
     const [appliedItem, setAppliedItem] = useState<string | null>(null);
     const [snapshots, setSnapshots] = useState<{ date: string; image: string }[]>([]);
-    const [sortOrder, setSortOrder] = useState('최신순'); // 정렬 상태 추가
 
     // 아이템 구매 성공 시 호출되는 함수
     const handlePurchaseSuccess = (updatedItem: any) => {
         setItems((prevItems) =>
             prevItems.map((item) =>
-                item.id === updatedItem.id ? { ...item, isLocked: false } : item
+                item.id  === updatedItem.id ? { ...item, isLocked: false } : item
             )
         );
         setUserCoin((prevCoin) => prevCoin - updatedItem.price);
@@ -62,11 +62,6 @@ export default function MyProfilePage() {
                 setSnapshots((prev) => [{ date: formattedDate, image }, ...prev]);
             });
         }
-    };
-
-    // 최신순과 과거순을 토글하는 함수
-    const toggleSortOrder = () => {
-        setSortOrder((prevOrder) => (prevOrder === '최신순' ? '과거순' : '최신순'));
     };
 
     return (
@@ -106,23 +101,16 @@ export default function MyProfilePage() {
             <div className="snapshotSection">
                 <p className="subtitle">스냅샷</p>
                 <div className="snapshotBox">
-                    <GeneralButton
-                        buttonStyle={{ style: "semiOutlined", size: "select" }}
-                        onClick={toggleSortOrder}
-                    >
-                        {sortOrder}
-                    </GeneralButton>
-                    <SnapshotList snapshots={snapshots} sortOrder={sortOrder} />
+                    <SnapshotList snapshots={snapshots} />
                 </div>
             </div>
 
-            <div>
-                <GeneralButton
-                    buttonStyle={{ style: "floating", size: "medium" }}
-                    className="logout">
-                    로그아웃
-                </GeneralButton>
-            </div>
+
+            <GeneralButton
+                buttonStyle={{ style: "floating", size: "small" }}
+                className="logout">
+                로그아웃
+            </GeneralButton>
         </div>
     );
 }
