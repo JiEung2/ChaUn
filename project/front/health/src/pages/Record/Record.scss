@@ -1,8 +1,14 @@
+@use '@/styles/constants/typographies' as typo;
+
 .recordsContainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 20px;
+
+  .bodyDetailButton {
+    @include typo.mediumButton;
+  }
 }
 

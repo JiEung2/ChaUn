@@ -55,6 +55,7 @@ export default function RecordPage() {
       <GeneralButton
         buttonStyle={{ style: 'primary', size: 'large' }}
         onClick={() => navigate('/record/bodyDetail')}
+        className="bodyDetailButton"
       >
         상세 체형 기록 조회
       </GeneralButton>

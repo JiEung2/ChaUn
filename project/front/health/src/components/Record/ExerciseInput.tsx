@@ -110,6 +110,7 @@ export default function ExerciseInput({
         buttonStyle={{ style: 'primary', size: 'medium' }}
         disabled={!isButtonEnabled}
         onClick={onShowPrediction}
+        className="predictButton"
       >
         체형 예측
       </GeneralButton>
