@@ -30,6 +30,13 @@ public class BattleWriteService {
     private final CrewRepository crewRepository;
     private final CoinService coinService;
 
+    private Integer calculateDDay() {
+        LocalDate now = LocalDate.now();
+        LocalDate lastDay = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+
+        return (int) ChronoUnit.DAYS.between(now, lastDay);
+    }
+
     private Crew findOpponentCrew(Long crewId, Float myCrewScore) {
         List<Battle> recentBattleList = findRecentBattlesForAvailableCrews();
 
