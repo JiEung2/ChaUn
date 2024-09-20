@@ -5,7 +5,6 @@ import pydantic
 from pydantic import BaseModel
 from bson import ObjectId
 
-
 # MongoClient 작업 가져오기
 from pymongo import MongoClient
 
