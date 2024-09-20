@@ -1,5 +1,7 @@
 package com.ssafy.health.domain.account.service;
 
+import com.ssafy.health.common.security.SecurityUtil;
+import com.ssafy.health.domain.account.dto.response.SurveyCompletedResponseDto;
 import com.ssafy.health.domain.account.dto.response.UserDetailDto;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
@@ -19,6 +21,14 @@ public class UserReadService {
         return UserDetailDto.builder()
                 .nickname(user.getNickname())
                 .coin(user.getCoin())
+                .build();
+    }
+
+    public SurveyCompletedResponseDto getSurveyCompleted() {
+        User user = findUserById(SecurityUtil.getCurrentUserId());
+
+        return SurveyCompletedResponseDto.builder()
+                .surveyCompleted(user.getSurveyCompleted())
                 .build();
     }
 
