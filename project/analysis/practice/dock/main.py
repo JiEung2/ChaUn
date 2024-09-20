@@ -134,7 +134,7 @@ def convert_objectid(data):
 # 루트 라우터
 @app.get("/")
 def root():
-    return {"This is Root" : "Hello, root"}
+    return {"message": "MongoDB와 FastAPI 연결 성공"}
 
 # 스프링에서 받은 json 데이터를 데이터프레임화 시키기 전에 해당 유저가 생성한 DB에 있는지 확인하기
 @app.post("/api/v1/users/{user_id}/body/prediction")
@@ -199,4 +199,4 @@ async def predict(user_id: int, request: UserExerciseRequest):
 
 # CLI 실행을 main 함수에서 실행
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
