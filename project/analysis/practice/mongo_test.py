@@ -42,19 +42,6 @@ class UserExerciseRequest(BaseModel):
     user_id: int
     exercise_data: List[ExerciseData]  # 7일간의 운동 정보 리스트
 
-def convert_objectid(data):
-    if isinstance(data, dict):
-        for key, value in data.items():
-            if isinstance(value, ObjectId):
-                data[key] = str(value)
-            elif isinstance(value, list):
-                data[key] = [convert_objectid(item) for item in value]
-            elif isinstance(value, dict):
-                data[key] = convert_objectid(value)
-    elif isinstance(data, list):
-        data = [convert_objectid(item) for item in data]
-    return data
-
 ### AI 회귀 모델 처리 ###
 # 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
 def build_model(input_shape, forecast_steps):
@@ -90,15 +77,11 @@ def model_predict(data_test):
     # 예측 수행
     predictions = make_predictions(model, data_test)
 
-    return float(predictions[0][29]), float(predictions[0][89])
-
-# 루트 라우터
-@app.get("/")
-def root():
-    return {"This is Root" : "Hello, root"}
+    # 30일, 90일 기록을 return 시키기
+    return round(float(predictions[0][29]), 2), round(float(predictions[0][89]), 2)
 
 '''
-
+dummy input
 {
   "user_id": 2,
   "exercise_data": [
@@ -111,21 +94,36 @@ def root():
     { "sex": 1, "age": 32, "bmi": 24.27, "weight": 75.22, "calories": 312.97836 }
   ]
 }
-
 '''
 
+# object id convergence
+def convert_objectid(data):
+    if isinstance(data, dict):
+        for key, value in data.items():
+            if isinstance(value, ObjectId):
+                data[key] = str(value)
+            elif isinstance(value, list):
+                data[key] = [convert_objectid(item) for item in value]
+            elif isinstance(value, dict):
+                data[key] = convert_objectid(value)
+    elif isinstance(data, list):
+        data = [convert_objectid(item) for item in data]
+    return data
+
+# 루트 라우터
+@app.get("/")
+def root():
+    return {"This is Root" : "Hello, root"}
 
 # 스프링에서 받은 json 데이터를 데이터프레임화 시키기 전에 해당 유저가 생성한 DB에 있는지 확인하기
 @app.post("/predict")
 async def predict(request: UserExerciseRequest):
-    # dt_json = await request.json()
-
-    user_id = request.user_id
-    exercise_data = request.exercise_data
+    user_id = request.user_id # user_id
+    exercise_data = request.exercise_data # exercise_data
 
     # 입력 데이터를 numpy 배열로 변환
-    X_test = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data])
-    X_test = X_test.reshape(1, 7, 5)  # 7일간의 운동 정보가 있으므로 timesteps=7, features=5
+    X_test = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data]) # (7, 5)
+    X_test = X_test.reshape(1, 7, 5)  # 한 차원 늘려서, 하나의 입력으로, 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
 
     # id 혹은 토큰으로 조회 예정
     user = collection.find_one({"user_id": user_id})
@@ -138,8 +136,8 @@ async def predict(request: UserExerciseRequest):
         # 예측 값을 포함한 데이터를 MongoDB에 저장
         new_prediction = {
             "user_id": user_id,
-            "prediction_30_days": pred_30_d,
-            "prediction_90_days": pred_90_d
+            "p30": pred_30_d,
+            "p90": pred_90_d
         }
 
         # MongoDB에 저장
@@ -154,7 +152,7 @@ async def predict(request: UserExerciseRequest):
     
     # 조회된 user 정보가 있을 경우
     else: 
-        # 조회해서 값을 채워 data 보내주기 (user_id, 예측 값 30, 90일 보내주기,)
+        # 조회해서 값을 채워 data 보내주기 (user_id, 예측 값 30, 90일 보내주기)
         user = convert_objectid(user)
         return {
             # ObjectId 변환
