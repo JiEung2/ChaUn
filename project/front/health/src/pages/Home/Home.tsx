@@ -8,13 +8,13 @@ import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
 import 'chart.js/auto';
 import './Home.scss';
 
-interface avatarContent {
+interface CharacterContent {
   nickname: string;
   todayTime: string;
   weeklyTime: string;
 }
   
-const avatarContent: avatarContent = {
+const characterContent: CharacterContent = {
     nickname: '민영',
     todayTime: '1h 48m',
     weeklyTime: '16h 45m',
@@ -65,9 +65,9 @@ export default function HomePage () {
 
   return (
     <div className="homeContainer">
-        <div className="avatarContainer">
+        <div className="characterContainer">
           <div className="title">
-            <p className="avatar">{avatarContent.nickname}님의 아바타</p>   
+            <p className="character">{characterContent.nickname}님</p>   
             <div className="iconWrapper">
               <div className="navIcon" onClick={() => navigate('/home/quest')}>
                 <img src={QuestIcon} alt="Quest Icon" className="icon" />
@@ -79,9 +79,9 @@ export default function HomePage () {
           </div>
           <div className="time">
             <p>오늘 운동 시간</p>
-            <span>{avatarContent.todayTime}</span>
+            <span>{characterContent.todayTime}</span>
             <p>이번 주 운동 시간</p>
-            <span>{avatarContent.weeklyTime}</span>
+            <span>{characterContent.weeklyTime}</span>
           </div>
         </div>
 
@@ -92,19 +92,22 @@ export default function HomePage () {
       </div>
 
       <div className="buttonSection">
-        <StyledButton
-          title="운동 추천"
-          icon={HomeIcon1}
-          onClick={() => navigate('/exercise/recommend')}
-          backgroundColor="styledButton1" // SASS에서 정의한 클래스 사용
-        />
-        <StyledButton
-          title="내 크루 보러가기"
-          icon={HomeIcon2}
-          onClick={() => navigate('/crew')}
-          backgroundColor="styledButton2"
-        />
-
+        <div className="stylebutton">
+          <StyledButton
+            title="운동 추천"
+            icon={HomeIcon1}
+            onClick={() => navigate('/exercise/recommend')}
+            backgroundColor="styledButton1" // SASS에서 정의한 클래스 사용
+          />          
+        </div>
+        <div className="stylebutton">
+          <StyledButton
+            title="내 크루 보러가기"
+            icon={HomeIcon2}
+            onClick={() => navigate('/crew')}
+            backgroundColor="styledButton2"
+          />          
+        </div>
       </div>
     </div>
   );

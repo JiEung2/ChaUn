@@ -3,13 +3,13 @@ import './Quest.scss';
 
 export default function QuestPage () {
   const todayQuests = [
-    { title: '[개인] 매일 몸무게 입력하기', completed: true },
-    { title: '[개인] 하루 한 번 운동하기', completed: true },
-    { title: '[개인] 크루원 1회 찌르기', completed: false },
+    { title: '매일 몸무게 입력하기', completed: true },
+    { title: '하루 한 번 운동하기', completed: true },
+    { title: '크루원 1회 찌르기', completed: false },
   ];
 
   const monthlyQuests = [
-    { title: '[개인] 2주 출석 도장 찍기', completed: false },
+    { title: '2주 출석 도장 찍기', completed: false },
   ];
 
   return (

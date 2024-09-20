@@ -2,24 +2,15 @@ import './SnapshotList.scss';
 
 interface SnapshotListProps {
   snapshots: { date: string; image: string }[];
-  sortOrder: string;
 }
 
-export default function SnapshotList({ snapshots, sortOrder }: SnapshotListProps) {
-    // 최신순, 과거순에 따라 스냅샷 정렬
-    const sortedSnapshots = [...snapshots].sort((a, b) => {
-        if (sortOrder === '최신순') {
-            return new Date(b.date).getTime() - new Date(a.date).getTime();
-        } else {
-            return new Date(a.date).getTime() - new Date(b.date).getTime();
-        }
-    });
+export default function SnapshotList({ snapshots }: SnapshotListProps) {
 
     return (
         <div className="snapshotListContainer">
-            {sortedSnapshots.length > 0 ? (
+            {snapshots.length > 0 ? (
                 <div className="snapshotGrid">
-                    {sortedSnapshots.map((snapshot, index) => (
+                    {snapshots.map((snapshot, index) => (
                         <div key={index} className="snapshotItem">
                             <img src={snapshot.image} alt={`snapshot-${index}`} />
                             <p>{snapshot.date}</p>

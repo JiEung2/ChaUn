@@ -56,3 +56,7 @@
   .adviceText {
     @include typo.login;
   }
+
+  .predictButton {
+    @include typo.mediumButton;
+  }

@@ -13,7 +13,7 @@ import SurveyResult from './pages/Survey/Result';
 import CrewRecommend from './pages/Crew/CrewRecommend/CrewRecommend';
 import Crew from './pages/Crew/Crew';
 import Alarm from './pages/Alarm/Alarm';
-import MyProfile from './pages/Profle/MyProfile/MyProfile'
+import Mypage from './pages/Mypage/Mypage'
 
 export default function App() {
   return (
@@ -33,7 +33,7 @@ export default function App() {
             <Route path="/record/bodyDetail" element={<BodyDetail />} />
             <Route path="/crew" element={<Crew />} />
             <Route path="/crew/recommend" element={<CrewRecommend />} />
-            <Route path="/myProfile" element={<MyProfile />} />
+            <Route path="/mypage" element={<Mypage />} />
             <Route path="/alarm" element={<Alarm />} />
           </Route>
         </Routes>
