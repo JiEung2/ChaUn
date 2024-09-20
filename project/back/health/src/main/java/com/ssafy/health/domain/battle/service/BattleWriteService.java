@@ -30,6 +30,12 @@ public class BattleWriteService {
     private final CrewRepository crewRepository;
     private final CoinService coinService;
 
+    private Float findRecentBattleScore(Long crewId) {
+        Optional<Battle> battle = battleRepository.findFirstByCrewIdOrderByCreatedAtDesc(crewId);
+        return battle.map(b -> b.getHomeCrew().getId().longValue() == crewId ? b.getHomeCrewScore(): b.getAwayCrewScore())
+                .orElse(0F);
+    }
+
     private List<Battle> findRecentBattlesForAvailableCrews() {
         List<Crew> availableCrews = crewRepository.findAvailableCrews();
 
