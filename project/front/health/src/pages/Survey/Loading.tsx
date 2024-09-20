@@ -1,7 +1,7 @@
 export default function Loading() {
   return (
     <div>
-      <h1>Loading</h1>
+      <h3>입력하신 정보에 따라 캐릭터를 생성하고 있습니다.</h3>
     </div>
   );
 }
