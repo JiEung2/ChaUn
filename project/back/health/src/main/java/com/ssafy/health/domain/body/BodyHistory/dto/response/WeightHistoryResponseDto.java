@@ -12,6 +12,7 @@ public class WeightHistoryResponseDto {
     private List<WeightData> weightDataList;
 
     @Builder
+    @Getter
     public static class WeightData {
         private LocalDateTime date;
         private Float weight;
