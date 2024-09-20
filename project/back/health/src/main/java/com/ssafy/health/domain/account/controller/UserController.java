@@ -1,6 +1,13 @@
 package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
+import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
+import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
+import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.CaloriesSurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.ValidateNicknameSuccessDto;
 import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
@@ -44,6 +51,11 @@ public class UserController implements UserControllerApi{
     @PatchMapping("/register-device")
     public ApiResponse<DeviceRegisterResponseDto> registerDevice(@RequestBody DeviceRegisterRequestDto deviceRegisterRequestDto) {
         return ApiResponse.success(userWriteService.regiesterDevice(deviceRegisterRequestDto));
+    }
+
+    @PostMapping("/survey/eating-habits")
+    public ApiResponse<CaloriesSurveySuccessDto> saveCaloriesSurvey(@RequestBody CaloriesSurveyRequestDto caloriesSurveyRequestDto) {
+        return ApiResponse.success(userWriteService.saveDailyCalories(caloriesSurveyRequestDto));
     }
 
 }

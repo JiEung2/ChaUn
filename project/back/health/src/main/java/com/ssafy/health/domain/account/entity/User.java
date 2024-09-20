@@ -75,6 +75,9 @@ public class User extends BaseEntity {
         this.gender = gender;
     }
 
+    public void saveDailyCaloricIntake(Integer dailyCaloricIntake) {
+        this.dailyCaloricIntake = dailyCaloricIntake;
+    }
 
     public void decreaseCoin(Integer coin) {
         this.coin -= coin;
@@ -83,4 +86,5 @@ public class User extends BaseEntity {
     public void updateUserDevice(String deviceToken) {
         this.deviceToken = deviceToken;
     }
+
 }

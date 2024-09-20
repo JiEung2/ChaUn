@@ -1,6 +1,8 @@
 package com.ssafy.health.domain.crew.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
+import com.ssafy.health.domain.battle.service.BattleWriteService;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
@@ -22,8 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CrewController implements CrewControllerApi {
 
-    private final CrewWriteService crewWriteService;
     private final CrewReadService crewReadService;
+    private final CrewWriteService crewWriteService;
+    private final BattleWriteService battleWriteService;
 
     @PostMapping("/crew")
     public ApiResponse<CreateCrewSuccessDto> createCrew(@RequestBody CreateCrewRequestDto createCrewRequestDto) {
@@ -54,5 +57,10 @@ public class CrewController implements CrewControllerApi {
     @GetMapping("/crew/{crew_id}/ranking")
     public ApiResponse<CrewMembersResponseDto> getCrewRanking(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(crewReadService.getCrewMemberRanking(crewId));
+    }
+
+    @PostMapping("/crew/{crew_id}/battle")
+    public ApiResponse<BattleMatchResponseDto> startCrewBattle(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(battleWriteService.startBattle(crewId));
     }
 }

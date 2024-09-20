@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.crew.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
@@ -180,5 +181,29 @@ public interface CrewControllerApi {
             )
     })
     ApiResponse<CrewMembersResponseDto> getCrewRanking(@PathVariable("crew_id") Long crewId);
-    
+
+    @Operation(
+            summary = "크루 배틀 생성",
+            description = "배틀 시작 요청이 들어온 크루의 배틀을 생성합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 배틀 생성 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"myTeamName\": \"달리자크루\",\n" +
+                                    "    \"myTeamScore\": 0,\n" +
+                                    "    \"opponentTeamName\": \"크크크루\",\n" +
+                                    "    \"opponentTeamScore\": 0,\n" +
+                                    "    \"exerciseName\": \"러닝\",\n" +
+                                    "    \"dDay\": 2\n" +
+                                    "  }\n" +
+                                    "}"
+                            ))
+            ),
+    })
+    ApiResponse<BattleMatchResponseDto> startCrewBattle(@PathVariable("crew_id") Long crewId);
+
 }

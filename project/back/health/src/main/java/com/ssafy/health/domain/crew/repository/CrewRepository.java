@@ -16,6 +16,7 @@ public interface CrewRepository extends JpaRepository<Crew, Long> {
 
     @Query("SELECT c FROM Crew c " +
             "WHERE c.id NOT IN (SELECT b.homeCrew.id FROM Battle b WHERE b.status = 'STARTED')" +
-            "AND c.id NOT IN (SELECT b.awayCrew.id FROM Battle b WHERE b.status = 'STARTED')")
+            "AND c.id NOT IN (SELECT b.awayCrew.id FROM Battle b WHERE b.status = 'STARTED')" +
+            "AND c.battleStatus = true ")
     List<Crew> findAvailableCrews();
 }

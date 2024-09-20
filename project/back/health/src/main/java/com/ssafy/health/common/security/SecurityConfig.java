@@ -7,6 +7,7 @@ import com.ssafy.health.common.oauth.jwt.JWTUtil;
 import com.ssafy.health.common.oauth.repository.CustomClientRegistrationRepository;
 import com.ssafy.health.common.oauth.repository.RefreshRepository;
 import com.ssafy.health.common.oauth.service.CustomOAuth2UserService;
+import com.ssafy.health.domain.account.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +38,7 @@ public class SecurityConfig {
     private final CustomClientRegistrationRepository customClientRegistrationRepository;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, UserRepository userRepository) throws Exception {
 
         http
                 .addFilterBefore(new ForwardedHeaderFilter(), WebAsyncManagerIntegrationFilter.class)
@@ -74,7 +75,7 @@ public class SecurityConfig {
 
         //JWTFilter 추가
         http
-                .addFilterAfter(new JWTFilter(jwtUtil), OAuth2LoginAuthenticationFilter.class);
+                .addFilterAfter(new JWTFilter(jwtUtil, userRepository), OAuth2LoginAuthenticationFilter.class);
 
         http
                 .oauth2Login((oauth2) -> oauth2

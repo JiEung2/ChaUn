@@ -40,7 +40,7 @@ public class CrewWriteService {
         Exercise exercise = exerciseRepository.findById(requestDto.getExerciseId()).orElseThrow(ExerciseNotFoundException::new);
         User user = findUserById(SecurityUtil.getCurrentUserId());
 
-        coinService.spendCoins(user.getId(), CREATE_CREW.getAmount());
+        coinService.spendUserCoins(user, CREATE_CREW.getAmount());
 
         Crew crew = buildCrew(requestDto, exercise);
 
@@ -60,7 +60,7 @@ public class CrewWriteService {
 
     public SendCoinSuccessDto sendCoin(Long crewId, Integer coin) throws InterruptedException {
         User user = findUserById(SecurityUtil.getCurrentUserId());
-        coinService.spendCoins(user.getId(), coin);
+        coinService.spendUserCoins(user, coin);
 
         Crew crew = updateCoinsWithLock(crewId, coin);
 
