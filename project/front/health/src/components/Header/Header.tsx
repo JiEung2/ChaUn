@@ -8,7 +8,8 @@ export default function Header() {
 
   // 경로에 따라 헤더의 텍스트를 설정
   const getHeaderTitle = () => {
-    switch (location.pathname) {
+    const path = location.pathname.toLowerCase();
+    switch (path) {
       case '/home':
         return '캐운';
       case '/home/quest':
@@ -34,6 +35,10 @@ export default function Header() {
       case '/alarm':
         return '알림';
       default:
+        // 프로필 페이지일 때 처리
+        if (path.startsWith('/profile')) {
+          return '프로필';
+        }
         return '캐운';
     }
   };
