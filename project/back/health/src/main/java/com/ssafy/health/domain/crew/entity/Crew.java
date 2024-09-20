@@ -44,11 +44,12 @@ public class Crew extends BaseEntity {
     private Exercise exercise;
 
     @Builder
-    public Crew(CreateCrewRequestDto createCrewRequestDto) {
+    public Crew(CreateCrewRequestDto createCrewRequestDto, Exercise exercise) {
         this.name = createCrewRequestDto.getName();
         this.profileImage = createCrewRequestDto.getProfileImage();
         this.averageAge = createCrewRequestDto.getAverageAge();
         this.description = createCrewRequestDto.getDescription();
+        this.exercise = exercise;
         this.memberLimit = 10;
         this.crewCoin = 0;
         this.version = 1;

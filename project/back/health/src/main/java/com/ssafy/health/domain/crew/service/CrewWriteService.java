@@ -6,7 +6,7 @@ import com.ssafy.health.domain.account.entity.UserCrew;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
-import com.ssafy.health.domain.account.service.UserValidator;
+import com.ssafy.health.domain.coin.service.CoinService;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
@@ -15,34 +15,36 @@ import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.entity.CrewRole;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
+import com.ssafy.health.domain.exercise.entity.Exercise;
+import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
+import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import static com.ssafy.health.domain.coin.CoinCost.*;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CrewWriteService {
 
-    private final UserValidator userValidator;
+    private final CoinService coinService;
     private final UserRepository userRepository;
     private final CrewRepository crewRepository;
+    private final ExerciseRepository exerciseRepository;
     private final UserCrewRepository userCrewRepository;
 
     public CreateCrewSuccessDto createCrew(CreateCrewRequestDto requestDto) {
-        // Todo: 코인 감소와 코인 감소에 대한 예외처리 추가
-
-        Crew crew = Crew.builder()
-                .createCrewRequestDto(requestDto).build();
-
-        crewRepository.save(crew);
-
+        Exercise exercise = exerciseRepository.findById(requestDto.getExerciseId()).orElseThrow(ExerciseNotFoundException::new);
         User user = findUserById(SecurityUtil.getCurrentUserId());
 
-        userCrewRepository.save(UserCrew.builder()
-                .user(user)
-                .crew(crew)
-                .role(CrewRole.LEADER)
-                .build());
+        coinService.spendCoins(user.getId(), CREATE_CREW.getAmount());
+
+        Crew crew = buildCrew(requestDto, exercise);
+
+        buildUserCrew(user, crew, CrewRole.LEADER);
 
         return new CreateCrewSuccessDto();
     }
@@ -51,20 +53,15 @@ public class CrewWriteService {
         Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
         User user = findUserById(SecurityUtil.getCurrentUserId());
 
-        userCrewRepository.save(UserCrew.builder()
-                .user(user)
-                .crew(crew)
-                .role(CrewRole.MEMBER)
-                .build());
+        buildUserCrew(user, crew, CrewRole.MEMBER);
 
         return new JoinCrewSuccessDto();
     }
 
     public SendCoinSuccessDto sendCoin(Long crewId, Integer coin) throws InterruptedException {
         User user = findUserById(SecurityUtil.getCurrentUserId());
-        userValidator.validateSufficientCoins(user.getCoin(), coin);
+        coinService.spendCoins(user.getId(), coin);
 
-        user.decreaseCoin(coin);
         Crew crew = updateCoinsWithLock(crewId, coin);
 
         userRepository.save(user);
@@ -90,5 +87,20 @@ public class CrewWriteService {
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
+    private UserCrew buildUserCrew(User user, Crew crew, CrewRole crewRole) {
+        return userCrewRepository.save(UserCrew.builder()
+                .user(user)
+                .crew(crew)
+                .role(crewRole)
+                .build());
+    }
+
+    private Crew buildCrew(CreateCrewRequestDto requestDto, Exercise exercise) {
+        return crewRepository.save(Crew.builder()
+                .createCrewRequestDto(requestDto)
+                .exercise(exercise)
+                .build());
     }
 }
