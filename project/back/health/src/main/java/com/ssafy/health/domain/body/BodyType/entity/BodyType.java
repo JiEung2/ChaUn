@@ -1,10 +1,8 @@
 package com.ssafy.health.domain.body.BodyType.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.ssafy.health.domain.account.entity.Gender;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
@@ -27,5 +25,9 @@ public class BodyType extends BaseEntity {
 
     @NotNull
     private String description;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
 }
