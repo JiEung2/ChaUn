@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import uvicorn
 from typing import List
+from datetime import datetime, timedelta
 import pydantic
 from pydantic import BaseModel
 from bson import ObjectId
@@ -126,7 +127,7 @@ def root():
     return {"This is Root" : "Hello, root"}
 
 # 스프링에서 받은 json 데이터를 데이터프레임화 시키기 전에 해당 유저가 생성한 DB에 있는지 확인하기
-@app.post("/api/v1/users/{user_id}/body/prediction")
+@app.post("/api/v1/users/{user_id}/body/prediction/")
 async def predict(user_id: int, request: UserExerciseRequest):
     user_id = request.user_id # user_id
     exercise_data = request.exercise_data # exercise_data
@@ -135,8 +136,14 @@ async def predict(user_id: int, request: UserExerciseRequest):
     X_test = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data]) # (7, 5)
     X_test = X_test.reshape(1, 7, 5)  # 한 차원 늘려서, 하나의 입력으로, 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
 
-    # id 혹은 토큰으로 조회 예정
-    user = collection.find_one({"user_id": user_id})
+    # 현재 날짜로부터 7일 전까지의 기간 계산
+    one_week_ago = datetime.utcnow() - timedelta(days=7)
+
+    # user_id와 지난 7일간의 운동 기록이 있는지 확인 (운동 기록이 있는지 검사)
+    user = collection.find_one({
+        "user_id": user_id,
+        "exercise_date": {"$gte": one_week_ago}  # 지난 7일간의 기록만 조회
+    })
 
     # DB에 user 정보가 없을 경우 == 예측한 결과가 없을 경우
     if not user:
@@ -147,7 +154,8 @@ async def predict(user_id: int, request: UserExerciseRequest):
         new_prediction = {
             "user_id": user_id,
             "p30": pred_30_d,
-            "p90": pred_90_d
+            "p90": pred_90_d,
+            "exercise_date": datetime.utcnow()
         }
 
         # MongoDB에 저장
