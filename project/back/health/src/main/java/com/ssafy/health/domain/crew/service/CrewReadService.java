@@ -77,7 +77,7 @@ public class CrewReadService {
                 .build();
     }
 
-    public CrewMembersResponseDto getCrewRanking(Long crewId) {
+    public CrewMembersResponseDto getCrewMemberRanking(Long crewId) {
         List<UserCrew> userCrewList = userCrewRepository.findByCrewId(crewId);
 
         Map<Long, User> userMap = userCrewList.stream()

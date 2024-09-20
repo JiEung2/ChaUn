@@ -53,6 +53,6 @@ public class CrewController implements CrewControllerApi {
 
     @GetMapping("/crew/{crew_id}/ranking")
     public ApiResponse<CrewMembersResponseDto> getCrewRanking(@PathVariable("crew_id") Long crewId) {
-        return ApiResponse.success(crewReadService.getCrewRanking(crewId));
+        return ApiResponse.success(crewReadService.getCrewMemberRanking(crewId));
     }
 }
