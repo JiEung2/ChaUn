@@ -1,5 +1,4 @@
 
-
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
@@ -55,4 +54,7 @@ def recommend_crews(user_index, user_df, crew_df, top_n=9):
 # 예시로 사용자 0에 대해 추천
 recommended_crews = recommend_crews(0, user_df, crew_df)
 print("추천된 크루 목록:")
-print(recommended_crews)
+print('-----')
+for crew in recommended_crews:
+    print(crew)
+    print()
