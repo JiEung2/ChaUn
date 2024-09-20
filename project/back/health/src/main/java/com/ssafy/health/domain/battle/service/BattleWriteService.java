@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class BattleWriteService {
+    // TODO: 배틀을 할 때 상대 팀의 코인도 고려해줘야함
+    // TODO: 각 메서드 간의 결합도를 낮춰야할 것처럼 보임
 
     private final BattleRepository battleRepository;
     private final CrewRepository crewRepository;
