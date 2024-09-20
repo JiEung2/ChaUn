@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import GeneralButton from "@/components/Button/GeneralButton";
-import BodyAddModal from '@/components/Record/BodyAddModal';
-import BodyDetailGraph from '@/components/Record/BodyDetailGraph';
+import BodyAddModal from '@/components/Record/BodyDetail/BodyAddModal';
+import BodyDetailGraph from '@/components/Record/BodyDetail/BodyDetailGraph';
 import './BodyDetail.scss';
 
 const sampleData = [
-  { date: '2024-09-01', weight: 62.5, fat: 20.1, muscle: 30.2 },
-  { date: '2024-09-10', weight: 61.8, fat: 19.8, muscle: 30.4 },
-  { date: '2024-09-20', weight: 61.5, fat: 19.5, muscle: 30.6 },
-  { date: '2024-09-22', weight: 61.5, fat: 19.3, muscle: 30.6 },
-  { date: '2024-09-25', weight: 60.5, fat: 18.5, muscle: 30.6 },
-  { date: '2024-09-26', weight: 59.5, fat: 17.5, muscle: 30.6 },
-  { date: '2024-09-29', weight: 59.5, fat: 16.5, muscle: 30.6 },
-  { date: '2024-08-15', weight: 63.0, fat: 20.5, muscle: 30.1 },
+  { date: '2024-08-01', weight: 62.5, fat: 20.1, muscle: 30.2 },
+  { date: '2024-08-10', weight: 61.8, fat: 19.8, muscle: 30.4 },
+  { date: '2024-08-20', weight: 61.5, fat: 19.5, muscle: 30.6 },
+  { date: '2024-08-22', weight: 61.5, fat: 19.3, muscle: 30.6 },
+  { date: '2024-08-25', weight: 60.5, fat: 18.5, muscle: 30.6 },
+  { date: '2024-08-26', weight: 59.5, fat: 17.5, muscle: 30.6 },
+  { date: '2024-09-02', weight: 59.5, fat: 16.5, muscle: 30.6 },
+  { date: '2024-09-15', weight: 63.0, fat: 20.5, muscle: 30.1 },
   // ... 다른 데이터 추가 가능
 ];
 
@@ -84,13 +84,7 @@ export default function BodyDetailPage() {
         <BodyDetailGraph filteredData={filteredData} />
       </div>
 
-      {filteredData.length === 0 ? (
-        <div className="noDataMessage">
-          <p>해당 월에 입력된 체형 정보가 없습니다.</p>
-          <p>체형 입력 버튼을 눌러 추가해주세요.</p>
-        </div>
-      ) : (
-        filteredData.map(item => (
+      {filteredData.map(item => (
           <div className="timeline" key={item.date}>
             <div className="timelineItem">
               <div className="timelineDate">
@@ -106,7 +100,7 @@ export default function BodyDetailPage() {
             </div>
           </div>
         ))
-      )}
+      }
 
       {showModal && <BodyAddModal onClose={handleCloseModal} />}
     </div>

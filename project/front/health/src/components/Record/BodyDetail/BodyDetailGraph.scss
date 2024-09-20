@@ -1,0 +1,29 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies.scss' as typo;
+
+.chartContainer {
+  position: relative;
+}
+
+.chartMain {
+  width: 120%;
+  height: 220px;
+
+  &.blurred {
+    filter: blur(4px);
+    pointer-events: none;
+  }
+}
+
+.noDataMessage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10; // 차트 위에 표시되도록 z-index 설정
+  // background-color: rgba(255, 255, 255, 0.8);
+  // padding: 20px;
+  // border-radius: 8px;
+  text-align: center;
+  // box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}

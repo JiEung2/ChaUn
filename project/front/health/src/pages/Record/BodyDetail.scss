@@ -28,6 +28,10 @@
         }
     }
 
+    .graphContainer {
+        height: 230px;
+    }
+
     .noDataMessage {
       @include typo.basic;
     }
