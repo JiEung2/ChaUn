@@ -50,4 +50,9 @@ public class CrewController implements CrewControllerApi {
     public ApiResponse<CrewMembersResponseDto> getCrewMembers(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(crewReadService.getCrewMembers(crewId));
     }
+
+    @GetMapping("/crew/{crew_id}/ranking")
+    public ApiResponse<CrewMembersResponseDto> getCrewRanking(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(crewReadService.getCrewRanking(crewId));
+    }
 }

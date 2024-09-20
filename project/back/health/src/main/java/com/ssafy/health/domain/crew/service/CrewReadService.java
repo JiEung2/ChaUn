@@ -1,5 +1,6 @@
 package com.ssafy.health.domain.crew.service;
 
+import com.ssafy.health.domain.account.dto.response.UserExerciseTimeDto;
 import com.ssafy.health.domain.account.entity.ExerciseHistory;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
@@ -14,8 +15,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -77,16 +77,73 @@ public class CrewReadService {
                 .build();
     }
 
-    private Map<Long, Long> getUsersThisWeekExerciseTime(List<Long> userIdList) {
+    public CrewMembersResponseDto getCrewRanking(Long crewId) {
+        List<UserCrew> userCrewList = userCrewRepository.findByCrewId(crewId);
+
+        Map<Long, User> userMap = userCrewList.stream()
+                .collect(Collectors.toMap(UserCrew::getId, UserCrew::getUser));
+
+        List<UserExerciseTimeDto> userExerciseTimeList = getUserExerciseTimeList(userMap);
+
+        List<CrewMemberInfo> memberInfoList = getCrewMemberInfoList(userExerciseTimeList, userMap, userCrewList);
+
+        return CrewMembersResponseDto.builder()
+                .memberList(memberInfoList)
+                .build();
+    }
+
+    private static List<CrewMemberInfo> getCrewMemberInfoList(List<UserExerciseTimeDto> userExerciseTimeList, Map<Long, User> userMap, List<UserCrew> userCrewList) {
+        Set<Long> processedUserIdList = new HashSet<>();
+
+        List<CrewMemberInfo> memberInfoList = userExerciseTimeList.stream()
+                .map(dto -> {
+                    User user = userMap.get(dto.getUserId());
+                    processedUserIdList.add(dto.getUserId());
+                    return CrewMemberInfo.builder()
+                            .userId(user.getId())
+                            .userProfileImage(user.getProfileImage())
+                            .nickname(user.getNickname())
+                            .thisWeekExerciseTime(dto.getTotalExerciseTime())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        userCrewList.stream()
+                .map(UserCrew::getUser)
+                .filter(user -> !processedUserIdList.contains(user.getId()))
+                .forEach(user -> memberInfoList.add(
+                        CrewMemberInfo.builder()
+                                .userId(user.getId())
+                                .userProfileImage(user.getProfileImage())
+                                .nickname(user.getNickname())
+                                .thisWeekExerciseTime(0L)
+                                .build()
+                ));
+        return memberInfoList;
+    }
+
+    private List<UserExerciseTimeDto> getUserExerciseTimeList(Map<Long, User> userMap) {
+        List<Long> userIdList = new ArrayList<>(userMap.keySet());
+
+        LocalDateTime startTime = getStartTime();
+        LocalDateTime endTime = LocalDateTime.now();
+
+        return exerciseHistoryRepository.findUserExerciseTimes(userIdList, startTime, endTime);
+    }
+
+    private LocalDateTime getStartTime() {
         LocalDateTime now = LocalDateTime.now();
 
-        LocalDateTime startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        return now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
                 .with(LocalTime.MIN);
+    }
 
-        LocalDateTime endOfWeek = now;
+    private Map<Long, Long> getUsersThisWeekExerciseTime(List<Long> userIdList) {
+        LocalDateTime startTime = getStartTime();
+        LocalDateTime endTime = LocalDateTime.now();
 
         List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdInAndExerciseStartTimeBetween(
-                userIdList, startOfWeek, endOfWeek);
+                userIdList, startTime, endTime);
 
         return exerciseHistories.stream()
                 .collect(Collectors.groupingBy(
