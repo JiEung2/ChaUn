@@ -58,4 +58,9 @@ public class UserController implements UserControllerApi{
         return ApiResponse.success(userWriteService.saveDailyCalories(caloriesSurveyRequestDto));
     }
 
+    @GetMapping("/survey")
+    public ApiResponse<SurveyCompletedResponseDto> getSurveyCompleted() {
+        return ApiResponse.success(userReadService.getSurveyCompleted());
+    }
+
 }
