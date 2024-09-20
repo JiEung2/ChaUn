@@ -67,6 +67,7 @@ public class UserWriteService {
 
         Integer dailyCaloricIntake = mealCalories.getCalories() + snackCalories.getCalories() + drinkCalories.getCalories();
         user.saveDailyCaloricIntake(dailyCaloricIntake);
+        user.updateSurveyCompleted();
         userRepository.save(user);
 
         return new CaloriesSurveySuccessDto();
