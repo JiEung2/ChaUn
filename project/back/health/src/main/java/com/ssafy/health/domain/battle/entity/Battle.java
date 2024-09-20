@@ -36,10 +36,10 @@ public class Battle extends BaseEntity {
     private Crew awayCrew;
 
     @Builder
-    public Battle(BattleRegisterDto battleRegisterDto) {
-        this.homeCrew = battleRegisterDto.getHomeCrew();
-        this.awayCrew = battleRegisterDto.getAwayCrew();
-        this.status = BattleStatus.WAITING;
+    public Battle(Crew homeCrew, Crew awayCrew) {
+        this.homeCrew = homeCrew;
+        this.awayCrew = awayCrew;
+        this.status = BattleStatus.STARTED;
         this.homeCrewScore = 0F;
         this.awayCrewScore = 0F;
     }
