@@ -105,7 +105,7 @@ def convert_objectid(data):
                 data[key] = [convert_objectid(item) for item in value]
             elif isinstance(value, dict):
                 data[key] = convert_objectid(value)
-    elif isinstance(data, list):
+    elif isinstance(data, list):    
         data = [convert_objectid(item) for item in data]
     return data
 
@@ -115,8 +115,8 @@ def root():
     return {"This is Root" : "Hello, root"}
 
 # 스프링에서 받은 json 데이터를 데이터프레임화 시키기 전에 해당 유저가 생성한 DB에 있는지 확인하기
-@app.post("/predict")
-async def predict(request: UserExerciseRequest):
+@app.post("/api/v1/users/{user_id}/body/prediction")
+async def predict(user_id: int, request: UserExerciseRequest):
     user_id = request.user_id # user_id
     exercise_data = request.exercise_data # exercise_data
 
