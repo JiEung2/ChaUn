@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
 import uvicorn
 from typing import List
 import pydantic
@@ -17,6 +19,15 @@ from tensorflow.keras.optimizers import Adam
 
 # APP 정의
 app = FastAPI()
+
+# CORS 설정
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # 허용할 Origin 목록 (React 클라이언트)
+    allow_credentials=True,
+    allow_methods=["*"],  # 모든 HTTP 메서드 허용 (GET, POST 등)
+    allow_headers=["*"],  # 모든 헤더 허용
+)
 
 # MongoClient 생성
 try:
