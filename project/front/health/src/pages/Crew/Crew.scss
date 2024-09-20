@@ -1,0 +1,14 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.buttonSection {
+  display: flex;
+  flex-direction: column;
+}
+.crewButtonSection {
+  display: flex;
+  gap: 10px;
+}
+
+.randkingButtonSection {
+}

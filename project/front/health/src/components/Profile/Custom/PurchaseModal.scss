@@ -1,0 +1,123 @@
+@use '@/styles/constants/colors' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.purchaseContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.purchaseModal {
+  background-color: colors.$white;
+  border-radius: 20px;
+  padding: 30px 20px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+
+  .xCircle {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+  }
+
+  .purchaseMent {
+    @include typo.subtitle;
+  }
+
+  .purchaseHr {
+    border: none;
+    border-top: 1px solid colors.$littleDarkGray;
+    margin: 10px 0;
+  }
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+
+  .customItemContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    overflow: hidden; // 테두리가 잘 보이도록 처리
+
+    .customItemImage {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 10px;
+      position: absolute;
+      filter: blur(4px);
+      opacity: 0.5;
+    }
+
+    // 테두리 강조를 위한 추가 스타일
+    .customItemBorder {
+      width: 100%;
+      height: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.3); // 테두리 색과 투명도 설정
+      border-radius: 10px;
+      position: absolute;
+      z-index: 1;
+      pointer-events: none; // 클릭 이벤트를 방해하지 않도록 설정
+    }
+
+    .lockIcon {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      z-index: 2;
+    }
+  }
+
+  .cost {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 5px 0;
+
+    p {
+      margin: 2px 100px 2px 0px;
+    }
+  }
+
+  .errorMessage {
+    color: colors.$pink;
+  }
+}
+
+.purchaseButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+
+  .purchase,
+  .cancel {
+    @include typo.coin;
+  }
+
+  .cancel {
+    background-color: colors.$lightGray;
+    color: colors.$black;
+  }
+}
