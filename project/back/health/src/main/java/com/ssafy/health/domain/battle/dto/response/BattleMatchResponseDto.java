@@ -8,9 +8,9 @@ import lombok.Getter;
 @Builder
 public class BattleMatchResponseDto {
     private String myTeamName;
-    private String opponentTeamName;
-    private Exercise exercise;
     private Float myTeamScore;
+    private String opponentTeamName;
     private Float opponentTeamScore;
+    private String exerciseName;
     private Integer dDay;
 }

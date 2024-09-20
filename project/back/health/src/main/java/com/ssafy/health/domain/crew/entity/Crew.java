@@ -11,10 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Getter
@@ -38,6 +35,7 @@ public class Crew extends BaseEntity {
     private Float averageAge;
     private String description;
     private Integer crewCoin;
+    private Boolean battleStatus;
 
     @OneToOne
     @JoinColumn(name = "exercise_id")
@@ -53,9 +51,23 @@ public class Crew extends BaseEntity {
         this.memberLimit = 10;
         this.crewCoin = 0;
         this.version = 1;
+        this.battleStatus = false;
     }
 
     public void increaseCoin(Integer coin) {
         this.crewCoin += coin;
     }
+
+    public void activeBattleStatus() {
+        this.battleStatus = true;
+    }
+
+    public void deActiveBattleStatus() {
+        this.battleStatus = false;
+    }
+
+    public void decreaseCoin(Integer coin) {
+        this.crewCoin -= coin;
+    }
+
 }
