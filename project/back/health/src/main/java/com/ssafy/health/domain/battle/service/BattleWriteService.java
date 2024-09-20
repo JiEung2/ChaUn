@@ -1,11 +1,10 @@
 package com.ssafy.health.domain.battle.service;
 
-import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
-import com.ssafy.health.domain.coin.CoinCost;
 import com.ssafy.health.domain.coin.service.CoinService;
+import com.ssafy.health.domain.coin.service.CoinValidator;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
@@ -21,22 +20,27 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.ssafy.health.domain.coin.CoinCost.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class BattleWriteService {
-    // TODO: 배틀을 할 때 상대 팀의 코인도 고려해줘야함
     // TODO: 각 메서드 간의 결합도를 낮춰야할 것처럼 보임
 
     private final BattleRepository battleRepository;
     private final CrewRepository crewRepository;
     private final CoinService coinService;
+    private final CoinValidator coinValidator;
 
     public BattleMatchResponseDto startBattle(Long crewId) {
-        coinService.spendCoins(SecurityUtil.getCurrentUserId(), CoinCost.START_BATTLE.getAmount());
+        Crew myCrew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+        coinValidator.validateSufficientCoins(myCrew.getCrewCoin(), START_BATTLE.getAmount());
         Float myCrewScore = findRecentBattleScore(crewId);
         Crew opponentCrew = findOpponentCrew(crewId, myCrewScore);
-        Crew myCrew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+
+        coinService.spendCrewCoins(myCrew, START_BATTLE.getAmount());
+        coinService.spendCrewCoins(opponentCrew, START_BATTLE.getAmount());
 
         Battle.builder()
                 .homeCrew(myCrew)
