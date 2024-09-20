@@ -30,6 +30,27 @@ public class BattleWriteService {
     private final CrewRepository crewRepository;
     private final CoinService coinService;
 
+    public BattleMatchResponseDto startBattle(Long crewId) {
+        coinService.spendCoins(SecurityUtil.getCurrentUserId(), CoinCost.START_BATTLE.getAmount());
+        Float myCrewScore = findRecentBattleScore(crewId);
+        Crew opponentCrew = findOpponentCrew(crewId, myCrewScore);
+        Crew myCrew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+
+        Battle.builder()
+                .homeCrew(myCrew)
+                .awayCrew(opponentCrew)
+                .build();
+
+        return BattleMatchResponseDto.builder()
+                .exercise(myCrew.getExercise())
+                .myTeamName(myCrew.getName())
+                .myTeamScore(0F)
+                .opponentTeamName(opponentCrew.getName())
+                .opponentTeamScore(0F)
+                .dDay(calculateDDay())
+                .build();
+    }
+
     private Integer calculateDDay() {
         LocalDate now = LocalDate.now();
         LocalDate lastDay = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
