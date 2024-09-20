@@ -155,7 +155,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
     # user_id와 지난 7일간의 운동 기록이 있는지 확인 (운동 기록이 있는지 검사)
     user = collection.find_one({
         "user_id": user_id,
-        "exercise_date": {"$gte": one_week_ago}  # 지난 7일간의 기록만 조회
+        "created_at": {"$gte": one_week_ago}  # 지난 7일간의 기록만 조회
     })
 
     # DB에 user 정보가 없을 경우 == 예측한 결과가 없을 경우
@@ -169,7 +169,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
             "user_id": user_id,
             "p30": pred_30_d,
             "p90": pred_90_d,
-            "exercise_date": utc_now  # UTC 시간으로 저장
+            "created_at": utc_now  # UTC 시간으로 저장
         }
 
         # MongoDB에 저장
@@ -177,7 +177,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
         new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
 
         # 저장된 내용을 반환
-        new_prediction["exercise_date"] = convert_utc_to_kst(new_prediction["exercise_date"])
+        new_prediction["created_at"] = convert_utc_to_kst(new_prediction["created_at"])
         
         return {
             "status": "predicted",
@@ -187,7 +187,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
     # 조회된 user 정보가 있을 경우
     else: 
         # 조회해서 값을 채워 data 보내주기 (user_id, 예측 값 30, 90일 보내주기)
-        user["exercise_date"] = convert_utc_to_kst(user["exercise_date"])
+        user["created_at"] = convert_utc_to_kst(user["created_at"])
         user = convert_objectid(user)
         return {
             # ObjectId 변환
