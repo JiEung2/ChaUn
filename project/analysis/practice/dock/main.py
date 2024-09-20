@@ -199,4 +199,4 @@ async def predict(user_id: int, request: UserExerciseRequest):
 
 # CLI 실행을 main 함수에서 실행
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
