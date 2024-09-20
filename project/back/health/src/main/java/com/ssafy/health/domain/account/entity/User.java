@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.account.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
+import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.UserLoginUpdateRequestDto;
 import com.ssafy.health.domain.account.dto.request.UserRegisterRequestDto;
 import jakarta.persistence.*;
@@ -31,6 +32,8 @@ public class User extends BaseEntity {
 
     private Date birthday;
 
+    private String profileImage;
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -41,13 +44,15 @@ public class User extends BaseEntity {
     private String sso;
 
     @NotNull
-    private Long coin;
+    private Integer coin;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
     private Integer dailyCaloricIntake;
+
+    private String deviceToken;
 
     @Builder
     public User(UserRegisterRequestDto userRegisterRequestDto) {
@@ -56,7 +61,7 @@ public class User extends BaseEntity {
         this.sso = userRegisterRequestDto.getSso();
         this.role = userRegisterRequestDto.getRole();
         this.surveyCompleted = false;
-        this.coin = 0L;
+        this.coin = 0;
     }
 
     public void updateNameAndEmail(UserLoginUpdateRequestDto userLoginUpdateRequestDto) {
@@ -72,6 +77,14 @@ public class User extends BaseEntity {
 
     public void saveDailyCaloricIntake(Integer dailyCaloricIntake) {
         this.dailyCaloricIntake = dailyCaloricIntake;
+    }
+
+    public void decreaseCoin(Integer coin) {
+        this.coin -= coin;
+    }
+
+    public void updateUserDevice(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 
 }

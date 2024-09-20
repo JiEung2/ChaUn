@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.account.service;
 
 import com.ssafy.health.domain.account.dto.response.ValidateNicknameSuccessDto;
+import com.ssafy.health.domain.account.exception.InsufficientCoinsException;
 import com.ssafy.health.domain.account.exception.NicknameDuplicateException;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

@@ -2,12 +2,7 @@ package com.ssafy.health.domain.account.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
 import com.ssafy.health.domain.exercise.entity.Exercise;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
@@ -18,6 +13,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id"),
+        @Index(name = "idx_exercise_start_time", columnList = "exerciseStartTime")
+})
 public class ExerciseHistory extends BaseEntity {
     //Todo: 칼로리 계산 추가
 
@@ -48,7 +47,7 @@ public class ExerciseHistory extends BaseEntity {
     @Builder
     public ExerciseHistory(User user, Exercise exercise,
                            LocalDateTime exerciseStartTime, LocalDateTime exerciseEndTime,
-                           Long exerciseDuration){
+                           Long exerciseDuration, Float burnedCalories){
         this.user = user;
         this.exercise = exercise;
         this.exerciseStartTime = exerciseStartTime;

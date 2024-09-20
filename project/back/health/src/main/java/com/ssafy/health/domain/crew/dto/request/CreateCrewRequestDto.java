@@ -5,9 +5,10 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CrewRegisterDto {
+public class CreateCrewRequestDto {
     private String name;
     private String profileImage;
     private Float averageAge;
     private String description;
+    private Long exerciseId;
 }

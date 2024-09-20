@@ -1,5 +1,7 @@
 package com.ssafy.health.domain.account.service;
 
+import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
+import com.ssafy.health.domain.account.dto.response.DeviceRegisterResponseDto;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.dto.request.*;
 import com.ssafy.health.domain.account.dto.response.CaloriesSurveySuccessDto;
@@ -18,8 +20,10 @@ import com.ssafy.health.domain.account.repository.SnackCaloriesRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserWriteService {
 
@@ -47,7 +51,7 @@ public class UserWriteService {
         user.updateNameAndEmail(userLoginUpdateRequestDto);
     }
 
-    public InfoSurveySuccessDto saveInfoSurvey(InfoSurveyRequestDto infoSurveyRequestDto){
+    public InfoSurveySuccessDto saveInfoSurvey(InfoSurveyRequestDto infoSurveyRequestDto) {
         User user = findUserById(SecurityUtil.getCurrentUserId());
         user.saveUserInfo(infoSurveyRequestDto.getNickname(), infoSurveyRequestDto.getBirthday(), infoSurveyRequestDto.getGender());
         userRepository.save(user);
@@ -66,6 +70,12 @@ public class UserWriteService {
         userRepository.save(user);
 
         return new CaloriesSurveySuccessDto();
+    }
+
+    public DeviceRegisterResponseDto regiesterDevice(DeviceRegisterRequestDto deviceRegisterRequestDto) {
+        User user = findUserById(SecurityUtil.getCurrentUserId());
+        user.updateUserDevice(deviceRegisterRequestDto.getDeviceToken());
+        return new DeviceRegisterResponseDto();
     }
 
     private User findUserById(Long userId) {
