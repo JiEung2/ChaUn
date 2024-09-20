@@ -2,6 +2,7 @@ package com.ssafy.health.domain.notification.service;
 
 import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
+import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.entity.Notification;
 import com.ssafy.health.domain.notification.entity.NotificationStatus;
@@ -10,18 +11,31 @@ import com.ssafy.health.domain.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.ssafy.health.domain.notification.entity.NotificationMessage.BATTLE_END;
-import static com.ssafy.health.domain.notification.entity.NotificationMessage.BATTLE_START;
+import static com.ssafy.health.domain.notification.entity.NotificationMessage.*;
 
 @Service
 @RequiredArgsConstructor
 public class NotificationWriteService {
 
     private final BattleRepository battleRepository;
+    private final BodyHistoryRepository bodyHistoryRepository;
     private final NotificationRepository notificationRepository;
+
+    public void createBodySurveryNotification(NotificationRequestDto dto) {
+        Map<String, Object> additionalData = new HashMap<>();
+
+        LocalDateTime lastSurveyedDate = bodyHistoryRepository.findFirstByUserId(dto.getUserId())
+                .orElseThrow().getCreatedAt();
+        additionalData.put("lastSurveyedDate", lastSurveyedDate);
+
+        Notification notification = notificationBuilder(
+                dto.getNotificationType(), dto.getUserId(), BODY_SURVEY.getMessage(), additionalData);
+        notificationRepository.save(notification);
+    }
 
     public void createBattleNotification(NotificationRequestDto dto, Long battleId) {
         Map<String, Object> additionalData = new HashMap<>();
