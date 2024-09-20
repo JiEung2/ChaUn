@@ -23,7 +23,7 @@ export default function RecordPage() {
   useEffect(() => {
     const fetchExerciseDays = () => {
       const dummyExerciseData = {
-        exerciseDays: 7,
+        exerciseDays: 2,
       };
       setExerciseDays(dummyExerciseData.exerciseDays);
     };

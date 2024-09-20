@@ -1,4 +1,4 @@
-import GeneralButton from "../Button/GeneralButton";
+import GeneralButton from "@/components/Button/GeneralButton";
 import xCircle from '@/assets/svg/xCircle.svg';
 import './BodyAddModal.scss'
 
