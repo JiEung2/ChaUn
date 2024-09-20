@@ -43,6 +43,7 @@ export default function ExerciseModal({ onSelectExercise, onClose, multiple = fa
         buttonStyle={{ style: 'floating', size: 'semiTiny' }}
         onClick={handleComplete}
         disabled={selectedExercises.length === 0}
+        className="complete"
       >
         완료
       </GeneralButton>

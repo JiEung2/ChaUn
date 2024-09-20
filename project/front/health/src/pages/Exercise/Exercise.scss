@@ -11,6 +11,10 @@
     .exerciseRecommendButton {
         margin-left: auto;
     }
+
+    .selectExercise {
+        @include typo.sub;
+    }
 }
 
 .timer {

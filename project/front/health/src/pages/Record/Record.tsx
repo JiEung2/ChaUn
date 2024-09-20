@@ -23,7 +23,7 @@ export default function RecordPage() {
   useEffect(() => {
     const fetchExerciseDays = () => {
       const dummyExerciseData = {
-        exerciseDays: 2,
+        exerciseDays: 7,
       };
       setExerciseDays(dummyExerciseData.exerciseDays);
     };
@@ -55,6 +55,7 @@ export default function RecordPage() {
       <GeneralButton
         buttonStyle={{ style: 'primary', size: 'large' }}
         onClick={() => navigate('/record/bodyDetail')}
+        className="bodyDetailButton"
       >
         상세 체형 기록 조회
       </GeneralButton>
@@ -94,6 +95,7 @@ export default function RecordPage() {
             <GeneralButton
               buttonStyle={{ style: 'primary', size: 'large' }}
               onClick={handleResetInput}
+              className="resetButton"
             >
               운동 다시 입력하기
             </GeneralButton>
@@ -101,11 +103,13 @@ export default function RecordPage() {
         ) : (
           <div className="exerciseAdvice">
             <p className="adviceText">
-              민영님, <br />
-              이번 주 운동을 {exerciseDays}회 진행하셨군요! <br />
+              <strong>민영님</strong>, <br />
+              이번 주 운동을 <strong>{exerciseDays}회</strong> 진행하셨군요!
+            <p>
               꾸준한 건강 관리 및 부상 방지를 위해 <br />
               주 2~3회 운동을 권장하고 있습니다. <br />
-              다음 주도 힘내서 달려볼까요~?
+              다음 주도 힘내서 달려볼까요~?              
+            </p>
             </p>
           </div>
         )}

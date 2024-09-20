@@ -29,7 +29,7 @@ interface Primary {
   interface Floating {
     buttonStyle: {
       style: 'floating';
-      size: 'medium' | 'semiTiny';
+      size: 'medium' | 'small' | 'semiTiny';
     };
   }
 

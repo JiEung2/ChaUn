@@ -1,4 +1,5 @@
 @use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
 
 .exerciseModal {
   display: flex;
@@ -18,6 +19,7 @@
   width: 100%;
   max-height: 70vh; // 모달의 최대 높이 설정
   overflow-y: auto; // 스크롤 활성화 (스크롤바는 항상 표시되지 않음)
+  z-index: 1000000;
 
   .xCircle {
     position: absolute; 
@@ -43,4 +45,8 @@
   border: 2px solid colors.$littleDarkGray;
   border-radius: 20px;
   width: 150px;
+}
+
+.complete {
+  @include typo.smallButton;
 }

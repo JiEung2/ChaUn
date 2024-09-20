@@ -32,11 +32,11 @@ const Navbar: React.FC = () => {
           <img src={CrewIcon} alt="Crew" className="navbar__icon-img" />
           <div className="navbar__title">크루</div>
         </Link>
-        <div className="navbar__icon navbar__icon--center">
+        <Link to="/exercise" className="navbar__icon navbar__icon--center">
           <div className="navbar__center-icon">
             <img src={ExerciseIcon} alt="Center" className="navbar__icon-img--center" />
           </div>
-        </div>
+        </Link>
         <Link to="/record" className={`navbar__icon ${activateIcon('/record')}`}>
           <img src={RecordIcon} alt="Records" className="navbar__icon-img" />
           <div className="navbar__title">기록</div>
