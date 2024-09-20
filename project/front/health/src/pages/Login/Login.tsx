@@ -8,15 +8,15 @@ export default function LoginPage() {
   const moveKakao = () => {
     // TODO : 카카오 로그인 페이지로 이동
     // window.location.href = "카카오 로그인 페이지 URL";
-    getTest();
+    // getTest();
     // 임시로 servey 페이지로 이동
-    // navigate('/survey');
+    navigate('/survey');
   };
   const moveGoogle = () => {
     //TODO : 구글 로그인 페이지로 이동
     // window.location.href = "구글 로그인 페이지 URL";
-    // navigate('/survey');
-    getTest2('닉네임');
+    navigate('/survey');
+    // getTest2('닉네임');
   };
   return (
     <div className="login-container">

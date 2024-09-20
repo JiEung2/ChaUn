@@ -1,4 +1,6 @@
 import { http, HttpResponse } from 'msw';
+
+const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 interface NicknameRequest {
   nick: string;
 }
@@ -17,7 +19,7 @@ export const handlers = [
   }),
 
   //닉네임 여부 테스트
-  http.post('https://example.com/nick', async ({ request }) => {
+  http.post(`${baseUrl}/nickname`, async ({ request }) => {
     const newPost = (await request.json()) as NicknameRequest;
     console.log(newPost);
 
