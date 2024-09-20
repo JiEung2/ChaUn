@@ -30,6 +30,26 @@ public class BattleWriteService {
     private final CrewRepository crewRepository;
     private final CoinService coinService;
 
+    private Crew findOpponentCrew(Long crewId, Float myCrewScore) {
+        List<Battle> recentBattleList = findRecentBattlesForAvailableCrews();
+
+        Crew closestCrew = null;
+        Float smallestDifference = Float.MAX_VALUE;
+
+        for (Battle battle : recentBattleList) {
+            Crew opponentCrew = (battle.getHomeCrew().getId().longValue() == crewId) ? battle.getAwayCrew() : battle.getHomeCrew();
+            Float opponentScore = (battle.getHomeCrew().getId().longValue() == crewId) ? battle.getAwayCrewScore() : battle.getHomeCrewScore();
+            Float scoreDifference = Math.abs(myCrewScore - opponentScore);
+
+            if (scoreDifference < smallestDifference) {
+                smallestDifference = scoreDifference;
+                closestCrew = opponentCrew;
+            }
+        }
+
+        return closestCrew;
+    }
+
     private Float findRecentBattleScore(Long crewId) {
         Optional<Battle> battle = battleRepository.findFirstByCrewIdOrderByCreatedAtDesc(crewId);
         return battle.map(b -> b.getHomeCrew().getId().longValue() == crewId ? b.getHomeCrewScore(): b.getAwayCrewScore())
