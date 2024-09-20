@@ -7,8 +7,14 @@
   align-items: center;
   gap: 20px;
 
-  .bodyDetailButton {
+  .bodyDetailButton,
+  .resetButton {
     @include typo.mediumButton;
   }
+
+  .exerciseAdvice {
+    width: 100%;
+  }
+
 }
 
