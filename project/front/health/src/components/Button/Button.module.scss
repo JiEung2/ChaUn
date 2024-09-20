@@ -1,7 +1,6 @@
 @use '@/styles/constants/colors.scss' as colors;
 @use '@/styles/constants/typographies' as typo;
 
-
 .button {
   padding: 10px 0;
   display: flex;
@@ -40,10 +39,10 @@
   background-color: colors.$blue;
   border-radius: 28px;
 
-    &.disabled {
-        color: colors.$white;
-        background-color: colors.$darkGray;
-      }
+  &.disabled {
+    color: colors.$white;
+    background-color: colors.$darkGray;
+  }
 }
 
 .outlined {
@@ -52,10 +51,12 @@
   background-color: transparent;
   border: 1px solid colors.$moreDarkGray;
   border-radius: 35px;
-  transition: color 0.1s, border-color 0.1s;
+  transition:
+    color 0.1s,
+    border-color 0.1s;
 
   &.active {
-    color: colors.$blue; 
+    color: colors.$blue;
     border-color: colors.$blue;
   }
 
@@ -79,10 +80,10 @@
   background-color: colors.$blue;
   border-radius: 35px;
 
-    &.disabled {
-        color: colors.$white;
-        background-color: colors.$darkGray;
-      }
+  &.disabled {
+    color: colors.$white;
+    background-color: colors.$darkGray;
+  }
 }
 
 .semiFloating {
@@ -91,97 +92,110 @@
   background-color: colors.$blue;
   border-radius: 20px;
 
-    &.disabled {
-        color: colors.$darkGray;
-        background-color: transparent;
-    }
+  &.disabled {
+    color: colors.$darkGray;
+    background-color: transparent;
+  }
 }
 
 .smallTag {
-    background-color: colors.$blue ;
-    border-radius: 20px;
+  background-color: colors.$blue;
+  border-radius: 20px;
 }
 
 .time {
-    background-color: colors.$lightGray ;
-    border-radius: 10px;
+  background-color: colors.$lightGray;
+  border-radius: 10px;
 }
 
 .large {
-    width: 327px;
-    height: 50x;
+  width: 327px;
+  height: 50x;
 }
 
 .medium {
-    width: 300px;
-    height: 50x;
+  width: 300px;
+  height: 50x;
 }
 
 .small {
-    width: 200px;
-    height: 40x;
+  width: 200px;
+  height: 40x;
 }
 
 .tiny {
-    width: 160px;
-    height: 40x;
+  width: 160px;
+  height: 40x;
 }
 
 .semiTiny {
-    width: 128px;
-    height: 40x;
+  width: 128px;
+  height: 40x;
 }
 
-
 .check {
-    width: 77px;
-    height: 48px;
+  width: 77px;
+  height: 48px;
 }
 
 .select {
-    width: 65px;
-    height: 30px;
+  width: 65px;
+  height: 30px;
 }
 
 .mini {
-    width: 99px;
-    height: 33px; 
+  width: 99px;
+  height: 33px;
 }
 
-.customTag {
-  width: 66px;
-  height: 28px;
-}
+// .kakao {
+//   display: flex;
+//   gap: 4px;
+//   align-items: center;
+//   justify-content: center;
+//   font-size: 16px;
+//   color: colors.$black;
+//   background-color: colors.$yellow;
+//   border-radius: 12px;
 
+//   svg {
+//     width: 26px;
+//     height: 21px;
+//   }
+// }
 
-.kakao {
+// .google {
+//   display: flex;
+//   gap: 4px;
+//   align-items: center;
+//   justify-content: center;
+//   font-size: 16px;
+//   color: colors.$black;
+//   background-color: colors.$white;
+//   border-radius: 12px;
+
+//   svg {
+//     width: 26px;
+//     height: 21px;
+//   }
+// }
+.kakao,
+.google {
   display: flex;
   gap: 4px;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   color: colors.$black;
-  background-color: colors.$yellow;
   border-radius: 12px;
+  height: 40px;
+  padding: 8px 16px;
+}
 
-  svg {
-    width: 26px;
-    height: 21px;
-  }
+.kakao {
+  background-color: colors.$yellow;
 }
 
 .google {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    color: colors.$black;
-    background-color: colors.$white;
-    border-radius: 12px;
-  
-    svg {
-      width: 26px;
-      height: 21px;
-    }
+  background-color: colors.$white;
 }

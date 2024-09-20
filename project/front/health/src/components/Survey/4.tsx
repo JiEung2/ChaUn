@@ -1,12 +1,25 @@
 import GeneralButton from '../Button/GeneralButton';
+import ExerciseCategories from '../Exercise/ExerciseCategories';
+import { useState } from 'react';
 interface FourProps {
   //TODO - 성공 화면으로 이동
   finishServey: () => void;
   handlePrev: () => void;
 }
 export default function Four({ finishServey, handlePrev }: FourProps) {
+  const handleSelectExercises = (exercises: string | string[]) => {
+    const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+    if (typeof exercises === 'string') {
+      setSelectedExercises([exercises]);
+    } else {
+      setSelectedExercises(exercises);
+    }
+  };
   return (
     <div>
+      <h1>선호하는 운동</h1>
+      <h3>최대 5개까지 선택 가능합니다.</h3>
+      <ExerciseCategories onSelect={handleSelectExercises} multiple={true} />
       <GeneralButton buttonStyle={{ style: 'semiOutlined', size: 'tiny' }} onClick={handlePrev}>
         이전
       </GeneralButton>

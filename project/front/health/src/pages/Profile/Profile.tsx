@@ -1,13 +1,17 @@
-import Crew from '../../../components/Crew/Crew';
+import { useParams } from 'react-router-dom';
 import { useState } from 'react';
-import './CrewRecommend.scss';
-import CrewModal from '../../../components/Crew/CrewModal';
-export default function CrewRecommend() {
-  const [nickname, setNickname] = useState('닉네임');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCrewId, setSelectedCrewId] = useState(1);
-  // TODO - MSW로 대체 예정
-  const crews = [
+import Coin from '@/components/Coin/Coin';
+import Crew from '@/components/Crew/Crew';
+import { Line } from 'react-chartjs-2';
+import 'chart.js/auto'; // Chart.js의 자동 등록을 위해 필요
+import './Profile.scss';
+
+export default function Profile() {
+  const { userId } = useParams();
+  const [userName, setUserName] = useState('닉네임');
+  const [totalExerciseTime, setTotalExerciseTime] = useState('150h 48m');
+  const [weeklyExerciseTime, setWeeklyExerciseTime] = useState('20h 45m');
+  const myCrews = [
     {
       id: 1,
       imageUrl:
@@ -72,36 +76,55 @@ export default function CrewRecommend() {
       tag: '런닝',
     },
   ];
+  const [chartData, setChartData] = useState({
+    labels: ['2024.03', '2024.04', '2024.05', '2024.06', '2024.07', '2024'],
+    datasets: [
+      {
+        label: '체중 기록 (kg)',
+        data: [70, 72, 71, 73, 74, 72], // 체중 기록 예시 데이터
+        borderColor: '#A8C3FF',
+        backgroundColor: '#CDE0FF',
+        fill: false,
+        tension: 0.1,
+      },
+    ],
+  });
+  //TODO - 해당 크루 상세보기
+  const handleCrewClick = (crewId: number) => {};
+  //TODO - userId로 사용자 데이터 가져오기
 
-  // Crew 클릭 시 모달을 여는 함수
-  const handleCrewClick = (id: number) => {
-    setSelectedCrewId(id);
-    setIsModalOpen(true);
-  };
-
-  // 모달을 닫는 함수
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
   return (
-    <div className="crew-recommend">
-      <h3>
-        <span className="nickname">{nickname}</span>님, 이런 <span className="highlight">크루</span>를 추천드려요!
-      </h3>
-
-      <div className="crew-grid">
-        {crews.map((crew, index) => (
-          <Crew
-            key={index}
-            imageUrl={crew.imageUrl}
-            name={crew.name}
-            tag={crew.tag}
-            onClick={() => handleCrewClick(crew.id)}
-          />
-        ))}
+    <div className="profile-container">
+      <div className="header-section">
+        <h3 className="username">{userName}님</h3>
+        <Coin amount={1290} style="basic" />
       </div>
 
-      {isModalOpen && <CrewModal crewId={selectedCrewId} onClose={closeModal}></CrewModal>}
+      <div className="exercise-summary">
+        <p>총 운동 시간</p>
+        <h1>{totalExerciseTime}</h1>
+        <p>이번 주 운동 시간</p>
+        <h1>{weeklyExerciseTime}</h1>
+      </div>
+
+      <div className="chart-container">
+        <Line data={chartData} />
+      </div>
+      <div className="crew-container">
+        <h3>{userName}님의 크루</h3>
+
+        <div className="crew-list">
+          {myCrews.map((crew, index) => (
+            <Crew
+              key={index}
+              imageUrl={crew.imageUrl}
+              name={crew.name}
+              tag={crew.tag}
+              onClick={() => handleCrewClick(crew.id)}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
