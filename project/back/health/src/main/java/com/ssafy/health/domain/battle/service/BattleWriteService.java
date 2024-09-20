@@ -27,6 +27,7 @@ import static com.ssafy.health.domain.coin.CoinCost.*;
 @RequiredArgsConstructor
 public class BattleWriteService {
     // TODO: 각 메서드 간의 결합도를 낮춰야할 것처럼 보임
+    // TODO: 지금까지 배틀을 한번도 하지 않은 크루들은 어떻게 할건지 예외처리 필요
 
     private final BattleRepository battleRepository;
     private final CrewRepository crewRepository;
@@ -48,7 +49,7 @@ public class BattleWriteService {
                 .build();
 
         return BattleMatchResponseDto.builder()
-                .exercise(myCrew.getExercise())
+                .exerciseName(myCrew.getExercise().getName())
                 .myTeamName(myCrew.getName())
                 .myTeamScore(0F)
                 .opponentTeamName(opponentCrew.getName())
