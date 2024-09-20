@@ -3,10 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import uvicorn
 from typing import List
-from datetime import datetime, timedelta
 import pydantic
 from pydantic import BaseModel
 from bson import ObjectId
+
+# DB timezone 설정
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 # MongoClient 작업 가져오기
 from pymongo import MongoClient
@@ -20,6 +23,13 @@ from tensorflow.keras.optimizers import Adam
 
 # APP 정의
 app = FastAPI()
+
+# 대한민국 시간대 설정
+kst = ZoneInfo("Asia/Seoul")
+
+# DB에서 불러온 UTC 시간을 KST로 변환
+def convert_utc_to_kst(utc_time):
+    return utc_time.replace(tzinfo=ZoneInfo("UTC")).astimezone(kst)
 
 # CORS 설정
 app.add_middleware(
@@ -127,7 +137,7 @@ def root():
     return {"This is Root" : "Hello, root"}
 
 # 스프링에서 받은 json 데이터를 데이터프레임화 시키기 전에 해당 유저가 생성한 DB에 있는지 확인하기
-@app.post("/api/v1/users/{user_id}/body/prediction/")
+@app.post("/api/v1/users/{user_id}/body/prediction")
 async def predict(user_id: int, request: UserExerciseRequest):
     user_id = request.user_id # user_id
     exercise_data = request.exercise_data # exercise_data
@@ -136,8 +146,11 @@ async def predict(user_id: int, request: UserExerciseRequest):
     X_test = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data]) # (7, 5)
     X_test = X_test.reshape(1, 7, 5)  # 한 차원 늘려서, 하나의 입력으로, 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
 
+    # 현재 UTC 시간 가져오기
+    utc_now = datetime.utcnow()
+
     # 현재 날짜로부터 7일 전까지의 기간 계산
-    one_week_ago = datetime.utcnow() - timedelta(days=7)
+    one_week_ago = utc_now - timedelta(days=7)
 
     # user_id와 지난 7일간의 운동 기록이 있는지 확인 (운동 기록이 있는지 검사)
     user = collection.find_one({
@@ -150,12 +163,13 @@ async def predict(user_id: int, request: UserExerciseRequest):
         # model.predict을 통해 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
         pred_30_d, pred_90_d = model_predict(X_test)
 
-        # 예측 값을 포함한 데이터를 MongoDB에 저장
+
+        # MongoDB에 운동 기록을 저장할 때 UTC 시간으로 저장
         new_prediction = {
             "user_id": user_id,
             "p30": pred_30_d,
             "p90": pred_90_d,
-            "exercise_date": datetime.utcnow()
+            "exercise_date": utc_now  # UTC 시간으로 저장
         }
 
         # MongoDB에 저장
@@ -163,6 +177,8 @@ async def predict(user_id: int, request: UserExerciseRequest):
         new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
 
         # 저장된 내용을 반환
+        new_prediction["exercise_date"] = convert_utc_to_kst(new_prediction["exercise_date"])
+        
         return {
             "status": "predicted",
             "data": new_prediction
@@ -171,6 +187,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
     # 조회된 user 정보가 있을 경우
     else: 
         # 조회해서 값을 채워 data 보내주기 (user_id, 예측 값 30, 90일 보내주기)
+        user["exercise_date"] = convert_utc_to_kst(user["exercise_date"])
         user = convert_objectid(user)
         return {
             # ObjectId 변환
