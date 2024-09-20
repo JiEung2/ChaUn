@@ -1,18 +1,10 @@
 package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
-import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
-import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
-import com.ssafy.health.domain.account.dto.response.CaloriesSurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
-import com.ssafy.health.domain.account.dto.response.DeviceRegisterResponseDto;
-import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
-import com.ssafy.health.domain.account.dto.response.ExerciseTimeResponseDto;
-import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
-import com.ssafy.health.domain.account.dto.response.UserDetailDto;
-import com.ssafy.health.domain.account.dto.response.ValidateNicknameSuccessDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -173,4 +165,28 @@ public interface UserControllerApi {
             )
     })
     ApiResponse<DeviceRegisterResponseDto> registerDevice(DeviceRegisterRequestDto deviceRegisterRequestDto);
+
+    @Operation(
+            summary = "설문조사 완료 상태 확인",
+            description = "초기 설문조사를 완료했는지 상태를 반환합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "설문조사 완료 상태 확인",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"surveyCompleted\": true\n" +
+                                    "  }\n" +
+                                    "}"
+                            )
+                    )
+            )
+    })
+    ApiResponse<SurveyCompletedResponseDto> getSurveyCompleted();
+
 }
