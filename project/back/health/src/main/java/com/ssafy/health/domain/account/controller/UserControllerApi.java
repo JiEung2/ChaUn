@@ -126,7 +126,6 @@ public interface UserControllerApi {
     ApiResponse<UserDetailDto> getUserDetail(@PathVariable("user_id") Long userId);
 
     @Operation(
-<<<<<<< project/back/health/src/main/java/com/ssafy/health/domain/account/controller/UserControllerApi.java
             summary = "회원 식습관 설문조사",
             description = "회원 식습관을 입력받아 평균 하루 섭취 칼로리를 계산합니다."
     )
@@ -152,7 +151,8 @@ public interface UserControllerApi {
             ),
     })
     ApiResponse<CaloriesSurveySuccessDto> saveCaloriesSurvey(@RequestBody CaloriesSurveyRequestDto caloriesSurveyRequestDto);
-=======
+
+    @Operation(
             summary = "알림 수신 기기 등록",
             description = "Firebase Cloud Messaging을 이용한 알림을 받을 기기를 등록합니다."
     )
@@ -173,5 +173,4 @@ public interface UserControllerApi {
             )
     })
     ApiResponse<DeviceRegisterResponseDto> registerDevice(DeviceRegisterRequestDto deviceRegisterRequestDto);
->>>>>>> project/back/health/src/main/java/com/ssafy/health/domain/account/controller/UserControllerApi.java
 }
