@@ -10,7 +10,9 @@ export default function Header() {
   const getHeaderTitle = () => {
     switch (location.pathname) {
       case '/home':
-        return '페이지';
+        return '캐운';
+      case '/home/quest':
+        return '퀘스트';
       case '/home/calendar':
         return '캘린더';
       case '/home/quest':
@@ -19,24 +21,36 @@ export default function Header() {
         return '운동 추천';
       case '/exercise':
         return '운동';
-      default:
+      case '/record':
+        return '기록';
+      case '/record/bodyDetail':
+        return '체형조회';
+      case '/crew':
         return '크루';
+      case '/crew/recommend':
+        return '크루 추천';
+      case '/mypage':
+        return '마이페이지';
+      case '/alarm':
+        return '알림';
+      default:
+        return '캐운';
     }
   };
 
   // back 버튼을 숨길 경로 목록
-  const hiddenBackButtonPaths = ['/home'];
+  const hiddenBackButtonPaths = ['/home', '/record', '/mypage'];
 
   // 현재 경로가 숨길 경로 목록에 있는지 확인
   const showBackBtn = !hiddenBackButtonPaths.includes(location.pathname);
 
   // alarm 버튼을 숨길 경로 목록
-  const hiddenAlarmButtonPaths = ['/exercise/recommend']; //TODO -  알람 페이지 경로 수정 예정
+  const hiddenAlarmButtonPaths = ['/exercise/recommend', '/record/bodyDetail', '/alarm']; //TODO -  알람 페이지 경로 수정 예정
 
   const showAlarmBtn = !hiddenAlarmButtonPaths.includes(location.pathname);
 
   // 특정 경로에서는 헤더를 숨기도록 설정
-  const hideHeaderPaths = ['/', '/survey'];
+  const hideHeaderPaths = ['/', '/survey', '/exercise', '/exercise/recommend'];
 
   if (hideHeaderPaths.includes(location.pathname)) {
     return null;
