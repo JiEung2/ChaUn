@@ -3,6 +3,7 @@ package com.ssafy.health.domain.body.BodyHistory.service;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
+import com.ssafy.health.domain.account.entity.Gender;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserRepository;
@@ -30,7 +31,7 @@ public class BodyHistoryWriteService {
     public BodySurveySuccessDto saveBodyHistory(BodySurveyRequestDto bodySurveyRequestDto) {
         User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
         Boolean isMuscle = calculateIsMuscle(bodySurveyRequestDto);
-        Long bodyTypeId = adjustBodyTypeId(isMuscle, bodySurveyRequestDto.getBodyType());
+        Long bodyTypeId = adjustBodyTypeId(isMuscle, bodySurveyRequestDto.getBodyType(), user.getGender());
 
         BodyType bodyType = bodyTypeRepository.findById(bodyTypeId).orElseThrow();
         saveBodyHistoryRecord(bodySurveyRequestDto, user, isMuscle, bodyType);
@@ -46,7 +47,8 @@ public class BodyHistoryWriteService {
         return dto.getIsMuscle();
     }
 
-    private Long adjustBodyTypeId(Boolean isMuscle, Long bodyTypeId) {
+    private Long adjustBodyTypeId(Boolean isMuscle, Long bodyTypeId, Gender gender) {
+        if (gender == Gender.WOMAN) bodyTypeId += 10;
         if (isMuscle && bodyTypeId <= BODY_TYPE_MIDDLE_NUMBER) {
             return bodyTypeId + MUSCLE_BODY_TYPE_OFFSET;
         }
