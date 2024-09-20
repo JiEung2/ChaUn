@@ -4,26 +4,31 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
 # 데이터 불러오기
-user_data = pd.read_csv('user_data.csv')  # 사용자 데이터: 나이, 체형, 활동 점수 등
-crew_data = pd.read_csv('crew_data.csv')  # 크루 데이터: 나이, 체형, 활동 점수 등
+user_data = pd.read_csv('user_data.csv')  # 사용자 데이터 = 사용자ID, 나이, 체형, 점수 3종류
+crew_data = pd.read_csv('crew_data.csv')  # 크루 데이터 = 나이, 체형, 점수 3종류
 
 # 데이터 정규화
 scaler = MinMaxScaler() # 정규화 스케일러
-# 예시 입력 : [25, 4, 1400, 1500, 1000]
 user_data_scaled = scaler.fit_transform(user_data[['age', 'body_type', 'base_score', 'activity_score', 'diet_score']]) # 나이, 체형, 기본 점수, 활동 점수, 식습관 점수
 crew_data_scaled = scaler.transform(crew_data[['age', 'body_type', 'base_score', 'activity_score', 'diet_score']])
 
-# 유사도 비교를 위한 데이터 프레임화 -> matrix 만들기 
+# DataFrame생성 (Matrix)
 user_df = pd.DataFrame(user_data_scaled, columns=['age', 'body_type', 'base_score', 'activity_score', 'diet_score'])
 crew_df = pd.DataFrame(crew_data_scaled, columns=['age', 'body_type', 'base_score', 'activity_score', 'diet_score'])
 
-# 나보다 건강한 체형일 때 유사도를 높게 부여하는 함수
+# 나보다 비슷하거나 나보다 더 건강할 경우 유사도 높게 설정
 def body_type_similarity(user_body_type, crew_body_type):
-    if crew_body_type >= user_body_type:
-        # 유사도 수치는 조정 예정
-        return 1 - abs(user_body_type - crew_body_type)  # 체형이 같거나 더 건강하면 유사도 증가
+    # 1 = 저체중, 2 = 마름, 3 = 보기 좋은, 4 = 정상, 5 = 과체중, 6 = 비만
+    # 3 ~ 4 를 권장하게 만들고 싶다.
+    # 1,2 인 사람들은 3,4로 만들고, 5,6인 사람들은 3,4를 추천하는게 필요하다.
+    # 수정중...
+    if user_body_type >= crew_body_type:
+        if 2 <= crew_body_type <= 4:
+            return 1 - abs(user_body_type - crew_body_type)
+        else:
+            return 0.5 - abs(user_body_type - crew_body_type)
     else:
-        return 0.5 - abs(user_body_type - crew_body_type)  # 체형이 낮으면 유사도 감소
+        return 0.5 - abs(user_body_type - crew_body_type)
 
 # 피어슨 상관계수 유사도 계산을 통해 가까운 거리 판단
 def pearson_similarity(user, crew):
@@ -34,11 +39,12 @@ def pearson_similarity(user, crew):
     combined_similarity = (0.7 * similarity) + (0.3 * body_similarity)
     return combined_similarity
 
-
 # 유저와 가장 유사한 크루 9개를 추천하는 함수
 def recommend_crews(user_index, user_df, crew_df, top_n=9):
     user = user_df.iloc[user_index].values  # 추천을 받을 사용자의 데이터에서 필요한 정보만 가져오기
-    
+    print('user 정보')
+    print(user)
+
     similarities = []
     for i in range(len(crew_df)):
         crew = crew_df.iloc[i].values
@@ -51,8 +57,17 @@ def recommend_crews(user_index, user_df, crew_df, top_n=9):
     
     return top_crews
 
-# 예시로 사용자 0에 대해 추천
-recommended_crews = recommend_crews(0, user_df, crew_df)
+# user_id를 입력 받아서 추천 시스템 실행
+def get_user_index_by_id(user_id, user_data):
+    # user_id가 있는 컬럼이 있다고 가정하고 해당 인덱스를 반환
+    user_index = user_data[user_data['user_id'] == user_id].index[0]
+    return user_index
+
+# user_id를 입력 받고 추천 실행
+user_id = int(input("user_id를 입력하세요: "))  # user_id 입력
+user_index = get_user_index_by_id(user_id, user_data)  # user_id에 해당하는 인덱스 찾기
+
+recommended_crews = recommend_crews(user_index, user_df, crew_df)
 print("추천된 크루 목록:")
 print('-----')
 for crew in recommended_crews:
