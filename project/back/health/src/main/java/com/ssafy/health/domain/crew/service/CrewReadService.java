@@ -6,11 +6,15 @@ import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
 import com.ssafy.health.domain.account.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
+import com.ssafy.health.domain.battle.repository.BattleRepository;
+import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto.CrewInfo;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto.CrewMemberInfo;
 import com.ssafy.health.domain.crew.entity.Crew;
+import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
+import com.ssafy.health.domain.crew.repository.CrewRepository;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CrewReadService {
 
+    private final CrewRepository crewRepository;
+    private final BattleRepository battleRepository;
     private final UserCrewRepository userCrewRepository;
     private final ExerciseHistoryRepository exerciseHistoryRepository;
 
@@ -45,6 +51,29 @@ public class CrewReadService {
 
         return CrewListResponseDto.builder()
                 .crewList(crewList)
+                .build();
+    }
+
+    public CrewDetailResponseDto getCrewDetail(Long crewId) {
+        Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+        Long crewRanking = getCrewRanking(crew.getActivityScore() + crew.getBasicScore());
+
+        Object[] result = battleRepository.countTotalAndWonBattles(crewId);
+
+        Integer totalBattlesCount= (Integer) result[0];
+        Integer winCount = (Integer) result[1];
+
+        return CrewDetailResponseDto.builder()
+                .crewName(crew.getName())
+                .exerciseName(crew.getExercise().getName())
+                .description(crew.getDescription())
+                .crewCoins(crew.getCrewCoin())
+                .averageAge(crew.getAverageAge())
+                .activityScore(crew.getActivityScore())
+                .basicScore(crew.getBasicScore())
+                .crewRanking(crewRanking)
+                .totalBattlesCount(totalBattlesCount)
+                .winCount(winCount)
                 .build();
     }
 
@@ -150,6 +179,10 @@ public class CrewReadService {
                         exerciseHistory -> exerciseHistory.getUser().getId(),
                         Collectors.summingLong(ExerciseHistory::getExerciseDuration)
                 ));
+    }
+
+    private Long getCrewRanking(Integer crewScore) {
+        return crewRepository.countCrewsWithHigherOrEqualScore(crewScore);
     }
 
 }
