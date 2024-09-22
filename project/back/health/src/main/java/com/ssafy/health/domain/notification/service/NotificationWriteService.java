@@ -26,11 +26,16 @@ public class NotificationWriteService {
     private final BodyHistoryRepository bodyHistoryRepository;
     private final NotificationRepository notificationRepository;
 
-    public void createBodySurveryNotification(NotificationRequestDto dto) {
+    public void createBodySurveyNotification(NotificationRequestDto dto) {
         Map<String, Object> additionalData = new HashMap<>();
+        LocalDateTime lastSurveyedDate = null;
 
-        LocalDateTime lastSurveyedDate = bodyHistoryRepository.findFirstByUserId(dto.getUserId())
-                .orElseThrow().getCreatedAt();
+        try {
+            lastSurveyedDate = bodyHistoryRepository.findFirstByUserId(dto.getUserId())
+                    .orElseThrow().getCreatedAt();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         additionalData.put("lastSurveyedDate", lastSurveyedDate);
 
         Notification notification = notificationBuilder(
