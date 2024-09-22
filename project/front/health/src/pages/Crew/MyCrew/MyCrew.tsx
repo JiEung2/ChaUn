@@ -20,6 +20,7 @@ export default function MyCrew() {
   interface Member {
     nickname: string;
     userId: number;
+    characterImage: string;
     userProfileImage: string;
     thisWeekExerciseTime: number;
   }
@@ -49,12 +50,14 @@ export default function MyCrew() {
     {
       nickname: '달리기 왕자',
       userId: 20,
+      characterImage: 'character01.jpg',
       userProfileImage: 'crew-profile-image.jpg',
       thisWeekExerciseTime: 27900000, // ms -> 7h 45m
     },
     {
       nickname: '달리기 공주',
       userId: 21,
+      characterImage: 'character01.jpg',
       userProfileImage: 'crew-profile-image.jpg',
       thisWeekExerciseTime: 18000000, // ms -> 5h 0m
     },
@@ -122,7 +125,7 @@ export default function MyCrew() {
         <button className="prevButton" onClick={prevMember}>
           ←
         </button>
-        <img className="memberProfileImage" src={members[currentMemberIndex].userProfileImage} alt="member profile" />
+        <img className="memberProfileImage" src={members[currentMemberIndex].characterImage} alt="member profile" />
         <div className="memberInfo">
           <h3>{members[currentMemberIndex].nickname}</h3>
           <p>크루 운동 시간</p>
@@ -131,6 +134,20 @@ export default function MyCrew() {
         <button className="nextButton" onClick={nextMember}>
           →
         </button>
+      </div>
+
+      {/* 크루 랭킹 */}
+      <div className="crewRankingContainer">
+        {members.map((member, index) => (
+          <div key={member.userId} className="rankingList">
+            <div className="rankingItem">
+              <span>{index + 1}</span>
+              <img className="memberProfileImageSmall" src={member.userProfileImage} alt="member profile" />
+              <span>{member.nickname}</span>
+              <span className="time">{formatExerciseTime(member.thisWeekExerciseTime)}</span>
+            </div>
+          </div>
+        ))}
       </div>
     </>
   );

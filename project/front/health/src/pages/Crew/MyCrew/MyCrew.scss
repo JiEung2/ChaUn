@@ -8,7 +8,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  margin-bottom: 12px;
+  margin: 12px 0;
 
   .crewInfoHeader {
     display: flex;
@@ -95,7 +95,7 @@
 }
 .buttonContainer {
   display: flex;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   gap: 10px;
 
   .quest,
@@ -116,4 +116,89 @@
   .battle {
     background-color: colors.$styledButton2;
   }
+}
+.crewCharacterContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  width: 330px;
+  height: 230px;
+  background-color: colors.$record;
+  border-radius: 20px;
+
+  .memberInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h3 {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .exerciseTime {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff5e5e;
+    }
+  }
+
+  .prevButton,
+  .nextButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+
+  .memberProfileImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+  }
+}
+
+.crewRankingContainer {
+  margin-bottom: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(213, 244, 255, 1) 0%,
+    rgba(234, 250, 255, 1) 58%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+
+  .rankingList {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 8px;
+  }
+  .rankingItem {
+    background-color: colors.$white;
+    width: 280px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding-top: 8px;
+  }
+  .memberProfileImageSmall {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: colors.$darkGray;
+  }
+
+  span {
+    margin: 0 10px;
+  }
+}
+.time {
+  color: colors.$blue;
+  font-weight: bold;
 }
