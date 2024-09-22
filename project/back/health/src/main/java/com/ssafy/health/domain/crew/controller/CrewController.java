@@ -5,6 +5,7 @@ import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.service.BattleWriteService;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
@@ -31,6 +32,11 @@ public class CrewController implements CrewControllerApi {
     @PostMapping("/crew")
     public ApiResponse<CreateCrewSuccessDto> createCrew(@RequestBody CreateCrewRequestDto createCrewRequestDto) {
         return ApiResponse.success(crewWriteService.createCrew(createCrewRequestDto));
+    }
+
+    @GetMapping("/crew/{crew_id}/detail")
+    public ApiResponse<CrewDetailResponseDto> getCrewDetail(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(crewReadService.getCrewDetail(crewId));
     }
 
     @GetMapping("/users/{user_id}/crew-list")
