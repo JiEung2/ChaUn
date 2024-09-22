@@ -84,24 +84,25 @@ export default function CrewRecommend() {
     setIsModalOpen(false);
   };
   return (
-    <div className="crew-recommend">
+    <div>
       <h3>
         <span className="nickname">{nickname}</span>님, 이런 <span className="highlight">크루</span>를 추천드려요!
       </h3>
+      <div className="crew-recommend">
+        <div className="crew-grid">
+          {crews.map((crew, index) => (
+            <Crew
+              key={index}
+              imageUrl={crew.imageUrl}
+              name={crew.name}
+              tag={crew.tag}
+              onClick={() => handleCrewClick(crew.id)}
+            />
+          ))}
+        </div>
 
-      <div className="crew-grid">
-        {crews.map((crew, index) => (
-          <Crew
-            key={index}
-            imageUrl={crew.imageUrl}
-            name={crew.name}
-            tag={crew.tag}
-            onClick={() => handleCrewClick(crew.id)}
-          />
-        ))}
+        {isModalOpen && <CrewModal crewId={selectedCrewId} onClose={closeModal}></CrewModal>}
       </div>
-
-      {isModalOpen && <CrewModal crewId={selectedCrewId} onClose={closeModal}></CrewModal>}
     </div>
   );
 }
