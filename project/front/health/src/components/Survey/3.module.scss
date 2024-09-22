@@ -1,0 +1,11 @@
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+}
+.buttonGroup {
+  margin-top: 50px;
+  gap: 10px;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+}
