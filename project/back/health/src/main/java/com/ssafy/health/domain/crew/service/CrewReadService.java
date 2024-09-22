@@ -12,6 +12,7 @@ import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto.CrewInfo;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto.CrewMemberInfo;
+import com.ssafy.health.domain.crew.dto.response.CrewScoreResponseDto;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
@@ -55,7 +56,7 @@ public class CrewReadService {
     }
 
     public CrewDetailResponseDto getCrewDetail(Long crewId) {
-        Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+        Crew crew = findCrewById(crewId);
         Long crewRanking = getCrewRanking(crew.getActivityScore() + crew.getBasicScore());
 
         Object[] result = battleRepository.countTotalAndWonBattles(crewId);
@@ -120,6 +121,15 @@ public class CrewReadService {
         return CrewMembersResponseDto.builder()
                 .memberList(memberInfoList)
                 .build();
+    }
+
+    public CrewScoreResponseDto getCrewScore(Long crewId) {
+        Crew crew = findCrewById(crewId);
+        return CrewScoreResponseDto.fromEntity(crew);
+    }
+
+    private Crew findCrewById(Long crewId) {
+        return crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
     }
 
     private static List<CrewMemberInfo> getCrewMemberInfoList(List<UserExerciseTimeDto> userExerciseTimeList, Map<Long, User> userMap, List<UserCrew> userCrewList) {
