@@ -7,6 +7,7 @@ import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
+import com.ssafy.health.domain.crew.dto.response.CrewScoreResponseDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -175,6 +176,26 @@ public interface CrewControllerApi {
             )
     })
     ApiResponse<CrewMembersResponseDto> getCrewMembers(@PathVariable("crew_id") Long crewId);
+
+    @Operation(
+            summary = "크루 점수 조회",
+            description = "크루 아이디를 통해 크루 점수를 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 점수 조회 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"basicScore\": 1200,\n" +
+                                    "    \"activityScore\": 800\n" +
+                                    "  }\n" +
+                                    "}"
+                            ))
+            ),
+    })
+    ApiResponse<CrewScoreResponseDto> getCrewScore(@PathVariable("crew_id") Long crewId);
 
     @Operation(
             summary = "크루 랭킹 조회",
