@@ -6,7 +6,7 @@ import { Line } from 'react-chartjs-2';
 import 'chart.js/auto'; // Chart.js의 자동 등록을 위해 필요
 import './Profile.scss';
 
-export default function Profile() {
+export default function ProfilePage() {
   const { userId } = useParams();
   const [userName, setUserName] = useState('닉네임');
   const [totalExerciseTime, setTotalExerciseTime] = useState('150h 48m');
@@ -89,8 +89,10 @@ export default function Profile() {
       },
     ],
   });
-  //TODO - 해당 크루 상세보기
-  const handleCrewClick = (crewId: number) => {};
+
+  const handleCrewClick = (crewId: number) => {
+    //TODO - 해당 크루 상세보기
+  };
   //TODO - userId로 사용자 데이터 가져오기
 
   return (
