@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.battle.repository;
 
 import com.ssafy.health.domain.battle.entity.Battle;
+import com.ssafy.health.domain.battle.entity.BattleStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -29,4 +30,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
             "WHERE (b.homeCrew.id = :crewId OR b.awayCrew.id = :crewId) " +
             "AND b.status = 'FINISHED'")
     Object[] countTotalAndWonBattles(Long crewId);
+
+    @Query("SELECT b FROM Battle b WHERE (b.homeCrew.id = :crewId OR b.awayCrew.id = :crewId) AND b.status = :status")
+    Optional<Battle> findBattleByCrewId(Long crewId, BattleStatus status);
 }
