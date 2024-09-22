@@ -4,6 +4,7 @@ import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
@@ -35,6 +36,35 @@ public interface CrewControllerApi {
             ),
     })
     ApiResponse<CreateCrewSuccessDto> createCrew(@RequestBody CreateCrewRequestDto createCrewRequestDto);
+
+    @Operation(
+            summary = "크루 상세 조회",
+            description = "크루 아이디를 통해 크루 상세를 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 상세 조회 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"crewName\": \"달리는 번개\",\n" +
+                                    "    \"exerciseName\": \"러닝\",\n" +
+                                    "    \"profileImage\": \"crew-profile-image.jpg\",\n" +
+                                    "    \"description\": \"번개맨보다 빠른 러너들의 모임\",\n" +
+                                    "    \"crewCoins\": 300,\n" +
+                                    "    \"crewRanking\": 3,\n" +
+                                    "    \"totalBattleCount\": 10,\n" +
+                                    "    \"winCount\": 7,\n" +
+                                    "    \"averageAge\": 29,\n" +
+                                    "    \"activityScore\": 1200,\n" +
+                                    "    \"basicScore\": 900\n" +
+                                    "  }\n" +
+                                    "}"
+                            ))
+            ),
+    })
+    ApiResponse<CrewDetailResponseDto> getCrewDetail(@PathVariable("crew_id") Long crewId);
 
     @Operation(
             summary = "가입된 크루 조회",
