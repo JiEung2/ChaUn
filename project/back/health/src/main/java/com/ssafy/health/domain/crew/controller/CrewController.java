@@ -2,6 +2,7 @@ package com.ssafy.health.domain.crew.controller;
 
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
+import com.ssafy.health.domain.battle.service.BattleReadService;
 import com.ssafy.health.domain.battle.service.BattleWriteService;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
@@ -28,6 +29,7 @@ public class CrewController implements CrewControllerApi {
 
     private final CrewReadService crewReadService;
     private final CrewWriteService crewWriteService;
+    private final BattleReadService battleReadService;
     private final BattleWriteService battleWriteService;
 
     @PostMapping("/crew")
@@ -74,5 +76,10 @@ public class CrewController implements CrewControllerApi {
     @PostMapping("/crew/{crew_id}/battle")
     public ApiResponse<BattleMatchResponseDto> startCrewBattle(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(battleWriteService.startBattle(crewId));
+    }
+
+    @GetMapping("/crew/{crew_id}/battle")
+    public ApiResponse<BattleMatchResponseDto> getBattleStatus(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(battleReadService.getBattleStatus(crewId));
     }
 }
