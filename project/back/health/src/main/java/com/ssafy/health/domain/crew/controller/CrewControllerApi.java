@@ -257,4 +257,28 @@ public interface CrewControllerApi {
     })
     ApiResponse<BattleMatchResponseDto> startCrewBattle(@PathVariable("crew_id") Long crewId);
 
+    @Operation(
+            summary = "크루 배틀 현황 조회",
+            description = "크루 아이디를 통해 크루 배틀 현황을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 배틀 현황 조회 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"myTeamName\": \"달리자크루\",\n" +
+                                    "    \"myTeamScore\": 400,\n" +
+                                    "    \"opponentTeamName\": \"크크크루\",\n" +
+                                    "    \"opponentTeamScore\": 500,\n" +
+                                    "    \"exerciseName\": \"러닝\",\n" +
+                                    "    \"dDay\": 2\n" +
+                                    "  }\n" +
+                                    "}"
+                            ))
+            ),
+    })
+    ApiResponse<BattleMatchResponseDto> getBattleStatus(@PathVariable("crew_id") Long crewId);
+
 }
