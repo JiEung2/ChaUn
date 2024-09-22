@@ -16,7 +16,16 @@ export default function MyCrew() {
     activityScore: number;
     basicScore: number;
   }
+
+  interface Member {
+    nickname: string;
+    userId: number;
+    userProfileImage: string;
+    thisWeekExerciseTime: number;
+  }
+
   const [isOpen, setIsOpen] = useState(false);
+  const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
 
   const toggleDetails = () => {
     setIsOpen(!isOpen);
@@ -35,6 +44,22 @@ export default function MyCrew() {
     activityScore: 1200,
     basicScore: 850,
   };
+
+  const members: Member[] = [
+    {
+      nickname: '달리기 왕자',
+      userId: 20,
+      userProfileImage: 'crew-profile-image.jpg',
+      thisWeekExerciseTime: 27900000, // ms -> 7h 45m
+    },
+    {
+      nickname: '달리기 공주',
+      userId: 21,
+      userProfileImage: 'crew-profile-image.jpg',
+      thisWeekExerciseTime: 18000000, // ms -> 5h 0m
+    },
+  ];
+
   return (
     <>
       <div className="title">내 크루</div>
@@ -71,12 +96,22 @@ export default function MyCrew() {
           </div>
         )}
       </div>
+
+      {/* 버튼 */}
       <div className="buttonContainer">
         <div className="quest">오늘의 퀘스트</div>
         <div className="battle">크루 배틀 현황</div>
       </div>
-      <div className="crewCharacterContainer"></div>
-      <div className="crewRankingContainer"></div>
+
+      {/* 크루원 캐러셀 */}
+      <div className="crewCharacterContainer">
+        <img className="memberProfileImage" src={members[currentMemberIndex].userProfileImage} alt="member profile" />
+        <div className="memberInfo">
+          <h3>{members[currentMemberIndex].nickname}</h3>
+          <p>크루 운동 시간</p>
+          <p className="exerciseTime">{members[currentMemberIndex].thisWeekExerciseTime}</p>
+        </div>
+      </div>
     </>
   );
 }
