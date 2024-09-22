@@ -9,6 +9,7 @@ public class CrewDetailResponseDto {
     private String crewName;
     private String exerciseName;
     private String description;
+    private String profileImage;
     private Integer crewCoins;
     private Long crewRanking;
     private Integer totalBattlesCount;

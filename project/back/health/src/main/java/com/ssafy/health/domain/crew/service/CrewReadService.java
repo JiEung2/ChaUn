@@ -66,6 +66,7 @@ public class CrewReadService {
         return CrewDetailResponseDto.builder()
                 .crewName(crew.getName())
                 .exerciseName(crew.getExercise().getName())
+                .profileImage(crew.getProfileImage())
                 .description(crew.getDescription())
                 .crewCoins(crew.getCrewCoin())
                 .averageAge(crew.getAverageAge())
