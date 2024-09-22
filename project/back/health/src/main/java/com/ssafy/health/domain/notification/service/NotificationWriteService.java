@@ -4,6 +4,7 @@ import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
+import com.ssafy.health.domain.notification.dto.response.StatusUpdateResponseDto;
 import com.ssafy.health.domain.notification.entity.Notification;
 import com.ssafy.health.domain.notification.entity.NotificationStatus;
 import com.ssafy.health.domain.notification.entity.NotificationType;
@@ -47,6 +48,18 @@ public class NotificationWriteService {
         Notification battleNotification = notificationBuilder(
                 dto.getNotificationType(), dto.getUserId(), message, additionalData);
         notificationRepository.save(battleNotification);
+    }
+
+    public StatusUpdateResponseDto updateNotificationStatus(NotificationStatus status, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow();
+        NotificationStatus previousStatus = notification.getNotificationStatus();
+        notification.updateNotificationStatus(status);
+        notificationRepository.save(notification);
+
+        return StatusUpdateResponseDto.builder()
+                .previousStatus(previousStatus)
+                .currentStatus(status)
+                .build();
     }
 
     public Notification notificationBuilder(NotificationType notificationType, Long userId, String message) {

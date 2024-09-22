@@ -39,7 +39,7 @@ public class Notification extends BaseEntity {
 
     public void updateNotificationStatus(NotificationStatus notificationStatus) {
         this.notificationStatus = notificationStatus;
-        if (notificationStatus.equals(NotificationStatus.READ)) {
+        if (this.checkedTime == null && notificationStatus.equals(NotificationStatus.READ)) {
             this.checkedTime = LocalDateTime.now();
         }
     }
