@@ -19,13 +19,14 @@ export const handlers = [
   }),
 
   //닉네임 여부 테스트
-  http.post(`${baseUrl}/nickname`, async ({ request }) => {
-    const newPost = (await request.json()) as NicknameRequest;
-    console.log(newPost);
+  http.get(`${baseUrl}/users/validate-nickname/:nickname`, async ({ params }) => {
+    const { nickname } = params;
+    const nicknameValue = Array.isArray(nickname) ? nickname[0] : nickname;
 
-    if (mockUser.includes(newPost?.nick)) {
-      return HttpResponse.json({ isDuplicated: true });
+    if (mockUser.includes(nicknameValue)) {
+      return HttpResponse.json({ message: '이미 존재하는 닉네임입니다.' }, { status: 409 });
     }
-    return HttpResponse.json({ isDuplicated: false });
+
+    return HttpResponse.json({ message: '사용 가능한 닉네임입니다.' }, { status: 200 });
   }),
 ];

@@ -15,6 +15,6 @@ export const getTest2 = async (nick: string) => {
 };
 
 export const nicknameCheck = async (nickname: string) => {
-  const response = await axios.get(`${baseUrl}/users/validate-nickname${nickname}`);
-  return response.data;
+  const response = await axios.get(`${baseUrl}/users/validate-nickname/${nickname}`);
+  return response;
 };

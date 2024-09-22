@@ -20,3 +20,21 @@
   display: flex;
   justify-content: center; // 가로 중앙 정렬sa[
 }
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.error-text {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.success-text {
+  color: green;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
