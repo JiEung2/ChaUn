@@ -8,6 +8,7 @@ import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
+import com.ssafy.health.domain.crew.dto.response.CrewScoreResponseDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import com.ssafy.health.domain.crew.service.CrewReadService;
@@ -58,6 +59,11 @@ public class CrewController implements CrewControllerApi {
     @GetMapping("/crew/{crew_id}/members")
     public ApiResponse<CrewMembersResponseDto> getCrewMembers(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(crewReadService.getCrewMembers(crewId));
+    }
+
+    @GetMapping("/crew/{crew_id}/score")
+    public ApiResponse<CrewScoreResponseDto> getCrewScore(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(crewReadService.getCrewScore(crewId));
     }
 
     @GetMapping("/crew/{crew_id}/ranking")
