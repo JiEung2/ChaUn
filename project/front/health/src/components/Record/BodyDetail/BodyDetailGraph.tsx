@@ -11,7 +11,7 @@ interface BodyDetailGraphProps {
 }
 
 export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) {
-  const chartRef = useRef<ChartJS<'line', (number | null)[], unknown> | null>(null); // ref 타입을 맞추기 위해 (number | null)[]로 수정
+  const chartRef = useRef<ChartJS<'line', (number | null)[], unknown> | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
   const handleChartClick = () => {
@@ -22,75 +22,81 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
     setModalOpen(false);
   };
 
-  // 현재 날짜와 월 마지막 날짜 계산
   const today = new Date();
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
-  const lastDateOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // 해당 월의 마지막 날
+  const lastDateOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
-  // filteredData의 마지막 날짜 가져오기
   const filteredLastDate = new Date(filteredData[filteredData.length - 1]?.date || today);
   const isCurrentMonth = filteredLastDate.getFullYear() === currentYear && filteredLastDate.getMonth() === currentMonth;
 
   // 모든 날짜에 맞춰 labels 생성
   const generateLabels = () => {
+    const labels = ['1일'];
+    filteredData.forEach(item => {
+      const date = new Date(item.date).getDate();
+      if (!labels.includes(`${date}일`)) {
+        labels.push(`${date}일`);
+      }
+    });
     if (isCurrentMonth) {
-      // 현재 월이면 오늘 날짜까지 표시
-      return Array.from({ length: today.getDate() }, (_, i) => `${i + 1}일`);
+      labels.push(`${today.getDate()}일`);
     } else {
-      // 그 외의 경우 해당 월의 마지막 날까지 표시
-      return Array.from({ length: lastDateOfMonth }, (_, i) => `${i + 1}일`);
+      labels.push(`${lastDateOfMonth}일`);
     }
+    return labels;
   };
 
   const labels = generateLabels();
 
   // 날짜를 기반으로 데이터를 채우는 함수 (날짜가 없는 곳은 null로 처리)
   const fillDataForLabels = (key: keyof typeof filteredData[0]) => {
-    const filledData = Array.from({ length: labels.length }, (_, i) => {
-      const day = i + 1;
+    const filledData = labels.map(label => {
+      const day = parseInt(label.replace('일', ''), 10);
       const dataForDay = filteredData.find(item => new Date(item.date).getDate() === day);
-      return dataForDay ? dataForDay[key] : null; // 데이터가 있는 날짜만 값 채우기, 없는 날은 null
+      return dataForDay ? dataForDay[key] : null;
     });
     return filledData;
   };
 
+  // 그래프 데이터 설정
   const data = {
     labels,
     datasets: [
       {
         type: 'line' as const,
         label: '몸무게',
-        data: fillDataForLabels('weight') as (number | null)[], // 데이터 타입을 맞춰줌
+        data: fillDataForLabels('weight') as (number | null)[],
         borderColor: '#4bc0c0',
         fill: false,
         tension: 0.1,
         pointRadius: 0,
-        yAxisID: 'weight',
+        yAxisID: 'y',
       },
       {
         type: 'line' as const,
         label: '골격근량',
-        data: fillDataForLabels('muscle') as (number | null)[], // 데이터 타입을 맞춰줌
+        data: fillDataForLabels('muscle') as (number | null)[],
         borderColor: '#36a2eb',
         fill: false,
         tension: 0.1,
         pointRadius: 0,
-        yAxisID: 'fatMuscle',
+        yAxisID: 'y',
       },
       {
         type: 'line' as const,
         label: '체지방량',
-        data: fillDataForLabels('fat') as (number | null)[], // 데이터 타입을 맞춰줌
+        data: fillDataForLabels('fat') as (number | null)[],
         borderColor: '#ff6384',
         fill: false,
         tension: 0.1,
         pointRadius: 0,
-        yAxisID: 'fatMuscle',
+        yAxisID: 'y',
       },
     ],
   };
 
+  // 그래프 옵션 설정
   const options = {
     maintainAspectRatio: false,
     onClick: handleChartClick,
@@ -100,34 +106,27 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
           display: true,
         },
         ticks: {
-          autoSkip: true, // 레이블을 자동으로 스킵
-          maxTicksLimit: 10, // 최대 표시할 레이블 수 (1일, 11일, 21일, 마지막 날)
+          autoSkip: true,
           callback: function (_: any, index: number): string {
-            return labels[index]; // 생성된 labels 배열을 사용하여 x축에 표시
+            return labels[index];
           },
-          maxRotation: 0, // 대각선 레이블 방지
+          maxRotation: 0,
           minRotation: 0,
         },
       },
-      weight: {
+      y: {
         type: 'linear' as const,
-        position: 'left' as const,
-        ticks: {
-          display: false,
-        },
+        beginAtZero: false,
+        min: 0,
+        max: Math.max(...filteredData.map(item => item.weight)) + 5,
         title: {
           display: false,
         },
-        grid: {
-          display: false,
+        ticks: {
+          stepSize: 5,
         },
-      },
-      fatMuscle: {
-        type: 'linear' as const,
-        position: 'right' as const,
-        display: false,
         grid: {
-          drawOnChartArea: false,
+          display: true,
         },
       },
     },
@@ -135,12 +134,12 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
       legend: {
         display: true,
         position: 'bottom' as const,
-        fullWidth: false, // 범례가 한 줄로 정렬되도록 설정
+        fullWidth: false,
         labels: {
-          usePointStyle: true, // 범례 도형을 원으로 설정
+          usePointStyle: true,
           pointStyle: 'circle',
           font: {
-            size: 10, // 글씨 크기를 작게 조정
+            size: 10,
           },
           boxWidth: 8,
           boxHeight: 8,
@@ -148,9 +147,9 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
           generateLabels: (chart: any) => {
             return chart.data.datasets.map((dataset: any, i: number) => ({
               text: dataset.label,
-              fillStyle: dataset.borderColor, // 선의 색상과 동일하게 채우기
-              strokeStyle: dataset.borderColor, // 테두리 색상도 동일하게 설정
-              lineWidth: 2, // 테두리 두께 설정
+              fillStyle: dataset.borderColor,
+              strokeStyle: dataset.borderColor,
+              lineWidth: 2,
               pointStyle: 'circle',
               hidden: !chart.isDatasetVisible(i),
               index: i,
@@ -161,9 +160,9 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
     },
     layout: {
       padding: {
-        top: 10, 
-        left: 0, 
-        right: 20, 
+        top: 10,
+        left: 0,
+        right: 20,
         bottom: 0,
       },
     },
