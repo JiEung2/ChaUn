@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './MyCrew.scss';
 import Coin from '../../../assets/svg/coin.svg';
+import QuestItem from '../../../components/Home/Quest/QuestItem';
 
 export default function MyCrew() {
   interface CrewInfo {
@@ -77,6 +78,23 @@ export default function MyCrew() {
     setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + members.length) % members.length);
   };
 
+  const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
+  const [isBattleModalOpen, setIsBattleModalOpen] = useState(false);
+  const [isCrewLeader, setIsCrewLeader] = useState(true); // 크루 대표 여부 상태
+  const [isInBattle, setIsInBattle] = useState(true); // 배틀 참여 여부 상태
+  const [opponentTeam, setOpponentTeam] = useState('3대 500만원'); // 상대 팀 정보
+
+  const toggleQuestModal = () => {
+    setIsQuestModalOpen(!isQuestModalOpen);
+  };
+
+  const toggleBattleModal = () => {
+    setIsBattleModalOpen(!isBattleModalOpen);
+  };
+
+  //   오늘의 퀘스트
+  const todayQuests = [{ title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기', completed: true }];
+
   return (
     <>
       <div className="title">내 크루</div>
@@ -116,8 +134,12 @@ export default function MyCrew() {
 
       {/* 버튼 */}
       <div className="buttonContainer">
-        <div className="quest">오늘의 퀘스트</div>
-        <div className="battle">크루 배틀 현황</div>
+        <div className="quest" onClick={toggleQuestModal}>
+          오늘의 퀘스트
+        </div>
+        <div className="battle" onClick={toggleBattleModal}>
+          크루 배틀 현황
+        </div>
       </div>
 
       {/* 크루원 캐러셀 */}
@@ -149,6 +171,45 @@ export default function MyCrew() {
           </div>
         ))}
       </div>
+
+      {/* 퀘스트 모달 */}
+      {isQuestModalOpen && (
+        <div className="modalOverlay">
+          <div className="modalContent">
+            <span>오늘의 퀘스트</span>
+            <button className="closeButton" onClick={toggleQuestModal}>
+              &times;
+            </button>
+            {todayQuests.map((quest, index) => (
+              <QuestItem key={index} title={quest.title} completed={quest.completed} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* 배틀 모달 */}
+      {isBattleModalOpen && (
+        <div className="modalOverlay">
+          <div className="modalContent">
+            <span>크루 배틀 현황</span>
+            <button className="closeButton" onClick={toggleBattleModal}>
+              &times;
+            </button>
+            {isInBattle ? (
+              <div>
+                <div className="battleInfo">
+                  <span className="vs">VS</span>
+                  <span className="opponentTeam">{opponentTeam}</span>
+                </div>
+              </div>
+            ) : (
+              <p>진행중인 배틀이 없습니다.</p>
+            )}
+
+            {isCrewLeader ? <button className="battleButton">참여하기</button> : ''}
+          </div>
+        </div>
+      )}
     </>
   );
 }
