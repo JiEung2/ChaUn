@@ -60,6 +60,14 @@ export default function MyCrew() {
     },
   ];
 
+  const nextMember = () => {
+    setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % members.length);
+  };
+
+  const prevMember = () => {
+    setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + members.length) % members.length);
+  };
+
   return (
     <>
       <div className="title">내 크루</div>
@@ -105,12 +113,18 @@ export default function MyCrew() {
 
       {/* 크루원 캐러셀 */}
       <div className="crewCharacterContainer">
+        <button className="prevButton" onClick={prevMember}>
+          ←
+        </button>
         <img className="memberProfileImage" src={members[currentMemberIndex].userProfileImage} alt="member profile" />
         <div className="memberInfo">
           <h3>{members[currentMemberIndex].nickname}</h3>
           <p>크루 운동 시간</p>
           <p className="exerciseTime">{members[currentMemberIndex].thisWeekExerciseTime}</p>
         </div>
+        <button className="nextButton" onClick={nextMember}>
+          →
+        </button>
       </div>
     </>
   );
