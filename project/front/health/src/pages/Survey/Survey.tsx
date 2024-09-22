@@ -4,8 +4,7 @@ import Three from '../../components/Survey/3';
 import Four from '../../components/Survey/4';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Survey.scss';
-export default function Survey() {
+export default function SurveyPage() {
   const [step, setStep] = useState(1);
   const totalSteps: number = 4;
   const navigate = useNavigate();

@@ -1,0 +1,22 @@
+.container {
+  margin: 0 auto; // 화면 가운데 배치
+  padding: 20px;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px; // 각 입력 요소 간의 간격
+  margin-bottom: 20px; // 아래 요소와의 간격
+}
+.input-gender {
+  display: flex;
+  //   justify-content: center; // 가로 중앙 정렬
+  gap: 20px; // 버튼 간 간격 추가
+}
+
+.nextBtn {
+  margin: 50px auto; // 화면 가운데 배치
+  display: flex;
+  justify-content: center; // 가로 중앙 정렬sa[
+}

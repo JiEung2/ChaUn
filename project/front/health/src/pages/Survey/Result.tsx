@@ -1,7 +1,7 @@
 import GeneralButton from '@/components/Button/GeneralButton';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-export default function Result() {
+export default function ResultPage() {
   const navigate = useNavigate();
 
   const [nickname, setNickname] = useState('닉네임');
