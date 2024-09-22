@@ -22,7 +22,8 @@
     .title {
       display: flex;
       justify-content: space-between;
-      gap: 200px;
+      gap: 220px;
+      margin-left: 10px;
     }
 
     .character {
@@ -34,7 +35,7 @@
   .iconWrapper {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 7px;
     justify-content: center;
   }
   
@@ -42,28 +43,37 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 35px; 
-    height: 35px; 
+    width: 23px; 
+    height: 23px; 
     border: 1px solid colors.$darkGray;  
     background-color: transparent;
     border-radius: 50%; 
   }
   
   .icon {
-    width: 20px;
-    height: 20px;
+    width: 17px;
+    height: 17px;
     cursor: pointer;
   }
 
   
   .time {
-    @include typo.subtitle;
+    @include typo.sub;
+    
+    .timeTitle {
+      margin-bottom: 5px;
+    }
     
     span {
     color: colors.$pink;
     @include typo.time;
     
     }
+  }
+
+  .myInfo {
+    display: flex;
+    gap: 30px;
   }
   
   .chartSection {

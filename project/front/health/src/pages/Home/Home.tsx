@@ -5,6 +5,7 @@ import CalendarIcon from '../../assets/svg/calendar.svg';
 import StyledButton from '../../components/Button/StyledButton';
 import HomeIcon1 from '../../assets/svg/homeIcon1.svg';
 import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
+import Character from '@/assets/image/model.png';
 import 'chart.js/auto';
 import './Home.scss';
 
@@ -32,14 +33,14 @@ export default function HomePage () {
         data: [3, 4, 5, 6, 7, 8, 7],
         borderColor: '#FF6384',
         fill: false,
-        tension: 0.4,
+        tension: 0.1,
       },
       {
         label: '칼로리',
         data: [200, 250, 300, 350, 400, 450, 500],
         borderColor: '#36A2EB',
         fill: false,
-        tension: 0.4,
+        tension: 0.1,
       },
     ],
   };
@@ -49,6 +50,28 @@ export default function HomePage () {
       legend: {
         display: true,
         position: 'bottom' as const,
+        fullWidth: false,
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: {
+            size: 10,
+          },
+          boxWidth: 8,
+          boxHeight: 8,
+          padding: 10,
+          generateLabels: (chart: any) => {
+            return chart.data.datasets.map((dataset: any, i: number) => ({
+              text: dataset.label,
+              fillStyle: dataset.borderColor,
+              strokeStyle: dataset.borderColor,
+              lineWidth: 2,
+              pointStyle: 'circle',
+              hidden: !chart.isDatasetVisible(i),
+              index: i,
+            }));
+          },
+        },
       },
     },
     scales: {
@@ -77,12 +100,16 @@ export default function HomePage () {
               </div>
             </div>
           </div>
-          <div className="time">
-            <p>오늘 운동 시간</p>
-            <span>{characterContent.todayTime}</span>
-            <p>이번 주 운동 시간</p>
-            <span>{characterContent.weeklyTime}</span>
+          <div className="myInfo">
+            <img src={Character} alt="character" />
+            <div className="time">
+              <p className="timeTitle">오늘 운동 시간</p>
+              <span>{characterContent.todayTime}</span>
+              <p className="timeTitle">이번 주 운동 시간</p>
+              <span>{characterContent.weeklyTime}</span>
+            </div>            
           </div>
+
         </div>
 
 
