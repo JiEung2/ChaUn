@@ -60,6 +60,12 @@ export default function MyCrew() {
     },
   ];
 
+  const formatExerciseTime = (timeInMs: number) => {
+    const hours = Math.floor(timeInMs / (1000 * 60 * 60));
+    const minutes = Math.floor((timeInMs % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+  };
+
   const nextMember = () => {
     setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % members.length);
   };
@@ -120,7 +126,7 @@ export default function MyCrew() {
         <div className="memberInfo">
           <h3>{members[currentMemberIndex].nickname}</h3>
           <p>크루 운동 시간</p>
-          <p className="exerciseTime">{members[currentMemberIndex].thisWeekExerciseTime}</p>
+          <p className="exerciseTime">{formatExerciseTime(members[currentMemberIndex].thisWeekExerciseTime)}</p>
         </div>
         <button className="nextButton" onClick={nextMember}>
           →
