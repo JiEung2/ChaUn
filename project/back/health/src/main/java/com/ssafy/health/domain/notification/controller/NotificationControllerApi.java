@@ -2,11 +2,13 @@ package com.ssafy.health.domain.notification.controller;
 
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.notification.dto.response.NotificationResponseDto;
+import com.ssafy.health.domain.notification.dto.response.StatusUpdateResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -50,4 +52,56 @@ public interface NotificationControllerApi {
             )
     })
     ApiResponse<List<NotificationResponseDto>> getNotifications();
+
+    @Operation(
+            summary = "알림 읽기",
+            description = "알림의 상태를 '읽음'으로 변경합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "Success",
+                                      "data": {
+                                        "message": "알림 상태 변경 완료",
+                                        "previousStatus": "UNREAD",
+                                        "currentStatus": "READ"
+                                      }
+                                    }"""
+                            )
+                    )
+            )
+    })
+    ApiResponse<StatusUpdateResponseDto> readNotification(Long id);
+
+    @Operation(
+            summary = "알림 삭제",
+            description = "알림의 상태를 '삭제됨'으로 변경합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "Success",
+                                      "data": {
+                                        "message": "알림 상태 변경 완료",
+                                        "previousStatus": "READ",
+                                        "currentStatus": "DELETED"
+                                      }
+                                    }"""
+                            )
+                    )
+            )
+    })
+    ApiResponse<StatusUpdateResponseDto> deleteNotification(Long id);
 }
