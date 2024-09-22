@@ -55,6 +55,7 @@ export default function MypagePage() {
         if (characterRef.current) {
             html2canvas(characterRef.current, {
                 scale: 2,
+                backgroundColor: '#98e4ff'
             }).then((canvas) => {
                 const image = canvas.toDataURL('image/png');
                 const now = new Date();
