@@ -39,7 +39,7 @@ public class NotificationWriteService {
         additionalData.put("lastSurveyedDate", lastSurveyedDate);
 
         Notification notification = notificationBuilder(
-                dto.getNotificationType(), dto.getUserId(), BODY_SURVEY.getMessage(), additionalData);
+                dto.getNotificationType(), dto.getUserId(), SURVEY.getMessage(), additionalData);
         notificationRepository.save(notification);
     }
 

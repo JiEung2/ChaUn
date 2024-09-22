@@ -31,7 +31,7 @@ public interface NotificationControllerApi {
                                       "data": [
                                         {
                                           "notificationId": 1,
-                                          "notificationType": "BODY_SURVEY",
+                                          "notificationType": "SURVEY",
                                           "additionalData": null,
                                           "content": "테스트 알림 1",
                                           "createdAt": "2024-09-20T00:00:00"
