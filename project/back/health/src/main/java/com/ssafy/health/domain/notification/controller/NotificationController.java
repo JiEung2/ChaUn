@@ -24,11 +24,13 @@ public class NotificationController implements NotificationControllerApi {
         return ApiResponse.success(notificationReadService.getNotifications());
     }
 
-    @PatchMapping("/{status}/{notification_id}")
-    public ApiResponse<StatusUpdateResponseDto> updateNotificationStatus(
-            @PathVariable("status") String status, @PathVariable("notification_id") Long id) {
-        if (status.equals("delete")) status = "DELETED";
-        return ApiResponse.success(notificationWriteService.updateNotificationStatus(
-                NotificationStatus.valueOf(status.toUpperCase()), id));
+    @PatchMapping("/read/{notification_id}")
+    public ApiResponse<StatusUpdateResponseDto> readNotification(@PathVariable("notification_id") Long id) {
+        return ApiResponse.success(notificationWriteService.updateNotificationStatus(NotificationStatus.READ, id));
+    }
+
+    @PatchMapping("/delete/{notification_id}")
+    public ApiResponse<StatusUpdateResponseDto> deleteNotification(@PathVariable("notification_id") Long id) {
+        return ApiResponse.success(notificationWriteService.updateNotificationStatus(NotificationStatus.DELETED, id));
     }
 }
