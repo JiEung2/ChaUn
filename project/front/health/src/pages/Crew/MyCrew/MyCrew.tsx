@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import './MyCrew.scss';
 import Coin from '../../../assets/svg/coin.svg';
 import QuestItem from '../../../components/Home/Quest/QuestItem';
+import Plus from '../../../assets/svg/plus.svg';
+import Minus from '../../../assets/svg/minus.svg';
+import { useNavigate } from 'react-router-dom';
 
 export default function MyCrew() {
   interface CrewInfo {
@@ -80,6 +83,7 @@ export default function MyCrew() {
 
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
   const [isBattleModalOpen, setIsBattleModalOpen] = useState(false);
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
   const [isCrewLeader, setIsCrewLeader] = useState(true); // 크루 대표 여부 상태
   const [isInBattle, setIsInBattle] = useState(true); // 배틀 참여 여부 상태
   const [opponentTeam, setOpponentTeam] = useState('3대 500만원'); // 상대 팀 정보
@@ -92,9 +96,32 @@ export default function MyCrew() {
     setIsBattleModalOpen(!isBattleModalOpen);
   };
 
+  const toggleDepositModal = () => {
+    setIsDepositModalOpen(!isDepositModalOpen);
+  };
+
   //   오늘의 퀘스트
   const todayQuests = [{ title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기', completed: true }];
 
+  const [selectedCoins, setSelectedCoins] = useState(100); // 선택된 코인 수
+  const [crewCoins, setCrewCoins] = useState(300); // 크루 코인 수
+
+  const incrementCoins = () => {
+    setSelectedCoins((prev) => prev + 50);
+  };
+
+  const decrementCoins = () => {
+    if (selectedCoins > 50) {
+      setSelectedCoins((prev) => prev - 50);
+    }
+  };
+
+  const handleDeposit = () => {
+    setCrewCoins((prev) => prev + selectedCoins);
+    setIsDepositModalOpen(false); // 모금 후 모달 닫기
+  };
+
+  const navigate = useNavigate();
   return (
     <>
       <div className="title">내 크루</div>
@@ -109,7 +136,10 @@ export default function MyCrew() {
             <p className="crewDescription">{crewInfo.description}</p>
             <div className="crewCoins">
               <img src={Coin} alt="coin" />
-              <span>{crewInfo.crewCoins}</span>
+              <span>{crewCoins}</span>
+              <button className="deposit" onClick={toggleDepositModal}>
+                모금하기
+              </button>
             </div>
           </div>
         </div>
@@ -180,9 +210,11 @@ export default function MyCrew() {
             <button className="closeButton" onClick={toggleQuestModal}>
               &times;
             </button>
-            {todayQuests.map((quest, index) => (
-              <QuestItem key={index} title={quest.title} completed={quest.completed} />
-            ))}
+            <div className="questList">
+              {todayQuests.map((quest, index) => (
+                <QuestItem key={index} title={quest.title} completed={quest.completed} />
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -206,7 +238,38 @@ export default function MyCrew() {
               <p>진행중인 배틀이 없습니다.</p>
             )}
 
-            {isCrewLeader ? <button className="battleButton">참여하기</button> : ''}
+            {isCrewLeader ? (
+              <button className="battleButton" onClick={() => navigate('/crew/battle')}>
+                참여하기
+              </button>
+            ) : (
+              ''
+            )}
+          </div>
+        </div>
+      )}
+
+      {isDepositModalOpen && (
+        <div className="modalOverlay">
+          <div className="modalContent">
+            <div className="modalHeader">
+              <h3>{crewInfo.crewName}</h3>
+              <button className="closeButton" onClick={toggleDepositModal}>
+                &times;
+              </button>
+            </div>
+            <div className="modalBody">
+              <div className="coinSelector">
+                <img src={Minus} className="decrement" onClick={decrementCoins}></img>
+                <span className="coinAmount">
+                  <img src={Coin} alt="coin" /> {selectedCoins}
+                </span>
+                <img src={Plus} className="increment" onClick={incrementCoins}></img>
+              </div>
+              <div className="depositButton" onClick={handleDeposit}>
+                모금하기
+              </div>
+            </div>
           </div>
         </div>
       )}
