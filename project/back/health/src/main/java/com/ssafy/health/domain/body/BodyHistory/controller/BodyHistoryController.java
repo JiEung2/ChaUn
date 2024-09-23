@@ -35,7 +35,7 @@ public class BodyHistoryController implements BodyHistoryControllerApi{
     }
 
     @GetMapping("/body")
-    public ApiResponse<BodyHistoryResponseDto> getBodyHistory(BodyHistoryRequestDto bodyHistoryRequestDto) {
+    public ApiResponse<BodyHistoryResponseDto> getBodyHistory(@RequestBody BodyHistoryRequestDto bodyHistoryRequestDto) {
         return ApiResponse.success(bodyHistoryReadService.getBodyHistory(bodyHistoryRequestDto));
     }
 
