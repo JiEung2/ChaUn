@@ -1,0 +1,402 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.crewInfoContainer {
+  background-color: colors.$white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0;
+
+  .crewInfoHeader {
+    display: flex;
+    margin-bottom: 20px;
+
+    .crewInfoTitle {
+      display: flex;
+      align-items: center;
+
+      img.crewProfileImage {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      h3 {
+        font-size: 20px;
+        margin-right: 10px;
+      }
+
+      .exerciseTag {
+        background-color: colors.$blue;
+        color: colors.$white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+      }
+      img {
+        margin-left: 10px;
+      }
+    }
+
+    .crewDescription {
+      margin: 10px 0;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .crewCoins {
+      display: flex;
+      align-items: center;
+      width: 160px;
+      height: 22px;
+      padding: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      justify-content: space-evenly;
+
+      img {
+        width: 24px;
+        height: 24px;
+        margin-right: 5px;
+        margin-left: 8px;
+      }
+
+      span {
+        display: flex;
+        font-size: 18px;
+        font-weight: bold;
+        margin-left: 7px;
+        margin-top: 3px;
+      }
+      button {
+        border-radius: 20px;
+        border: colors.$white;
+        font-weight: bold;
+        padding: 5px;
+      }
+    }
+  }
+
+  .detailButton {
+    background-color: colors.$blue;
+    color: colors.$white;
+    width: 273px;
+    height: 30px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 8.5px;
+  }
+
+  .crewInfoDetails {
+    margin-top: 15px;
+    font-size: 14px;
+    color: colors.$darkGray;
+
+    p {
+      margin: 5px 0;
+    }
+  }
+}
+.buttonContainer {
+  display: flex;
+  margin-bottom: 12px;
+  gap: 10px;
+
+  .quest,
+  .battle {
+    width: 160px;
+    height: 53px;
+    border-radius: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .quest {
+    background-color: colors.$styledButton1;
+  }
+
+  .battle {
+    background-color: colors.$styledButton2;
+  }
+}
+.crewCharacterContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  width: 330px;
+  height: 230px;
+  background-color: colors.$record;
+  border-radius: 20px;
+
+  .memberInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    h3 {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .exerciseTime {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff5e5e;
+    }
+  }
+
+  .prevButton,
+  .nextButton {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 0 10px;
+  }
+
+  .memberProfileImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+  }
+}
+
+.crewRankingContainer {
+  margin-bottom: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(213, 244, 255, 1) 0%,
+    rgba(234, 250, 255, 1) 58%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+  margin: 20px -30px 0px -30px;
+  padding: 20px 0 10px 0;
+  max-height: 288px;
+
+  .rankingList {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+  .rankingItem {
+    background-color: colors.$white;
+    width: 280px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .memberProfileImageSmall {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: colors.$darkGray;
+  }
+
+  span {
+    margin: 0 10px;
+  }
+}
+.time {
+  color: colors.$blue;
+  font-weight: bold;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modalContent {
+  background-color: colors.$white;
+  border-radius: 20px;
+  text-align: center;
+  width: 330px;
+  height: 300px;
+  position: relative;
+  display: flex;
+  z-index: 1000;
+  span {
+    @include typo.subtitle;
+  }
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.questDetail {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+
+  input {
+    margin-right: 10px;
+  }
+
+  span {
+    font-size: 16px;
+  }
+}
+.battleInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  width: 220px;
+  height: 45px;
+  background-color: colors.$moreDarkGray;
+  color: colors.$white;
+  gap: 20px;
+  margin-top: 20px;
+}
+.vs {
+  color: colors.$blue;
+  font-size: 25px !important;
+}
+.battleButton {
+  background-color: colors.$blue;
+  color: colors.$white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 20px;
+
+  &:disabled {
+    background-color: colors.$lightGray;
+    cursor: not-allowed;
+  }
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.coinSelector {
+  display: flex;
+  span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.coinAmount {
+  margin: 0 30px 10px 30px;
+  padding: 5px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  gap: 10px;
+}
+
+.depositButton {
+  width: 160px;
+  height: 40px;
+  background-color: colors.$blue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20px;
+  margin-top: 20px;
+}
+
+.questItem {
+  max-width: 270px;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  gap: 10px;
+  .checkBox {
+    width: 50px;
+    height: 35%;
+  }
+}
+.crewSettings {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  .settingTitle {
+    font-weight: bold;
+    font-size: 16px;
+  }
+  .settingDescription {
+    font-size: 12px;
+    color: colors.$darkGray;
+  }
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  transform: scale(0.65);
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: colors.$littleDarkGray;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: '';
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: colors.$white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: colors.$blue;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
