@@ -6,6 +6,7 @@ import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
+import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
 import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
@@ -252,5 +253,41 @@ public interface UserControllerApi {
             )
     })
     ApiResponse<ExerciseHistoryListResponseDto> getWeeklyExerciseHistory(@RequestBody WeeklyExerciseHistoryRequestDto requestDto);
+
+    @Operation(
+            summary = "자신의 특정 달의 운동 기록 조회",
+            description = "자신의 특정 달의 운동 기록을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "운동 기록 조회 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                {
+                                  "status": 200,
+                                  "message": "",
+                                  "data": {
+                                    "exerciseHistoryList": [
+                                        {
+                                          "id": 1,
+                                          "exerciseDuration": 3600,
+                                          "burnedCalories": 560,
+                                          "exerciseName": "러닝",
+                                          "createdAt": "2024-09-16T15:00:00"
+                                        },
+                                        {
+                                          "id": 2,
+                                          "exerciseDuration": 1800,
+                                          "burnedCalories": 300,
+                                          "exerciseName": "수영",
+                                          "createdAt": "2024-09-17T10:00:00"
+                                        }
+                                    ]
+                                  }
+                                }
+                                """
+                            ))
+            )
+    })
+    ApiResponse<ExerciseHistoryListResponseDto> getMonthlyExerciseHistory(@RequestBody MonthlyExerciseHistoryRequestDto requestDto);
 
 }
