@@ -1,0 +1,42 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  //   align-items: flex-start;
+
+  .inputWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .selectButtonWrapper {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    .selectButton {
+      width: calc(50% - 10px); // 버튼이 한 줄에 두 개씩 배치되도록 설정
+    }
+  }
+
+  .bodyShapeWrapper {
+    margin-bottom: 20px;
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    .selectButton {
+      width: calc(50% - 10px); // 버튼이 한 줄에 두 개씩 배치되도록 설정
+    }
+  }
+
+  .nextPrevBtnWrapper {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+}

@@ -21,10 +21,10 @@ export default function App() {
     <Router>
       <div>
         <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/survey" element={<Survey />} />
-          <Route path="/surveyResult" element={<SurveyResult />} />
           <Route element={<CommonLayout />}>
+            <Route path="/" element={<Login />} />
+            <Route path="/survey" element={<Survey />} />
+            <Route path="/surveyResult" element={<SurveyResult />} />
             <Route path="/home" element={<Home />} />
             <Route path="/home/calendar" element={<Calendar />} />
             <Route path="/home/quest" element={<Quest />} />

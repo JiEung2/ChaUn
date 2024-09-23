@@ -1,0 +1,4 @@
+@import '@/styles/constants/typographies.scss';
+.title {
+  @include title;
+}
