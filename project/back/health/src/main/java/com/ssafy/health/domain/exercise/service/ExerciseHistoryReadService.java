@@ -40,20 +40,15 @@ public class ExerciseHistoryReadService {
 
     public ExerciseHistoryListResponseDto getWeeklyExerciseHistory(WeeklyExerciseHistoryRequestDto requestDto) {
         LocalDateTime[] dateTimes = calculateWeekDateTimeRange(requestDto.getYear(), requestDto.getMonth(), requestDto.getWeek());
-        LocalDateTime startDateTime = dateTimes[0];
-        LocalDateTime endDateTime = dateTimes[1];
-
-        List<ExerciseHistory> exerciseHistoryList = exerciseHistoryRepository.findByUserIdAndCreatedAtBetween(SecurityUtil.getCurrentUserId(), startDateTime, endDateTime);
-
-        List<ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto> exerciseHistoryDetailList = getExerciseHistoryDetailDtoList(exerciseHistoryList);
-
-        return ExerciseHistoryListResponseDto.builder()
-                .exerciseHistoryList(exerciseHistoryDetailList)
-                .build();
+        return getExerciseHistoryListResponseDto(dateTimes);
     }
 
     public ExerciseHistoryListResponseDto getMonthlyExerciseHistory(MonthlyExerciseHistoryRequestDto requestDto) {
         LocalDateTime[] dateTimes = calculateMonthDateTimeRange(requestDto.getYear(), requestDto.getMonth());
+        return getExerciseHistoryListResponseDto(dateTimes);
+    }
+
+    private ExerciseHistoryListResponseDto getExerciseHistoryListResponseDto(LocalDateTime[] dateTimes) {
         LocalDateTime startDateTime = dateTimes[0];
         LocalDateTime endDateTime = dateTimes[1];
 
