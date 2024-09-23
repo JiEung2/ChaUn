@@ -4,6 +4,7 @@ import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
 import com.ssafy.health.common.security.SecurityUtil;
+import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
 import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
@@ -44,15 +45,21 @@ public class ExerciseHistoryReadService {
 
         List<ExerciseHistory> exerciseHistoryList = exerciseHistoryRepository.findByUserIdAndCreatedAtBetween(SecurityUtil.getCurrentUserId(), startDateTime, endDateTime);
 
-        List<ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto> exerciseHistoryDetailList = exerciseHistoryList.stream()
-                .map(exerciseHistory -> ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto.builder()
-                        .id(exerciseHistory.getId())
-                        .exerciseDuration(exerciseHistory.getExerciseDuration())
-                        .burnedCalories(exerciseHistory.getBurnedCalories())
-                        .exerciseName(exerciseHistory.getExercise().getName())
-                        .createdAt(exerciseHistory.getCreatedAt())
-                        .build())
-                .toList();
+        List<ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto> exerciseHistoryDetailList = getExerciseHistoryDetailDtoList(exerciseHistoryList);
+
+        return ExerciseHistoryListResponseDto.builder()
+                .exerciseHistoryList(exerciseHistoryDetailList)
+                .build();
+    }
+
+    public ExerciseHistoryListResponseDto getMonthlyExerciseHistory(MonthlyExerciseHistoryRequestDto requestDto) {
+        LocalDateTime[] dateTimes = calculateMonthDateTimeRange(requestDto.getYear(), requestDto.getMonth());
+        LocalDateTime startDateTime = dateTimes[0];
+        LocalDateTime endDateTime = dateTimes[1];
+
+        List<ExerciseHistory> exerciseHistoryList = exerciseHistoryRepository.findByUserIdAndCreatedAtBetween(SecurityUtil.getCurrentUserId(), startDateTime, endDateTime);
+
+        List<ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto> exerciseHistoryDetailList = getExerciseHistoryDetailDtoList(exerciseHistoryList);
 
         return ExerciseHistoryListResponseDto.builder()
                 .exerciseHistoryList(exerciseHistoryDetailList)
@@ -91,4 +98,26 @@ public class ExerciseHistoryReadService {
         return new LocalDateTime[]{startDateTime, endDateTime};
     }
 
+    private LocalDateTime[] calculateMonthDateTimeRange(int year, int month){
+        LocalDate startOfMonth = LocalDate.of(year, month, 1);
+        LocalDate endOfMonth = startOfMonth.with(TemporalAdjusters.lastDayOfMonth());
+
+        LocalDateTime startDateTime = startOfMonth.atStartOfDay();
+        LocalDateTime endDateTime = endOfMonth.atTime(23, 59, 59);
+
+        return new LocalDateTime[]{startDateTime, endDateTime};
+    }
+
+    private static List<ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto> getExerciseHistoryDetailDtoList(List<ExerciseHistory> exerciseHistoryList) {
+        List<ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto> exerciseHistoryDetailList = exerciseHistoryList.stream()
+                .map(exerciseHistory -> ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto.builder()
+                        .id(exerciseHistory.getId())
+                        .exerciseDuration(exerciseHistory.getExerciseDuration())
+                        .burnedCalories(exerciseHistory.getBurnedCalories())
+                        .exerciseName(exerciseHistory.getExercise().getName())
+                        .createdAt(exerciseHistory.getCreatedAt())
+                        .build())
+                .toList();
+        return exerciseHistoryDetailList;
+    }
 }
