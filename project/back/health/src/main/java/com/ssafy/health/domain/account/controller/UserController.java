@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.CaloriesSurveySuccessDto;
@@ -13,7 +14,8 @@ import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryReques
 import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
-import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
+import com.ssafy.health.domain.exercise.dto.response.TodayAndWeeklyExerciseTimeResponseDto;
+import com.ssafy.health.domain.exercise.dto.response.TotalAndMonthlyExerciseTimeResponseDto;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryReadService;
 import com.ssafy.health.domain.account.service.UserReadService;
 import com.ssafy.health.domain.account.service.UserValidator;
@@ -44,8 +46,8 @@ public class UserController implements UserControllerApi{
     }
 
     @GetMapping("/{user_id}/exercise-time")
-    public ApiResponse<ExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId) {
-        return ApiResponse.success(exerciseHistoryReadService.getExerciseTime(userId));
+    public ApiResponse<TotalAndMonthlyExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId) {
+        return ApiResponse.success(exerciseHistoryReadService.getTotalAndWeeklyExerciseTime(userId));
     }
 
     @GetMapping("{user_id}")
@@ -81,6 +83,11 @@ public class UserController implements UserControllerApi{
     @GetMapping("/exercise-history/month")
     public ApiResponse<ExerciseHistoryListResponseDto> getMonthlyExerciseHistory(@RequestBody MonthlyExerciseHistoryRequestDto requestDto) {
         return ApiResponse.success(exerciseHistoryReadService.getMonthlyExerciseHistory(requestDto));
+    }
+
+    @GetMapping("/my/exercise-history/today-and-weekly")
+    public ApiResponse<TodayAndWeeklyExerciseTimeResponseDto> getMyTodayAndWeeklyExerciseTime() {
+        return ApiResponse.success(exerciseHistoryReadService.getTodayAndWeeklyExerciseTime(SecurityUtil.getCurrentUserId()));
     }
 
 }
