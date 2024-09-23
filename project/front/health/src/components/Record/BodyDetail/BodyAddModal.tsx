@@ -1,5 +1,6 @@
 import GeneralButton from "@/components/Button/GeneralButton";
 import xCircle from '@/assets/svg/xCircle.svg';
+// import Survey1 from '@/components/Survey/2';
 import './BodyAddModal.scss'
 
 interface BodyAddModalProps {
@@ -16,9 +17,11 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
       <hr className='hr' />
         <img src={xCircle} alt="xCircle" className="xCircle" onClick={onClose} />
         <h2>체형 정보 입력</h2>
+        {/* <Survey1 /> */}
         <GeneralButton
             buttonStyle={{style: "floating", size: "semiTiny"}}
-            onClick={handleComplete}>
+            onClick={handleComplete}
+            className="completedButton">
         완료
         </GeneralButton>
     </div>
