@@ -5,13 +5,15 @@ import com.ssafy.health.domain.exercise.dto.response.ExerciseAndCategoryDto;
 import com.ssafy.health.domain.exercise.service.ExerciseReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController("/api/v1")
+@RestController
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
-public class ExerciseController {
+public class ExerciseController implements ExerciseControllerApi{
 
     private final ExerciseReadService exerciseReadService;
 
