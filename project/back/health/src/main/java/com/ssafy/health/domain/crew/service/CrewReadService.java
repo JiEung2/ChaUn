@@ -142,7 +142,7 @@ public class CrewReadService {
         LocalDateTime startTime = getStartTime();
         LocalDateTime endTime = LocalDateTime.now();
 
-        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdInAndExerciseStartTimeBetween(
+        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdInAndCreatedAtBetween(
                 userIdList, startTime, endTime);
 
         return exerciseHistories.stream()
