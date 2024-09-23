@@ -11,7 +11,5 @@ import org.springframework.data.jpa.repository.Query;
 public interface BodyHistoryRepository extends JpaRepository<BodyHistory, Long> {
     List<BodyHistory> findByUserIdAndCreatedAtAfter(Long userId, LocalDateTime startTime);
     List<BodyHistory> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime startTime, LocalDateTime endTime);
-
-    @Query("SELECT b FROM BodyHistory b WHERE b.user.id = :userId ORDER BY b.createdAt DESC")
-    Optional<BodyHistory> findFirstByUserId(Long userId);
+    Optional<BodyHistory> findFirstByUserIdOrderByCreatedAtDesc(Long userId);
 }

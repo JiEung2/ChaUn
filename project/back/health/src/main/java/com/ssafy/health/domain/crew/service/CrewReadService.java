@@ -1,10 +1,10 @@
 package com.ssafy.health.domain.crew.service;
 
 import com.ssafy.health.domain.account.dto.response.UserExerciseTimeDto;
-import com.ssafy.health.domain.account.entity.ExerciseHistory;
+import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
-import com.ssafy.health.domain.account.repository.ExerciseHistoryRepository;
+import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto.CrewInfo;
@@ -142,7 +142,7 @@ public class CrewReadService {
         LocalDateTime startTime = getStartTime();
         LocalDateTime endTime = LocalDateTime.now();
 
-        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdInAndExerciseStartTimeBetween(
+        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdInAndCreatedAtBetween(
                 userIdList, startTime, endTime);
 
         return exerciseHistories.stream()
