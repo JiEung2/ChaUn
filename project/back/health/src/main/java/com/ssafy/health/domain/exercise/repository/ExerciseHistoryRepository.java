@@ -11,9 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 public interface ExerciseHistoryRepository extends JpaRepository<ExerciseHistory, Long> {
     List<ExerciseHistory> findByUserId(Long userId);
 
-    List<ExerciseHistory> findByUserIdAndExerciseStartTimeBetween(Long userId, LocalDateTime startTime,
-                                                                     LocalDateTime endTime);
-
     @Query("SELECT exerciseHistory FROM ExerciseHistory exerciseHistory " +
             "WHERE exerciseHistory.user.id IN :userIdList " +
             "AND exerciseHistory.exerciseStartTime BETWEEN :startTime AND :endTime " +
