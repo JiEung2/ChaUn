@@ -65,7 +65,7 @@ public class UserController implements UserControllerApi{
         return ApiResponse.success(userReadService.getSurveyCompleted());
     }
 
-    @PostMapping("/exercise")
+    @PostMapping("/exercise-history")
     public ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) {
         return ApiResponse.success(exerciseHistoryWriteService.saveExerciseHistory(exerciseHistorySaveRequestDto));
     }
