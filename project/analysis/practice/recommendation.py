@@ -28,15 +28,28 @@ def pearson_similarity(user, crew):
 
 # 유저와 유사한 크루 7개 추천하는 함수
 def recommend_crews(user_index, user_df, crew_df, top_n=7):
-    user = user_df.iloc[user_index].values  # 추천을 받을 사용자의 데이터에서 필요한 정보만 가져오기
+    user_value = user_df.iloc[user_index].values  # 추천을 받을 사용자의 데이터에서 필요한 정보만 가져오기
     print('user 정보')
-    print(user)
+    print(user_value)
 
     similarities = []
     for i in range(len(crew_df)):
         crew = crew_df.iloc[i].values
-        sim = pearson_similarity(user, crew)  # 유사도 계산
-        similarities.append((i, sim))  # (크루 인덱스, 유사도) 저장
+        crew_sports = crew_list['crew_list'][i]['sport']
+
+        # 콘텐츠 기반 필터링
+        content_similarity = 0
+        if user['favorite_sports'] and crew_sports in user['favorite_sports']:
+            content_similarity = 0.8  # 선호하는 운동일 경우, 최대치 보다 조금 낮은 정도의 추천도
+        else:
+            content_similarity = 0.5  # 선호하지 않는 운동인 경우, 그래도 이런 크루도 어떤가요식 추천해주는 편으로
+
+        # 유저와 크루간 협업 필터링
+        sim = pearson_similarity(user_value, crew)  # 유사도 계산
+
+        # 협업 필터링과 콘텐츠 필터링의 가중치를 합산 (7:3)
+        combined_similarity = (0.7 * sim) + (0.3 * content_similarity)
+        similarities.append((i, combined_similarity))  # (크루 인덱스, 유사도) 저장
     
     # 유사도 내림차순으로 정렬 후 상위 top_n 크루 선택
     similarities.sort(key=lambda x: x[1], reverse=True)
@@ -62,7 +75,8 @@ Dummy Data
 
 user = {
     'user_id' : 14,
-    'favorite_sports' : ['Soccer', 'Baseball'] 
+    'favorite_sports' : ['Soccer', 'Baseball'],
+    'crew_list' : [1,3,10]
 }
 
 user_list = {
@@ -227,7 +241,7 @@ crew_list = {
         },
         {
             'crew_id': 2,
-            'sport': 'Soccer',
+            'sport': 'Running',
             'age': 33,
             'type': 4,
             'score_1' : 1800,
@@ -235,8 +249,8 @@ crew_list = {
             'score_3' : 1000
         },
         {
-            'crew_id': 1,
-            'sport': 'Soccer',
+            'crew_id': 3,
+            'sport': 'Baseball',
             'age': 22,
             'type': 7,
             'score_1' : 1100,
@@ -244,7 +258,7 @@ crew_list = {
             'score_3' : 1500
         },
         {
-            'crew_id': 1,
+            'crew_id': 4,
             'sport': 'Soccer',
             'age': 28,
             'type': 8,
@@ -252,8 +266,76 @@ crew_list = {
             'score_2' : 1100,
             'score_3' : 1100
         },
+        {
+            'crew_id': 5,
+            'sport': 'Running',
+            'age': 37,
+            'type': 8,
+            'score_1' : 1200,
+            'score_2' : 1100,
+            'score_3' : 1100
+        },
+        {
+            'crew_id': 6,
+            'sport': 'Soccer',
+            'age': 35,
+            'type': 3,
+            'score_1' : 1800,
+            'score_2' : 1900,
+            'score_3' : 1500
+        },
+        {
+            'crew_id': 7,
+            'sport': 'Swimming',
+            'age': 28,
+            'type': 3,
+            'score_1' : 1800,
+            'score_2' : 1700,
+            'score_3' : 1400
+        },
+        {
+            'crew_id': 8,
+            'sport': 'Running',
+            'age': 30,
+            'type': 9,
+            'score_1' : 1100,
+            'score_2' : 1300,
+            'score_3' : 980
+        },
+        {
+            'crew_id': 9,
+            'sport': 'Soccer',
+            'age': 31,
+            'type': 3,
+            'score_1' : 1600,
+            'score_2' : 1900,
+            'score_3' : 1150
+        },
+        {
+            'crew_id': 10,
+            'sport': 'Baseball',
+            'age': 22,
+            'type': 4,
+            'score_1' : 1500,
+            'score_2' : 1700,
+            'score_3' : 1600
+        },
     ]
 }
+'''
+'user_id' : 14,
+'age' : 43,
+'type' : 7, # body_type 10개 중 1,2,3,4 근육질, 5,6,7,8,9,10 정상
+'score_1' : 1200,
+'score_2' : 1800,
+'score_3' : 1500
+sport 반영 안했을 때, 3, 10, 8, 9, 6, 4, 7
+sport 반영 했을 때(7:3까지 적용), 3, 10, 9, 6, 8, 4, 1
+
+만약 유저가 이미 크루에 들어가 있다면, 예외 처리
+-> 가중치 계산 이후, append할 때 체크
+
+'''
 
 # Convert the user list to a pandas DataFrame
 user_data = pd.DataFrame(user_list['user_list'])
