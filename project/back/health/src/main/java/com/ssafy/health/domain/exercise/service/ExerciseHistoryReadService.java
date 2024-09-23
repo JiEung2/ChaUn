@@ -7,7 +7,8 @@ import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
 import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
-import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
+import com.ssafy.health.domain.exercise.dto.response.TodayAndWeeklyExerciseTimeResponseDto;
+import com.ssafy.health.domain.exercise.dto.response.TotalAndMonthlyExerciseTimeResponseDto;
 import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 
@@ -28,13 +29,23 @@ public class ExerciseHistoryReadService {
 
     private final ExerciseHistoryRepository exerciseHistoryRepository;
 
-    public ExerciseTimeResponseDto getExerciseTime(final Long userId) {
+    public TotalAndMonthlyExerciseTimeResponseDto getTotalAndWeeklyExerciseTime(final Long userId) {
         Long totalExerciseTime = getTotalExerciseTime(userId);
         Long monthlyAccumulateExerciseTime = getMonthlyAccumulatedExerciseTime(userId);
 
-        return ExerciseTimeResponseDto.builder()
+        return TotalAndMonthlyExerciseTimeResponseDto.builder()
                 .totalExerciseTime(totalExerciseTime)
                 .monthlyAccumulatedExerciseTime(monthlyAccumulateExerciseTime)
+                .build();
+    }
+
+    public TodayAndWeeklyExerciseTimeResponseDto getTodayAndWeeklyExerciseTime(final Long userId) {
+        Long todayExerciseTime = getDailyExerciseTime(userId);
+        Long weeklyAccumulateExerciseTime = getWeeklyAccumulatedExerciseTime(userId);
+
+        return TodayAndWeeklyExerciseTimeResponseDto.builder()
+                .todayExerciseTime(todayExerciseTime)
+                .weeklyAccumulatedExerciseTime(weeklyAccumulateExerciseTime)
                 .build();
     }
 
@@ -73,13 +84,41 @@ public class ExerciseHistoryReadService {
         LocalDateTime startTime = today.with(firstDayOfMonth()).with(LocalTime.MIN);
         LocalDateTime endTime = today.with(lastDayOfMonth()).with(LocalTime.MAX);
 
-        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdAndExerciseStartTimeBetween(
+        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdAndCreatedAtBetween(
                 userId, startTime, endTime);
 
         return exerciseHistories.stream()
                 .mapToLong(ExerciseHistory::getExerciseDuration)
                 .sum();
 
+    }
+
+    private Long getWeeklyAccumulatedExerciseTime(final Long userId) {
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                .with(LocalDateTime.MIN);
+        LocalDateTime endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).with(LocalTime.MAX);
+
+        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdAndCreatedAtBetween(
+                userId, startOfWeek, endOfWeek);
+
+        return exerciseHistories.stream()
+                .mapToLong(ExerciseHistory::getExerciseDuration)
+                .sum();
+    }
+
+    private Long getDailyExerciseTime(final Long userId) {
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
+
+        List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserIdAndCreatedAtBetween(
+                userId, startOfDay, endOfDay
+        );
+
+        return exerciseHistories.stream()
+                .mapToLong(ExerciseHistory::getExerciseDuration)
+                .sum();
     }
 
     private LocalDateTime[] calculateWeekDateTimeRange(int year, int month, int week){
