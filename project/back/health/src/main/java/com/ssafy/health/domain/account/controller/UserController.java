@@ -8,11 +8,14 @@ import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.ValidateNicknameSuccessDto;
 import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
+import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
+import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryReadService;
 import com.ssafy.health.domain.account.service.UserReadService;
 import com.ssafy.health.domain.account.service.UserValidator;
 import com.ssafy.health.domain.account.service.UserWriteService;
+import com.ssafy.health.domain.exercise.service.ExerciseHistoryWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +24,11 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController implements UserControllerApi{
 
-    private final UserWriteService userWriteService;
-    private final UserReadService userReadService;
     private final UserValidator userValidator;
+    private final UserReadService userReadService;
+    private final UserWriteService userWriteService;
     private final ExerciseHistoryReadService exerciseHistoryReadService;
+    private final ExerciseHistoryWriteService exerciseHistoryWriteService;
 
     @GetMapping("/validate-nickname/{nickname}")
     public ApiResponse<ValidateNicknameSuccessDto> validateNickname(@PathVariable("nickname") String nickname) {
@@ -59,6 +63,11 @@ public class UserController implements UserControllerApi{
     @GetMapping("/survey")
     public ApiResponse<SurveyCompletedResponseDto> getSurveyCompleted() {
         return ApiResponse.success(userReadService.getSurveyCompleted());
+    }
+
+    @PostMapping("/exercise")
+    public ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) {
+        return ApiResponse.success(exerciseHistoryWriteService.saveExerciseHistory(exerciseHistorySaveRequestDto));
     }
 
 }
