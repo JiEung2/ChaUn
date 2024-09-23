@@ -80,24 +80,24 @@ export default function One({ handleNext }: { handleNext: () => void }) {
     <div className={styles.container}>
       <h1 className="title">기본 정보</h1>
       <h1>닉네임</h1>
-      <div className={styles['input-wrapper']}>
+      <div className={styles['inputWrapper']}>
         <Input placeholder="" size="large" onChange={handleNincknameChange} value={nickname} />
         <GeneralButton buttonStyle={{ style: 'check', size: 'small' }} onClick={handleNincknameCheck}>
           중복 확인
         </GeneralButton>
       </div>
-      {isNicknameError && <p className={styles['error-text']}>닉네임을 올바르게 입력해주세요</p>}
-      {isNicknameChecked === 2 && <p className={styles['error-text']}>중복된 닉네임입니다.</p>}
-      {isNicknameChecked === 3 && <p className={styles['success-text']}>사용 가능한 닉네임입니다.</p>}
+      {isNicknameError && <p className={styles['errorText']}>닉네임을 올바르게 입력해주세요</p>}
+      {isNicknameChecked === 2 && <p className={styles['errorText']}>중복된 닉네임입니다.</p>}
+      {isNicknameChecked === 3 && <p className={styles['successText']}>사용 가능한 닉네임입니다.</p>}
 
       <h3>생년월일</h3>
-      <div className={styles['input-wrapper']}>
+      <div className={styles['inputWrapper']}>
         <Input placeholder="YYYY" size="tiny" onChange={handleYearChange} value={birthYear} />
         <Input placeholder="MM" size="tiny" onChange={handleMonthChange} value={birthMonth} />
         <Input placeholder="DD" size="tiny" onChange={handleDayChange} value={birthDay} />
       </div>
       <h3>성별</h3>
-      <div className={styles['input-gender']}>
+      <div className={styles['inputGender']}>
         <SelectButton label="남성" selected={selectedGender === '남성'} onClick={() => handleGenderSelect('남성')} />
         <SelectButton label="여성" selected={selectedGender === '여성'} onClick={() => handleGenderSelect('여성')} />
       </div>
