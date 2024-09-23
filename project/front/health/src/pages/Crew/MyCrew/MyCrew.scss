@@ -168,14 +168,16 @@
     rgba(234, 250, 255, 1) 58%,
     rgba(255, 255, 255, 1) 100%
   );
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+  margin: 20px -30px 0px -30px;
+  padding: 20px 0 10px 0;
+  max-height: 288px;
 
   .rankingList {
     display: flex;
     align-items: center;
     justify-content: space-around;
-    padding: 8px;
   }
   .rankingItem {
     background-color: colors.$white;
@@ -185,7 +187,8 @@
     display: flex;
     justify-content: space-evenly;
     align-items: center;
-    padding-top: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   .memberProfileImageSmall {
     width: 32px;
@@ -213,6 +216,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 999;
 }
 
 .modalContent {
@@ -226,6 +230,7 @@
   span {
     @include typo.subtitle;
   }
+  z-index: 1000;
 }
 
 .closeButton {
