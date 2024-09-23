@@ -36,11 +36,41 @@ export const handlers = [
 
   http.post(`${baseUrl}/users/survey/information`, async ({ request }) => {
     const body = await request.json();
-    const { nick, birthday, gender } = body as { nick: string; birthday: string; gender: string };
+    const { nickname, birthday, gender } = body as { nickname: string; birthday: string; gender: string };
+    console.log(`${nickname}-${birthday}-${gender}`);
 
-    if (!nick || !birthday || !gender) {
-      return HttpResponse.json({ message: '필수 정보가 누락되었습니다.' }, { status: 400 });
-    }
+    // TODO - DB에 저장하는 부분 우선 생략
+    // mockDatabase.users.push({ nick, birthday, gender });
+
+    return HttpResponse.json({ message: '회원 정보 설문조사를 완료했습니다.' }, { status: 200 });
+  }),
+  http.post(`${baseUrl}/users/survey/body`, async ({ request }) => {
+    const body = await request.json();
+    const { height, weight, skeletalMuscleMass, bodyFatRatio, isMuscle, bodyType } = body as {
+      height: number;
+      weight: number;
+      skeletalMuscleMass: number;
+      bodyFatRatio: number;
+      isMuscle: boolean;
+      bodyType: number;
+    };
+    console.log(`${height}-${weight}-${skeletalMuscleMass}-${bodyFatRatio}-${isMuscle}-${bodyType}`);
+    // mockDatabase.users.push({ nick, birthday, gender });
+
+    return HttpResponse.json({ message: '회원 정보 설문조사를 완료했습니다.' }, { status: 200 });
+  }),
+
+  http.post(`${baseUrl}/users/survey/eating-habits`, async ({ request }) => {
+    const body = await request.json();
+    const { mealCount, mealType, snackFrequency, drinkFrequency } = body as {
+      mealCount: number;
+      mealType: string;
+      snackFrequency: string;
+      drinkFrequency: string;
+    };
+    console.log(`${mealCount}-${mealType}-${snackFrequency}-${drinkFrequency}`);
+
+    // TODO - DB에 저장하는 부분 우선 생략
     // mockDatabase.users.push({ nick, birthday, gender });
 
     return HttpResponse.json({ message: '회원 정보 설문조사를 완료했습니다.' }, { status: 200 });
