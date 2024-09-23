@@ -4,6 +4,7 @@ import Coin from '../../../assets/svg/coin.svg';
 import QuestItem from '../../../components/Home/Quest/QuestItem';
 import Plus from '../../../assets/svg/plus.svg';
 import Minus from '../../../assets/svg/minus.svg';
+import Settings from '../../../assets/svg/setting.svg';
 import { useNavigate } from 'react-router-dom';
 
 export default function MyCrew() {
@@ -84,6 +85,7 @@ export default function MyCrew() {
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
   const [isBattleModalOpen, setIsBattleModalOpen] = useState(false);
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isCrewLeader, setIsCrewLeader] = useState(true); // 크루 대표 여부 상태
   const [isInBattle, setIsInBattle] = useState(true); // 배틀 참여 여부 상태
   const [opponentTeam, setOpponentTeam] = useState('3대 500만원'); // 상대 팀 정보
@@ -98,6 +100,10 @@ export default function MyCrew() {
 
   const toggleDepositModal = () => {
     setIsDepositModalOpen(!isDepositModalOpen);
+  };
+
+  const toggleSettingsModal = () => {
+    setIsSettingsModalOpen(!isSettingsModalOpen); // Settings 모달 열고 닫기
   };
 
   //   오늘의 퀘스트
@@ -121,6 +127,10 @@ export default function MyCrew() {
     setIsDepositModalOpen(false); // 모금 후 모달 닫기
   };
 
+  const [isRandomAllowed, setisRandomAllowed] = useState(true); // 배틀 랜덤 매칭 동의 상태
+  const handleToggle = () => {
+    setisRandomAllowed((prevState) => !prevState);
+  };
   const navigate = useNavigate();
   return (
     <>
@@ -132,6 +142,9 @@ export default function MyCrew() {
             <div className="crewInfoTitle">
               <h3>{crewInfo.crewName}</h3>
               <span className="exerciseTag"># {crewInfo.exerciseName}</span>
+              {isCrewLeader && (
+                <img src={Settings} alt="settings" onClick={toggleSettingsModal} style={{ cursor: 'pointer' }} />
+              )}
             </div>
             <p className="crewDescription">{crewInfo.description}</p>
             <div className="crewCoins">
@@ -249,6 +262,7 @@ export default function MyCrew() {
         </div>
       )}
 
+      {/* 모금하기 모달 */}
       {isDepositModalOpen && (
         <div className="modalOverlay">
           <div className="modalContent">
@@ -269,6 +283,28 @@ export default function MyCrew() {
               <div className="depositButton" onClick={handleDeposit}>
                 모금하기
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/*크루 설정 모달 */}
+      {isSettingsModalOpen && (
+        <div className="modalOverlay">
+          <div className="modalContent">
+            <span>내 크루 설정</span>
+            <button className="closeButton" onClick={toggleSettingsModal}>
+              &times;
+            </button>
+            <div className="crewSettings">
+              <div>
+                <p className="settingTitle">크루 배틀 랜덤 매칭 동의</p>
+                <p className="settingDescription">상대가 배틀을 신청했을 때 자동으로 수락됩니다.</p>
+              </div>
+              <label className="toggleSwitch">
+                <input type="checkbox" checked={isRandomAllowed} onChange={handleToggle} />
+                <span className="slider"></span>
+              </label>
             </div>
           </div>
         </div>
