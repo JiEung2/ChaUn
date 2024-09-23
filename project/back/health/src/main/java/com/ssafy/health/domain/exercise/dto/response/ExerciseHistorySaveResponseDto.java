@@ -4,5 +4,5 @@ import lombok.Builder;
 
 @Builder
 public class ExerciseHistorySaveResponseDto {
-    private Double burnedCalories;
+    private Float burnedCalories;
 }
