@@ -2,8 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  padding: 20px;
+  padding: 0 20px;
   border-radius: 15px;
 }
 
@@ -11,7 +10,6 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 10px;
 }
 
 .username {
@@ -41,8 +39,6 @@
 }
 
 .chart-container {
-  width: 100%;
-  max-width: 350px;
   padding: 20px;
   background-color: white;
   border-radius: 15px;
@@ -55,26 +51,15 @@
   h3 {
     margin-bottom: 20px;
     font-size: 1.5rem; /* 제목 크기 조정 */
-    text-align: center; /* 텍스트 중앙 정렬 */
   }
 }
 
 .crew-list {
   display: flex; /* 가로로 요소를 배치 */
   justify-content: flex-start; /* 왼쪽 정렬 */
-  gap: 20px; /* 요소 간의 간격 */
+  gap: 10px; /* 요소 간의 간격 */
   overflow-x: auto; /* 가로 스크롤 가능 */
   padding: 10px 0;
-
-  /* 크루 아이템의 컨테이너 */
-  .crew-item {
-    display: flex;
-    flex-direction: column; /* 세로로 정렬 */
-    align-items: center; /* 가운데 정렬 */
-    text-align: center;
-    width: 150px; /* 크루 가로 길이 설정 */
-    flex-shrink: 0; /* 스크롤 시 크기 축소 방지 */
-  }
 
   .crew-item img {
     width: 120px; /* 이미지 크기 조정 */
@@ -82,11 +67,6 @@
     border-radius: 50%; /* 원형 이미지 */
     object-fit: cover; /* 이미지가 잘리거나 찌그러지지 않게 조정 */
     margin-bottom: 10px;
-  }
-
-  .crew-item h4 {
-    font-size: 1rem;
-    margin: 5px 0;
   }
 
   .crew-item .tag {
@@ -105,8 +85,4 @@
 .crew-list::-webkit-scrollbar-thumb {
   background-color: #888; /* 스크롤바 색상 */
   border-radius: 10px; /* 스크롤바 모서리 둥글게 */
-}
-
-.crew-list::-webkit-scrollbar-thumb:hover {
-  background-color: #555; /* 스크롤바 hover 시 색상 */
 }
