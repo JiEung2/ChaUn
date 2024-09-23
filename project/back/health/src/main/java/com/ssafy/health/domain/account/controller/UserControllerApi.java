@@ -10,7 +10,8 @@ import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryReques
 import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
-import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
+import com.ssafy.health.domain.exercise.dto.response.TodayAndWeeklyExerciseTimeResponseDto;
+import com.ssafy.health.domain.exercise.dto.response.TotalAndMonthlyExerciseTimeResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -88,7 +89,7 @@ public interface UserControllerApi {
                     )
             )
     })
-    ApiResponse<ExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId);
+    ApiResponse<TotalAndMonthlyExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId);
 
     @Operation(
             summary = "회원 디테일 조회",
@@ -289,5 +290,29 @@ public interface UserControllerApi {
             )
     })
     ApiResponse<ExerciseHistoryListResponseDto> getMonthlyExerciseHistory(@RequestBody MonthlyExerciseHistoryRequestDto requestDto);
+
+    @Operation(
+            summary = "나의 운동 시간 조회",
+            description = "나의 총 운동시간과 이번 달 운동시간을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "회원 운동 시간 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"todayExerciseTime\": 0,\n" +
+                                    "    \"weeklyAccumulatedExerciseTime\": 0\n" +
+                                    "  }\n" +
+                                    "}"
+                            )
+                    )
+            )
+    })
+    ApiResponse<TodayAndWeeklyExerciseTimeResponseDto> getMyTodayAndWeeklyExerciseTime();
 
 }
