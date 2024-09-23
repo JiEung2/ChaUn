@@ -12,6 +12,7 @@ public class BodyHistoryResponseDto {
 
     private List<BodyHistoryData> bodyHistoryDataList;
 
+    @Getter
     @Builder
     public static class BodyHistoryData {
         private Float weight;
