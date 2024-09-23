@@ -3,11 +3,18 @@ package com.ssafy.health.domain.exercise.service;
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
+import com.ssafy.health.common.security.SecurityUtil;
+import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
+import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
 import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +37,28 @@ public class ExerciseHistoryReadService {
                 .build();
     }
 
+    public ExerciseHistoryListResponseDto getWeeklyExerciseHistory(WeeklyExerciseHistoryRequestDto requestDto) {
+        LocalDateTime[] dateTimes = calculateWeekDateTimeRange(requestDto.getYear(), requestDto.getMonth(), requestDto.getWeek());
+        LocalDateTime startDateTime = dateTimes[0];
+        LocalDateTime endDateTime = dateTimes[1];
+
+        List<ExerciseHistory> exerciseHistoryList = exerciseHistoryRepository.findByUserIdAndCreatedAtBetween(SecurityUtil.getCurrentUserId(), startDateTime, endDateTime);
+
+        List<ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto> exerciseHistoryDetailList = exerciseHistoryList.stream()
+                .map(exerciseHistory -> ExerciseHistoryListResponseDto.ExerciseHistoryDetailDto.builder()
+                        .id(exerciseHistory.getId())
+                        .exerciseDuration(exerciseHistory.getExerciseDuration())
+                        .burnedCalories(exerciseHistory.getBurnedCalories())
+                        .exerciseName(exerciseHistory.getExercise().getName())
+                        .createdAt(exerciseHistory.getCreatedAt())
+                        .build())
+                .toList();
+
+        return ExerciseHistoryListResponseDto.builder()
+                .exerciseHistoryList(exerciseHistoryDetailList)
+                .build();
+    }
+
     private Long getTotalExerciseTime(final Long userId) {
         List<ExerciseHistory> exerciseHistories = exerciseHistoryRepository.findByUserId(userId);
         return exerciseHistories.stream()
@@ -49,6 +78,17 @@ public class ExerciseHistoryReadService {
                 .mapToLong(ExerciseHistory::getExerciseDuration)
                 .sum();
 
+    }
+
+    private LocalDateTime[] calculateWeekDateTimeRange(int year, int month, int week){
+        LocalDate firstDayOfWeek = LocalDate.of(year, month, 1);
+        LocalDate firstMondayOfMonth = firstDayOfWeek.with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY));
+        LocalDate startOfWeek = firstMondayOfMonth.plusWeeks(week - 1);
+
+        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
+        LocalDateTime endDateTime = startOfWeek.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).atTime(23, 59, 59);
+
+        return new LocalDateTime[]{startDateTime, endDateTime};
     }
 
 }
