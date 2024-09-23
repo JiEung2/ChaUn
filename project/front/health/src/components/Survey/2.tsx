@@ -41,7 +41,7 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
   };
   return (
     <div className={styles.container}>
-      <h1>체형 정보</h1>
+      <h1 className="title">체형 정보</h1>
       <div className={styles['input-wrapper']}>
         <h2>키</h2>
         <Input placeholder="" size="medium" onChange={handleHeightChange} value={height} />
@@ -93,7 +93,7 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
         />
       </div>
       <div className={styles['nextPrevBtn-wrapper']}>
-        <GeneralButton buttonStyle={{ style: 'semiOutlined', size: 'tiny' }} onClick={handlePrev}>
+        <GeneralButton buttonStyle={{ style: 'outlined', size: 'tiny' }} onClick={handlePrev}>
           이전
         </GeneralButton>
         <GeneralButton buttonStyle={{ style: 'semiPrimary', size: 'tiny' }} onClick={handleNext}>

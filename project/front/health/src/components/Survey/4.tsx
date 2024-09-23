@@ -15,14 +15,16 @@ export default function Four({ finishServey, handlePrev }: FourProps) {
     } else {
       setSelectedExercises(exercises);
     }
+
+    console.log(selectedExercises);
   };
   return (
     <div className={styles.container}>
-      <h1>선호하는 운동</h1>
+      <h1 className="title">선호하는 운동</h1>
       <h3>최대 5개까지 선택 가능합니다.</h3>
       <ExerciseCategories onSelect={handleSelectExercises} multiple={true} />
       <div className={styles.buttonGroup}>
-        <GeneralButton buttonStyle={{ style: 'semiOutlined', size: 'tiny' }} onClick={handlePrev}>
+        <GeneralButton buttonStyle={{ style: 'outlined', size: 'tiny' }} onClick={handlePrev}>
           이전
         </GeneralButton>
         <GeneralButton buttonStyle={{ style: 'semiPrimary', size: 'tiny' }} onClick={finishServey}>

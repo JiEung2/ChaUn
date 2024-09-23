@@ -3,8 +3,8 @@ import SelectButton from '../Button/SelectButton';
 import Input from '../Input/Input';
 import { useState } from 'react';
 import styles from './1.module.scss'; // CSS 모듈 import
-import { nicknameCheck } from '@/api/survey';
-import { set } from 'react-hook-form';
+import { nicknameCheck, surveySubmit1 } from '@/api/survey';
+
 export default function One({ handleNext }: { handleNext: () => void }) {
   const [nickname, setNickname] = useState('');
   const [birthYear, setBirthYear] = useState('');
@@ -13,7 +13,7 @@ export default function One({ handleNext }: { handleNext: () => void }) {
   const [isNicknameError, setIsNicknameError] = useState(false); // 올바른 닉네임 여부
   // 초기상태 1, 닉네임이 중복된 상태 2. 닉네임이 사용 가능한 상태 3
   const [isNicknameChecked, setIsNicknameChecked] = useState(1);
-
+  const [selectedGender, setSelectedGender] = useState<string>('');
   const handleNincknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNickname(e.target.value);
     setIsNicknameError(false);
@@ -50,12 +50,27 @@ export default function One({ handleNext }: { handleNext: () => void }) {
     setBirthDay(e.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const birthdate: string = `${birthYear}-${birthMonth}-${birthDay}`;
-    // console.log(birthdate);
-    handleNext(); // 다음 페이지로 이동
+    try {
+      if (isNicknameChecked !== 1) {
+        //빈 문자열을 전송하는 경우, 예외처리를 해야할까?
+        try {
+          const response = await surveySubmit1(nickname, birthdate, selectedGender);
+
+          console.log(response);
+        } catch (e) {
+          console.error('사용자 정보 전송 중 에러', e);
+        }
+
+        handleNext();
+      }
+    } catch (e) {
+      console.error('서버로 데이터 전송 중 에러 발생:', e);
+    }
+
+    handleNext();
   };
-  const [selectedGender, setSelectedGender] = useState<string | null>(null);
 
   const handleGenderSelect = (gender: string) => {
     setSelectedGender(gender); // 성별 선택
@@ -63,8 +78,8 @@ export default function One({ handleNext }: { handleNext: () => void }) {
 
   return (
     <div className={styles.container}>
-      <h1>기본 정보</h1>
-      <h3>닉네임</h3>
+      <h1 className="title">기본 정보</h1>
+      <h1>닉네임</h1>
       <div className={styles['input-wrapper']}>
         <Input placeholder="" size="large" onChange={handleNincknameChange} value={nickname} />
         <GeneralButton buttonStyle={{ style: 'check', size: 'small' }} onClick={handleNincknameCheck}>

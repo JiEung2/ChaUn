@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import Coin from '@/components/Coin/Coin';
 import Crew from '@/components/Crew/Crew';
@@ -7,10 +7,10 @@ import 'chart.js/auto'; // Chart.js의 자동 등록을 위해 필요
 import './Profile.scss';
 
 export default function ProfilePage() {
-  const { userId } = useParams();
-  const [userName, setUserName] = useState('닉네임');
-  const [totalExerciseTime, setTotalExerciseTime] = useState('150h 48m');
-  const [weeklyExerciseTime, setWeeklyExerciseTime] = useState('20h 45m');
+  //   const { userId } = useParams();
+  const [userName] = useState('닉네임');
+  const [totalExerciseTime] = useState('150h 48m');
+  const [weeklyExerciseTime] = useState('20h 45m');
   const myCrews = [
     {
       id: 1,
@@ -76,7 +76,7 @@ export default function ProfilePage() {
       tag: '런닝',
     },
   ];
-  const [chartData, setChartData] = useState({
+  const [chartData] = useState({
     labels: ['2024.03', '2024.04', '2024.05', '2024.06', '2024.07', '2024'],
     datasets: [
       {
@@ -92,6 +92,7 @@ export default function ProfilePage() {
 
   const handleCrewClick = (crewId: number) => {
     //TODO - 해당 크루 상세보기
+    console.log(crewId);
   };
   //TODO - userId로 사용자 데이터 가져오기
 

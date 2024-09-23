@@ -4,6 +4,7 @@ import Three from '../../components/Survey/3';
 import Four from '../../components/Survey/4';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Survey.scss';
 export default function SurveyPage() {
   const [step, setStep] = useState(1);
   const totalSteps: number = 4;
@@ -35,6 +36,7 @@ export default function SurveyPage() {
         return <Two handleNext={handleNext} handlePrev={handlePrev} />;
       case 3:
         return <Three handleNext={handleNext} handlePrev={handlePrev} />;
+
       case 4:
         return <Four finishServey={finishServey} handlePrev={handlePrev} />;
     }

@@ -5,7 +5,7 @@ import './Result.scss';
 export default function ResultPage() {
   const navigate = useNavigate();
 
-  const [nickname, setNickname] = useState('닉네임');
+  const [nickname] = useState('닉네임');
   const moveMain = () => {
     navigate('/home');
   };

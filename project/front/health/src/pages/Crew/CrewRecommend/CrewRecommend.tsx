@@ -3,7 +3,7 @@ import { useState } from 'react';
 import './CrewRecommend.scss';
 import CrewModal from '../../../components/Crew/CrewModal';
 export default function CrewRecommend() {
-  const [nickname, setNickname] = useState('닉네임');
+  const [nickname] = useState('닉네임');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCrewId, setSelectedCrewId] = useState(1);
   // TODO - MSW로 대체 예정
