@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ExerciseTimeResponseDto {
+public class TotalAndMonthlyExerciseTimeResponseDto {
     private Long totalExerciseTime;
     private Long monthlyAccumulatedExerciseTime;
 }
