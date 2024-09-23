@@ -42,7 +42,7 @@ public class NotificationWriteService {
         LocalDateTime lastSurveyedDate = null;
 
         try {
-            lastSurveyedDate = bodyHistoryRepository.findFirstByUserId(dto.getUserId())
+            lastSurveyedDate = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(dto.getUserId())
                     .orElseThrow().getCreatedAt();
         } catch (Exception e) {
             System.out.println(e.getMessage());
