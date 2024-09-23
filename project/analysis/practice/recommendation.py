@@ -1,6 +1,7 @@
 
 import numpy as np
 import pandas as pd
+import requests
 from sklearn.preprocessing import MinMaxScaler
 
 # 나보다 비슷하거나 나보다 더 건강할 경우 유사도 높게 설정
@@ -35,7 +36,7 @@ def recommend_crews(user_index, user_df, crew_df, top_n=7):
     similarities = []
     for i in range(len(crew_df)):
         crew = crew_df.iloc[i].values
-        crew_sports = crew_list['crew_list'][i]['sport']
+        crew_sports = crew_list['crew_list'][i]['exerciseName']
 
         # 콘텐츠 기반 필터링
         content_similarity = 0
@@ -75,7 +76,7 @@ Dummy Data
 
 user = {
     'user_id' : 14,
-    'favorite_sports' : ['Soccer', 'Baseball'],
+    'favorite_sports' : ['축구', '야구'],
     'crew_list' : [1,3,10]
 }
 
@@ -232,7 +233,7 @@ crew_list = {
     'crew_list' : [
         {
             'crew_id': 1,
-            'sport': 'Soccer',
+            'exerciseName': '축구',
             'age': 26,
             'type': 5,
             'score_1' : 1700,
@@ -241,7 +242,7 @@ crew_list = {
         },
         {
             'crew_id': 2,
-            'sport': 'Running',
+            'exerciseName': '러닝',
             'age': 33,
             'type': 4,
             'score_1' : 1800,
@@ -250,7 +251,7 @@ crew_list = {
         },
         {
             'crew_id': 3,
-            'sport': 'Baseball',
+            'exerciseName': '야구',
             'age': 22,
             'type': 7,
             'score_1' : 1100,
@@ -259,7 +260,7 @@ crew_list = {
         },
         {
             'crew_id': 4,
-            'sport': 'Soccer',
+            'exerciseName': '축구',
             'age': 28,
             'type': 8,
             'score_1' : 1200,
@@ -268,7 +269,7 @@ crew_list = {
         },
         {
             'crew_id': 5,
-            'sport': 'Running',
+            'exerciseName': '러닝',
             'age': 37,
             'type': 8,
             'score_1' : 1200,
@@ -277,7 +278,7 @@ crew_list = {
         },
         {
             'crew_id': 6,
-            'sport': 'Soccer',
+            'exerciseName': '축구',
             'age': 35,
             'type': 3,
             'score_1' : 1800,
@@ -286,7 +287,7 @@ crew_list = {
         },
         {
             'crew_id': 7,
-            'sport': 'Swimming',
+            'exerciseName': '수영',
             'age': 28,
             'type': 3,
             'score_1' : 1800,
@@ -295,7 +296,7 @@ crew_list = {
         },
         {
             'crew_id': 8,
-            'sport': 'Running',
+            'exerciseName': '러닝',
             'age': 30,
             'type': 9,
             'score_1' : 1100,
@@ -304,7 +305,7 @@ crew_list = {
         },
         {
             'crew_id': 9,
-            'sport': 'Soccer',
+            'exerciseName': '축구',
             'age': 31,
             'type': 3,
             'score_1' : 1600,
@@ -313,7 +314,7 @@ crew_list = {
         },
         {
             'crew_id': 10,
-            'sport': 'Baseball',
+            'exerciseName': '야구',
             'age': 22,
             'type': 4,
             'score_1' : 1500,
@@ -337,6 +338,22 @@ sport 반영 했을 때(7:3까지 적용), 3, 10, 9, 6, 8, 4, 1
 
 '''
 
+### Java spring에 요청 이후, 데이터 조회
+def get_user_data(user_id):
+    response = requests.get(f"https://https://j11c106.p.ssafy.io/api/v1/users/{user_id}")
+    my_data = response.json()  # 내 유저 정보
+    return my_data
+
+def get_crew_data():
+    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/users")
+    user_data = response.json()  # 유저 전체 목록
+    return user_data
+
+def get_user_favorite_sports():
+    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/crews/")
+    crew_data = response.json()  # 크루 전체 목록
+    return crew_data
+
 # Convert the user list to a pandas DataFrame
 user_data = pd.DataFrame(user_list['user_list'])
 crew_data = pd.DataFrame(crew_list['crew_list'])
@@ -356,10 +373,8 @@ crew_df = pd.DataFrame(crew_data_scaled, columns=['age', 'type', 'score_1', 'sco
 # user_id를 입력 받고 추천 실행
 user_id = user['user_id']  # user_id 입력
 user_index = get_user_index_by_id(user_id, user_data)  # user_id에 해당하는 인덱스 찾기
-
 recommended_crews = recommend_crews(user_index, user_df, crew_df)
 print("추천된 크루 목록:")
 print('-----')
 for crew in recommended_crews:
-    print(crew)
-    print()
+    print(crew.name, end='\n')
