@@ -5,6 +5,8 @@ import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
+import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
+import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -190,4 +192,26 @@ public interface UserControllerApi {
     })
     ApiResponse<SurveyCompletedResponseDto> getSurveyCompleted();
 
+    @Operation(
+            summary = "운동 기록 저장",
+            description = "운동 기록을 저장하고, 소비된 칼로리를 반환받습니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "운동 기록 저장 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"burnedCalories\": 500\n" +
+                                    "  }\n" +
+                                    "}"
+                            )
+                    )
+            )
+    })
+    ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto);
 }
