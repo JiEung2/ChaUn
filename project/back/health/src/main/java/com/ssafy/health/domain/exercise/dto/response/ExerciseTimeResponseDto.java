@@ -1,4 +1,4 @@
-package com.ssafy.health.domain.account.dto.response;
+package com.ssafy.health.domain.exercise.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

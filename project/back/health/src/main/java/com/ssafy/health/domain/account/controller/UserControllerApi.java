@@ -5,6 +5,7 @@ import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
+import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

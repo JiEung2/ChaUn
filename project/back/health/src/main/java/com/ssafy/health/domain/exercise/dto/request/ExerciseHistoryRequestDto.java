@@ -1,4 +1,4 @@
-package com.ssafy.health.domain.account.dto.request;
+package com.ssafy.health.domain.exercise.dto.request;
 
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.exercise.entity.Exercise;

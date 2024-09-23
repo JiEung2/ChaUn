@@ -1,7 +1,7 @@
-package com.ssafy.health.domain.account.repository;
+package com.ssafy.health.domain.exercise.repository;
 
 import com.ssafy.health.domain.account.dto.response.UserExerciseTimeDto;
-import com.ssafy.health.domain.account.entity.ExerciseHistory;
+import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import java.time.LocalDateTime;
 import java.util.List;
 

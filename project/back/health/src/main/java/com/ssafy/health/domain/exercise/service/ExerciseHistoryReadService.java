@@ -1,11 +1,11 @@
-package com.ssafy.health.domain.account.service;
+package com.ssafy.health.domain.exercise.service;
 
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
-import com.ssafy.health.domain.account.dto.response.ExerciseTimeResponseDto;
-import com.ssafy.health.domain.account.entity.ExerciseHistory;
-import com.ssafy.health.domain.account.repository.ExerciseHistoryRepository;
+import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
+import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
+import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;

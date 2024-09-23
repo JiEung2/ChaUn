@@ -1,7 +1,7 @@
-package com.ssafy.health.domain.account.entity;
+package com.ssafy.health.domain.exercise.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import com.ssafy.health.domain.exercise.entity.Exercise;
+import com.ssafy.health.domain.account.entity.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
