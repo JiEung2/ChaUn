@@ -5,8 +5,8 @@ import BodyDetailGraph from '@/components/Record/BodyDetail/BodyDetailGraph';
 import './BodyDetail.scss';
 
 const sampleData = [
-  { date: '2024-08-01', weight: 62.5, fat: 20.1, muscle: 30.2 },
-  { date: '2024-08-10', weight: 61.8, fat: 19.8, muscle: 30.4 },
+  { date: '2024-08-01', weight: 100.5, fat: 20.1, muscle: 30.2 },
+  { date: '2024-08-10', weight: 81.8, fat: 19.8, muscle: 30.4 },
   { date: '2024-08-20', weight: 61.5, fat: 19.5, muscle: 30.6 },
   { date: '2024-08-22', weight: 61.5, fat: 19.3, muscle: 30.6 },
   { date: '2024-08-25', weight: 60.5, fat: 18.5, muscle: 30.6 },

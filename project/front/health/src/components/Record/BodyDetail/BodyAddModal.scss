@@ -1,4 +1,5 @@
 @use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies.scss' as typo;
 
 .bodyAddModal {
   display: flex;
@@ -44,4 +45,8 @@
   border: 2px solid colors.$littleDarkGray;
   border-radius: 20px;
   width: 150px;
+}
+
+.completedButton {
+  @include typo.smallButton;
 }
