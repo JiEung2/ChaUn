@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './MyCrew.scss';
 import Coin from '../../../assets/svg/coin.svg';
 import QuestItem from '../../../components/Home/Quest/QuestItem';
@@ -89,6 +89,10 @@ export default function MyCrew() {
   const [isCrewLeader, setIsCrewLeader] = useState(true); // 크루 대표 여부 상태
   const [isInBattle, setIsInBattle] = useState(true); // 배틀 참여 여부 상태
   const [opponentTeam, setOpponentTeam] = useState('3대 500만원'); // 상대 팀 정보
+
+  console.log(setIsCrewLeader);
+  console.log(setIsInBattle);
+  console.log(setOpponentTeam);
 
   const toggleQuestModal = () => {
     setIsQuestModalOpen(!isQuestModalOpen);
