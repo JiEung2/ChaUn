@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/notification")
@@ -41,7 +42,7 @@ public class NotificationController implements NotificationControllerApi {
     }
 
     @PostMapping("/test/{type}")
-    public ApiResponse<?> testNotification(@PathVariable("type") String type) {
+    public ApiResponse<?> testNotification(@PathVariable("type") String type) throws ExecutionException, InterruptedException {
         Long userId = SecurityUtil.getCurrentUserId();
         if (type.equals("survey")) {
             NotificationRequestDto dto = NotificationRequestDto.builder()
@@ -50,12 +51,20 @@ public class NotificationController implements NotificationControllerApi {
             notificationWriteService.createBodySurveyNotification(dto);
         } else if (type.equals("battle")) {
             List<Battle> battles = battleRepository.findAll();
-            battles.forEach(battle -> notificationWriteService.createBattleNotification(
-                    NotificationRequestDto.builder()
-                            .notificationType(NotificationType.BATTLE)
-                            .userId(userId)
-                            .build(),
-                    battle.getId()));
+            battles.forEach(battle -> {
+                try {
+                    notificationWriteService.createBattleNotification(
+                            NotificationRequestDto.builder()
+                                    .notificationType(NotificationType.BATTLE)
+                                    .userId(userId)
+                                    .build(),
+                            battle.getId());
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         } else {
             return ApiResponse.error(405, "Unknown parameter: " + type);
         }
