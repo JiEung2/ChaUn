@@ -48,6 +48,10 @@ dependencies {
 
 	// FCM
 	implementation 'com.google.firebase:firebase-admin:9.3.0'
+
+	// JSON Mapper
+	implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.8.2'
+	implementation 'com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations'
 }
 
 tasks.named('test') {
