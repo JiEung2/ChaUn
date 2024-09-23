@@ -4,11 +4,13 @@ import { Outlet } from 'react-router-dom';
 
 export default function CommonLayout() {
   return (
-    <div>
+    <div id="root">
       <Header />
-      <main className="outletPadding">
-        <Outlet />
-      </main>
+      <div className="outletContainer">
+        <main className="outletPadding">
+          <Outlet />
+        </main>
+      </div>
       <Navbar />
     </div>
   );

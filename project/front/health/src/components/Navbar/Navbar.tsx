@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
   const activateIcon = (path: string) => (isActive(path) ? 'navbar__icon--active' : '');
 
   //navbar를 숨길 경로 목록
-  const hideNavbarPaths = ['/', '/survey'];
+  const hideNavbarPaths = ['/', '/survey', '/surveyResult'];
 
   if (hideNavbarPaths.includes(location.pathname)) {
     return null;
