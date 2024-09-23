@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import QuestIcon from '../../assets/svg/quest.svg';
@@ -7,13 +8,16 @@ import HomeIcon1 from '../../assets/svg/homeIcon1.svg';
 import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
 import Character from '@/assets/image/model.png';
 import 'chart.js/auto';
+import Chart from 'chart.js/auto';
+import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
 
-// 데이터 인터페이스 정의
+Chart.register(annotationPlugin);
+
 interface ChartDataInterface {
   day: string;
-  time?: number;  // 운동 시간
-  calories?: number;  // 칼로리
+  time?: number;
+  calories?: number;
 }
 
 interface CharacterContent {
@@ -28,46 +32,31 @@ const characterContent: CharacterContent = {
   weeklyTime: '16h 45m',
 };
 
-// 차트 데이터 예시
 const chartData: ChartDataInterface[] = [
-  { day: '일', time: 3, calories: 200 },
-  { day: '월', time: 4, calories: 250 },
-  { day: '화', time: 2, calories: 300 },
-  { day: '수', time: 6, calories: 350 },
+  { day: '일', time: 30, calories: 200 },
+  { day: '월', time: 40, calories: 250 },
+  { day: '화', time: 120, calories: 300 },
+  { day: '수', time: 60, calories: 350 },
   { day: '목', time: 0, calories: 0 },
-  { day: '금', time: 8, calories: 450 },
-  { day: '토', time: 7, calories: 500 },
+  { day: '금', time: 100, calories: 450 },
+  { day: '토', time: 150, calories: 500 },
 ];
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
+  const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
-  // 차트 데이터
-  const data = {
-    labels: chartData.map((data) => data.day),
-    datasets: [
-      {
-        label: '운동 시간 (시간)',
-        data: chartData.map((data) => data.time),
-        borderColor: '#FF6384',
-        backgroundColor: '#FF6384',
-        fill: false,
-        tension: 0.1,
-        yAxisID: 'time',  // 보조 y축을 사용
-      },
-      {
-        label: '칼로리 (kcal)',
-        data: chartData.map((data) => data.calories),
-        borderColor: '#36A2EB',
-        backgroundColor: '#36A2EB',
-        fill: false,
-        tension: 0.1,
-        yAxisID: 'calories',  // 주 y축으로 설정
-      },
-    ],
+  // 그래프 클릭 시 칼로리 값을 설정하는 함수
+  const handleChartClick = (_: any, elements: any) => {
+    if (elements.length > 0) {
+      const clickedElementIndex = elements[0].index;
+      const clickedData = chartData[clickedElementIndex];
+      setSelectedCalories(clickedData.calories || 0); // 선택된 칼로리 값 설정
+      setClickedIndex(clickedElementIndex); // 클릭된 인덱스를 설정
+    }
   };
 
-  // 차트 옵션
   const options = {
     plugins: {
       legend: {
@@ -83,21 +72,38 @@ export default function HomePage() {
           boxWidth: 8,
           boxHeight: 8,
           padding: 10,
-          // 범례 색상 채우기
-          generateLabels: (chart: any) => {
-            return chart.data.datasets.map((dataset: any, i: number) => ({
-              text: dataset.label,
-              fillStyle: dataset.backgroundColor,
-              strokeStyle: dataset.borderColor,
-              lineWidth: 2,
-              pointStyle: 'circle',
-              hidden: !chart.isDatasetVisible(i),
-              index: i,
-            }));
-          },
         },
       },
+      tooltip: {
+        enabled: false, // 기본 툴팁 비활성화
+      },
+      annotation: {
+        annotations: clickedIndex !== null
+          ? [
+              {
+                type: 'label' as const,
+                xValue: chartData[clickedIndex].day,
+                yValue: chartData[clickedIndex].time || 0, // null 값을 0으로 처리
+                content: [`${chartData[clickedIndex].time || 0} 분`, `${selectedCalories || 0} kcal`], // null 값을 0으로 처리
+                enabled: true,
+                font: {
+                  size: 10,
+                  weight: 'bold' as const,
+                },
+                padding: {
+                  top: 5,
+                  bottom: 5,
+                  left: 5,
+                  right: 5,
+                },
+                yAdjust: chartData[clickedIndex].time === 0 || (chartData[clickedIndex].time && chartData[clickedIndex].time <= 100) ? -20 : 20, // 위아래 조정
+                xAdjust: clickedIndex === 0 ? 20 : clickedIndex === chartData.length - 1 ? -20 : 0,
+              },
+            ]
+          : [],
+      },
     },
+    onClick: handleChartClick,
     scales: {
       x: {
         grid: {
@@ -105,26 +111,47 @@ export default function HomePage() {
         },
       },
       time: {
+        type: 'linear' as const,
+        axis: 'y' as const,
         beginAtZero: true,
         display: true,
         ticks: {
-          stepSize: 1,
-          callback: function(value: string | number) {
-            // 숫자가 아닌 값에 대해 안전하게 처리
-            if (typeof value === 'number') {
-              return value.toString();  // 1단위로 표시
-            }
-            return ''; // 처리할 수 없는 경우 빈 문자열 반환
+          stepSize: 10, 
+          callback: function (value: string | number) {
+            return `${value}`;
           },
         },
         min: 0,
-        max: 10,
-      },
-      calories: {
-        display: false,  // 칼로리 y축을 숨김
+        max: 160,
       },
     },
   };
+
+
+  // null 값 처리하는 함수
+  const processedChartData = chartData.map((data) => ({
+    ...data,
+    time: data.time || 0,
+    calories: data.calories || 0,
+  }));
+
+  const data = {
+    labels: processedChartData.map((data) => data.day),
+    datasets: [
+      {
+        label: '운동 시간 (분)',
+        data: processedChartData.map((data) => data.time),
+        borderColor: '#FF6384',
+        backgroundColor: '#FF6384',
+        fill: false,
+        tension: 0.1,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        yAxisID: 'time',
+      },
+    ],
+  };
+
 
   return (
     <div className="homeContainer">
@@ -140,6 +167,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
         <div className="myInfo">
           <img src={Character} alt="character" />
           <div className="time">
@@ -152,7 +180,7 @@ export default function HomePage() {
       </div>
 
       <div className="chartSection">
-        <h2>이번 주 운동 그래프</h2>
+        <p className="chartTitle">이번 주 운동 그래프</p>
         <Line data={data} options={options} />
       </div>
 
