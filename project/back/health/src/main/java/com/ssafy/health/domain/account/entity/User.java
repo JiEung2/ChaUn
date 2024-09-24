@@ -1,7 +1,6 @@
 package com.ssafy.health.domain.account.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.UserLoginUpdateRequestDto;
 import com.ssafy.health.domain.account.dto.request.UserRegisterRequestDto;
 import jakarta.persistence.*;
@@ -10,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -30,7 +29,7 @@ public class User extends BaseEntity {
 
     private String email;
 
-    private Date birthday;
+    private LocalDate birthday;
 
     private String profileImage;
 
@@ -69,7 +68,7 @@ public class User extends BaseEntity {
         this.email = userLoginUpdateRequestDto.getEmail();
     }
 
-    public void saveUserInfo(String nickname, Date birthday, Gender gender) {
+    public void saveUserInfo(String nickname, LocalDate birthday, Gender gender) {
         this.nickname = nickname;
         this.birthday = birthday;
         this.gender = gender;
