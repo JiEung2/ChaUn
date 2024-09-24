@@ -3,6 +3,7 @@ package com.ssafy.health.domain.exercise.service;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
+import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
 import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistoryNotFoundException;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExerciseHistoryWriteService {
 
     private final UserRepository userRepository;
+    private final UserCrewRepository userCrewRepository;
     private final ExerciseRepository exerciseRepository;
     private final BodyHistoryRepository bodyHistoryRepository;
     private final ExerciseHistoryRepository exerciseHistoryRepository;
@@ -38,9 +40,16 @@ public class ExerciseHistoryWriteService {
         ExerciseHistory exerciseHistory = buildExerciseHistory(exerciseHistorySaveRequestDto, user, exercise, burnedCalories);
         exerciseHistoryRepository.save(exerciseHistory);
 
+        updateScore(user, exercise, burnedCalories);
+
         return ExerciseHistorySaveResponseDto.builder()
                 .burnedCalories(exerciseHistory.getBurnedCalories())
                 .build();
+    }
+
+    private void updateScore(User user, Exercise exercise, Float burnedCalories) {
+        Float basicScore = calculateBasicScore(burnedCalories);
+        userCrewRepository.updateBasicScoreByUserAndExercise(user, exercise, basicScore);
     }
 
     private ExerciseHistory buildExerciseHistory(ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto, User user, Exercise exercise, Float burnedCalories) {
@@ -77,5 +86,9 @@ public class ExerciseHistoryWriteService {
 
     private Long msToMin(Long exerciseTime) {
         return exerciseTime / 6000;
+    }
+
+    private Float calculateBasicScore(Float burnedCalories) {
+        return burnedCalories / 10;
     }
 }

@@ -9,12 +9,7 @@ import com.ssafy.health.domain.body.BodyHistory.dto.response.WeightHistoryRespon
 import com.ssafy.health.domain.body.BodyHistory.service.BodyHistoryReadService;
 import com.ssafy.health.domain.body.BodyHistory.service.BodyHistoryWriteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -35,8 +30,12 @@ public class BodyHistoryController implements BodyHistoryControllerApi{
     }
 
     @GetMapping("/body")
-    public ApiResponse<BodyHistoryResponseDto> getBodyHistory(@RequestBody BodyHistoryRequestDto bodyHistoryRequestDto) {
-        return ApiResponse.success(bodyHistoryReadService.getBodyHistory(bodyHistoryRequestDto));
+    public ApiResponse<BodyHistoryResponseDto> getBodyHistory(@RequestParam("year") Integer year,
+                                                              @RequestParam("month") Integer month) {
+        return ApiResponse.success(bodyHistoryReadService.getBodyHistory(BodyHistoryRequestDto.builder()
+                .year(year)
+                .month(month)
+                .build()));
     }
 
 }

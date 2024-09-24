@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "체형 기록 컨트롤러", description = "회원의 체형 기록을 관리하는 클래스")
 public interface BodyHistoryControllerApi {
@@ -97,6 +98,7 @@ public interface BodyHistoryControllerApi {
                     )
             )
     })
-    ApiResponse<BodyHistoryResponseDto> getBodyHistory(BodyHistoryRequestDto bodyHistoryRequestDto);
+    ApiResponse<BodyHistoryResponseDto> getBodyHistory(@RequestParam("year") Integer year,
+                                                       @RequestParam("month") Integer month);
 
 }
