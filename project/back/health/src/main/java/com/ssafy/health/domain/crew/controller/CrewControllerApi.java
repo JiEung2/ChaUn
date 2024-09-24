@@ -16,8 +16,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -40,7 +39,9 @@ public interface CrewControllerApi {
                             ))
             ),
     })
-    ApiResponse<CreateCrewSuccessDto> createCrew(@RequestBody CreateCrewRequestDto createCrewRequestDto, @RequestParam("profileImage") MultipartFile profileImage) throws IOException;
+    ApiResponse<CreateCrewSuccessDto> createCrew(
+            @RequestPart("data") CreateCrewRequestDto createCrewRequestDto,
+            @RequestPart("profileImage") MultipartFile profileImage) throws IOException;
 
     @Operation(
             summary = "크루 상세 조회",
