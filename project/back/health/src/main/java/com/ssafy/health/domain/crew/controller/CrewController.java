@@ -31,7 +31,9 @@ public class CrewController implements CrewControllerApi {
     private final BattleWriteService battleWriteService;
 
     @PostMapping("/crew")
-    public ApiResponse<CreateCrewSuccessDto> createCrew(@RequestBody CreateCrewRequestDto createCrewRequestDto, @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
+    public ApiResponse<CreateCrewSuccessDto> createCrew(
+            @RequestPart("createCrewRequestDto") CreateCrewRequestDto createCrewRequestDto,
+            @RequestPart("profileImage") MultipartFile profileImage) throws IOException {
         return ApiResponse.success(crewWriteService.createCrew(createCrewRequestDto, profileImage));
     }
 
