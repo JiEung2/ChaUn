@@ -1,6 +1,8 @@
 package com.ssafy.health.domain.crew.service;
 
+import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.dto.response.UserExerciseTimeDto;
+import com.ssafy.health.domain.crew.entity.CrewRole;
 import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
@@ -64,6 +66,8 @@ public class CrewReadService {
         Integer totalBattlesCount= (Integer) result[0];
         Integer winCount = (Integer) result[1];
 
+        CrewRole crewRole = getCrewRole(crewId);
+
         return CrewDetailResponseDto.builder()
                 .crewName(crew.getName())
                 .exerciseName(crew.getExercise().getName())
@@ -76,7 +80,14 @@ public class CrewReadService {
                 .crewRanking(crewRanking)
                 .totalBattlesCount(totalBattlesCount)
                 .winCount(winCount)
+                .role(crewRole)
                 .build();
+    }
+
+    private CrewRole getCrewRole(Long crewId) {
+        return userCrewRepository.findByCrewIdAndUserId(crewId, SecurityUtil.getCurrentUserId())
+                .map(UserCrew::getRole)
+                .orElse(CrewRole.NOT_REGISTERED);
     }
 
     public CrewMembersResponseDto getCrewMembers(Long crewId) {
