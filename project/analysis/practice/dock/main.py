@@ -93,20 +93,21 @@ def make_predictions(model, X_test):
     
     return predictions
 
-# 전체 model 돌리는 함수
-def model_predict(data_test):
+# 모델 로드 함수
+@app.on_event("startup")
+def load_model_startup():
+    global model
     timesteps = 7
-    features = 5  # ['sex', 'age', 'BMI', 'weight', 'consumed_cal'] -> feature 수
-    forecast_steps = 90  # 90일 예측
+    features = 5 # [sex, age, BMI, weight, comsumed_cal] = 5 features
+    forecast_steps = 90 # 최대 90일까지의 예측을 진행
     input_shape = (timesteps, features)
 
-    # 모델 생성, 가중치 불러오기
     model = build_model(input_shape, forecast_steps)
     model = load_model_weights(model, "./modelv1.weights.h5")
 
-    # 예측 수행
-    predictions = make_predictions(model, data_test)
-
+# 모델 수행 이후 처리 함수
+def model_predict(data_test):
+    predictions = make_predictions(model, data_test) # 7일 입력 X -> 그 다음 1일 부터 ~ 90일 앞까지 값을 Y
     # 30일, 90일 기록을 return 시키기
     return round(float(predictions[0][29]), 2), round(float(predictions[0][89]), 2)
 
@@ -140,24 +141,29 @@ def convert_objectid(data):
         data = [convert_objectid(item) for item in data]
     return data
 
-row_user_data = []
-row_crew_data = []
-user_data = []
-crew_data = []
+# Java spring에 요청 이후, 데이터 조회
+def get_user_data(user_id):
+    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/users/{user_id}")
+    my_data = response.json()  # 내 유저 정보
+    print(my_data)
+    return my_data
+
+def get_user_list():
+    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/users")
+    user_data = response.json()  # 유저 전체 목록
+    print(user_data)
+    return user_data
+
+def get_crew_list():
+    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/crews")
+    crew_data = response.json()  # 크루 전체 목록
+    print(crew_data)
+    return crew_data
 
 # 루트 라우터
 @app.get("/")
 def root():
-    global row_user_data, row_crew_data, user_data, crew_data
-    # 데이터 불러오기 (JSON)
-    row_user_data = get_user_list()
-    row_crew_data = get_crew_list()
-
-    # JSON -> DF
-    user_data = pd.DataFrame(row_user_data)
-    crew_data = pd.DataFrame(row_crew_data)
-
-    return {"message": "MongoDB와 FastAPI 연결 성공; 유저, 크루 목록 조회 완료"}
+    return {"message": "MongoDB와 FastAPI 연결 성공"}
 
 # 사용자별 예측 라우터
 @app.post("/api/v1/users/{user_id}/body/prediction")
@@ -220,22 +226,6 @@ async def predict(user_id: int, request: UserExerciseRequest):
             }
         }
 
-# Java spring에 요청 이후, 데이터 조회
-def get_user_data(user_id):
-    response = requests.get(f"https://https://j11c106.p.ssafy.io/api/v1/users/{user_id}")
-    my_data = response.json()  # 내 유저 정보
-    return my_data
-
-def get_user_list():
-    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/users")
-    user_data = response.json()  # 유저 전체 목록
-    return user_data
-
-def get_crew_list():
-    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/crews")
-    crew_data = response.json()  # 크루 전체 목록
-    return crew_data
-
 ### 크루 추천에 필요한 함수들
 # user_id를 입력 받아서 추천 시스템 실행
 def get_user_index_by_id(user_id, user_data):
@@ -260,7 +250,9 @@ def pearson_similarity(user, crew):
     return combined_similarity
 
 # 메인 추천 함수
-def recommend_crews(user_index, user_df, crew_df, top_n=6):
+def recommend_crews(user_index, user_df, crew_df, crew_list, top_n=6):
+    user = get_user_data()
+    row_crew_data = crew_list
     user_value = user_df.iloc[user_index].values  # 추천을 받을 사용자의 데이터에서 필요한 정보만 가져오기
 
     similarities = []
@@ -298,10 +290,16 @@ def recommend_crews(user_index, user_df, crew_df, top_n=6):
     np.random.shuffle(top_crews)
     return top_crews
 
-
 # 사용자가 크루 추천을 받을 때
 @app.get("/api/v1/users/{user_id}/crew-recommendation/")
-def crew_recommendation():
+def crew_recommendation(user_id : int):
+    # 데이터 불러오기 (각 요청에 대해 독립적으로 처리)
+    row_user_data = get_user_list()
+    row_crew_data = get_crew_list()
+
+    # JSON -> DF (각 요청별로 변환)
+    user_data = pd.DataFrame(row_user_data)
+    crew_data = pd.DataFrame(row_crew_data)
 
     # 데이터 정규화
     scaler = MinMaxScaler() # 정규화 스케일러
@@ -314,20 +312,13 @@ def crew_recommendation():
     crew_df['crew_id'] = crew_data['crew_id']
     # print(crew_df)
 
-    user = get_user_data()
-    user_id = user['user_id']  # user_id 입력
     user_index = get_user_index_by_id(user_id, user_data)  # user_id에 해당하는 인덱스 찾기
-    recommended_crews = recommend_crews(user_index, user_df, crew_df)
-    result = []
-    for crew in recommended_crews:
-        result.append({
-            'crew_id': crew[0],
-            'similarity' : crew[1]
-        })
+    recommended_crews = recommend_crews(user_index, user_df, crew_df, row_crew_data)
+    result = [{'crew_id': crew[0], 'similarity': crew[1]} for crew in recommended_crews]
 
     response = requests.post('https://j11c106.p.ssafy.io/api/v1/users/{user_id}/crew-recommendation', json = result)
 
-    if response.status.code == 200:
+    if response.status_code == 200:
         print("200 OK")
     else:
         print("error", response.text)
