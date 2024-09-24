@@ -1,5 +1,6 @@
 package com.ssafy.health.domain.crew.service;
 
+import com.ssafy.health.common.s3.service.S3Service;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
@@ -22,6 +23,11 @@ import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
 
 import static com.ssafy.health.domain.coin.CoinCost.*;
 
@@ -35,14 +41,16 @@ public class CrewWriteService {
     private final CrewRepository crewRepository;
     private final ExerciseRepository exerciseRepository;
     private final UserCrewRepository userCrewRepository;
+    private final S3Service s3Service;
 
-    public CreateCrewSuccessDto createCrew(CreateCrewRequestDto requestDto) {
+    public CreateCrewSuccessDto createCrew(CreateCrewRequestDto requestDto, MultipartFile profileImage) throws IOException {
         Exercise exercise = exerciseRepository.findById(requestDto.getExerciseId()).orElseThrow(ExerciseNotFoundException::new);
         User user = findUserById(SecurityUtil.getCurrentUserId());
 
         coinService.spendUserCoins(user, CREATE_CREW.getAmount());
+        String savedProfileImage = s3Service.uploadFile(profileImage);
 
-        Crew crew = buildCrew(requestDto, exercise);
+        Crew crew = buildCrew(requestDto, exercise, savedProfileImage, calculateAge(user.getBirthday()));
 
         buildUserCrew(user, crew, CrewRole.LEADER);
 
@@ -97,10 +105,17 @@ public class CrewWriteService {
                 .build());
     }
 
-    private Crew buildCrew(CreateCrewRequestDto requestDto, Exercise exercise) {
+    private Crew buildCrew(CreateCrewRequestDto requestDto, Exercise exercise, String profileImage, Float averageAge) {
         return crewRepository.save(Crew.builder()
                 .createCrewRequestDto(requestDto)
+                .profileImage(profileImage)
+                .averageAge(averageAge)
                 .exercise(exercise)
                 .build());
+    }
+
+    private Float calculateAge(LocalDate birthday) {
+        LocalDate today = LocalDate.now();
+        return (float) Period.between(birthday, today).getYears();
     }
 }
