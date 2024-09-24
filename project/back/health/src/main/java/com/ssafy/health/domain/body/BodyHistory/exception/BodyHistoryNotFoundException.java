@@ -1,4 +1,4 @@
-package com.ssafy.health.domain.body.BodyHistory.entity;
+package com.ssafy.health.domain.body.BodyHistory.exception;
 
 public class BodyHistoryNotFoundException extends RuntimeException{
     @Override
