@@ -2,6 +2,7 @@ package com.ssafy.health.common.config;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.ssafy.health.domain.account.repository.RecommendedCrewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -25,7 +26,9 @@ import java.util.Objects;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ssafy.health")
-@EnableMongoRepositories(basePackages = "com.ssafy.health.domain.body.BodyPrediction.repository")
+@EnableMongoRepositories(basePackageClasses = {
+    RecommendedCrewRepository.class,
+})
 @EnableConfigurationProperties({
         DataSourceProperties.class, MongoProperties.class, HibernateProperties.class
 })

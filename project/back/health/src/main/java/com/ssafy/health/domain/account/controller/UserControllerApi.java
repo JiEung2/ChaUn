@@ -2,9 +2,9 @@ package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
+import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
-import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
 import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
 import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
@@ -226,29 +226,29 @@ public interface UserControllerApi {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "운동 기록 조회 완료",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = """
-                                {
-                                  "status": 200,
-                                  "message": "",
-                                  "data": {
-                                    "exerciseHistoryList": [
-                                        {
-                                          "id": 1,
-                                          "exerciseDuration": 3600,
-                                          "burnedCalories": 560,
-                                          "exerciseName": "러닝",
-                                          "createdAt": "2024-09-16T15:00:00"
-                                        },
-                                        {
-                                          "id": 2,
-                                          "exerciseDuration": 1800,
-                                          "burnedCalories": 300,
-                                          "exerciseName": "수영",
-                                          "createdAt": "2024-09-17T10:00:00"
-                                        }
-                                    ]
-                                  }
-                                }
-                                """
+                                    {
+                                      "status": 200,
+                                      "message": "",
+                                      "data": {
+                                        "exerciseHistoryList": [
+                                            {
+                                              "id": 1,
+                                              "exerciseDuration": 3600,
+                                              "burnedCalories": 560,
+                                              "exerciseName": "러닝",
+                                              "createdAt": "2024-09-16T15:00:00"
+                                            },
+                                            {
+                                              "id": 2,
+                                              "exerciseDuration": 1800,
+                                              "burnedCalories": 300,
+                                              "exerciseName": "수영",
+                                              "createdAt": "2024-09-17T10:00:00"
+                                            }
+                                        ]
+                                      }
+                                    }
+                                    """
                             ))
             )
     })
@@ -262,32 +262,66 @@ public interface UserControllerApi {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "운동 기록 조회 완료",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = """
-                                {
-                                  "status": 200,
-                                  "message": "",
-                                  "data": {
-                                    "exerciseHistoryList": [
-                                        {
-                                          "id": 1,
-                                          "exerciseDuration": 3600,
-                                          "burnedCalories": 560,
-                                          "exerciseName": "러닝",
-                                          "createdAt": "2024-09-16T15:00:00"
-                                        },
-                                        {
-                                          "id": 2,
-                                          "exerciseDuration": 1800,
-                                          "burnedCalories": 300,
-                                          "exerciseName": "수영",
-                                          "createdAt": "2024-09-17T10:00:00"
-                                        }
-                                    ]
-                                  }
-                                }
-                                """
+                                    {
+                                      "status": 200,
+                                      "message": "",
+                                      "data": {
+                                        "exerciseHistoryList": [
+                                            {
+                                              "id": 1,
+                                              "exerciseDuration": 3600,
+                                              "burnedCalories": 560,
+                                              "exerciseName": "러닝",
+                                              "createdAt": "2024-09-16T15:00:00"
+                                            },
+                                            {
+                                              "id": 2,
+                                              "exerciseDuration": 1800,
+                                              "burnedCalories": 300,
+                                              "exerciseName": "수영",
+                                              "createdAt": "2024-09-17T10:00:00"
+                                            }
+                                        ]
+                                      }
+                                    }
+                                    """
                             ))
             )
     })
     ApiResponse<ExerciseHistoryListResponseDto> getMonthlyExerciseHistory(@RequestBody MonthlyExerciseHistoryRequestDto requestDto);
 
+    @Operation(
+            summary = "자신의 추천 크루 목록 조회",
+            description = "자신의 추천 크루와 유사도 목록을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "추천 크루 목록 조회 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "Success",
+                                      "data": {
+                                        "userId": 1,
+                                        "crewRecommend": [
+                                          {
+                                            "crewId": 3,
+                                            "similarity": 0.2
+                                          },
+                                          {
+                                            "crewId": 6,
+                                            "similarity": 0.8
+                                          },
+                                          {
+                                            "crewId": 2,
+                                            "similarity": 1
+                                          }
+                                        ]
+                                      }
+                                    }
+                                    """
+                            ))
+            )
+    })
+    ApiResponse<RecommendedCrewResponseDto> getRecommendedCrew();
 }
