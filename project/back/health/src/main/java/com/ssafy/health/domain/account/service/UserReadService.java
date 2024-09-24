@@ -1,10 +1,13 @@
 package com.ssafy.health.domain.account.service;
 
 import com.ssafy.health.common.security.SecurityUtil;
+import com.ssafy.health.domain.account.dto.response.RecommendedCrewResponseDto;
 import com.ssafy.health.domain.account.dto.response.SurveyCompletedResponseDto;
 import com.ssafy.health.domain.account.dto.response.UserDetailDto;
+import com.ssafy.health.domain.account.entity.RecommendedCrew;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
+import com.ssafy.health.domain.account.repository.RecommendedCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class UserReadService {
 
     private final UserRepository userRepository;
+    private final RecommendedCrewRepository recommendedCrewRepository;
 
     public UserDetailDto getUserDetail(Long userId) {
         User user = findUserById(userId);
@@ -29,6 +33,22 @@ public class UserReadService {
 
         return SurveyCompletedResponseDto.builder()
                 .surveyCompleted(user.getSurveyCompleted())
+                .build();
+    }
+
+    public RecommendedCrewResponseDto getRecommendedCrew() {
+        Long userId = SecurityUtil.getCurrentUserId();
+        RecommendedCrew recommendedCrew = recommendedCrewRepository.findByUserId(userId);
+
+        return RecommendedCrewResponseDto.builder()
+                .userId(recommendedCrew.getUserId())
+                .crewRecommend(recommendedCrew.getCrewRecommend()
+                        .stream()
+                        .map(crew -> RecommendedCrewResponseDto.CrewRecommendList.builder()
+                                .crewId(crew.getCrewId())
+                                .similarity(crew.getSimilarity())
+                                .build())
+                        .toList())
                 .build();
     }
 
