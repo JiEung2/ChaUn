@@ -292,7 +292,10 @@ def crew_recommendation(user_id : int):
     user_index = get_user_index_by_id(user_id, user_data)  # user_id에 해당하는 인덱스 찾기
     recommended_crews = recommend_crews(user_index, user_id, user_df, crew_df, row_crew_data)
     # 4. 저장할 정보 리스트로 만들기
-    result = [{'crew_id': crew[0], 'similarity': crew[1]} for crew in recommended_crews]
+    result = {
+        'user_id' : user_id,
+        'crew_recommended' : [{'crew_id': crew[0], 'similarity': crew[1]} for crew in recommended_crews]
+    }
 
     # 5. response.data 내보내기
     try:
