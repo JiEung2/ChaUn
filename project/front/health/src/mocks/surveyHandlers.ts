@@ -44,6 +44,8 @@ export const surveyHandlers = [
 
     return HttpResponse.json({ message: '회원 정보 설문조사를 완료했습니다.' }, { status: 200 });
   }),
+
+  //설문 - 체형
   http.post(`${baseUrl}/users/survey/body`, async ({ request }) => {
     const body = await request.json();
     const { height, weight, skeletalMuscleMass, bodyFatRatio, isMuscle, bodyType } = body as {

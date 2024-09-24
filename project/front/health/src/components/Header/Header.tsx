@@ -72,6 +72,7 @@ export default function Header() {
           onClick={handleBackClick}>
           <img src={back} alt="뒤로가기" className="icon" />
         </button>
+
         <h1 className="title">{getHeaderTitle()}</h1>
       </div>
       <img
