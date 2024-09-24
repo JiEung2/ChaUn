@@ -1,5 +1,6 @@
 package com.ssafy.health.domain.crew.dto.response;
 
+import com.ssafy.health.domain.crew.entity.CrewRole;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,4 +18,5 @@ public class CrewDetailResponseDto {
     private Float averageAge;
     private Integer basicScore;
     private Integer activityScore;
+    private CrewRole role;
 }
