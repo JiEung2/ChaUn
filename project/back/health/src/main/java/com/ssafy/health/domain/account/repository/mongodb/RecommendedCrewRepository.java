@@ -1,4 +1,4 @@
-package com.ssafy.health.domain.account.repository;
+package com.ssafy.health.domain.account.repository.mongodb;
 
 import com.ssafy.health.domain.account.entity.RecommendedCrew;
 import org.springframework.data.mongodb.repository.MongoRepository;

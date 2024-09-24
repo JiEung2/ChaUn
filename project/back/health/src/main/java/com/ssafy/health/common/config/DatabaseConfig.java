@@ -2,16 +2,14 @@ package com.ssafy.health.common.config;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import com.ssafy.health.domain.account.repository.RecommendedCrewRepository;
+import com.ssafy.health.domain.account.repository.mongodb.RecommendedCrewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.*;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -25,9 +23,15 @@ import java.util.Map;
 import java.util.Objects;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.ssafy.health")
+@EnableJpaRepositories(basePackages = "com.ssafy.health",
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = {
+                        RecommendedCrewRepository.class,
+                }
+        ))
 @EnableMongoRepositories(basePackageClasses = {
-    RecommendedCrewRepository.class,
+        RecommendedCrewRepository.class,
 })
 @EnableConfigurationProperties({
         DataSourceProperties.class, MongoProperties.class, HibernateProperties.class
