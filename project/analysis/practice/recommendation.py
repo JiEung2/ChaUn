@@ -46,6 +46,7 @@ def recommend_crews(user_index, user_df, crew_df, top_n=6):
     similarities.sort(key=lambda x: x[1], reverse=True)
     # 유사도가 0.2 이상인 항목만 필터링 (= 적당히 유사해야 한다.)
     filtered_similarities = [item for item in similarities[:20] if item[1] >= 0.2]
+    print('필터 된 목록 :', len(filtered_similarities))
 
     # 유사도 0.2 이상 상위 20개가 9개가 될 경우
     if len(filtered_similarities) >= 9 :
@@ -61,7 +62,7 @@ def recommend_crews(user_index, user_df, crew_df, top_n=6):
 def get_user_index_by_id(user_id, user_data):
     # user_id가 있는 컬럼이 있다고 가정하고 해당 인덱스를 반환
     user_index = user_data[user_data['user_id'] == user_id].index[0]
-    print('user_index :', user_index)
+    print(f'user_index : {user_index} || user_id : {user_id}')
     return user_index
 
 '''
@@ -371,17 +372,22 @@ def get_user_data(user_id):
     my_data = response.json()  # 내 유저 정보
     return my_data
 
-def get_crew_data():
+def get_user_list():
     response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/users")
     user_data = response.json()  # 유저 전체 목록
     return user_data
 
-def get_user_favorite_sports():
+def get_crew_list():
     response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/crews")
     crew_data = response.json()  # 크루 전체 목록
     return crew_data
 
+
+### MAIN
 # Json 형식으로 받게 된다면, 이를 pandas로 처리
+# user_data = get_user_list()
+# crew_data = get_crew_list()
+
 user_data = pd.DataFrame(user_list['user_list'])
 crew_data = pd.DataFrame(crew_list['crew_list'])
 
@@ -396,12 +402,11 @@ crew_df = pd.DataFrame(crew_data_scaled, columns=['m_type', 'type', 'age', 'scor
 crew_df['crew_id'] = crew_data['crew_id']
 # print(crew_df)
 
-### MAIN
+# user = get_user_data()
 user_id = user['user_id']  # user_id 입력
 user_index = get_user_index_by_id(user_id, user_data)  # user_id에 해당하는 인덱스 찾기
 recommended_crews = recommend_crews(user_index, user_df, crew_df)
-print("추천된 크루 목록:")
-print('-----')
+print("[추천된 크루 목록]")
 result = []
 for crew in recommended_crews:
     result += [crew[0]]
