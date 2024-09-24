@@ -159,27 +159,34 @@ async def predict(user_id: int, request: UserExerciseRequest):
     7 - (현재 길이)로 길이를 정해서 더미 길이를 추가해야 함
         - 운동을 하지 않았으니까, 체중을 키우는 방식으로 
     '''
+    # 2. exercise_data를 길이를 맞춰 전처리 코드
 
-    # 입력 데이터를 numpy 배열로 변환
+
+
+
+    # 3. 전처리 데이터 np 배열 변환
     X_test = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data]) # (7, 5)
     X_test = X_test.reshape(1, 7, 5)  # 한 차원 늘려서, 하나의 입력으로, 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
 
-    # model.predict을 통해 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
+    # 4. model.predict 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
     pred_30_d, pred_90_d = model_predict(X_test)
 
-
-    # MongoDB에 운동 기록을 저장할 때 UTC 시간으로 저장
+    # 5. 예측 DB 변수 정의
     new_prediction = {
         "user_id": user_id,
         "p30": pred_30_d,
         "p90": pred_90_d,
         "created_at": convert_utc_to_kst(datetime.utcnow())  # KST 시간으로 저장
+        # MongoDB상에는 KST로 안나오고 UTC로 나오는데? -> 따로 설정이 있나?
     }
 
-    # 종합 예측 MongoDB에 저장
+    # 6. 종합 예측 MongoDB 저장
     predict_basic.insert_one(new_prediction)
     new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
 
+    # 7. 재확인 :: return시에는 kst 잘 나옴
+    return new_prediction
+
 # CLI 실행을 main 함수에서 실행
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("predict:app", host="0.0.0.0", port=8000, reload=True)
