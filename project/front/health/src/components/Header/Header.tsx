@@ -55,7 +55,7 @@ export default function Header() {
   const showAlarmBtn = !hiddenAlarmButtonPaths.includes(location.pathname);
 
   // 특정 경로에서는 헤더를 숨기도록 설정
-  const hideHeaderPaths = ['/', '/survey', '/surveyResult', '/exercise', '/exercise/recommend'];
+  const hideHeaderPaths = ['/', '/survey', '/surveyResult', '/exercise'];
 
   if (hideHeaderPaths.includes(location.pathname)) {
     return null;
