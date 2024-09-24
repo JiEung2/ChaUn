@@ -32,6 +32,8 @@ public class Crew extends BaseEntity {
     private Float averageAge;
     private String description;
     private Integer crewCoin;
+    private Integer basicScore;
+    private Integer activityScore;
     private Boolean battleStatus;
 
     @OneToOne
@@ -39,16 +41,18 @@ public class Crew extends BaseEntity {
     private Exercise exercise;
 
     @Builder
-    public Crew(CreateCrewRequestDto createCrewRequestDto, Exercise exercise) {
+    public Crew(CreateCrewRequestDto createCrewRequestDto, Exercise exercise, String profileImage, Float averageAge) {
         this.name = createCrewRequestDto.getName();
-        this.profileImage = createCrewRequestDto.getProfileImage();
-        this.averageAge = createCrewRequestDto.getAverageAge();
         this.description = createCrewRequestDto.getDescription();
         this.exercise = exercise;
+        this.profileImage = profileImage;
+        this.averageAge = averageAge;
         this.memberLimit = 10;
         this.crewCoin = 0;
         this.version = 1;
         this.battleStatus = false;
+        this.basicScore = 0;
+        this.activityScore = 0;
     }
 
     public void increaseCoin(Integer coin) {

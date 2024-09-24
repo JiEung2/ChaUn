@@ -50,10 +50,10 @@ public class BattleWriteService {
 
         return BattleMatchResponseDto.builder()
                 .exerciseName(myCrew.getExercise().getName())
-                .myTeamName(myCrew.getName())
-                .myTeamScore(0F)
-                .opponentTeamName(opponentCrew.getName())
-                .opponentTeamScore(0F)
+                .myCrewName(myCrew.getName())
+                .myCrewScore(0)
+                .opponentCrewName(opponentCrew.getName())
+                .opponentCrewScore(0)
                 .dDay(calculateDDay())
                 .build();
     }

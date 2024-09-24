@@ -2,11 +2,14 @@ package com.ssafy.health.domain.crew.controller;
 
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
+import com.ssafy.health.domain.battle.service.BattleReadService;
 import com.ssafy.health.domain.battle.service.BattleWriteService;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
+import com.ssafy.health.domain.crew.dto.response.CrewScoreResponseDto;
 import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import com.ssafy.health.domain.crew.service.CrewReadService;
@@ -26,11 +29,17 @@ public class CrewController implements CrewControllerApi {
 
     private final CrewReadService crewReadService;
     private final CrewWriteService crewWriteService;
+    private final BattleReadService battleReadService;
     private final BattleWriteService battleWriteService;
 
     @PostMapping("/crew")
     public ApiResponse<CreateCrewSuccessDto> createCrew(@RequestBody CreateCrewRequestDto createCrewRequestDto) {
         return ApiResponse.success(crewWriteService.createCrew(createCrewRequestDto));
+    }
+
+    @GetMapping("/crew/{crew_id}/detail")
+    public ApiResponse<CrewDetailResponseDto> getCrewDetail(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(crewReadService.getCrewDetail(crewId));
     }
 
     @GetMapping("/users/{user_id}/crew-list")
@@ -54,6 +63,11 @@ public class CrewController implements CrewControllerApi {
         return ApiResponse.success(crewReadService.getCrewMembers(crewId));
     }
 
+    @GetMapping("/crew/{crew_id}/score")
+    public ApiResponse<CrewScoreResponseDto> getCrewScore(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(crewReadService.getCrewScore(crewId));
+    }
+
     @GetMapping("/crew/{crew_id}/ranking")
     public ApiResponse<CrewMembersResponseDto> getCrewRanking(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(crewReadService.getCrewMemberRanking(crewId));
@@ -62,5 +76,10 @@ public class CrewController implements CrewControllerApi {
     @PostMapping("/crew/{crew_id}/battle")
     public ApiResponse<BattleMatchResponseDto> startCrewBattle(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(battleWriteService.startBattle(crewId));
+    }
+
+    @GetMapping("/crew/{crew_id}/battle")
+    public ApiResponse<BattleMatchResponseDto> getBattleStatus(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(battleReadService.getBattleStatus(crewId));
     }
 }
