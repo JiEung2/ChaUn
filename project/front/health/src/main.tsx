@@ -1,12 +1,12 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './styles/global.scss';
-import { worker } from './mocks/browser';
+import { surveyWorker } from './mocks/browser';
 
 // 개발 환경에서만 MSW를 활성화
 if (import.meta.env.VITE_APP_STATE === 'development') {
   console.log('개발 환경에서 MSW를 활성화합니다.');
-  worker.start({
+  surveyWorker.start({
     onUnhandledRequest: 'bypass', // 핸들러가 없는 요청은 실제 네트워크 요청을 통과시킴
   });
 

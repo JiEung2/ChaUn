@@ -1,11 +1,11 @@
 import alarmIcon from '@/assets/svg/bell.svg';
 import back from '@/assets/svg/back.svg';
 import './Header.scss';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function Header() {
   const location = useLocation();
-
+  const navigate = useNavigate();
   // 경로에 따라 헤더의 텍스트를 설정
   const getHeaderTitle = () => {
     const path = location.pathname.toLowerCase();
@@ -55,18 +55,24 @@ export default function Header() {
   const showAlarmBtn = !hiddenAlarmButtonPaths.includes(location.pathname);
 
   // 특정 경로에서는 헤더를 숨기도록 설정
-  const hideHeaderPaths = ['/', '/survey', '/surveyResult', '/exercise', '/exercise/recommend'];
+  const hideHeaderPaths = ['/', '/survey', '/surveyResult', '/exercise'];
 
   if (hideHeaderPaths.includes(location.pathname)) {
     return null;
   }
-
+  const handleBackClick = () => {
+    navigate(-1); // 뒤로 가기 기능 구현
+  };
   return (
     <div className="header">
       <div className="left-section">
-        <button className="back-button" style={{ visibility: showBackBtn ? 'visible' : 'hidden' }}>
+        <button
+          className="back-button"
+          style={{ visibility: showBackBtn ? 'visible' : 'hidden' }}
+          onClick={handleBackClick}>
           <img src={back} alt="뒤로가기" className="icon" />
         </button>
+
         <h1 className="title">{getHeaderTitle()}</h1>
       </div>
       <img
