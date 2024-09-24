@@ -2,6 +2,7 @@ package com.ssafy.health.common.config;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,15 +19,20 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.ssafy.health")
 @EnableMongoRepositories(basePackages = "com.ssafy.health.domain.body.BodyPrediction.repository")
 @EnableConfigurationProperties({
-        DataSourceProperties.class, MongoProperties.class
+        DataSourceProperties.class, MongoProperties.class, HibernateProperties.class
 })
 public class DatabaseConfig {
+
+    @Autowired
+    private HibernateProperties hibernateProperties;
 
     @Primary
     @Bean
@@ -50,9 +56,15 @@ public class DatabaseConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(
             EntityManagerFactoryBuilder builder, DataSource dataSource) {
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("hibernate.hbm2ddl.auto", hibernateProperties.getHbm2Ddl());
+        properties.put("hibernate.format_sql", hibernateProperties.getFormatSql());
+
         return builder.dataSource(dataSource)
                 .packages("com.ssafy.health")
                 .persistenceUnit("MySQL")
+                .properties(properties)
                 .build();
     }
 
