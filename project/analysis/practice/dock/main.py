@@ -1,28 +1,28 @@
+# 웹처리
+import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-import pymongo.errors
+# Uvicorn 라이브러리
 import uvicorn
 from typing import List
-import pydantic
 from pydantic import BaseModel
 from bson import ObjectId
 
-# DB timezone 설정
+# DB timezone 설정 라이브러리
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-# MongoClient 작업 가져오기
+# MongoDB 관련 라이브러리
 import pymongo
 from pymongo import MongoClient
 
-# 데이터 처리 및 예측
+# 데이터 처리 및 예측, 추천 라이브러리
 import pandas as pd
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import GRU, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
-
 from sklearn.preprocessing import MinMaxScaler
 
 # APP 정의
@@ -299,14 +299,9 @@ def recommend_crews(user_index, user_df, crew_df, top_n=6):
     return top_crews
 
 
-
-
-
 # 사용자가 크루 추천을 받을 때
-@app.get("/api/v1/users/crew-recommendation")
+@app.get("/api/v1/users/{user_id}/crew-recommendation/")
 def crew_recommendation():
-
-
 
     # 데이터 정규화
     scaler = MinMaxScaler() # 정규화 스케일러
@@ -323,27 +318,19 @@ def crew_recommendation():
     user_id = user['user_id']  # user_id 입력
     user_index = get_user_index_by_id(user_id, user_data)  # user_id에 해당하는 인덱스 찾기
     recommended_crews = recommend_crews(user_index, user_df, crew_df)
-    print("[추천된 크루 목록]")
     result = []
     for crew in recommended_crews:
-        result += [crew[0]]
-        print(f'crew_id : {crew[0]}, total : {crew[1]} = {crew[2]} + {crew[3]}', end='\n')
+        result.append({
+            'crew_id': crew[0],
+            'similarity' : crew[1]
+        })
 
+    response = requests.post('https://j11c106.p.ssafy.io/api/v1/users/{user_id}/crew-recommendation', json = result)
 
-
-
-
-
-
-
-
-
-    result = [1,2,3,4,5,6]
-
-    return {
-        'result' : result
-    }
-
+    if response.status.code == 200:
+        print("200 OK")
+    else:
+        print("error", response.text)
 
 
 
