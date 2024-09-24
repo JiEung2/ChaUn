@@ -9,3 +9,6 @@
   display: flex;
   flex-direction: row;
 }
+.radioGroup label {
+  margin-bottom: 10px; // 각 라디오 버튼 레이블 하단에 여유 공간 추가
+}

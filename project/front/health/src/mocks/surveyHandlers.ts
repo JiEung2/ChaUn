@@ -10,7 +10,7 @@ const mockUser = ['닉네임'];
 //   users: [],
 // };
 
-export const handlers = [
+export const surveyHandlers = [
   // get 테스트
   // http.get('https://example.com/test', () => {
   //   // ...and respond to them using this JSON response.
