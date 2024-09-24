@@ -15,6 +15,7 @@ import Crew from './pages/Crew/Crew';
 import Alarm from './pages/Alarm/Alarm';
 import Mypage from './pages/Mypage/Mypage';
 import Profile from './pages/Profile/Profile';
+import MyCrew from './pages/Crew/MyCrew/MyCrew';
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/alarm" element={<Alarm />} />
             <Route path="/profile/:userId" element={<Profile />} />
+            <Route path="/crew/mycrew/" element={<MyCrew />} />
           </Route>
         </Routes>
       </div>
