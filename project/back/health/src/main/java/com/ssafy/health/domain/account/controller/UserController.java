@@ -45,7 +45,7 @@ public class UserController implements UserControllerApi{
         return ApiResponse.success(exerciseHistoryReadService.getExerciseTime(userId));
     }
 
-    @GetMapping("{user_id}")
+    @GetMapping("/{user_id}")
     public ApiResponse<UserDetailDto> getUserDetail(@PathVariable("user_id") Long userId) {
         return ApiResponse.success(userReadService.getUserDetail(userId));
     }
