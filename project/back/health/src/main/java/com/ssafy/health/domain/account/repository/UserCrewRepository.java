@@ -5,6 +5,7 @@ import com.ssafy.health.domain.account.entity.UserCrew;
 import java.util.List;
 
 import com.ssafy.health.domain.exercise.entity.Exercise;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +14,8 @@ import org.springframework.data.repository.query.Param;
 public interface UserCrewRepository extends JpaRepository<UserCrew, Long> {
     List<UserCrew> findByUserId(Long userId);
     List<UserCrew> findByCrewId(Long crewId);
+
+    Optional<UserCrew> findByCrewIdAndUserId(Long crewId, Long userId);
 
     @Modifying
     @Query("UPDATE UserCrew uc " +
