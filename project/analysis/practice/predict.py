@@ -9,16 +9,14 @@ from typing import List
 from pydantic import BaseModel
 from bson import ObjectId
 
-# DB timezone 설정 라이브러리
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
+# DB timezone UTC 저장
+from datetime import datetime
 
 # MongoDB 관련 라이브러리
 import pymongo
 from pymongo import MongoClient
 
 # 데이터 처리 및 예측, 추천 라이브러리
-import pandas as pd
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import GRU, Dense, Dropout, Input
@@ -27,13 +25,6 @@ from sklearn.preprocessing import MinMaxScaler
 
 # APP 정의
 app = FastAPI()
-
-# 대한민국 시간대 설정
-kst = ZoneInfo("Asia/Seoul")
-
-# DB에서 불러온 UTC 시간을 KST로 변환
-def convert_utc_to_kst(utc_time):
-    return utc_time.replace(tzinfo=ZoneInfo("UTC")).astimezone(kst)
 
 # CORS 설정
 app.add_middleware(
@@ -176,7 +167,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
         "user_id": user_id,
         "p30": pred_30_d,
         "p90": pred_90_d,
-        "created_at": convert_utc_to_kst(datetime.utcnow())  # KST 시간으로 저장
+        "created_at": datetime.utcnow()  # KST 시간으로 저장
         # MongoDB상에는 KST로 안나오고 UTC로 나오는데? -> 따로 설정이 있나?
     }
 
