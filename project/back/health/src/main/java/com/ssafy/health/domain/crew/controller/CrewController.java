@@ -15,12 +15,10 @@ import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import com.ssafy.health.domain.crew.service.CrewReadService;
 import com.ssafy.health.domain.crew.service.CrewWriteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -33,8 +31,8 @@ public class CrewController implements CrewControllerApi {
     private final BattleWriteService battleWriteService;
 
     @PostMapping("/crew")
-    public ApiResponse<CreateCrewSuccessDto> createCrew(@RequestBody CreateCrewRequestDto createCrewRequestDto) {
-        return ApiResponse.success(crewWriteService.createCrew(createCrewRequestDto));
+    public ApiResponse<CreateCrewSuccessDto> createCrew(@RequestBody CreateCrewRequestDto createCrewRequestDto, @RequestParam("profileImage") MultipartFile profileImage) throws IOException {
+        return ApiResponse.success(crewWriteService.createCrew(createCrewRequestDto, profileImage));
     }
 
     @GetMapping("/crew/{crew_id}/detail")
