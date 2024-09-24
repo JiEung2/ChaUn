@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import GeneralButton from "@/components/Button/GeneralButton";
+import GeneralButton from '@/components/Button/GeneralButton';
 import BodyAddModal from '@/components/Record/BodyDetail/BodyAddModal';
 import BodyDetailGraph from '@/components/Record/BodyDetail/BodyDetailGraph';
 import './BodyDetail.scss';
+
+import { getBodyRecord } from '@/api/record';
 
 const sampleData = [
   { date: '2024-08-01', weight: 100.5, fat: 20.1, muscle: 30.2 },
@@ -23,14 +25,22 @@ export default function BodyDetailPage() {
   const [showModal, setShowModal] = useState(false);
   const [filteredData, setFilteredData] = useState<{ date: string; weight: number; fat: number; muscle: number }[]>([]);
 
+  const handleBodyRecord = (year: number, month: number) => {
+    try {
+      const response = getBodyRecord(year, month);
+      return response;
+    } catch (e) {
+      console.log(`error`);
+    }
+  };
   useEffect(() => {
     // 현재 선택된 달의 데이터만 필터링
-    const monthData = sampleData.filter(item => {
+    const monthData = sampleData.filter((item) => {
       const itemDate = new Date(item.date);
       return itemDate.getFullYear() === year && itemDate.getMonth() + 1 === month;
     });
-
     setFilteredData(monthData);
+    handleBodyRecord(year, month);
   }, [year, month]);
 
   const onDecreaseMonth = () => {
@@ -67,8 +77,7 @@ export default function BodyDetailPage() {
       <GeneralButton
         buttonStyle={{ style: 'semiOutlined', size: 'mini' }}
         className="bodyAdd"
-        onClick={handleOpenModal}
-      >
+        onClick={handleOpenModal}>
         체형 입력
       </GeneralButton>
 
@@ -84,23 +93,22 @@ export default function BodyDetailPage() {
         <BodyDetailGraph filteredData={filteredData} />
       </div>
 
-      {filteredData.map(item => (
-          <div className="timeline" key={item.date}>
-            <div className="timelineItem">
-              <div className="timelineDate">
-                <span className="dateIcon" />
-                {formatDate(item.date)}
-              </div>
+      {filteredData.map((item) => (
+        <div className="timeline" key={item.date}>
+          <div className="timelineItem">
+            <div className="timelineDate">
+              <span className="dateIcon" />
+              {formatDate(item.date)}
+            </div>
 
-              <div className="timelineContent">
-                <p>몸무게: {item.weight}kg</p>
-                <p>골격근량: {item.muscle}kg</p>
-                <p>체지방량: {item.fat}kg</p>
-              </div>
+            <div className="timelineContent">
+              <p>몸무게: {item.weight}kg</p>
+              <p>골격근량: {item.muscle}kg</p>
+              <p>체지방량: {item.fat}kg</p>
             </div>
           </div>
-        ))
-      }
+        </div>
+      ))}
 
       {showModal && <BodyAddModal onClose={handleCloseModal} />}
     </div>

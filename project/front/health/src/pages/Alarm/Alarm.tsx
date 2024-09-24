@@ -1,9 +1,12 @@
-import '@/components/Alarm/AlarmItem.scss';
 import './Alarm.scss';
 import Icon from '@/assets/svg/home/Icon2.svg';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import RightArrow from '@/assets/svg/rightArrow.svg';
-import { format } from 'date-fns'; // date-fns를 사용하여 날짜 형식 변환
+import { format } from 'date-fns';
+import BattleBoard from '../Crew/components/BattleBoard';
+
+
 
 interface AlarmData {
   notificationId: number;
@@ -30,7 +33,7 @@ const sampleAlarmData: AlarmData[] = [
   },
   {
     notificationId: 2,
-    notificationType: 'BATTLE',
+    notificationType: 'BATTLE_FINISHED',
     additionalData: [{ battleId: 1 }],
     content: '테스트 알림 2',
     createdAt: '2024-09-20T00:00:00',
@@ -39,6 +42,11 @@ const sampleAlarmData: AlarmData[] = [
 
 export default function AlarmPage({ alarms = sampleAlarmData }: AlarmPageProps) {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   // 알림 타입에 따라 다른 페이지로 이동 설정
   const handleNavigation = (notificationType: string) => {
@@ -51,6 +59,9 @@ export default function AlarmPage({ alarms = sampleAlarmData }: AlarmPageProps) 
         break;
       case 'BATTLE_STARTED':
         navigate('/battle/status');
+        break;
+      case 'BATTLE_FINISHED':
+        setIsModalOpen(true);
         break;
       default:
         break;
@@ -80,6 +91,19 @@ export default function AlarmPage({ alarms = sampleAlarmData }: AlarmPageProps) 
           />
         </div>
       ))}
+      {isModalOpen &&
+        <>
+          <BattleBoard 
+            status='finished'
+            ourTeamName = '으랏차챠'
+            opponentTeamName = '3대 500만원'
+            ourTeamSport = '헬스'
+            opponentTeamSport = '헬스'
+            ourTeamScore = {1200}
+            opponentTeamScore = {1200}
+            onClose={handleCloseModal} />
+        </>
+    }
     </div>
   );
 }

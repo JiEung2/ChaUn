@@ -1,5 +1,6 @@
 import './BattleBoard.scss';
-import Coin from '../../../assets/svg/coin.svg';
+import CloseButton from '@/assets/svg/xCircle.svg';
+import Coin from '@/components/Coin/Coin';
 
 interface BattleBoardProps {
   status: 'not-started' | 'started' | 'finished';
@@ -10,6 +11,12 @@ interface BattleBoardProps {
   ourTeamScore?: number;
   opponentTeamScore?: number;
   dDay?: string;
+  onClose: () => void;
+}
+
+interface battleRewardProps {
+  crewCoins: number;
+
 }
 
 export default function BattleBoard({
@@ -21,7 +28,8 @@ export default function BattleBoard({
   ourTeamScore,
   opponentTeamScore,
   dDay,
-}: BattleBoardProps) {
+  onClose,
+}: BattleBoardProps, {crewCoins} : battleRewardProps) {
   const renderContent = () => {
     switch (status) {
       case 'not-started':
@@ -57,6 +65,11 @@ export default function BattleBoard({
       case 'finished':
         return (
           <div className="battle-board">
+            <div className="battleBoardTitle">
+              <img src={CloseButton} alt="CloseButton" className="closeButton" onClick={onClose} />
+              <p>배틀 결과</p>              
+            </div>
+            <hr className="divider2"/>
             <div className="team-info">
               <div className="our-team">
                 <p>{ourTeamName}</p>
@@ -73,10 +86,18 @@ export default function BattleBoard({
                 <p>{opponentTeamScore}점</p>
               </div>
             </div>
-            <div className="score-bar" />
+            <div className="battleReward">
+                <p>보상</p>
+                <hr className="divider2"/>
+                <div>
+                  <p>크루 저금통</p>
+                  <Coin amount={crewCoins}/>                  
+                </div>
+                
+
+              </div>
             <button className="button receive-reward">
-              <img src={Coin} alt="coin" />
-              <p>보상받기</p>
+              <p>확인</p>
             </button>
           </div>
         );
