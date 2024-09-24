@@ -64,7 +64,8 @@ public interface CrewControllerApi {
                                     "    \"winCount\": 7,\n" +
                                     "    \"averageAge\": 29,\n" +
                                     "    \"activityScore\": 1200,\n" +
-                                    "    \"basicScore\": 900\n" +
+                                    "    \"basicScore\": 900,\n" +
+                                    "    \"role\": \"LEADER\"\n" +
                                     "  }\n" +
                                     "}"
                             ))
