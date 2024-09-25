@@ -20,6 +20,6 @@ public interface CrewRepository extends JpaRepository<Crew, Long> {
             "AND c.battleStatus = true ")
     List<Crew> findAvailableCrews();
 
-    @Query("SELECT c FROM Crew c WHERE (c.basicScore + c.activityScore) >= :totalScore")
+    @Query("SELECT COUNT(c) FROM Crew c WHERE (c.basicScore + c.activityScore) >= :totalScore")
     Long countCrewsWithHigherOrEqualScore(Integer totalScore);
 }
