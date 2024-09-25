@@ -56,7 +56,7 @@ async def load_model_startup(app: FastAPI):
 
     # 어플리케이션 종료 시 실행되는 부분
     print("Application shutdown.")
-    
+
 # 예측 수행
 def make_predictions(model, X_test):
     try:
@@ -159,16 +159,15 @@ async def predict(user_id: int, request: UserExerciseRequest):
     user_id = request.user_id # user_id
     exercise_data = request.exercise_data # exercise_data
 
-    '''
-    exercise_data는 1 ~ 7의 길이 데이터가 들어올 예정
-    7 - (현재 길이)로 길이를 정해서 더미 길이를 추가해야 함
-        - 운동을 하지 않았으니까, 체중을 키우는 방식으로 
-    '''
     # 2. exercise_data를 길이를 맞춰 전처리 코드
     dummy_count = 7 - len(exercise_data)
-    for i in range(dummy_count):
-        exercise_data[-1]
-
+    height_sqr = exercise_data[-1].weight / exercise_data[-1].bmi
+    for _ in range(dummy_count):
+        last_data = dp(exercise_data[-1])
+        last_data.calories = np.random.normal(250, 15) # 평균 걸음으로도 250에서 300 칼로리를 소모한다.
+        last_data.weight = last_data.weight + round(np.random.uniform(-0.1, 0.2), 2) # 하지만, 식습관으로 인해서 체중이 찌거나 유지되는 중..
+        last_data.bmi = last_data.weight / height_sqr
+        exercise_data.append(last_data)
 
     # 3. 전처리 데이터 np 배열 변환
     X_test = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data]) # (7, 5)
