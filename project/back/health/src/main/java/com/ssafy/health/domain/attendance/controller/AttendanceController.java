@@ -5,7 +5,7 @@ import com.ssafy.health.domain.attendance.dto.response.AttendanceListDto;
 import com.ssafy.health.domain.attendance.dto.response.AttendanceSuccessDto;
 import com.ssafy.health.domain.attendance.service.AttendanceReadService;
 import com.ssafy.health.domain.attendance.service.AttendanceWriteService;
-import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
+import com.ssafy.health.common.util.MonthlyRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +26,7 @@ public class AttendanceController {
     }
 
     @GetMapping("/attendance")
-    public ApiResponse<AttendanceListDto> getMonthlyAttendance(MonthlyExerciseHistoryRequestDto requestDto){
+    public ApiResponse<AttendanceListDto> getMonthlyAttendance(MonthlyRequestDto requestDto){
         return ApiResponse.success(attendanceReadService.getMonthlyAttendance(requestDto));
     }
 }
