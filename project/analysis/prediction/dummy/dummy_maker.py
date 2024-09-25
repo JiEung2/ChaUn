@@ -36,33 +36,52 @@ for sample_id in range(len(people_data)):
         np.random.choice([1600, 2100, 2600, 3100, 3600],size=980,replace=True,p=[0.15, 0.3, 0.4, 0.1, 0.05]),
         np.random.choice([1300, 1700, 2100, 2500, 2900],size=980,replace=True,p=[0.15, 0.3, 0.4, 0.1, 0.05]))
 
-    # 기초 대사량 채워 넣기
-    equation = (10 * df['weight']) + (6.25 * df['height']) - (5 * df['age'])
-    df['BMR'] = np.where(
-        df['sex'] == 1,
-        # Mifflin St.Jeor 미핀 세인트 젤 공식 - 기초 대사량 BMR
-        equation + 5, # 1 = 남성
-        equation - 161 # 2 = 여성
-    )
-
     '''
     전체 몸무게 변화는 (먹었던 것 - (기초 + 운동) / 7700)
     먹었던 것 > (기초 + 운동) = 찌는게 당연
     '''
 
-    # 하루의 몸무게 변화 = (먹었던 것 - (기초 대사 + 활동 대사)) / 7700
-    df['day_variable'] = round((df['intake_cal'] - (df['BMR'] + df['consumed_cal'])) / 7700, 2)
+    # 패턴 만들어 저장하는 함수
+    def generate_weight_patterns():
 
-    # 연산으로 얻어낸 몸무게 변화라고 가정
-    df.loc[0, 'est_weight'] = df.loc[0, 'weight'] + df.loc[0, 'day_variable']
+        days = 0
+        patterns = []
+        min_day, max_day = 7, 60
 
-    # 랜덤한 패턴 추가
-    random_period_effect = np.random.normal(0, 0.05, size=980)  # 소량의 랜덤 노이즈
-    seasonal_effect = np.random.uniform(-0.08, 0.03, size=980)  # 불규칙한 계절성 효과 추가
-    random_effect_combined = random_period_effect + seasonal_effect
+        while days < 980:
+            # 최소 7일 ~ 최대 60일까지의 수 중 하나 골라서 패턴 적용할 것 정하기
+            pattern_length = np.random.randint(min_day, max_day)
 
-    # 체중 유지되는 구간을 추가 (10% 확률로 체중 변화 없음)
-    df['weight_change_effect'] = np.where(np.random.rand(980) < 0.9, random_effect_combined, 0)
+            pattern_type = np.random.choice(['increase', 'decrease', 'maintain'])
+            
+            # 980일 이상으로 안만들기 위해서
+            end = min(days+ pattern_length ,980)
+            patterns.append((days, end, pattern_type))
+
+            # days 최신화 (다음 번에 시작지점 정하기)
+            days += pattern_length
+
+        return patterns
+
+    # 패턴 적용 함수
+    def apply_patterns(df, patterns):
+        for start, end, pattern_type in patterns:
+            if pattern_type == 'increase':
+                # 증가 패턴: 하루에 0.1~0.5kg 증가
+                df.loc[start:end, 'weight_change_effect'] += np.linspace(0, 0.5, end-start+1)
+            elif pattern_type == 'decrease':
+                # 감소 패턴: 하루에 0.1~0.5kg 감소
+                df.loc[start:end, 'weight_change_effect'] -= np.linspace(0, 0.5, end-start+1)
+            elif pattern_type == 'maintain':
+                # 유지 패턴: weight_change_effect 추가 없음
+                df.loc[start:end, 'weight_change_effect'] = 0  # 유지 패턴은 기본적인 fluctuation만 반영
+        return df
+
+    # 패턴 저장이후, 적용
+    patterns = generate_weight_patterns()
+    # 패턴 확인
+    print(patterns)
+    df = apply_patterns(df, patterns)
 
     '''
     유저 타입
@@ -76,19 +95,38 @@ for sample_id in range(len(people_data)):
     - 유지 패턴 (일주일에 ~ 0.3 이내 Fluctuation)
     '''
 
+
     # 증가하는 패턴
 
+
+
     # 감소하는 패턴
+
+
 
     # 유지하는 패턴
 
 
+    # 첫 번째 날의 BMR 계산 (Mifflin St. Jeor 공식)
+    equation = (10 * df.loc[0, 'weight']) + (6.25 * df.loc[0, 'height']) - (5 * df.loc[0, 'age'])
+    df.loc[0, 'BMR'] = np.where(
+        df.loc[0, 'sex'] == 1,
+        equation + 5,  # 남성
+        equation - 161  # 여성
+    )
+
+    # 첫째날 하루의 몸무게 변화 = (먹었던 것 - (기초 대사 + 활동 대사)) / 7700
+    df.loc[0, 'day_variable'] = round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'consumed_cal'])) / 7700, 2)
+
+
+    # 연산으로 얻어낸 몸무게 변화라고 가정
+    df.loc[0, 'est_weight'] = df.loc[0, 'weight'] + df.loc[0, 'day_variable']
+
     # 이후 체중 변화 및 추정 체중을 weight에 반영
     for i in range(1, len(df)):
-        # 하루 동안 체중이 주기적으로 체중을 쟀다고 했을 경우, 자연스러운 단기 변동 추가
-        daily_fluctuation = np.random.uniform(-0.05, 0.05)
-        # 기존 체중(weight) + 변화량에 단기 변동 반영
-        df.loc[i, 'weight'] = df.loc[i-1, 'est_weight'] + daily_fluctuation
+
+        # 기존 체중(weight) 
+        df.loc[i, 'weight'] = df.loc[i-1, 'est_weight']
 
         # 몸무게 랜덤 패턴 반영한 오늘의 est_weight 계산
         df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + df.loc[i, 'day_variable'] + df.loc[i, 'weight_change_effect']
@@ -102,6 +140,7 @@ for sample_id in range(len(people_data)):
         # BMI 계산해서 df에 넣기
         df['BMI'] = round(df['weight'] / ((df['height']/100) ** 2), 2)
 
+
     # 결과 확인
     # print(df.head(10))
 
@@ -109,7 +148,6 @@ for sample_id in range(len(people_data)):
     csv_file = os.path.join('./outputs/csv', f'sample_{sample_id}.csv')
     df.to_csv(csv_file, index=False)
     print(f'{csv_file} Saved!')
-
 
     # 데이터프레임을 월별로 그룹화하여 평균 몸무게 계산
     df['date'] = pd.to_datetime(df['date'])  # 'date' 열을 datetime 타입으로 변환
