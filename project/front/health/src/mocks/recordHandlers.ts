@@ -12,17 +12,18 @@ const bodyHistoryDataList = [
 ];
 export const recordHandlers = [
   // 월 당 나의 체형 조회
+
   http.get(`${baseUrl}/users/body`, ({ request }) => {
     const url = new URL(request.url);
-    const year = url.searchParams.get('year');
-    const month = url.searchParams.get('month');
-    console.log(year, month);
+    try {
+      const year = url.searchParams.get('year');
+      const month = url.searchParams.get('month');
+      console.log('msw에서 받은 year, month', year, month);
 
-    return HttpResponse.json(
-      // { data: bodyHistoryDataList },
-      {
-        status: 200,
-      }
-    );
+      return HttpResponse.json({ bodyHistoryDataList }, { status: 200 });
+    } catch (error) {
+      console.error('msw handler에서 에러 발생', error);
+      return HttpResponse.error();
+    }
   }),
 ];
