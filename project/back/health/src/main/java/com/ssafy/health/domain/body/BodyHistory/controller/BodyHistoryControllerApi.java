@@ -1,9 +1,9 @@
 package com.ssafy.health.domain.body.BodyHistory.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.common.util.MonthlyRequestDto;
 import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
-import com.ssafy.health.domain.body.BodyHistory.dto.request.BodyHistoryRequestDto;
 import com.ssafy.health.domain.body.BodyHistory.dto.response.BodyHistoryResponseDto;
 import com.ssafy.health.domain.body.BodyHistory.dto.response.WeightHistoryResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "체형 기록 컨트롤러", description = "회원의 체형 기록을 관리하는 클래스")
 public interface BodyHistoryControllerApi {
@@ -98,7 +97,6 @@ public interface BodyHistoryControllerApi {
                     )
             )
     })
-    ApiResponse<BodyHistoryResponseDto> getBodyHistory(@RequestParam("year") Integer year,
-                                                       @RequestParam("month") Integer month);
+    ApiResponse<BodyHistoryResponseDto> getBodyHistory(MonthlyRequestDto requestDto);
 
 }

@@ -3,7 +3,7 @@ package com.ssafy.health.domain.body.BodyHistory.service;
 import static java.time.temporal.TemporalAdjusters.*;
 
 import com.ssafy.health.common.security.SecurityUtil;
-import com.ssafy.health.domain.body.BodyHistory.dto.request.BodyHistoryRequestDto;
+import com.ssafy.health.common.util.MonthlyRequestDto;
 import com.ssafy.health.domain.body.BodyHistory.dto.response.BodyHistoryResponseDto;
 import com.ssafy.health.domain.body.BodyHistory.dto.response.WeightHistoryResponseDto;
 import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
@@ -43,7 +43,7 @@ public class BodyHistoryReadService {
                 .build();
     }
 
-    public BodyHistoryResponseDto getBodyHistory(BodyHistoryRequestDto requestDto) {
+    public BodyHistoryResponseDto getBodyHistory(MonthlyRequestDto requestDto) {
 
         LocalDate startDate = LocalDate.of(requestDto.getYear(), requestDto.getMonth(), 1);
         LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
