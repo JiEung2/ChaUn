@@ -32,6 +32,7 @@ public class BattleReadService {
                 .opponentCrewName(opponentCrew.getName())
                 .opponentCrewScore(opponentCrew.getBasicScore() + opponentCrew.getActivityScore())
                 .exerciseName(myCrew.getExercise().getName())
+                .battleStatus(battle.getStatus())
                 .dDay(calculateDDay())
                 .build();
     }
