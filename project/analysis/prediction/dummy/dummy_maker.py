@@ -21,7 +21,7 @@ for sample_id in range(len(people_data)):
         'BMI' : person_data['BMI'],
         'fat' : person_data['fat'],
         'muscle' : person_data['muscle'],
-        'consumed_cal' : np.random.normal(person_data['consumed_cal'], 3, 980),
+        'consumed_cal' : person_data['consumed_cal'],
         'intake_cal' : 0,
         'BMR': person_data['BMR'],
         'day_variable' : 0,
@@ -43,7 +43,6 @@ for sample_id in range(len(people_data)):
 
     # 패턴 만들어 저장하는 함수
     def generate_weight_patterns():
-
         days = 0
         patterns = []
         min_day, max_day = 7, 60
@@ -54,7 +53,7 @@ for sample_id in range(len(people_data)):
 
             pattern_type = np.random.choice(['increase', 'decrease', 'maintain'])
             
-            # 980일 이상으로 안만들기 위해서
+            # 980일 이상으로 안만들기 위해 min 적용, 패턴 저장
             end = min(days+ pattern_length ,980)
             patterns.append((days, end, pattern_type))
 
@@ -64,6 +63,11 @@ for sample_id in range(len(people_data)):
         return patterns
 
     # 패턴 적용 함수
+    '''
+    전체 DF의 df['consumed_cal']를 조정할 필요도 있음.
+    -> 매번 운동을 하진 않으니까 이 사람이 일주일에 운동을 몇 번 하는 사람임을 알아서 (하루 500 칼로리 이상 소모한다 = 운동하는 사람)
+    (150분 이상 = 헬스 40분 = 4번급 = 3~7일, 운동 안하는 사람들 = 0,1,2)
+    '''
     def apply_patterns(df, patterns):
         for start, end, pattern_type in patterns:
             if pattern_type == 'increase':
@@ -118,26 +122,31 @@ for sample_id in range(len(people_data)):
     # 첫째날 하루의 몸무게 변화 = (먹었던 것 - (기초 대사 + 활동 대사)) / 7700
     df.loc[0, 'day_variable'] = round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'consumed_cal'])) / 7700, 2)
 
-
     # 연산으로 얻어낸 몸무게 변화라고 가정
     df.loc[0, 'est_weight'] = df.loc[0, 'weight'] + df.loc[0, 'day_variable']
 
-    # 이후 체중 변화 및 추정 체중을 weight에 반영
+    # 시계열 반영 데이터 추가
     for i in range(1, len(df)):
 
-        # 기존 체중(weight) 
-        df.loc[i, 'weight'] = df.loc[i-1, 'est_weight']
+        # 1. 기존 체중(weight)을 예상 체중으로 덮어 씌우기
+        fluctuation = np.random.uniform(-0.2, 0.2)
+        df.loc[i, 'weight'] = df.loc[i-1, 'est_weight'] + fluctuation
 
-        # 몸무게 랜덤 패턴 반영한 오늘의 est_weight 계산
+        # 2. 오늘 하루 BMR 반영
+        equation = (10 * df.loc[i, 'weight']) + (6.25 * df.loc[i, 'height']) - (5 * df.loc[i, 'age'])
+        df.loc[i, 'BMR'] = np.where(
+            df.loc[i, 'sex'] == 1,
+            equation + 5,  # 남성
+            equation - 161  # 여성
+        )
+
+        # 3. 하루의 체중 변화량 = (섭취한 칼로리 - (BMR + 소모된 칼로리)) / 7700
+        df.loc[i, 'day_variable'] = round((df.loc[i, 'intake_cal'] - (df.loc[i, 'BMR'] + df.loc[i, 'consumed_cal'])) / 7700, 2)
+
+        # 4. 오늘의 est_weight 계산 (어제의 몸무게, 오늘의 몸무게의 평균 + 체중 변화량 + 패턴 변화량)
         df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + df.loc[i, 'day_variable'] + df.loc[i, 'weight_change_effect']
 
-        # 나이에 따른 체중 변동 상한선 설정 (남성과 여성에 따라 다르게 설정)
-        if df.loc[i, 'sex'] == 1:  # 남성
-            df.loc[i, 'est_weight'] = np.clip(df.loc[i, 'est_weight'], 55, 95)  # 남성: 최소 55kg, 최대 95kg
-        else:  # 여성
-            df.loc[i, 'est_weight'] = np.clip(df.loc[i, 'est_weight'], 40, 80)  # 여성: 최소 40kg, 최대 80kg
-
-        # BMI 계산해서 df에 넣기
+        # 5. 변화하는 BMI 계산해서 df에 넣기
         df['BMI'] = round(df['weight'] / ((df['height']/100) ** 2), 2)
 
 
