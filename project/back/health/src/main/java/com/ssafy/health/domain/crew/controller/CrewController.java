@@ -15,8 +15,10 @@ import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
 import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import com.ssafy.health.domain.crew.service.CrewReadService;
 import com.ssafy.health.domain.crew.service.CrewWriteService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,9 +34,9 @@ public class CrewController implements CrewControllerApi {
     private final BattleReadService battleReadService;
     private final BattleWriteService battleWriteService;
 
-    @PostMapping("/crew")
+    @PostMapping(value="/crew", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<CreateCrewSuccessDto> createCrew(
-            @RequestPart("createCrewRequestDto") CreateCrewRequestDto createCrewRequestDto,
+            @Valid @RequestPart("createCrewRequestDto") CreateCrewRequestDto createCrewRequestDto,
             @RequestPart("profileImage") MultipartFile profileImage) throws IOException {
         return ApiResponse.success(crewWriteService.createCrew(createCrewRequestDto, profileImage));
     }
