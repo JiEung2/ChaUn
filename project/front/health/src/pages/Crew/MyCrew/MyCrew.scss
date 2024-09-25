@@ -228,6 +228,9 @@
   align-items: center;
   z-index: 999;
 }
+.modalTitle {
+  @include typo.login;
+}
 
 .modalContent {
   background-color: colors.$white;
@@ -331,15 +334,8 @@
   margin-top: 20px;
 }
 
-.questItem {
-  max-width: 270px;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  gap: 10px;
-  .checkBox {
-    width: 50px;
-    height: 35%;
-  }
+.questLayout {
+  transform: scale(0.85);
 }
 .crewSettings {
   display: flex;

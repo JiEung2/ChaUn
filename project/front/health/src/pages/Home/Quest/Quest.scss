@@ -6,7 +6,7 @@
   flex-direction: column;
   gap: 50px;
 
-  p {
-    @include typo.description2;
+  .questH3 {
+    @include typo.sub;
   }
 }

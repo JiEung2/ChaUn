@@ -6,12 +6,12 @@ import { useState } from 'react';
 
 interface BodyTypeProps {
   onBodyDataChange: (data: {
-    height: string;
-    weight: string;
-    skeletalMuscleMass: string;
-    bodyFat: string;
-    bodyMuscle: string;
-    bodyShape: string;
+    height: number;
+    weight: number;
+    skeletalMuscleMass: number;
+    bodyFat: number;
+    bodyMuscle: boolean;
+    bodyShape: number;
   }) => void;
 }
 
@@ -55,12 +55,12 @@ export default function BodyType({ onBodyDataChange }: BodyTypeProps) {
 
   const handleDataChange = () => {
     onBodyDataChange({
-      height,
-      weight,
-      skeletalMuscleMass,
-      bodyFat,
-      bodyMuscle,
-      bodyShape,
+      height: Number(height),
+      weight: Number(weight),
+      skeletalMuscleMass: Number(skeletalMuscleMass),
+      bodyFat: Number(bodyFat),
+      bodyMuscle: bodyMuscle === '근육많음',
+      bodyShape: Number(bodyShape),
     });
   };
 
@@ -68,16 +68,16 @@ export default function BodyType({ onBodyDataChange }: BodyTypeProps) {
     <div className={styles.container}>
       <div className={styles['inputWrapper']}>
         <h2>키</h2>
-        <Input placeholder="키 입력" size="medium" onChange={handleHeightChange} value={height} />
+        <Input placeholder="숫자만 입력해주세요." size="medium" onChange={handleHeightChange} value={height} />
       </div>
       <div className={styles['inputWrapper']}>
         <h2>몸무게</h2>
-        <Input placeholder="몸무게 입력" size="medium" onChange={handleWeightChange} value={weight} />
+        <Input placeholder="숫자만 입력해주세요." size="medium" onChange={handleWeightChange} value={weight} />
       </div>
       <div className={styles['inputWrapper']}>
         <h2>골격근량</h2>
         <Input
-          placeholder="골격근량 입력"
+          placeholder="숫자만 입력해주세요."
           size="medium"
           onChange={handleSkeletalMuscleMassChange}
           value={skeletalMuscleMass}
@@ -85,7 +85,7 @@ export default function BodyType({ onBodyDataChange }: BodyTypeProps) {
       </div>
       <div className={styles['inputWrapper']}>
         <h2>체지방률</h2>
-        <Input placeholder="체지방률 입력" size="medium" onChange={handleBodyFatChange} value={bodyFat} />
+        <Input placeholder="숫자만 입력해주세요." size="medium" onChange={handleBodyFatChange} value={bodyFat} />
       </div>
       <h2>근육 여부</h2>
       <div className={styles['selectButtonWrapper']}>

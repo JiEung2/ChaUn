@@ -223,11 +223,11 @@ export default function MyCrew() {
       {isQuestModalOpen && (
         <div className="modalOverlay">
           <div className="modalContent">
-            <span>오늘의 퀘스트</span>
+            <span className="modalTitle">오늘의 퀘스트</span>
             <button className="closeButton" onClick={toggleQuestModal}>
               &times;
             </button>
-            <div className="questList">
+            <div className="questLayout">
               {todayQuests.map((quest, index) => (
                 <QuestItem key={index} title={quest.title} completed={quest.completed} />
               ))}

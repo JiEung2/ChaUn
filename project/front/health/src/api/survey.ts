@@ -8,15 +8,41 @@ export const nicknameCheck = async (nickname: string) => {
 };
 
 export const surveySubmit1 = async (nickname: string, birthday: string, gender: string) => {
-  try {
-    const response = await axios.post(`${baseUrl}/users/survey/information`, {
-      nickname,
-      birthday,
-      gender,
-    });
+  const response = await axios.post(`${baseUrl}/users/survey/information`, {
+    nickname,
+    birthday,
+    gender,
+  });
 
-    return response;
-  } catch (e) {
-    console.error('서버로 데이터 전송 중 에러 발생:', e);
-  }
+  return response;
+};
+
+export const surveySubmit2 = async (
+  height: number,
+  weight: number,
+  skeletalMuscleMass: number,
+  bodyFatRatio: number,
+  isMuscle: boolean,
+  bodyType: number
+) => {
+  const response = await axios.post(`${baseUrl}/users/survey/body`, {
+    height,
+    weight,
+    skeletalMuscleMass,
+    bodyFatRatio,
+    isMuscle,
+    bodyType,
+  });
+
+  return response;
+};
+
+export const surveySubmit3 = async (nickname: string, birthday: string, gender: string) => {
+  const response = await axios.post(`${baseUrl}/users/survey/eating-habits`, {
+    nickname,
+    birthday,
+    gender,
+  });
+
+  return response;
 };
