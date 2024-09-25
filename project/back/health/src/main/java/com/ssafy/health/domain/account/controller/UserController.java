@@ -9,8 +9,8 @@ import com.ssafy.health.domain.account.service.UserReadService;
 import com.ssafy.health.domain.account.service.UserValidator;
 import com.ssafy.health.domain.account.service.UserWriteService;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
-import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
-import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
+import com.ssafy.health.common.util.MonthlyRequestDto;
+import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
@@ -71,12 +71,12 @@ public class UserController implements UserControllerApi {
     }
 
     @GetMapping("/exercise-history/week")
-    public ApiResponse<ExerciseHistoryListResponseDto> getWeeklyExerciseHistory(WeeklyExerciseHistoryRequestDto requestDto) {
+    public ApiResponse<ExerciseHistoryListResponseDto> getWeeklyExerciseHistory(WeeklyRequestDto requestDto) {
         return ApiResponse.success(exerciseHistoryReadService.getWeeklyExerciseHistory(requestDto));
     }
 
     @GetMapping("/exercise-history/month")
-    public ApiResponse<ExerciseHistoryListResponseDto> getMonthlyExerciseHistory(MonthlyExerciseHistoryRequestDto requestDto) {
+    public ApiResponse<ExerciseHistoryListResponseDto> getMonthlyExerciseHistory(MonthlyRequestDto requestDto) {
         return ApiResponse.success(exerciseHistoryReadService.getMonthlyExerciseHistory(requestDto));
     }
 

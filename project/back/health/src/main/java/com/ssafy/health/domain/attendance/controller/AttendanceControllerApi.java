@@ -3,7 +3,7 @@ package com.ssafy.health.domain.attendance.controller;
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.attendance.dto.response.AttendanceListDto;
 import com.ssafy.health.domain.attendance.dto.response.AttendanceSuccessDto;
-import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
+import com.ssafy.health.common.util.MonthlyRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -70,6 +70,6 @@ public interface AttendanceControllerApi {
                     )
             ),
     })
-    ApiResponse<AttendanceListDto> getMonthlyAttendance(MonthlyExerciseHistoryRequestDto requestDto);
+    ApiResponse<AttendanceListDto> getMonthlyAttendance(MonthlyRequestDto requestDto);
 
 }

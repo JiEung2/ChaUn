@@ -1,9 +1,9 @@
 package com.ssafy.health.domain.body.BodyHistory.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.common.util.MonthlyRequestDto;
 import com.ssafy.health.domain.account.dto.request.BodySurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.BodySurveySuccessDto;
-import com.ssafy.health.domain.body.BodyHistory.dto.request.BodyHistoryRequestDto;
 import com.ssafy.health.domain.body.BodyHistory.dto.response.BodyHistoryResponseDto;
 import com.ssafy.health.domain.body.BodyHistory.dto.response.WeightHistoryResponseDto;
 import com.ssafy.health.domain.body.BodyHistory.service.BodyHistoryReadService;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class BodyHistoryController implements BodyHistoryControllerApi{
+    //Todo: getBodyHistory 인자 통일
 
     private final BodyHistoryReadService bodyHistoryReadService;
     private final BodyHistoryWriteService bodyHistoryWriteService;
@@ -30,12 +31,8 @@ public class BodyHistoryController implements BodyHistoryControllerApi{
     }
 
     @GetMapping("/body")
-    public ApiResponse<BodyHistoryResponseDto> getBodyHistory(@RequestParam("year") Integer year,
-                                                              @RequestParam("month") Integer month) {
-        return ApiResponse.success(bodyHistoryReadService.getBodyHistory(BodyHistoryRequestDto.builder()
-                .year(year)
-                .month(month)
-                .build()));
+    public ApiResponse<BodyHistoryResponseDto> getBodyHistory(MonthlyRequestDto requestDto) {
+        return ApiResponse.success(bodyHistoryReadService.getBodyHistory(requestDto));
     }
 
 }

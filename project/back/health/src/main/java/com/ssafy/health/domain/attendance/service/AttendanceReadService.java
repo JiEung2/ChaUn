@@ -4,7 +4,7 @@ import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.attendance.dto.response.AttendanceListDto;
 import com.ssafy.health.domain.attendance.entity.Attendance;
 import com.ssafy.health.domain.attendance.repository.AttendanceRepository;
-import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
+import com.ssafy.health.common.util.MonthlyRequestDto;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
@@ -20,7 +20,7 @@ public class AttendanceReadService {
 
     private final AttendanceRepository attendanceRepository;
 
-    public AttendanceListDto getMonthlyAttendance(MonthlyExerciseHistoryRequestDto requestDto) {
+    public AttendanceListDto getMonthlyAttendance(MonthlyRequestDto requestDto) {
         YearMonth yearMonth = YearMonth.of(requestDto.getYear(), requestDto.getMonth());
         LocalDateTime startOfMonth = yearMonth.atDay(1).atStartOfDay();
         LocalDateTime endOfMonth = yearMonth.atEndOfMonth().atTime(LocalTime.MAX);
