@@ -71,6 +71,7 @@ public class CrewReadService {
         CrewRole crewRole = getCrewRole(crewId);
 
         return CrewDetailResponseDto.builder()
+                .crewId(crewId)
                 .crewName(crew.getName())
                 .exerciseName(crew.getExercise().getName())
                 .profileImage(crew.getProfileImage())
