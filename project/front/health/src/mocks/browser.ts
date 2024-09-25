@@ -1,9 +1,8 @@
-// src/mocks/browser.ts
 import { setupWorker } from 'msw/browser';
-import { handlers } from './surveyHandlers';
 import { recordHandlers } from './recordHandlers';
-
-// 서비스 워커 설정
-export const worker = setupWorker(...handlers);
+import { surveyHandlers } from './surveyHandlers';
+// import { crewHandlers } from './crewHandlers';
 
 export const recordWorker = setupWorker(...recordHandlers);
+export const surveyWorker = setupWorker(...surveyHandlers);
+// export const crewWorker = setupWorker(...crewHandlers);

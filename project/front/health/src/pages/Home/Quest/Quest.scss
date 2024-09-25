@@ -2,14 +2,11 @@
 @use '@/styles/constants/typographies' as typo;
 
 .questList {
-    display: flex;
-    flex-direction: column;
-    gap: 50px; 
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
 
-    p {
-      @include typo.sub;
-    }         
+  .questH3 {
+    @include typo.sub;
+  }
 }
-  
-
-
