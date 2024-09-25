@@ -2,6 +2,7 @@ package com.ssafy.health.domain.crew.controller;
 
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
+import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.service.BattleReadService;
 import com.ssafy.health.domain.battle.service.BattleWriteService;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
@@ -15,6 +16,7 @@ import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
 import com.ssafy.health.domain.crew.service.CrewReadService;
 import com.ssafy.health.domain.crew.service.CrewWriteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -80,6 +82,11 @@ public class CrewController implements CrewControllerApi {
 
     @GetMapping("/crew/{crew_id}/battle")
     public ApiResponse<BattleMatchResponseDto> getBattleStatus(@PathVariable("crew_id") Long crewId) {
-        return ApiResponse.success(battleReadService.getBattleStatus(crewId));
+        BattleMatchResponseDto battleStatus = battleReadService.getBattleStatus(crewId);
+
+        if(battleStatus.getBattleStatus() != BattleStatus.NONE)
+            return ApiResponse.success(battleStatus);
+
+        return ApiResponse.success(HttpStatus.NO_CONTENT.value(), battleStatus, "현재 진행 중인 배틀이 없습니다.");
     }
 }

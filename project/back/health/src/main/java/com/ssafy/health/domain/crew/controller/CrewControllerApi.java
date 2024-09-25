@@ -285,6 +285,22 @@ public interface CrewControllerApi {
                                     "}"
                             ))
             ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "배틀 없음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 204,\n" +
+                                    "  \"message\": \"현재 진행 중인 배틀이 없습니다.\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"myTeamName\": \"No Battle\",\n" +
+                                    "    \"myTeamScore\": 0,\n" +
+                                    "    \"opponentTeamName\": \"No Opponent\",\n" +
+                                    "    \"opponentTeamScore\": 0,\n" +
+                                    "    \"exerciseName\": \"N/A\",\n" +
+                                    "    \"battleStatus\": \"NONE\",\n" +
+                                    "    \"dDay\": 0\n" +
+                                    "  }\n" +
+                                    "}"))
+            )
     })
     ApiResponse<BattleMatchResponseDto> getBattleStatus(@PathVariable("crew_id") Long crewId);
 
