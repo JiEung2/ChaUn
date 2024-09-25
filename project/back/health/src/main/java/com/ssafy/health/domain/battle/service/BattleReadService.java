@@ -3,13 +3,14 @@ package com.ssafy.health.domain.battle.service;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
-import com.ssafy.health.domain.battle.exception.BattleNotFoundException;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
 import com.ssafy.health.domain.crew.entity.Crew;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,9 +23,14 @@ public class BattleReadService {
     private final BattleRepository battleRepository;
 
     public BattleMatchResponseDto getBattleStatus(Long crewId) {
-        Battle battle = findOngoingBattleByCrewId(crewId);
-        Crew myCrew = getMyCrew(battle, crewId);
-        Crew opponentCrew = getOpponentCrew(battle, crewId);
+        Optional<Battle> battle = battleRepository.findBattleByCrewId(crewId, BattleStatus.STARTED);
+
+        if (battle.isEmpty()) {
+            return createEmptyBattleResponse();
+        }
+
+        Crew myCrew = getMyCrew(battle.get(), crewId);
+        Crew opponentCrew = getOpponentCrew(battle.get(), crewId);
 
         return BattleMatchResponseDto.builder()
                 .myCrewName(myCrew.getName())
@@ -32,13 +38,21 @@ public class BattleReadService {
                 .opponentCrewName(opponentCrew.getName())
                 .opponentCrewScore(opponentCrew.getBasicScore() + opponentCrew.getActivityScore())
                 .exerciseName(myCrew.getExercise().getName())
-                .battleStatus(battle.getStatus())
+                .battleStatus(battle.get().getStatus())
                 .dDay(calculateDDay())
                 .build();
     }
 
-    private Battle findOngoingBattleByCrewId(Long crewId) {
-        return battleRepository.findBattleByCrewId(crewId, BattleStatus.STARTED).orElseThrow(BattleNotFoundException::new);
+    private BattleMatchResponseDto createEmptyBattleResponse(){
+        return BattleMatchResponseDto.builder()
+                .myCrewName("No Battle")
+                .myCrewScore(0)
+                .opponentCrewName("No Opponent")
+                .opponentCrewScore(0)
+                .exerciseName("N/A")
+                .battleStatus(BattleStatus.NONE)
+                .dDay(0)
+                .build();
     }
 
     private Crew getMyCrew(Battle battle, Long crewId) {
