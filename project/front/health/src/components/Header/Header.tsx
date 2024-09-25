@@ -73,13 +73,14 @@ export default function Header() {
           <img src={back} alt="뒤로가기" className="icon" />
         </button>
 
-        <h1 className="title">{getHeaderTitle()}</h1>
+        <h3 className="headerTitle">{getHeaderTitle()}</h3>
       </div>
       <img
         src={alarmIcon}
         alt="알림"
         className="icon bell-icon"
         style={{ visibility: showAlarmBtn ? 'visible' : 'hidden' }}
+        onClick={() => navigate('/alarm')}
       />
     </div>
   );
