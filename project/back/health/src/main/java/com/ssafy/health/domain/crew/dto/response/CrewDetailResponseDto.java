@@ -13,8 +13,8 @@ public class CrewDetailResponseDto {
     private String profileImage;
     private Integer crewCoins;
     private Long crewRanking;
-    private Integer totalBattlesCount;
-    private Integer winCount;
+    private Long totalBattlesCount;
+    private Long winCount;
     private Float averageAge;
     private Integer basicScore;
     private Integer activityScore;

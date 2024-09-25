@@ -2,6 +2,7 @@ package com.ssafy.health.domain.crew.service;
 
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.dto.response.UserExerciseTimeDto;
+import com.ssafy.health.domain.battle.dto.response.BattleStatsDto;
 import com.ssafy.health.domain.crew.entity.CrewRole;
 import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.account.entity.User;
@@ -61,10 +62,10 @@ public class CrewReadService {
         Crew crew = findCrewById(crewId);
         Long crewRanking = getCrewRanking(crew.getActivityScore() + crew.getBasicScore());
 
-        Object[] result = battleRepository.countTotalAndWonBattles(crewId);
+        Optional<BattleStatsDto> battleStats= battleRepository.countTotalAndWonBattles(crewId);
 
-        Integer totalBattlesCount= (Integer) result[0];
-        Integer winCount = (Integer) result[1];
+        Long totalBattlesCount = battleStats.get().totalBattles();
+        Long winCount = battleStats.get().wonBattles();
 
         CrewRole crewRole = getCrewRole(crewId);
 
