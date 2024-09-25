@@ -60,6 +60,13 @@ class UserExerciseRequest(BaseModel):
     user_id: int
     exercise_data: List[ExerciseData]  # 7일간의 운동 정보 리스트
 
+class UserExtraExerciseRequest(BaseModel):
+    user_id: int
+    exercise_id: int
+    duration: int
+    exercise_data: List[ExerciseData]
+    extra_exercise_data: List[ExerciseData]
+
 '''
 dummy time series input
 {
@@ -139,7 +146,7 @@ def root():
     return {"message": "MongoDB와 FastAPI 연결 성공"}
 
 # API :: 종합 체중 예측 => spring에서 스케쥴러를 통한 예측 후 MongoDB 저장
-@app.post("/api/v1/users/{user_id}/body/prediction")
+@app.post("/api/v1/users/{user_id}/body/prediction/fast-api")
 async def predict(user_id: int, request: UserExerciseRequest):
     # 1. user_id를 URL로부터 받는다.
     user_id = request.user_id # user_id
@@ -151,8 +158,6 @@ async def predict(user_id: int, request: UserExerciseRequest):
         - 운동을 하지 않았으니까, 체중을 키우는 방식으로 
     '''
     # 2. exercise_data를 길이를 맞춰 전처리 코드
-
-
 
 
     # 3. 전처리 데이터 np 배열 변환
@@ -177,6 +182,49 @@ async def predict(user_id: int, request: UserExerciseRequest):
 
     # 7. 재확인 :: return시에는 kst 잘 나옴
     return new_prediction
+
+# API :: 추가 운동 예측 -> 요청시 
+@app.post("/api/v1/users/{user_id}/body/prediction/extra/fast-api")
+async def extra_predict(user_id: int, request: UserExtraExerciseRequest):
+    # 1. user_id를 URL로부터 받는다.
+    user_id = request.user_id # user_id
+    exercise_data = request.exercise_data # List Exercise_data
+    extra_exercise_data = request.extra_exercise_data # List Extra_Exercise_data
+
+    # 2. exercise_data를 길이를 맞춰 전처리 코드
+    mid_exercise_data = exercise_data + extra_exercise_data
+    dummy_count = 7 - len(mid_exercise_data)
+    for i in range(dummy_count):
+        print(mid_exercise_data[-1])
+
+    # 3. 전처리 데이터 np 배열 변환
+    X_test = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data]) # (7, 5)
+    X_test = X_test.reshape(1, 7, 5)  # 한 차원 늘려서, 하나의 입력으로, 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
+
+
+    # 4. model.predict 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
+    pred_30_d, pred_90_d = model_predict(X_test)
+
+    # 5. 예측 DB 변수 정의
+    new_prediction = {
+        "user_id": user_id,
+        "p30": pred_30_d,
+        "p90": pred_90_d,
+        "exercise" : {
+            "exercise_id": request.exercise_id,
+            "count": len(mid_exercise_data),
+            "duration": request.duration
+        },
+        "created_at": datetime.utcnow()
+    }
+
+    # 6. 종합 예측 MongoDB 저장
+    predict_basic.insert_one(new_prediction)
+    new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
+
+    # 7. 재확인 :: return시에는 kst 잘 나옴
+    return new_prediction
+
 
 # CLI 실행을 main 함수에서 실행
 if __name__ == "__main__":
