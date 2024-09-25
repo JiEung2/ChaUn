@@ -54,6 +54,7 @@ public interface CrewControllerApi {
                                     "  \"status\": 200,\n" +
                                     "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
+                                    "    \"crewId\": 1,\n" +
                                     "    \"crewName\": \"달리는 번개\",\n" +
                                     "    \"exerciseName\": \"러닝\",\n" +
                                     "    \"profileImage\": \"crew-profile-image.jpg\",\n" +
