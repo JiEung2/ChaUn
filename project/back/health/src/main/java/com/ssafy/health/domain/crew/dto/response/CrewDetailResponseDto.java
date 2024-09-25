@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class CrewDetailResponseDto {
+    private Long crewId;
     private String crewName;
     private String exerciseName;
     private String description;
