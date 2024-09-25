@@ -1,12 +1,11 @@
-package com.ssafy.health.domain.exercise.dto.request;
+package com.ssafy.health.common.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class WeeklyExerciseHistoryRequestDto {
+public class MonthlyRequestDto {
     private int year;
     private int month;
-    private int week;
 }

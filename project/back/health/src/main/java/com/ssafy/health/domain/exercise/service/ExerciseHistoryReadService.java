@@ -4,8 +4,8 @@ import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
 import com.ssafy.health.common.security.SecurityUtil;
-import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
-import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
+import com.ssafy.health.common.util.MonthlyRequestDto;
+import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
 import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
@@ -38,12 +38,12 @@ public class ExerciseHistoryReadService {
                 .build();
     }
 
-    public ExerciseHistoryListResponseDto getWeeklyExerciseHistory(WeeklyExerciseHistoryRequestDto requestDto) {
+    public ExerciseHistoryListResponseDto getWeeklyExerciseHistory(WeeklyRequestDto requestDto) {
         LocalDateTime[] dateTimes = calculateWeekDateTimeRange(requestDto.getYear(), requestDto.getMonth(), requestDto.getWeek());
         return getExerciseHistoryListResponseDto(dateTimes);
     }
 
-    public ExerciseHistoryListResponseDto getMonthlyExerciseHistory(MonthlyExerciseHistoryRequestDto requestDto) {
+    public ExerciseHistoryListResponseDto getMonthlyExerciseHistory(MonthlyRequestDto requestDto) {
         LocalDateTime[] dateTimes = calculateMonthDateTimeRange(requestDto.getYear(), requestDto.getMonth());
         return getExerciseHistoryListResponseDto(dateTimes);
     }

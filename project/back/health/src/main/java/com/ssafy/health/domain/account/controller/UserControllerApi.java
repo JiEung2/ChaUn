@@ -6,8 +6,8 @@ import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
-import com.ssafy.health.domain.exercise.dto.request.MonthlyExerciseHistoryRequestDto;
-import com.ssafy.health.domain.exercise.dto.request.WeeklyExerciseHistoryRequestDto;
+import com.ssafy.health.common.util.MonthlyRequestDto;
+import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
@@ -252,7 +252,7 @@ public interface UserControllerApi {
                             ))
             )
     })
-    ApiResponse<ExerciseHistoryListResponseDto> getWeeklyExerciseHistory(@RequestBody WeeklyExerciseHistoryRequestDto requestDto);
+    ApiResponse<ExerciseHistoryListResponseDto> getWeeklyExerciseHistory(WeeklyRequestDto requestDto);
 
     @Operation(
             summary = "자신의 특정 달의 운동 기록 조회",
@@ -288,7 +288,7 @@ public interface UserControllerApi {
                             ))
             )
     })
-    ApiResponse<ExerciseHistoryListResponseDto> getMonthlyExerciseHistory(@RequestBody MonthlyExerciseHistoryRequestDto requestDto);
+    ApiResponse<ExerciseHistoryListResponseDto> getMonthlyExerciseHistory(MonthlyRequestDto requestDto);
 
     @Operation(
             summary = "자신의 추천 크루 목록 조회",
