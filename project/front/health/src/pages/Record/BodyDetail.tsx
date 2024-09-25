@@ -134,11 +134,19 @@ export default function BodyDetailPage() {
     try {
       const response = await getBodyRecord(year, month);
       if (response && response.data) {
-        const { bodyHistoryDataList } = response.data.data; // API로부터 받은 데이터 구조에 맞게 접근
-        const monthData = bodyHistoryDataList.filter((item: { date: string }) => {
-          const itemDate = new Date(item.date);
-          return itemDate.getFullYear() === year && itemDate.getMonth() + 1 === month;
-        });
+        const { bodyHistoryDataList } = response.data;
+        const monthData = bodyHistoryDataList
+          .filter((item: { date: string }) => {
+            const itemDate = new Date(item.date);
+            return itemDate.getFullYear() === year && itemDate.getMonth() + 1 === month;
+          })
+          .map((item: any) => ({
+            date: item.date,
+            weight: item.weight,
+            fat: item.bodyFatRatio,
+            muscle: item.skeletalMuscleMass,
+          }));
+
         setFilteredData(monthData); // 필터된 데이터 설정
       }
     } catch (e) {

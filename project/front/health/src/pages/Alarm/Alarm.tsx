@@ -6,8 +6,6 @@ import RightArrow from '@/assets/svg/rightArrow.svg';
 import { format } from 'date-fns';
 import BattleBoard from '../Crew/components/BattleBoard';
 
-
-
 interface AlarmData {
   notificationId: number;
   notificationType: string;
@@ -44,9 +42,9 @@ export default function AlarmPage({ alarms = sampleAlarmData }: AlarmPageProps) 
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  // const handleCloseModal = () => {
+  //   setIsModalOpen(false);
+  // };
 
   // 알림 타입에 따라 다른 페이지로 이동 설정
   const handleNavigation = (notificationType: string) => {
@@ -91,19 +89,19 @@ export default function AlarmPage({ alarms = sampleAlarmData }: AlarmPageProps) 
           />
         </div>
       ))}
-      {isModalOpen &&
+      {isModalOpen && (
         <>
-          <BattleBoard 
-            status='finished'
-            ourTeamName = '으랏차챠'
-            opponentTeamName = '3대 500만원'
-            ourTeamSport = '헬스'
-            opponentTeamSport = '헬스'
-            ourTeamScore = {1200}
-            opponentTeamScore = {1200}
-            onClose={handleCloseModal} />
+          <BattleBoard
+            status="finished"
+            ourTeamName="으랏차챠"
+            opponentTeamName="3대 500만원"
+            ourTeamSport="헬스"
+            opponentTeamSport="헬스"
+            ourTeamScore={1200}
+            opponentTeamScore={1200}
+          />
         </>
-    }
+      )}
     </div>
   );
 }
