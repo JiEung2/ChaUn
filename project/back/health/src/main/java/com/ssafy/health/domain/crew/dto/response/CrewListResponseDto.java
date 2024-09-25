@@ -12,6 +12,7 @@ public class CrewListResponseDto {
     @Getter
     @Builder
     public static class CrewInfo{
+        private Long crewId;
         private String crewName;
         private String exerciseName;
         private String crewProfileImage;

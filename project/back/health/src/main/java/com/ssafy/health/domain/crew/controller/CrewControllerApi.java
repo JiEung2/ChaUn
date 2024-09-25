@@ -89,11 +89,13 @@ public interface CrewControllerApi {
                                     "  \"data\": {\n" +
                                     "    \"crewList\": [\n" +
                                     "      {\n" +
+                                    "        \"crewId\": 2,\n" +
                                     "        \"crewName\": \"달리자\",\n" +
                                     "        \"exerciseName\": \"러닝\",\n" +
                                     "        \"crewProfileImage\": \"crew-profile-image.jpg\"\n" +
                                     "      },\n" +
                                     "      {\n" +
+                                    "        \"crewId\": 3,\n" +
                                     "        \"crewName\": \"달리자\",\n" +
                                     "        \"exerciseName\": \"러닝\",\n" +
                                     "        \"crewProfileImage\": \"crew-profile-image.jpg\"\n" +
