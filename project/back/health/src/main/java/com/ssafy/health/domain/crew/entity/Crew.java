@@ -36,7 +36,7 @@ public class Crew extends BaseEntity {
     private Integer activityScore;
     private Boolean battleStatus;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
