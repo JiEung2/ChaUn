@@ -279,6 +279,7 @@ public interface CrewControllerApi {
                                     "    \"opponentTeamName\": \"크크크루\",\n" +
                                     "    \"opponentTeamScore\": 500,\n" +
                                     "    \"exerciseName\": \"러닝\",\n" +
+                                    "    \"battleStatus\": \"STARTED\",\n" +
                                     "    \"dDay\": 2\n" +
                                     "  }\n" +
                                     "}"
