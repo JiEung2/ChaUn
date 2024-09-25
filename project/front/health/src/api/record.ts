@@ -9,7 +9,7 @@ export const getBodyRecord = async (year: number, month: number) => {
       month,
     },
   });
-  console.log(`year : ${year}, month: ${month}`);
+  console.log('record의 response', response);
   return response;
 };
 
