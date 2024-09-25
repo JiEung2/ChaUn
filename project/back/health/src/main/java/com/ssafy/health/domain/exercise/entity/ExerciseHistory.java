@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
         @Index(name = "idx_exercise_start_time", columnList = "exerciseStartTime")
 })
 public class ExerciseHistory extends BaseEntity {
-    //Todo: 칼로리 계산 추가
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

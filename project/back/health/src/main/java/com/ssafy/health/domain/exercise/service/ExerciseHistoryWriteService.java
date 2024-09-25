@@ -85,7 +85,7 @@ public class ExerciseHistoryWriteService {
     }
 
     private Long msToMin(Long exerciseTime) {
-        return exerciseTime / 6000;
+        return exerciseTime / 60000;
     }
 
     private Float calculateBasicScore(Float burnedCalories) {
