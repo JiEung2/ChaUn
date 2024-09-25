@@ -39,9 +39,9 @@ def generate_data(row_data, N):
         # print(f'{sex_group}, {age_group}, {active_ratio}, {group_population}')
         total_count += group_population
 
+        print(f'{age_group}, {sex_group}, {active_ratio}, {group_population - active_ratio}')
         # 데이터 생성 라인
         # 운동을 잘하는 사람 데이터
-        print(f'{age_group}, {sex_group}, {active_ratio}, {group_population - active_ratio}')
         for _ in range(active_ratio):
             user_data = {
                 'age': age_group,
@@ -54,9 +54,7 @@ def generate_data(row_data, N):
                 'BMR': 0  # Placeholder for future calculation
             }
 
-            user_data['consumed_cal'] = 200 + np.random.normal(300, 25)
-            user_data['intake_cal'] = np.random.choice([1500, 1800, 2400, 3000, 3300], p=[0.2, 0.25, 0.4, 0.1, 0.05])
-
+            user_data['consumed_cal'] = 450 + round(np.random.normal(100, 75), 2)
             result_data.append(user_data)
 
         # 운동을 잘 안하는 사람 데이터
@@ -72,9 +70,7 @@ def generate_data(row_data, N):
                 'BMR': 0  # Placeholder for future calculation
             }
 
-            user_data['consumed_cal'] = 150 + np.random.normal(50, 10)  # 운동량 적음
-            user_data['intake_cal'] = np.random.choice([2000, 2300, 2700, 3200, 3500], p=[0.2, 0.2, 0.3, 0.2 , 0.1])  # 섭취량 더 많음
-
+            user_data['consumed_cal'] = 100 + round(np.random.normal(100, 50), 2) # 운동량 적음
             result_data.append(user_data)
 
     return pd.DataFrame(result_data)
@@ -86,7 +82,7 @@ data = pd.read_csv(file_path)
 # n = 200000
 
 # 테스트 데이터
-n = 500
+n = 1200
 
 # 데이터 출력 이후, 나이와 성별로 정렬
 result = generate_data(data, n)

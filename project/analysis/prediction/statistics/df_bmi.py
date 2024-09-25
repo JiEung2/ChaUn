@@ -21,7 +21,7 @@ def generate_height_weight(bmi_data, total_state_data):
             # 해당 상태별로 인원수만큼 신장과 체중 생성
 
             for _ in range(count):
-                height = np.random.normal(height_avg, height_std)
+                height = round(np.random.normal(height_avg, height_std), 2)
                 height_in_m = round(height / 100, 2)  # cm -> m
                 
                 # 상태에 따른 BMI 생성
@@ -31,7 +31,7 @@ def generate_height_weight(bmi_data, total_state_data):
                     bmi = np.random.uniform(18.5, 22.9)
                 elif state == 'state3':  # 과체중
                     bmi = np.random.uniform(23.0, 24.9)
-                else:  # 비만 (3단계로 나눠져   있는데,)
+                else:  # 비만 (3단계로 나눠져 있는데, 그 분포가 치우쳐져있다.)
                     n = np.random.choice([1,2,3], 1, p =[0.82, 0.15, 0.03])
                     if n == 1:
                         bmi = np.random.uniform(25.0, 29.9)
