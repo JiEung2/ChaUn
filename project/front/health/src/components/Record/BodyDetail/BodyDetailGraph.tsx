@@ -63,7 +63,7 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
   const fillDataForLabels = (key: keyof (typeof filteredData)[0]) => {
     const filledData = labels.map((label) => {
       const day = parseInt(label.replace('일', ''), 10);
-      const dataForDay = filteredData.find((item) => new Date(item.date).getDate() === day);
+      const dataForDay = filteredData.find((item) => Number(item.date.split('.')[2]) === day);
       return dataForDay ? dataForDay[key] : null;
     });
     return filledData;
@@ -78,9 +78,10 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
         label: '몸무게',
         data: fillDataForLabels('weight') as (number | null)[],
         borderColor: '#4bc0c0',
+        backgroundColor: '#4bc0c0',
         fill: false,
         tension: 0.1,
-        pointRadius: 0,
+        pointRadius: filteredData.length === 1 ? 3 : 0,
         yAxisID: 'y',
       },
       {
@@ -88,9 +89,10 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
         label: '골격근량',
         data: fillDataForLabels('muscle') as (number | null)[],
         borderColor: '#36a2eb',
+        backgroundColor: '#36a2eb',
         fill: false,
         tension: 0.1,
-        pointRadius: 0,
+        pointRadius: filteredData.length === 1 ? 3 : 0,
         yAxisID: 'y',
       },
       {
@@ -98,9 +100,10 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
         label: '체지방량',
         data: fillDataForLabels('fat') as (number | null)[],
         borderColor: '#ff6384',
+        backgroundColor: '#ff6384',
         fill: false,
         tension: 0.1,
-        pointRadius: 0,
+        pointRadius: filteredData.length === 1 ? 3 : 0,
         yAxisID: 'y',
       },
     ],
