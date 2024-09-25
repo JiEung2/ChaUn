@@ -86,12 +86,6 @@ public class CrewReadService {
                 .build();
     }
 
-    private CrewRole getCrewRole(Long crewId) {
-        return userCrewRepository.findByCrewIdAndUserId(crewId, SecurityUtil.getCurrentUserId())
-                .map(UserCrew::getRole)
-                .orElse(CrewRole.NOT_REGISTERED);
-    }
-
     public CrewMembersResponseDto getCrewMembers(Long crewId) {
         List<UserCrew> userCrewList = userCrewRepository.findByCrewId(crewId);
 
@@ -137,8 +131,19 @@ public class CrewReadService {
     }
 
     public CrewScoreResponseDto getCrewScore(Long crewId) {
-        Crew crew = findCrewById(crewId);
-        return CrewScoreResponseDto.fromEntity(crew);
+        List<UserCrew> userCrewList = userCrewRepository.findByCrewId(crewId);
+        Float totalBasicScore = 0F;
+        Float totalActivityScore = 0F;
+
+        for(UserCrew userCrew : userCrewList) {
+            totalBasicScore += userCrew.getBasicScore();
+            totalActivityScore += userCrew.getActivityScore();
+        }
+
+        return CrewScoreResponseDto.builder()
+                .basicScore(totalBasicScore)
+                .activityScore(totalActivityScore)
+                .build();
     }
 
     private Crew findCrewById(Long crewId) {
@@ -209,4 +214,9 @@ public class CrewReadService {
         return crewRepository.countCrewsWithHigherOrEqualScore(crewScore);
     }
 
+    private CrewRole getCrewRole(Long crewId) {
+        return userCrewRepository.findByCrewIdAndUserId(crewId, SecurityUtil.getCurrentUserId())
+                .map(UserCrew::getRole)
+                .orElse(CrewRole.NOT_REGISTERED);
+    }
 }
