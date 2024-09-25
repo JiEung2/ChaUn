@@ -11,6 +11,7 @@ people_data = pd.read_csv('../statistics/updated_output.csv')
 for sample_id in range(len(people_data)):
     person_data = people_data.iloc[sample_id]
 
+    ### DF 사용할 data 만들기
     data = {
         'date' : pd.date_range(start='2022-01-01', periods=980, freq='D'),
         'user_id': sample_id,
@@ -29,9 +30,58 @@ for sample_id in range(len(people_data)):
     }
     df = pd.DataFrame(data)
 
-    # 운동을 안 하는 날도 존재, 20% 확률로 설정, 80에서 180 칼로리는 기본 활동으로 소모한다 가정
-    no_exercise_days = np.random.choice([0, 1], size=980, p=[0.2, 0.8])
-    df['consumed_cal'] = np.where(no_exercise_days == 0, np.random.normal(250, 15), df['consumed_cal'])
+    ### 칼로리 분배를 위한 전처리
+    # 1. 사용자 운동 습관 분석
+    if person_data['consumed_cal'] >= 400:
+        exercise_habit = True
+    else:
+        exercise_habit = False
+
+    # 2. 7일 단위 패턴 만들기
+    def generate_7days_patterns(flag):
+        weekly_pattern = []
+        
+        # 일주일에 몇 번 운동할지
+        if flag:
+            num_exercise_days = np.random.randint(3, 8)
+        else:
+            num_exercise_days = np.random.randint(0, 4)
+
+        # 운동하는 날과 하지 않는 날 구분
+        exercise_days = np.random.choice(range(7), size=num_exercise_days, replace=False)
+        for day in range(7):
+            if day in exercise_days:
+                if flag:
+                    consumed_cal = 450 + round(np.random.normal(100, 75), 2)  # 운동량이 높은 날
+                else:
+                    consumed_cal = 250 + round(np.random.normal(100, 25), 2)  # 운동량이 낮은 날
+            else:
+                # 운동안할 때 기본 활동량
+                consumed_cal = 100 + round(np.random.normal(100, 50), 2)
+        weekly_pattern.append(consumed_cal)
+        
+        return weekly_pattern
+
+    # 3. 140주 동안 패턴 생성 및 섞기
+    def generate_and_shuffle_patterns(exercise_habit):
+        # 전체 패턴 리스트
+        all_patterns = []
+        for _ in range(140):
+            # 각 주간 패턴 생성
+            weekly_pattern = generate_7days_patterns(exercise_habit)
+            all_patterns.append(weekly_pattern)
+        
+        # 전체 패턴을 무작위로 섞기
+        np.random.shuffle(all_patterns)
+        # 길이가 980짜리 하나의 활동 칼로리 리스트로 펼치기
+        flattened_patterns = [cal for weekly_pattern in all_patterns for cal in weekly_pattern]
+        return flattened_patterns
+
+    # 4. df에 반영하기
+    consumed_cal_patterns = generate_and_shuffle_patterns(exercise_habit)
+    df['consumed_cal'] = consumed_cal_patterns
+
+
     df['intake_cal'] = np.where(df['sex'] == 1,
         np.random.choice([1600, 2100, 2600, 3100, 3600],size=980,replace=True,p=[0.15, 0.3, 0.4, 0.1, 0.05]),
         np.random.choice([1300, 1700, 2100, 2500, 2900],size=980,replace=True,p=[0.15, 0.3, 0.4, 0.1, 0.05]))
@@ -40,8 +90,8 @@ for sample_id in range(len(people_data)):
     전체 몸무게 변화는 (먹었던 것 - (기초 + 운동) / 7700)
     먹었던 것 > (기초 + 운동) = 찌는게 당연
     '''
-    
-    # 패턴 만들어 저장하는 함수
+
+    # 1. 패턴 만들어 저장하는 함수
     def generate_weight_patterns():
         days = 0
         if df['consumed_cal'] >= 500:
@@ -73,7 +123,7 @@ for sample_id in range(len(people_data)):
 
         return user_type, patterns
 
-    # 패턴 적용 함수
+    # 2. 패턴 적용 함수
     '''
     전체 DF의 df['consumed_cal']를 조정할 필요도 있음.
     -> 매번 운동을 하진 않으니까 이 사람이 일주일에 운동을 몇 번 하는 사람임을 알아서 (하루 500 칼로리 이상 소모한다 = 운동하는 사람)
@@ -86,17 +136,24 @@ for sample_id in range(len(people_data)):
             min_variable = 3
             max_variable = 10
         elif user_type == 'decrease': # 전체 기간 동안 2키로 감소 ~ 5키로 감소
-            min_variable = 2
-            max_variable = 5
+            min_variable = -5
+            max_variable = -2
         else: # 거의 유지되는 정도 전체 기간동안 2키로 감소 ~ 2키로 증가
-            min_variable = 2
+            min_variable = -2
             max_variable = 2
 
+        # 전체 기간 동안의 목표를 설정
+        aim = np.random.randint(min_variable, max_variable)
 
+        # 제일 처음과 제일 끝의 차이는 결국 aim값에 맞춰져야한다.
 
-
+        # 아래 패턴을 이용해서 aim으로 잘 가게금 유도하기 (근데 급하게 틀면 안됨)
 
         for start, end, pattern_type in patterns:
+            days_in_pattern = end - start + 1
+
+
+            # 길이가 길면, 몸무게 증가하는 양도 늘고, 길이가 줄면, 몸무게 감소 + 유지하는 양도 높아진다.
             if pattern_type == 'increase':
                 # 증가 패턴: 하루에 0.1~0.5kg 증가
                 df.loc[start:end, 'weight_change_effect'] += np.linspace(0, 0.5, end-start+1)
@@ -106,6 +163,9 @@ for sample_id in range(len(people_data)):
             elif pattern_type == 'maintain':
                 # 유지 패턴: weight_change_effect 추가 없음
                 df.loc[start:end, 'weight_change_effect'] = 0  # 유지 패턴은 기본적인 fluctuation만 반영
+
+
+
         return df
 
     # 저장된 패턴을 불러와 적용
@@ -124,26 +184,6 @@ for sample_id in range(len(people_data)):
     - 감소 패턴 (일주일에 0.5키로 이상 지속 감소)
     - 유지 패턴 (일주일에 ~ 0.3 이내 Fluctuation)
     '''
-
-
-    # 증가하는 패턴
-
-
-
-    # 감소하는 패턴
-
-
-
-    # 유지하는 패턴
-
-
-    # 첫 번째 날의 BMR 계산 (Mifflin St. Jeor 공식)
-    equation = (10 * df.loc[0, 'weight']) + (6.25 * df.loc[0, 'height']) - (5 * df.loc[0, 'age'])
-    df.loc[0, 'BMR'] = np.where(
-        df.loc[0, 'sex'] == 1,
-        equation + 5,  # 남성
-        equation - 161  # 여성
-    )
 
     # 첫째날 하루의 몸무게 변화 = (먹었던 것 - (기초 대사 + 활동 대사)) / 7700
     df.loc[0, 'day_variable'] = round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'consumed_cal'])) / 7700, 2)
@@ -175,7 +215,6 @@ for sample_id in range(len(people_data)):
         # 5. 변화하는 BMI 계산해서 df에 넣기
         df['BMI'] = round(df['weight'] / ((df['height']/100) ** 2), 2)
 
-
     # 결과 확인
     # print(df.head(10))
 
@@ -196,8 +235,8 @@ for sample_id in range(len(people_data)):
     # 남성일 경우 파란색, 여성일 경우 빨간색
     color = 'b' if df['sex'][0] == 1 else 'r'  # 성별에 따른 색상 선택
     marker = 'o' if df['sex'][0] == 1 else 'x'  # 성별에 따른 마커 선택
-    min_weight = 55 if df['sex'][0] == 1 else 40
-    max_weight = 95 if df['sex'][0] == 1 else 80
+    min_weight = min(df['weight'])
+    max_weight = max(df['weight'])
 
     plt.plot(df_monthly_weight.index, df_monthly_weight['est_weight'], marker=marker, linestyle='-', color=color)
     
