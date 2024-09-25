@@ -129,28 +129,39 @@ export default function BodyDetailPage() {
   const [showModal, setShowModal] = useState(false);
   const [filteredData, setFilteredData] = useState<{ date: string; weight: number; fat: number; muscle: number }[]>([]);
 
-  // API 호출을 비동기로 수행
   const handleBodyRecord = async (year: number, month: number) => {
     try {
       const response = await getBodyRecord(year, month);
+
+      // 응답 내용 확인
+      console.log('API 응답:', response);
+
       if (response && response.data) {
         const { bodyHistoryDataList } = response.data;
-        const monthData = bodyHistoryDataList
-          .filter((item: { date: string }) => {
-            const itemDate = new Date(item.date);
-            return itemDate.getFullYear() === year && itemDate.getMonth() + 1 === month;
-          })
-          .map((item: any) => ({
-            date: item.date,
-            weight: item.weight,
-            fat: item.bodyFatRatio,
-            muscle: item.skeletalMuscleMass,
-          }));
 
-        setFilteredData(monthData); // 필터된 데이터 설정
+        // bodyHistoryDataList가 배열인지 확인
+        if (Array.isArray(bodyHistoryDataList)) {
+          const monthData = bodyHistoryDataList
+            .filter((item: { date: string }) => {
+              const itemDate = new Date(item.date);
+              return itemDate.getFullYear() === year && itemDate.getMonth() + 1 === month;
+            })
+            .map((item: any) => ({
+              date: formatDate(item.date), // 날짜 포맷 적용
+              weight: item.weight,
+              fat: item.bodyFatRatio, // 체지방률
+              muscle: item.skeletalMuscleMass, // 골격근량
+            }));
+
+          setFilteredData(monthData); // 필터된 데이터 설정
+        } else {
+          console.error('bodyHistoryDataList가 배열이 아님:', bodyHistoryDataList);
+        }
+      } else {
+        console.error('응답 데이터가 없습니다.');
       }
     } catch (e) {
-      console.log(`error: ${e}`);
+      console.error(`API 호출 중 에러 발생: ${e}`);
     }
   };
 
@@ -206,7 +217,15 @@ export default function BodyDetailPage() {
       </div>
 
       <div className="graphContainer">
-        <BodyDetailGraph filteredData={filteredData} />
+        {/* 그래프에 필요한 데이터만 전달 */}
+        <BodyDetailGraph
+          filteredData={filteredData.map((item) => ({
+            date: item.date,
+            weight: item.weight,
+            muscle: item.muscle,
+            fat: item.fat,
+          }))}
+        />
       </div>
 
       {filteredData.map((item) => (
@@ -214,7 +233,7 @@ export default function BodyDetailPage() {
           <div className="timelineItem">
             <div className="timelineDate">
               <span className="dateIcon" />
-              {formatDate(item.date)}
+              {item.date} {/* 포맷된 날짜 */}
             </div>
 
             <div className="timelineContent">

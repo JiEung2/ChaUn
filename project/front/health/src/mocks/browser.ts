@@ -1,4 +1,3 @@
-// src/mocks/browser.ts
 import { setupWorker } from 'msw/browser';
 import { surveyHandlers } from './surveyHandlers';
 import { recordHandlers } from './recordHandlers';
