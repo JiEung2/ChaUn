@@ -122,13 +122,9 @@ def calculate_bmr(row):
     age = row['age']
     sex = row['sex']
     
-    if sex == 1:
-        # 남성용 Mifflin-St Jeor 공식
-        bmr = 10 * weight + 6.25 * height - 5 * age + 5
-    else:
-        # 여성용 Mifflin-St Jeor 공식
-        bmr = 10 * weight + 6.25 * height - 5 * age - 161
-    return int(bmr)
+    equation = 10 * weight + 6.25 * height - 5 * age 
+    bmr = int(equation + 5) if sex == 1 else int(equation - 161)
+    return bmr
 
 # output.csv를 받아와서 BMI를 반영한 데이터 덮어쓰기를 진행
 file_path = './output.csv'
