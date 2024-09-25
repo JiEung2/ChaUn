@@ -8,7 +8,9 @@ import os
 # np.random.normal -> loc, scale, size => centre, standard deviation, size = (int, tuple, etc...)
 people_data = pd.read_csv('../statistics/updated_output.csv')
 
-for sample_id in range(len(people_data)):
+# 테스트 코드
+for sample_id in range(10):
+# for sample_id in range(len(people_data)):
     person_data = people_data.iloc[sample_id]
 
     ### DF 사용할 data 만들기
@@ -81,30 +83,36 @@ for sample_id in range(len(people_data)):
     consumed_cal_patterns = generate_and_shuffle_patterns(exercise_habit)
     df['consumed_cal'] = consumed_cal_patterns
 
-
+    ### 식습관 반영
     df['intake_cal'] = np.where(df['sex'] == 1,
         np.random.choice([1600, 2100, 2600, 3100, 3600],size=980,replace=True,p=[0.15, 0.3, 0.4, 0.1, 0.05]),
         np.random.choice([1300, 1700, 2100, 2500, 2900],size=980,replace=True,p=[0.15, 0.3, 0.4, 0.1, 0.05]))
 
+    ### 체중 변화 전처리
     '''
-    전체 몸무게 변화는 (먹었던 것 - (기초 + 운동) / 7700)
-    먹었던 것 > (기초 + 운동) = 찌는게 당연
+    유저 타입
+    - 장기간 감소 (3~7키로)
+    - 장기간 증가 (5~9키로)
+    - 유지 (~2키로 내외)
+    
+    패턴 타입 (일주일 단위)
+    - 증가 패턴 (일주일에 0.5키로 이상 지속 증가)
+    - 감소 패턴 (일주일에 0.5키로 이상 지속 감소)
+    - 유지 패턴 (일주일에 ~ 0.3 이내 Fluctuation)
     '''
 
     # 1. 패턴 만들어 저장하는 함수
     def generate_weight_patterns():
         days = 0
-        if df['consumed_cal'] >= 500:
+        if exercise_habit:
             user_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.1, 0.3, 0.6])
         else:
             user_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.25, 0.25, 0.5])
             
         patterns = []
-        min_day, max_day = 7, 60
-
         while days < 980:
             # 최소 7일 ~ 최대 60일까지의 수 중 하나 골라서 패턴 적용할 것 정하기
-            pattern_length = np.random.randint(min_day, max_day)
+            pattern_length = np.random.randint(7, 61)
             
             # 유저 타입에 따라 패턴 확률을 다르게 가져간다.
             if user_type == 'increase': # 증가형, 증가를 많이 가져가게
@@ -115,7 +123,7 @@ for sample_id in range(len(people_data)):
                 pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.3, 0.3, 0.4])
 
             # 980일 이상으로 안만들기 위해 min 적용, 패턴 저장
-            end = min(days+ pattern_length ,980)
+            end = min(days + pattern_length, 980)
             patterns.append((days, end, pattern_type))
 
             # days 최신화 (다음 번에 시작지점 정하기)
@@ -124,17 +132,12 @@ for sample_id in range(len(people_data)):
         return user_type, patterns
 
     # 2. 패턴 적용 함수
-    '''
-    전체 DF의 df['consumed_cal']를 조정할 필요도 있음.
-    -> 매번 운동을 하진 않으니까 이 사람이 일주일에 운동을 몇 번 하는 사람임을 알아서 (하루 500 칼로리 이상 소모한다 = 운동하는 사람)
-    (150분 이상 = 헬스 40분 = 4번급 = 3~7일, 운동 안하는 사람들 = 0,1,2)
-    '''
     def apply_patterns(df, user_type, patterns):
         
         # 최소, 최대 몸무게 변화를 지정해 전체 기간 중 결과적으로 얼마나 변화를 줄지
         if user_type == 'increase': # 전체 기간 동안 3키로 증가 ~ 10키로 증가
             min_variable = 3
-            max_variable = 10
+            max_variable = 11
         elif user_type == 'decrease': # 전체 기간 동안 2키로 감소 ~ 5키로 감소
             min_variable = -5
             max_variable = -2
@@ -152,7 +155,6 @@ for sample_id in range(len(people_data)):
         for start, end, pattern_type in patterns:
             days_in_pattern = end - start + 1
 
-
             # 길이가 길면, 몸무게 증가하는 양도 늘고, 길이가 줄면, 몸무게 감소 + 유지하는 양도 높아진다.
             if pattern_type == 'increase':
                 # 증가 패턴: 하루에 0.1~0.5kg 증가
@@ -164,26 +166,12 @@ for sample_id in range(len(people_data)):
                 # 유지 패턴: weight_change_effect 추가 없음
                 df.loc[start:end, 'weight_change_effect'] = 0  # 유지 패턴은 기본적인 fluctuation만 반영
 
-
-
         return df
 
     # 저장된 패턴을 불러와 적용
     user_type, patterns = generate_weight_patterns()
     # print(patterns)
     df = apply_patterns(df, user_type, patterns)
-
-    '''
-    유저 타입
-    - 장기간 감소 (3~7키로)
-    - 장기간 증가 (5~9키로)
-    - 유지 (~2키로 내외)
-    
-    패턴 타입 (일주일 단위)
-    - 증가 패턴 (일주일에 0.5키로 이상 지속 증가)
-    - 감소 패턴 (일주일에 0.5키로 이상 지속 감소)
-    - 유지 패턴 (일주일에 ~ 0.3 이내 Fluctuation)
-    '''
 
     # 첫째날 하루의 몸무게 변화 = (먹었던 것 - (기초 대사 + 활동 대사)) / 7700
     df.loc[0, 'day_variable'] = round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'consumed_cal'])) / 7700, 2)
@@ -209,6 +197,8 @@ for sample_id in range(len(people_data)):
         # 3. 하루의 체중 변화량 = (섭취한 칼로리 - (BMR + 소모된 칼로리)) / 7700
         df.loc[i, 'day_variable'] = round((df.loc[i, 'intake_cal'] - (df.loc[i, 'BMR'] + df.loc[i, 'consumed_cal'])) / 7700, 2)
 
+        # 하루 체중 변화량 (연산) vs 하루 패턴 변화량 (패턴화) => 둘 중 하나만 가져가야하나?
+
         # 4. 오늘의 est_weight 계산 (어제의 몸무게, 오늘의 몸무게의 평균 + 체중 변화량 + 패턴 변화량)
         df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + df.loc[i, 'day_variable'] + df.loc[i, 'weight_change_effect']
 
@@ -218,47 +208,53 @@ for sample_id in range(len(people_data)):
     # 결과 확인
     # print(df.head(10))
 
-    # csv로 저장하기
-    csv_file = os.path.join('./outputs/csv', f'sample_{sample_id}.csv')
-    df.to_csv(csv_file, index=False)
-    print(f'{csv_file} Saved!')
+    ### person_time_series_raw_data save
+    def make_time_series_data():
+        csv_file = os.path.join('./outputs/csv', f'sample_{sample_id}.csv')
+        # csv로 저장하기
+        df.to_csv(csv_file, index=False)
+        print(f'{csv_file} Saved!')
+    make_time_series_data()
 
-    # 데이터프레임을 월별로 그룹화하여 평균 몸무게 계산
-    df['date'] = pd.to_datetime(df['date'])  # 'date' 열을 datetime 타입으로 변환
-    df_monthly = df.resample('ME', on='date').mean()  # 월 단위로 평균 계산
+    ### matplotlib, graph save
+    def make_graph():
+        # 데이터프레임을 월별로 그룹화하여 평균 몸무게 계산
+        df['date'] = pd.to_datetime(df['date'])  # 'date' 열을 datetime 타입으로 변환
+        df_monthly = df.resample('ME', on='date').mean()  # 월 단위로 평균 계산
 
-    # 필요한 데이터만 선택해서 확인
-    df_monthly_weight = df_monthly[['est_weight']].copy()
+        # 필요한 데이터만 선택해서 확인
+        df_monthly_weight = df_monthly[['est_weight']].copy()
 
-    # 그래프 그리기 (남성은 파란색, 여성은 빨간색)
-    plt.figure(figsize=(10, 6))
-    # 남성일 경우 파란색, 여성일 경우 빨간색
-    color = 'b' if df['sex'][0] == 1 else 'r'  # 성별에 따른 색상 선택
-    marker = 'o' if df['sex'][0] == 1 else 'x'  # 성별에 따른 마커 선택
-    min_weight = min(df['weight'])
-    max_weight = max(df['weight'])
+        # 그래프 그리기 (남성은 파란색, 여성은 빨간색)
+        plt.figure(figsize=(10, 6))
+        # 남성일 경우 파란색, 여성일 경우 빨간색
+        color = 'b' if df['sex'][0] == 1 else 'r'  # 성별에 따른 색상 선택
+        marker = 'o' if df['sex'][0] == 1 else 'x'  # 성별에 따른 마커 선택
+        min_weight = min(df['weight'])
+        max_weight = max(df['weight'])
 
-    plt.plot(df_monthly_weight.index, df_monthly_weight['est_weight'], marker=marker, linestyle='-', color=color)
-    
-    # 데이터 포인트 위에 수치 표시
-    for x, y in zip(df_monthly_weight.index, df_monthly_weight['est_weight']):
-        plt.text(x, y, f'{y:.1f}', ha='center', va='bottom', fontsize=8, color=color)
+        plt.plot(df_monthly_weight.index, df_monthly_weight['est_weight'], marker=marker, linestyle='-', color=color)
+        
+        # 데이터 포인트 위에 수치 표시
+        for x, y in zip(df_monthly_weight.index, df_monthly_weight['est_weight']):
+            plt.text(x, y, f'{y:.1f}', ha='center', va='bottom', fontsize=8, color=color)
 
-    # y축 범위를 성별에 맞춰 설정
-    plt.ylim(min_weight, max_weight)
+        # y축 범위를 성별에 맞춰 설정
+        plt.ylim(min_weight, max_weight)
 
-    # 그래프 제목과 축 레이블 설정
-    plt.title('Monthly Average Weight Trend', fontsize=16)
-    plt.xlabel('Month', fontsize=12)
-    plt.ylabel('Average Weight (kg)', fontsize=12)
+        # 그래프 제목과 축 레이블 설정
+        plt.title('Monthly Average Weight Trend', fontsize=16)
+        plt.xlabel('Month', fontsize=12)
+        plt.ylabel('Average Weight (kg)', fontsize=12)
 
-    # 그리드 추가
-    plt.grid(True)
+        # 그리드 추가
+        plt.grid(True)
 
-    # plt, png 저장
-    png_file = os.path.join('./outputs/chart', f'sample_{sample_id}.png')
-    plt.savefig(png_file)
-    print(f'{png_file} Saved!')
-    
-    # plt.show()
-    plt.close()
+        # plt, png 저장
+        png_file = os.path.join('./outputs/chart', f'sample_{sample_id}.png')
+        plt.savefig(png_file)
+        print(f'{png_file} Saved!')
+        
+        # plt.show()
+        plt.close()
+    make_graph()
