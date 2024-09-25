@@ -46,6 +46,7 @@ public class CrewReadService {
                 .map(userCrew -> {
                     Crew crew = userCrew.getCrew();
                     return CrewInfo.builder()
+                            .crewId(crew.getId())
                             .crewName(crew.getName())
                             .exerciseName(crew.getExercise().getName())
                             .crewProfileImage(crew.getProfileImage())
