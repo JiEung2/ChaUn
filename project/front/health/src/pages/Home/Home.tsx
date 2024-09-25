@@ -78,29 +78,34 @@ export default function HomePage() {
         enabled: false, // 기본 툴팁 비활성화
       },
       annotation: {
-        annotations: clickedIndex !== null
-          ? [
-              {
-                type: 'label' as const,
-                xValue: chartData[clickedIndex].day,
-                yValue: chartData[clickedIndex].time || 0, // null 값을 0으로 처리
-                content: [`${chartData[clickedIndex].time || 0} 분`, `${selectedCalories || 0} kcal`], // null 값을 0으로 처리
-                enabled: true,
-                font: {
-                  size: 10,
-                  weight: 'bold' as const,
+        annotations:
+          clickedIndex !== null
+            ? [
+                {
+                  type: 'label' as const,
+                  xValue: chartData[clickedIndex].day,
+                  yValue: chartData[clickedIndex].time || 0, // null 값을 0으로 처리
+                  content: [`${chartData[clickedIndex].time || 0} 분`, `${selectedCalories || 0} kcal`], // null 값을 0으로 처리
+                  enabled: true,
+                  font: {
+                    size: 10,
+                    weight: 'bold' as const,
+                  },
+                  padding: {
+                    top: 5,
+                    bottom: 5,
+                    left: 5,
+                    right: 5,
+                  },
+                  yAdjust:
+                    chartData[clickedIndex].time === 0 ||
+                    (chartData[clickedIndex].time && chartData[clickedIndex].time <= 100)
+                      ? -20
+                      : 20, // 위아래 조정
+                  xAdjust: clickedIndex === 0 ? 20 : clickedIndex === chartData.length - 1 ? -20 : 0,
                 },
-                padding: {
-                  top: 5,
-                  bottom: 5,
-                  left: 5,
-                  right: 5,
-                },
-                yAdjust: chartData[clickedIndex].time === 0 || (chartData[clickedIndex].time && chartData[clickedIndex].time <= 100) ? -20 : 20, // 위아래 조정
-                xAdjust: clickedIndex === 0 ? 20 : clickedIndex === chartData.length - 1 ? -20 : 0,
-              },
-            ]
-          : [],
+              ]
+            : [],
       },
     },
     onClick: handleChartClick,
@@ -116,7 +121,7 @@ export default function HomePage() {
         beginAtZero: true,
         display: true,
         ticks: {
-          stepSize: 10, 
+          stepSize: 10,
           callback: function (value: string | number) {
             return `${value}`;
           },
@@ -126,7 +131,6 @@ export default function HomePage() {
       },
     },
   };
-
 
   // null 값 처리하는 함수
   const processedChartData = chartData.map((data) => ({
@@ -151,7 +155,6 @@ export default function HomePage() {
       },
     ],
   };
-
 
   return (
     <div className="homeContainer">
@@ -204,4 +207,4 @@ export default function HomePage() {
       </div>
     </div>
   );
-};
+}
