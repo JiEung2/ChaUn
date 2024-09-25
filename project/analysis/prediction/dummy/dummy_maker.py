@@ -40,19 +40,30 @@ for sample_id in range(len(people_data)):
     전체 몸무게 변화는 (먹었던 것 - (기초 + 운동) / 7700)
     먹었던 것 > (기초 + 운동) = 찌는게 당연
     '''
-
+    
     # 패턴 만들어 저장하는 함수
     def generate_weight_patterns():
         days = 0
+        if df['consumed_cal'] >= 500:
+            user_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.1, 0.3, 0.6])
+        else:
+            user_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.25, 0.25, 0.5])
+            
         patterns = []
         min_day, max_day = 7, 60
 
         while days < 980:
             # 최소 7일 ~ 최대 60일까지의 수 중 하나 골라서 패턴 적용할 것 정하기
             pattern_length = np.random.randint(min_day, max_day)
-
-            pattern_type = np.random.choice(['increase', 'decrease', 'maintain'])
             
+            # 유저 타입에 따라 패턴 확률을 다르게 가져간다.
+            if user_type == 'increase': # 증가형, 증가를 많이 가져가게
+                pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.5, 0.2, 0.3])
+            elif user_type == 'decrease': # 감소형, 감소를 많이 가져가게
+                pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.2, 0.5, 0.3])
+            elif user_type == 'maintain': # 유지형, 증가-감소를 가져가고, 유지가 더 많이
+                pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.3, 0.3, 0.4])
+
             # 980일 이상으로 안만들기 위해 min 적용, 패턴 저장
             end = min(days+ pattern_length ,980)
             patterns.append((days, end, pattern_type))
@@ -60,7 +71,7 @@ for sample_id in range(len(people_data)):
             # days 최신화 (다음 번에 시작지점 정하기)
             days += pattern_length
 
-        return patterns
+        return user_type, patterns
 
     # 패턴 적용 함수
     '''
@@ -68,7 +79,23 @@ for sample_id in range(len(people_data)):
     -> 매번 운동을 하진 않으니까 이 사람이 일주일에 운동을 몇 번 하는 사람임을 알아서 (하루 500 칼로리 이상 소모한다 = 운동하는 사람)
     (150분 이상 = 헬스 40분 = 4번급 = 3~7일, 운동 안하는 사람들 = 0,1,2)
     '''
-    def apply_patterns(df, patterns):
+    def apply_patterns(df, user_type, patterns):
+        
+        # 최소, 최대 몸무게 변화를 지정해 전체 기간 중 결과적으로 얼마나 변화를 줄지
+        if user_type == 'increase': # 전체 기간 동안 3키로 증가 ~ 10키로 증가
+            min_variable = 3
+            max_variable = 10
+        elif user_type == 'decrease': # 전체 기간 동안 2키로 감소 ~ 5키로 감소
+            min_variable = 2
+            max_variable = 5
+        else: # 거의 유지되는 정도 전체 기간동안 2키로 감소 ~ 2키로 증가
+            min_variable = 2
+            max_variable = 2
+
+
+
+
+
         for start, end, pattern_type in patterns:
             if pattern_type == 'increase':
                 # 증가 패턴: 하루에 0.1~0.5kg 증가
@@ -81,11 +108,10 @@ for sample_id in range(len(people_data)):
                 df.loc[start:end, 'weight_change_effect'] = 0  # 유지 패턴은 기본적인 fluctuation만 반영
         return df
 
-    # 패턴 저장이후, 적용
-    patterns = generate_weight_patterns()
-    # 패턴 확인
-    print(patterns)
-    df = apply_patterns(df, patterns)
+    # 저장된 패턴을 불러와 적용
+    user_type, patterns = generate_weight_patterns()
+    # print(patterns)
+    df = apply_patterns(df, user_type, patterns)
 
     '''
     유저 타입
