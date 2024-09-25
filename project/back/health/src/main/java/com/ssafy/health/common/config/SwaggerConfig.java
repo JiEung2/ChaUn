@@ -24,18 +24,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    private static final String BEARER_TOKEN_PREFIX = "Bearer ";
-
     @Bean
     public OpenAPI openAPI() {
-        String securitySchemeName = "JWT";
+        String securitySchemeName = "access";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(securitySchemeName);
         Components components = new Components()
                 .addSecuritySchemes(securitySchemeName, new SecurityScheme()
                         .name(securitySchemeName)
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme(BEARER_TOKEN_PREFIX)
-                        .bearerFormat("JWT"));
+                        .type(SecurityScheme.Type.APIKEY)  // HTTP 대신 APIKEY 사용
+                        .in(SecurityScheme.In.HEADER));  // 헤더에 정의
 
         return new OpenAPI()
                 .addSecurityItem(securityRequirement)
