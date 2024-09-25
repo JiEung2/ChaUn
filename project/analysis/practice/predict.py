@@ -107,11 +107,9 @@ class ExerciseData(BaseModel):
     calories: float
 
 class UserExerciseRequest(BaseModel):
-    user_id: int
     exercise_data: List[ExerciseData]  # 7일간의 운동 정보 리스트
 
 class UserExtraExerciseRequest(BaseModel):
-    user_id: int
     exercise_id: int
     duration: int
     exercise_data: List[ExerciseData]
@@ -155,8 +153,7 @@ def root():
 # API :: 종합 체중 예측 => spring에서 스케쥴러를 통한 예측 후 MongoDB 저장
 @app.post("/api/v1/users/{user_id}/body/prediction/fast-api")
 async def predict(user_id: int, request: UserExerciseRequest):
-    # 1. user_id를 URL로부터 받는다.
-    user_id = request.user_id # user_id
+    # 1. request를 통해 exercise_data를 받는다.
     exercise_data = request.exercise_data # exercise_data
 
     # 2. exercise_data를 길이를 맞춰 전처리 코드
