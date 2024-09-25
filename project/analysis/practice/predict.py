@@ -191,8 +191,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
 # API :: 추가 운동 예측 -> 요청시 
 @app.post("/api/v1/users/{user_id}/body/prediction/extra/fast-api")
 async def extra_predict(user_id: int, request: UserExtraExerciseRequest):
-    # 1. user_id를 URL로부터 받는다.
-    user_id = request.user_id # user_id
+    # 1. exercise_data들 받기
     exercise_data = request.exercise_data # List Exercise_data
     extra_exercise_data = request.extra_exercise_data # List Extra_Exercise_data
     exercise_data = exercise_data + extra_exercise_data
