@@ -65,8 +65,8 @@ export default function BodyDetailModal({ filteredData, onClose }: BodyDetailMod
   };
 
   return (
-    <div className="modalContainer">
-      <div className="modalContent">
+    <div className="bodyDetailModalContainer">
+      <div className="bodyDetailModalContent">
         <img src={xCircle} alt="xCircle" className="xCircle" onClick={onClose} />
         <Chart type="line" data={createLineData('몸무게', '#4bc0c0', 'weight')} options={lineOptions} />
         <Chart type="line" data={createLineData('골격근량', '#36a2eb', 'muscle')} options={lineOptions} />
