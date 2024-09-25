@@ -2,6 +2,7 @@
 import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
 # Uvicorn 라이브러리
 import uvicorn
@@ -18,13 +19,62 @@ from pymongo import MongoClient
 
 # 데이터 처리 및 예측, 추천 라이브러리
 import numpy as np
+from copy import deepcopy as dp
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import GRU, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 
+### AI 회귀 모델 처리 ###
+# 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
+def build_model(input_shape, forecast_steps):
+    model = Sequential()
+    model.add(Input(shape=input_shape))  # input_shape = (timesteps, features)
+    model.add(GRU(units=64, return_sequences=False)) 
+    model.add(Dropout(0.3)) 
+    model.add(Dense(64, activation='relu')) 
+    model.add(Dense(units=forecast_steps))  # 예측할 시점 수에 따라 output 설정
+    return model
+
+# 모델에 따른 가중치 불러오기
+def load_model_weights(model, weights_path):
+    model.load_weights(weights_path)
+    return model
+
+# 모델 로드 함수
+@asynccontextmanager
+async def load_model_startup(app: FastAPI):
+    global model
+    timesteps = 7
+    features = 5 # [sex, age, BMI, weight, comsumed_cal] = 5 features
+    forecast_steps = 90 # 최대 90일까지의 예측을 진행
+    input_shape = (timesteps, features)
+
+    model = build_model(input_shape, forecast_steps)
+    model = load_model_weights(model, "./modelv1.weights.h5")
+    yield
+
+    # 어플리케이션 종료 시 실행되는 부분
+    print("Application shutdown.")
+    
+# 예측 수행
+def make_predictions(model, X_test):
+    try:
+        predictions = model.predict(X_test)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail = f'Model Prediciton : {e}')
+    
+    return predictions
+
+
+# 모델 수행 이후 처리 함수
+def model_predict(data_test):
+    predictions = make_predictions(model, data_test) # 7일 입력 X -> 그 다음 1일 부터 ~ 90일 앞까지 값을 Y
+    # 30일, 90일 기록을 return 시키기
+    return round(float(predictions[0][29]), 2), round(float(predictions[0][89]), 2)
+
 # APP 정의
-app = FastAPI()
+app = FastAPI(lifespan=load_model_startup)
 
 # CORS 설정
 app.add_middleware(
@@ -83,49 +133,6 @@ dummy time series input
 }
 '''
 
-### AI 회귀 모델 처리 ###
-# 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
-def build_model(input_shape, forecast_steps):
-    model = Sequential()
-    model.add(Input(shape=input_shape))  # input_shape = (timesteps, features)
-    model.add(GRU(units=64, return_sequences=False)) 
-    model.add(Dropout(0.3)) 
-    model.add(Dense(64, activation='relu')) 
-    model.add(Dense(units=forecast_steps))  # 예측할 시점 수에 따라 output 설정
-    return model
-
-# 모델에 따른 가중치 불러오기
-def load_model_weights(model, weights_path):
-    model.load_weights(weights_path)
-    return model
-
-# 예측 수행
-def make_predictions(model, X_test):
-    try:
-        predictions = model.predict(X_test)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail = f'Model Prediciton : {e}')
-    
-    return predictions
-
-# 모델 로드 함수
-@app.on_event("startup")
-def load_model_startup():
-    global model
-    timesteps = 7
-    features = 5 # [sex, age, BMI, weight, comsumed_cal] = 5 features
-    forecast_steps = 90 # 최대 90일까지의 예측을 진행
-    input_shape = (timesteps, features)
-
-    model = build_model(input_shape, forecast_steps)
-    model = load_model_weights(model, "./modelv1.weights.h5")
-
-# 모델 수행 이후 처리 함수
-def model_predict(data_test):
-    predictions = make_predictions(model, data_test) # 7일 입력 X -> 그 다음 1일 부터 ~ 90일 앞까지 값을 Y
-    # 30일, 90일 기록을 return 시키기
-    return round(float(predictions[0][29]), 2), round(float(predictions[0][89]), 2)
-
 # object id convergence
 def convert_objectid(data):
     if isinstance(data, dict):
@@ -158,6 +165,9 @@ async def predict(user_id: int, request: UserExerciseRequest):
         - 운동을 하지 않았으니까, 체중을 키우는 방식으로 
     '''
     # 2. exercise_data를 길이를 맞춰 전처리 코드
+    dummy_count = 7 - len(exercise_data)
+    for i in range(dummy_count):
+        exercise_data[-1]
 
 
     # 3. 전처리 데이터 np 배열 변환
