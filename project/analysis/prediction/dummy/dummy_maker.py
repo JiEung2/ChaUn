@@ -60,8 +60,7 @@ for sample_id in range(10):
             else:
                 # 운동안할 때 기본 활동량
                 consumed_cal = 100 + round(np.random.normal(100, 50), 2)
-        weekly_pattern.append(consumed_cal)
-        
+            weekly_pattern.append(consumed_cal)
         return weekly_pattern
 
     # 3. 140주 동안 패턴 생성 및 섞기
@@ -77,6 +76,10 @@ for sample_id in range(10):
         np.random.shuffle(all_patterns)
         # 길이가 980짜리 하나의 활동 칼로리 리스트로 펼치기
         flattened_patterns = [cal for weekly_pattern in all_patterns for cal in weekly_pattern]
+        
+        # 리스트의 길이가 정확히 980인지 확인
+        assert len(flattened_patterns) == 980, f"Flattened pattern length is {len(flattened_patterns)}, expected 980."
+
         return flattened_patterns
 
     # 4. df에 반영하기
@@ -167,50 +170,51 @@ for sample_id in range(10):
                 df.loc[start:end, 'weight_change_effect'] = 0  # 유지 패턴은 기본적인 fluctuation만 반영
 
         return df
-
-    # 저장된 패턴을 불러와 적용
     user_type, patterns = generate_weight_patterns()
     # print(patterns)
     df = apply_patterns(df, user_type, patterns)
 
-    # 첫째날 하루의 몸무게 변화 = (먹었던 것 - (기초 대사 + 활동 대사)) / 7700
-    df.loc[0, 'day_variable'] = round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'consumed_cal'])) / 7700, 2)
+    # 3. 몸무게 패턴 생성 함수
+    def generate_weight_patterns():
+        # 첫째날 하루의 몸무게 변화 = (먹었던 것 - (기초 대사 + 활동 대사)) / 7700
+        df.loc[0, 'day_variable'] = round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'consumed_cal'])) / 7700, 2)
 
-    # 연산으로 얻어낸 몸무게 변화라고 가정
-    df.loc[0, 'est_weight'] = df.loc[0, 'weight'] + df.loc[0, 'day_variable']
+        # 연산으로 얻어낸 몸무게 변화라고 가정
+        df.loc[0, 'est_weight'] = df.loc[0, 'weight'] + df.loc[0, 'day_variable']
 
-    # 시계열 반영 데이터 추가
-    for i in range(1, len(df)):
+        # 시계열 반영 데이터 추가
+        for i in range(1, len(df)):
 
-        # 1. 기존 체중(weight)을 예상 체중으로 덮어 씌우기
-        fluctuation = np.random.uniform(-0.2, 0.2)
-        df.loc[i, 'weight'] = df.loc[i-1, 'est_weight'] + fluctuation
+            # 1. 기존 체중(weight)을 예상 체중으로 덮어 씌우기
+            fluctuation = np.random.uniform(-0.2, 0.2)
+            df.loc[i, 'weight'] = df.loc[i-1, 'est_weight'] + fluctuation
 
-        # 2. 오늘 하루 BMR 반영
-        equation = (10 * df.loc[i, 'weight']) + (6.25 * df.loc[i, 'height']) - (5 * df.loc[i, 'age'])
-        df.loc[i, 'BMR'] = np.where(
-            df.loc[i, 'sex'] == 1,
-            equation + 5,  # 남성
-            equation - 161  # 여성
-        )
+            # 2. 오늘 하루 BMR 반영
+            equation = (10 * df.loc[i, 'weight']) + (6.25 * df.loc[i, 'height']) - (5 * df.loc[i, 'age'])
+            df.loc[i, 'BMR'] = np.where(
+                df.loc[i, 'sex'] == 1,
+                equation + 5,  # 남성
+                equation - 161  # 여성
+            )
 
-        # 3. 하루의 체중 변화량 = (섭취한 칼로리 - (BMR + 소모된 칼로리)) / 7700
-        df.loc[i, 'day_variable'] = round((df.loc[i, 'intake_cal'] - (df.loc[i, 'BMR'] + df.loc[i, 'consumed_cal'])) / 7700, 2)
+            # 3. 하루의 체중 변화량 = (섭취한 칼로리 - (BMR + 소모된 칼로리)) / 7700
+            df.loc[i, 'day_variable'] = round((df.loc[i, 'intake_cal'] - (df.loc[i, 'BMR'] + df.loc[i, 'consumed_cal'])) / 7700, 2)
 
-        # 하루 체중 변화량 (연산) vs 하루 패턴 변화량 (패턴화) => 둘 중 하나만 가져가야하나?
+            # 하루 체중 변화량 (연산) vs 하루 패턴 변화량 (패턴화) => 둘 중 하나만 가져가야하나?
 
-        # 4. 오늘의 est_weight 계산 (어제의 몸무게, 오늘의 몸무게의 평균 + 체중 변화량 + 패턴 변화량)
-        df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + df.loc[i, 'day_variable'] + df.loc[i, 'weight_change_effect']
+            # 4. 오늘의 est_weight 계산 (어제의 몸무게, 오늘의 몸무게의 평균 + 체중 변화량 + 패턴 변화량)
+            df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + df.loc[i, 'day_variable'] + df.loc[i, 'weight_change_effect']
 
-        # 5. 변화하는 BMI 계산해서 df에 넣기
-        df['BMI'] = round(df['weight'] / ((df['height']/100) ** 2), 2)
+            # 5. 변화하는 BMI 계산해서 df에 넣기
+            df['BMI'] = round(df['weight'] / ((df['height']/100) ** 2), 2)
+    generate_weight_patterns()
 
     # 결과 확인
     # print(df.head(10))
 
     ### person_time_series_raw_data save
     def make_time_series_data():
-        csv_file = os.path.join('./outputs/csv', f'sample_{sample_id}.csv')
+        csv_file = os.path.join('./outputs/test/csv', f'sample_{sample_id}.csv')
         # csv로 저장하기
         df.to_csv(csv_file, index=False)
         print(f'{csv_file} Saved!')
