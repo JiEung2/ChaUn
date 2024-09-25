@@ -16,7 +16,6 @@ public class HealthApplication {
 	@PostConstruct
 	public void init() {
 		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-		System.out.println(LocalDateTime.now());
 	}
 
 	public static void main(String[] args) {
