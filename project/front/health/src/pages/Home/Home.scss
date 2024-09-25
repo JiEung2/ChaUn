@@ -2,11 +2,11 @@
 @use '@/styles/constants/typographies' as typo;
 
 .homeContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
   .characterContainer {
     display: flex;
     flex-direction: column;
@@ -30,44 +30,42 @@
       @include typo.button;
     }
   }
-  
-  
+
   .iconWrapper {
     display: flex;
     flex-direction: column;
     gap: 7px;
     justify-content: center;
   }
-  
+
   .navIcon {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 23px; 
-    height: 23px; 
-    border: 1px solid colors.$darkGray;  
+    width: 23px;
+    height: 23px;
+    border: 1px solid colors.$darkGray;
     background-color: transparent;
-    border-radius: 50%; 
+    border-radius: 50%;
   }
-  
+
   .icon {
     width: 17px;
     height: 17px;
     cursor: pointer;
   }
 
-  
   .time {
     @include typo.sub;
-    
+
     .timeTitle {
       margin-bottom: 5px;
+      color: colors.$black;
     }
-    
+
     span {
-    color: colors.$pink;
-    @include typo.time;
-    
+      color: colors.$pink;
+      @include typo.time;
     }
   }
 
@@ -75,7 +73,7 @@
     display: flex;
     gap: 30px;
   }
-  
+
   .chartSection {
     width: 100%;
     margin: 20px 0;
@@ -84,7 +82,7 @@
       @include typo.sub;
     }
   }
-  
+
   .buttonSection {
     display: flex;
     flex-direction: row;
