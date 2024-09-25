@@ -181,16 +181,15 @@ async def predict(user_id: int, request: UserExerciseRequest):
         "user_id": user_id,
         "p30": pred_30_d,
         "p90": pred_90_d,
-        "created_at": datetime.utcnow()  # KST 시간으로 저장
-        # MongoDB상에는 KST로 안나오고 UTC로 나오는데? -> 따로 설정이 있나?
+        "created_at": datetime.utcnow()
     }
 
-    # 6. 종합 예측 MongoDB 저장
+    # 6. 종합 예측 Predict_basic document에 MongoDB 저장
     predict_basic.insert_one(new_prediction)
-    new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
 
-    # 7. 재확인 :: return시에는 kst 잘 나옴
-    return new_prediction
+    # 7. 재확인 코드
+    # new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
+    # return new_prediction
 
 # API :: 추가 운동 예측 -> 요청시 
 @app.post("/api/v1/users/{user_id}/body/prediction/extra/fast-api")
@@ -199,17 +198,21 @@ async def extra_predict(user_id: int, request: UserExtraExerciseRequest):
     user_id = request.user_id # user_id
     exercise_data = request.exercise_data # List Exercise_data
     extra_exercise_data = request.extra_exercise_data # List Extra_Exercise_data
+    exercise_data = exercise_data + extra_exercise_data
 
     # 2. exercise_data를 길이를 맞춰 전처리 코드
-    mid_exercise_data = exercise_data + extra_exercise_data
-    dummy_count = 7 - len(mid_exercise_data)
-    for i in range(dummy_count):
-        print(mid_exercise_data[-1])
+    dummy_count = 7 - len(exercise_data)
+    height_sqr = exercise_data[-1].weight / exercise_data[-1].bmi
+    for _ in range(dummy_count):
+        last_data = dp(exercise_data[-1])
+        last_data.calories = np.random.normal(250, 15) # 평균 걸음으로도 250에서 300 칼로리를 소모한다.
+        last_data.weight = last_data.weight + round(np.random.uniform(-0.1, 0.2), 2) # 하지만, 식습관으로 인해서 체중이 찌거나 유지되는 중..
+        last_data.bmi = last_data.weight / height_sqr
+        exercise_data.append(last_data)
 
     # 3. 전처리 데이터 np 배열 변환
     X_test = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data]) # (7, 5)
-    X_test = X_test.reshape(1, 7, 5)  # 한 차원 늘려서, 하나의 입력으로, 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
-
+    X_test = X_test.reshape(1, 7, 5)  # 한 차원 늘려서, 1개의 데이터에 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
 
     # 4. model.predict 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
     pred_30_d, pred_90_d = model_predict(X_test)
@@ -221,19 +224,18 @@ async def extra_predict(user_id: int, request: UserExtraExerciseRequest):
         "p90": pred_90_d,
         "exercise" : {
             "exercise_id": request.exercise_id,
-            "count": len(mid_exercise_data),
+            "count": len(extra_exercise_data),
             "duration": request.duration
         },
         "created_at": datetime.utcnow()
     }
 
     # 6. 종합 예측 MongoDB 저장
-    predict_basic.insert_one(new_prediction)
+    predict_extra.insert_one(new_prediction)
+
+    # 7. 재확인 코드
     new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
-
-    # 7. 재확인 :: return시에는 kst 잘 나옴
     return new_prediction
-
 
 # CLI 실행을 main 함수에서 실행
 if __name__ == "__main__":
