@@ -2,13 +2,17 @@ package com.ssafy.health.domain.body.BodyPredict.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ssafy.health.domain.body.BodyPredict.dto.ExerciseDetailDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AnalysisRequestDto {
 
     @JsonProperty("exercise_detail")
@@ -22,6 +26,8 @@ public class AnalysisRequestDto {
 
     @Data
     @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UserExerciseData {
 
         private int sex;
