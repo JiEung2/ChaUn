@@ -11,7 +11,7 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 
 # csv를 불러와
-csv_dir = './dummy/sample_v2/'
+csv_dir = './dummy/outputs/csv'
 df_list = []
 
 for csv_file in os.listdir(csv_dir):
@@ -106,3 +106,7 @@ ax[1].legend()
 
 plt.tight_layout()
 plt.show()
+
+# plt, png 저장
+png_file = os.path.join('./models/', f'model_ver.png')
+plt.savefig(png_file)

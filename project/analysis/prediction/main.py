@@ -1,5 +1,7 @@
 
 import numpy as np
+import pandas as pd
+import os
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import GRU, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
@@ -47,20 +49,41 @@ if __name__ == "__main__":
 
     # 예측할 데이터 준비 (예시로 랜덤 데이터 사용, 실제 데이터로 교체 필요)
     # Input으로 받아야할 것 (성별, 나이, BMI, 체중, 소모 칼로리)
-    X_test = np.array([
-        [  2,        32.,        20.66,      49,       300.55997 ],
-        [  2,        32.,        20.53,      48.7,  295.3654  ],
-        [  2,        32.,        20.91,      49.6,     312.97836 ],
-        [  2,        32.,        20.66,      49,   312.97836 ],
-        [  2,        32.,        20.53,      48.7,   312.97836 ],
-        [  2,        32.,        20.45,      48.5,   312.97836 ],
-        [  2,        32.,        20.74,      49.2,   312.97836 ]
-    ])
-    X_test = X_test.reshape(1, timesteps, features)
+    
+    csv_path = './dummy/outputs/test/csv/'
+    # 폴더 내의 모든 파일 중에서 CSV 파일만 필터링
+    csv_files = [f for f in os.listdir(csv_path) if f.endswith('.csv')]
 
-    # 예측 수행
-    predictions = make_predictions(model, X_test)
+    # CSV 파일들을 하나씩 불러오기
+    dataframes = []
+    for file in csv_files:
+        file_path = os.path.join(csv_path, file)  # 파일의 전체 경로
+        df = pd.read_csv(file_path)  # CSV 파일을 데이터프레임으로 불러오기
+        dataframes.append(df)  # 각 데이터프레임을 리스트에 추가
+    
+    for df in dataframes:
+        magic_number = np.random.randint(0, len(df)-97)
+        # magic 넘버를 기준으로 7일
+        # X_test = np.array([
+        #     [  2,        32.,        20.66,      49,       300.55997 ],
+        #     [  2,        32.,        20.53,      48.7,  295.3654  ],
+        #     [  2,        32.,        20.91,      49.6,     312.97836 ],
+        #     [  2,        32.,        20.66,      49,   312.97836 ],
+        #     [  2,        32.,        20.53,      48.7,   312.97836 ],
+        #     [  2,        32.,        20.45,      48.5,   312.97836 ],
+        #     [  2,        32.,        20.74,      49.2,   312.97836 ]
+        # ])
+        # 저런식으로 만들어야 됨.
+        selected_data = df.iloc[magic_number:magic_number + 7][['sex', 'age', 'BMI', 'weight', 'calories']].values
+        X_test = selected_data.reshape(1, timesteps, features)
 
-    # 예측 결과 출력
-    print("Predictions for the next 30 days:", predictions[0][29])
-    print("Predictions for the next 90 days:", predictions[0][89])
+        # 예측 수행
+        predictions = make_predictions(model, X_test)
+
+        # 실제 값 출력
+        print("Real Weight for the next 30 days:", df.loc[29, 'weight'])
+        print("Real Weight for the next 90 days:", df.loc[89, 'weight'])
+        
+        # 예측 결과 출력
+        print("Predictions for the next 30 days:", predictions[0][29])
+        print("Predictions for the next 90 days:", predictions[0][89])

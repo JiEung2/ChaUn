@@ -9,8 +9,9 @@ import os
 people_data = pd.read_csv('../statistics/updated_output.csv')
 
 # 테스트 코드
-# for sample_id in range(10):
-for sample_id in range(len(people_data)):
+for sample_id in range(10):
+# for sample_id in range(len(people_data)):
+    sample_id = np.random.randint(0, len(people_data))
     person_data = people_data.iloc[sample_id]
 
     ### DF 사용할 data 만들기
@@ -24,7 +25,7 @@ for sample_id in range(len(people_data)):
         'BMI' : person_data['BMI'],
         'fat' : person_data['fat'],
         'muscle' : person_data['muscle'],
-        'consumed_cal' : person_data['consumed_cal'],
+        'calories' : person_data['consumed_cal'],
         'intake_cal' : 0,
         'BMR': person_data['BMR'],
         'day_variable' : 0.0,
@@ -54,13 +55,13 @@ for sample_id in range(len(people_data)):
         for day in range(7):
             if day in exercise_days:
                 if flag:
-                    consumed_cal = 450 + round(np.random.normal(100, 75), 2)  # 운동량이 높은 날
+                    calories = 450 + round(np.random.normal(100, 75), 2)  # 운동량이 높은 날
                 else:
-                    consumed_cal = 250 + round(np.random.normal(100, 25), 2)  # 운동량이 낮은 날
+                    calories = 250 + round(np.random.normal(100, 25), 2)  # 운동량이 낮은 날
             else:
                 # 운동안할 때 기본 활동량
-                consumed_cal = 100 + round(np.random.normal(100, 50), 2)
-            weekly_pattern.append(consumed_cal)
+                calories = 100 + round(np.random.normal(100, 50), 2)
+            weekly_pattern.append(calories)
         return weekly_pattern
 
     # 3. 140주 동안 패턴 생성 및 섞기
@@ -81,7 +82,7 @@ for sample_id in range(len(people_data)):
 
     # 4. df에 반영하기
     consumed_cal_patterns = generate_and_shuffle_patterns(exercise_habit)
-    df['consumed_cal'] = consumed_cal_patterns
+    df['calories'] = consumed_cal_patterns
 
     ### 식습관 반영
     df['intake_cal'] = np.where(df['sex'] == 1,
@@ -149,6 +150,7 @@ for sample_id in range(len(people_data)):
 
         # 전체 기간 동안의 목표를 설정
         aim = np.random.randint(min_variable, max_variable)
+        variable = 0.0
         # 한번 변화할 때, 변화량 추적
         increase_count_patterns = 0
         decrease_count_patterns = 0
@@ -168,20 +170,19 @@ for sample_id in range(len(people_data)):
             # 길이가 길면, 몸무게 증가하는 양도 늘고, 길이가 줄면, 몸무게 감소 + 유지하는 양도 높아진다.
             if pattern_type == 'increase': # 증가
                 increase_change = aim / increase_count_patterns
-                daily_change = increase_change / days_in_pattern
-                df.loc[start:end-1, 'weight_change_effect'] += np.linspace(0.01, daily_change * days_in_pattern, days_in_pattern) + np.random.uniform(-0.1, 0.1, days_in_pattern)
+                df.loc[start:end-1, 'weight_change_effect'] += np.linspace(0.01, days_in_pattern, days_in_pattern) + np.random.uniform(-0.1, 0.1, days_in_pattern)
                 current_change += increase_change
+
             elif pattern_type == 'decrease': # 감소
                 decrease_change = aim / decrease_count_patterns
-                daily_change = decrease_change / days_in_pattern
-                df.loc[start:end-1, 'weight_change_effect'] -= np.linspace(0.01, daily_change * days_in_pattern, days_in_pattern) + np.random.uniform(-0.1, 0.1, days_in_pattern)
+                df.loc[start:end-1, 'weight_change_effect'] -= np.linspace(0.01, days_in_pattern, days_in_pattern) + np.random.uniform(-0.1, 0.1, days_in_pattern)
                 current_change -= decrease_change
+
             elif pattern_type == 'maintain':
                 # 유지 패턴: weight_change_effect 추가 없음
                 maintain_change = np.random.uniform(-0.05, 0.05, days_in_pattern)
                 df.loc[start:end-1, 'weight_change_effect'] += maintain_change  # 유지 패턴은 기본적인 fluctuation만 반영
                 current_change += maintain_change.sum()
-
             # print(f"Start: {start}, End: {end}, Pattern Type: {pattern_type}, Days: {days_in_pattern}")
             # print(f"Current Change: {current_change}\n")
         return df
@@ -195,7 +196,7 @@ for sample_id in range(len(people_data)):
         df['day_variable'] = df['day_variable'].astype(float)
         df['est_weight'] = df['est_weight'].astype(float)
         # 첫째날 하루의 몸무게 변화 = (먹었던 것 - (기초 대사 + 활동 대사)) / 7700
-        df.loc[0, 'day_variable'] = float(round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'consumed_cal'])) / 7700, 2))
+        df.loc[0, 'day_variable'] = float(round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'calories'])) / 7700, 2))
 
         # 연산으로 얻어낸 몸무게 변화라고 가정
         df.loc[0, 'est_weight'] = df.loc[0, 'weight'] + df.loc[0, 'day_variable']
@@ -216,7 +217,7 @@ for sample_id in range(len(people_data)):
             )
 
             # 3. 하루의 체중 변화량 = (섭취한 칼로리 - (BMR + 소모된 칼로리)) / 7700
-            df.loc[i, 'day_variable'] = round((df.loc[i, 'intake_cal'] - (df.loc[i, 'BMR'] + df.loc[i, 'consumed_cal'])) / 7700, 2)
+            df.loc[i, 'day_variable'] = round((df.loc[i, 'intake_cal'] - (df.loc[i, 'BMR'] + df.loc[i, 'calories'])) / 7700, 2) - 0.05
 
             # 하루 체중 변화량 (연산) vs 하루 패턴 변화량 (패턴화) => 둘 중 하나만 가져가야하나?
 
@@ -235,7 +236,7 @@ for sample_id in range(len(people_data)):
 
     ### person_time_series_raw_data save
     def make_time_series_data():
-        csv_file = os.path.join('./outputs/csv', f'sample_{sample_id}.csv')
+        csv_file = os.path.join('./outputs/test/csv', f'sample_{sample_id}.csv')
         # csv로 저장하기
         df.to_csv(csv_file, index=False)
 
@@ -276,7 +277,7 @@ for sample_id in range(len(people_data)):
         plt.grid(True)
 
         # plt, png 저장
-        png_file = os.path.join('./outputs/chart', f'sample_{sample_id}.png')
+        png_file = os.path.join('./outputs/test/chart', f'sample_{sample_id}.png')
         plt.savefig(png_file)
         
         # plt.show()
