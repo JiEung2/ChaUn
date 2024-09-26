@@ -5,32 +5,35 @@ import CrewModal from '../../../components/Crew/CrewModal';
 import { getCrewRecommendList } from '@/api/crew';
 
 interface Crew {
-  id: number;
+  crewId: number;
   crewProfileImage: string;
   crewName: string;
   exerciseName: string;
 }
+
 export default function CrewRecommend() {
   const [nickname] = useState('닉네임');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedCrewId, setSelectedCrewId] = useState(1);
+  const [selectedCrewId, setSelectedCrewId] = useState<number | null>(null);
   const [crews, setCrews] = useState<Crew[]>([]); // crews 배열을 상태로 관리
 
+  const getCrewRecommendListData = async () => {
+    try {
+      const response = await getCrewRecommendList();
+      console.log(response);
+      setCrews(response.data); // API 호출 후 데이터를 상태에 저장
+    } catch (error) {
+      console.error('크루추천 리스트 불러오기 실패', error);
+    }
+  };
+
   useEffect(() => {
-    const getCrewRecommendListData = async () => {
-      try {
-        const response = await getCrewRecommendList();
-        setCrews(response.data.crewList); // API 호출 후 데이터를 상태에 저장
-      } catch (error) {
-        console.error('크루추천 리스트 불러오기 실패', error);
-      }
-    };
     getCrewRecommendListData();
   }, []);
 
   // Crew 클릭 시 모달을 여는 함수
-  const handleCrewClick = (id: number) => {
-    setSelectedCrewId(id);
+  const handleCrewClick = (crewId: number) => {
+    setSelectedCrewId(crewId);
     setIsModalOpen(true);
   };
 
@@ -46,18 +49,18 @@ export default function CrewRecommend() {
       </h3>
       <div className="crew-recommend">
         <div className="crew-grid">
-          {crews.map((crew, index) => (
+          {crews.map((crew) => (
             <Crew
-              key={index}
+              key={crew.crewId}
               imageUrl={crew.crewProfileImage}
               name={crew.crewName}
               tag={crew.exerciseName}
-              onClick={() => handleCrewClick(crew.id)}
+              onClick={() => handleCrewClick(crew.crewId)}
             />
           ))}
         </div>
 
-        {isModalOpen && <CrewModal crewId={selectedCrewId} onClose={closeModal} />}
+        {isModalOpen && selectedCrewId !== null && <CrewModal crewId={selectedCrewId} onClose={closeModal} />}
       </div>
     </div>
   );

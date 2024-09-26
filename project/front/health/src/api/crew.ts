@@ -7,3 +7,9 @@ export const getCrewRecommendList = async () => {
   const response = await axios.get(`${baseURL}/users/crew-recommendation`);
   return response;
 };
+// 크루 추천 상세 모달
+export const getCrewRecommendModal = async (crewId: number) => {
+  const response = await axios.get(`${baseURL}/users/crew-recommendation/${crewId}`);
+  console.log(response);
+  return response;
+};
