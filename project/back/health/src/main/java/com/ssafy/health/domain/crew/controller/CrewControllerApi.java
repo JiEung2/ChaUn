@@ -3,13 +3,7 @@ package com.ssafy.health.domain.crew.controller;
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
-import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
-import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewScoreResponseDto;
-import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
-import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -169,13 +163,13 @@ public interface CrewControllerApi {
                                     "        \"nickname\": \"달리기 왕자\",\n" +
                                     "        \"userId\": 20,\n" +
                                     "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"thisWeekExerciseTime\": 123123\n" +
+                                    "        \"exerciseTime\": 123123\n" +
                                     "      },\n" +
                                     "      {\n" +
                                     "        \"nickname\": \"달리기 공주\",\n" +
                                     "        \"userId\": 21,\n" +
                                     "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"thisWeekExerciseTime\": 123123\n" +
+                                    "        \"exerciseTime\": 123123\n" +
                                     "      }\n" +
                                     "    ]\n" +
                                     "  }\n" +
@@ -225,13 +219,13 @@ public interface CrewControllerApi {
                                     "        \"nickname\": \"달리기 왕자\",\n" +
                                     "        \"userId\": 20,\n" +
                                     "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"thisWeekExerciseTime\": 123123\n" +
+                                    "        \"exerciseTime\": 123123\n" +
                                     "      },\n" +
                                     "      {\n" +
                                     "        \"nickname\": \"달리기 공주\",\n" +
                                     "        \"userId\": 21,\n" +
                                     "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"thisWeekExerciseTime\": 123121\n" +
+                                    "        \"exerciseTime\": 123121\n" +
                                     "      }\n" +
                                     "    ]\n" +
                                     "  }\n" +
@@ -253,6 +247,7 @@ public interface CrewControllerApi {
                                     "  \"status\": 200,\n" +
                                     "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
+                                    "    \"battleId\": 1,\n" +
                                     "    \"myTeamName\": \"달리자크루\",\n" +
                                     "    \"myTeamScore\": 0,\n" +
                                     "    \"opponentTeamName\": \"크크크루\",\n" +
@@ -260,6 +255,15 @@ public interface CrewControllerApi {
                                     "    \"exerciseName\": \"러닝\",\n" +
                                     "    \"dDay\": 2\n" +
                                     "  }\n" +
+                                    "}"
+                            ))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "크루 배틀 생성 실패",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 409,\n" +
+                                    "  \"message\": \"이미 진행중인 배틀이 존재합니다.\",\n" +
+                                    "  \"data\": {}\n" +
                                     "}"
                             ))
             ),
@@ -306,5 +310,41 @@ public interface CrewControllerApi {
             )
     })
     ApiResponse<BattleMatchResponseDto> getBattleStatus(@PathVariable("crew_id") Long crewId);
+
+
+    @Operation(
+            summary = "크루 배틀 랜덤 매칭 동의, 취소",
+            description = "크루 배틀 랜덤 매칭에 동의, 취소 합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 배틀 랜덤 매칭 동의 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "Success",
+                                      "data": {
+                                        "message": "크루 배틀 랜덤 매칭 동의에 성공하였습니다."
+                                      }
+                                    }
+                                    """
+                            ))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 배틀 랜덤 매칭 동의 취소 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "Success",
+                                      "data": {
+                                        "message": "크루 배틀 랜덤 매칭 동의를 취소하였습니다."
+                                      }
+                                    }
+                                    """
+                            ))
+            ),
+            
+    })
+    ApiResponse<BattleReadyStatusResponse> readyCrewBattle(@PathVariable("crew_id") Long crewId);
 
 }

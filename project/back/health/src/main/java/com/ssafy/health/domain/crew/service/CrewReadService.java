@@ -14,7 +14,7 @@ import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto.CrewInfo;
 import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto.CrewMemberInfo;
+import com.ssafy.health.domain.crew.dto.response.CrewMemberInfo;
 import com.ssafy.health.domain.crew.dto.response.CrewScoreResponseDto;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
@@ -106,7 +106,7 @@ public class CrewReadService {
                             .userId(user.getId())
                             .userProfileImage(user.getProfileImage())
                             .nickname(user.getNickname())
-                            .thisWeekExerciseTime(thisWeekExerciseTime)
+                            .exerciseTime(thisWeekExerciseTime)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -162,7 +162,7 @@ public class CrewReadService {
                             .userId(user.getId())
                             .userProfileImage(user.getProfileImage())
                             .nickname(user.getNickname())
-                            .thisWeekExerciseTime(dto.getTotalExerciseTime())
+                            .exerciseTime(dto.getTotalExerciseTime())
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -175,7 +175,7 @@ public class CrewReadService {
                                 .userId(user.getId())
                                 .userProfileImage(user.getProfileImage())
                                 .nickname(user.getNickname())
-                                .thisWeekExerciseTime(0L)
+                                .exerciseTime(0L)
                                 .build()
                 ));
         return memberInfoList;

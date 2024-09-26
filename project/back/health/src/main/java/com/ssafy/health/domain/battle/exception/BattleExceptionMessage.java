@@ -1,10 +1,13 @@
 package com.ssafy.health.domain.battle.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public enum BattleExceptionMessage {
 
     BATTLE_NOT_FOUND("현재 진행중인 배틀이 존재하지 않습니다.", HttpStatus.NOT_FOUND.value()),
+    BATTLE_ALREADY_EXISTS("이미 진행중인 배틀이 존재합니다.", HttpStatus.CONFLICT.value()),
     ;
 
     private final String message;

@@ -8,10 +8,9 @@ import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.coin.service.CoinService;
+import com.ssafy.health.domain.coin.service.CoinValidator;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
-import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
-import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
-import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.*;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.entity.CrewRole;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
@@ -36,12 +35,14 @@ import static com.ssafy.health.domain.coin.CoinCost.*;
 @RequiredArgsConstructor
 public class CrewWriteService {
 
+    private final S3Service s3Service;
     private final CoinService coinService;
+    private final CoinValidator coinValidator;
     private final UserRepository userRepository;
     private final CrewRepository crewRepository;
     private final ExerciseRepository exerciseRepository;
     private final UserCrewRepository userCrewRepository;
-    private final S3Service s3Service;
+    private final CrewValidator crewValidator;
 
     public CreateCrewSuccessDto createCrew(CreateCrewRequestDto requestDto, MultipartFile profileImage) throws IOException {
         Exercise exercise = exerciseRepository.findById(requestDto.getExerciseId()).orElseThrow(ExerciseNotFoundException::new);
@@ -58,7 +59,7 @@ public class CrewWriteService {
     }
 
     public JoinCrewSuccessDto joinCrew(Long crewId) {
-        Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+        Crew crew = findCrewById(crewId);
         User user = findUserById(SecurityUtil.getCurrentUserId());
 
         buildUserCrew(user, crew, CrewRole.MEMBER);
@@ -79,6 +80,20 @@ public class CrewWriteService {
                 .crewCoin(crew.getCrewCoin())
                 .myCoin(user.getCoin())
                 .build();
+    }
+
+    public BattleReadyStatusResponse readyCrewBattle(Long crewId) {
+        crewValidator.validateCrewLeader(crewId);
+        Crew crew = findCrewById(crewId);
+
+        if(crewValidator.isBattleReady(crew)){
+            crew.deActiveBattleStatus();
+            return new BattleUnReadySuccessDto();
+        }
+
+        coinValidator.validateSufficientCoins(crew.getCrewCoin(), START_BATTLE.getAmount());
+        crew.activeBattleStatus();
+        return new BattleReadySuccessDto();
     }
 
     private Crew updateCoinsWithLock(Long crewId, Integer coin) throws InterruptedException {
@@ -117,5 +132,9 @@ public class CrewWriteService {
     private Float calculateAge(LocalDate birthday) {
         LocalDate today = LocalDate.now();
         return (float) Period.between(birthday, today).getYears();
+    }
+
+    private Crew findCrewById(Long crewId) {
+        return crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
     }
 }
