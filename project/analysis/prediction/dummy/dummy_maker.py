@@ -235,7 +235,7 @@ for sample_id in range(len(people_data)):
 
     ### person_time_series_raw_data save
     def make_time_series_data():
-        csv_file = os.path.join('./outputs/test/csv', f'sample_{sample_id}.csv')
+        csv_file = os.path.join('./outputs/csv', f'sample_{sample_id}.csv')
         # csv로 저장하기
         df.to_csv(csv_file, index=False)
 
