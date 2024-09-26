@@ -6,13 +6,7 @@ import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.service.BattleReadService;
 import com.ssafy.health.domain.battle.service.BattleWriteService;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
-import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
-import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewScoreResponseDto;
-import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
-import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.*;
 import com.ssafy.health.domain.crew.service.CrewReadService;
 import com.ssafy.health.domain.crew.service.CrewWriteService;
 import jakarta.validation.Valid;
@@ -34,7 +28,7 @@ public class CrewController implements CrewControllerApi {
     private final BattleReadService battleReadService;
     private final BattleWriteService battleWriteService;
 
-    @PostMapping(value="/crew", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/crew", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<CreateCrewSuccessDto> createCrew(
             @Valid @RequestPart("createCrewRequestDto") CreateCrewRequestDto createCrewRequestDto,
             @RequestPart("profileImage") MultipartFile profileImage) throws IOException {
@@ -58,7 +52,7 @@ public class CrewController implements CrewControllerApi {
 
     @PostMapping("/crew/{crew_id}/coin/{coin_count}")
     public ApiResponse<SendCoinSuccessDto> sendCoin(@PathVariable("crew_id") Long crewId,
-                                                    @PathVariable("coin_count") Integer coin) throws InterruptedException{
+                                                    @PathVariable("coin_count") Integer coin) throws InterruptedException {
         return ApiResponse.success(crewWriteService.sendCoin(crewId, coin));
     }
 
@@ -86,9 +80,14 @@ public class CrewController implements CrewControllerApi {
     public ApiResponse<BattleMatchResponseDto> getBattleStatus(@PathVariable("crew_id") Long crewId) {
         BattleMatchResponseDto battleStatus = battleReadService.getBattleStatus(crewId);
 
-        if(battleStatus.getBattleStatus() != BattleStatus.NONE)
+        if (battleStatus.getBattleStatus() != BattleStatus.NONE)
             return ApiResponse.success(battleStatus);
 
         return ApiResponse.success(HttpStatus.NO_CONTENT.value(), battleStatus, "현재 진행 중인 배틀이 없습니다.");
+    }
+
+    @PostMapping("/crew/{crew_id}/battle/ready")
+    public ApiResponse<BattleReadyStatusResponse> readyCrewBattle(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(crewWriteService.readyCrewBattle(crewId));
     }
 }
