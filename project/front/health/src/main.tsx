@@ -6,14 +6,12 @@ import { worker } from './mocks/browser';
 // 개발 환경에서만 MSW를 활성화
 if (import.meta.env.VITE_APP_STATE === 'development') {
   console.log('개발 환경에서 MSW를 활성화합니다.');
-  worker.start({
+  await worker.start({
     onUnhandledRequest: 'bypass', // 핸들러가 없는 요청은 실제 네트워크 요청을 통과시킴
   });
 
   // 개발 환경에서 푸쉬 알림을 테스트할 때 아래에 추가하기
 }
-
-createRoot(document.getElementById('root')!).render(<App />);
 
 if (import.meta.env.VITE_APP_STATE === 'production') {
   // 서비스 워커 등록 코드 추가
@@ -30,3 +28,4 @@ if (import.meta.env.VITE_APP_STATE === 'production') {
     });
   }
 }
+createRoot(document.getElementById('root')!).render(<App />);
