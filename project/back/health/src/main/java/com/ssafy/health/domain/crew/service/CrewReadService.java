@@ -43,15 +43,7 @@ public class CrewReadService {
         List<UserCrew> userCrewList = userCrewRepository.findByUserId(userId);
 
         List<CrewInfo> crewList = userCrewList.stream()
-                .map(userCrew -> {
-                    Crew crew = userCrew.getCrew();
-                    return CrewInfo.builder()
-                            .crewId(crew.getId())
-                            .crewName(crew.getName())
-                            .exerciseName(crew.getExercise().getName())
-                            .crewProfileImage(crew.getProfileImage())
-                            .build();
-                })
+                .map(userCrew -> createCrewInfo(userCrew.getCrew()))
                 .collect(Collectors.toList());
 
         return CrewListResponseDto.builder()
