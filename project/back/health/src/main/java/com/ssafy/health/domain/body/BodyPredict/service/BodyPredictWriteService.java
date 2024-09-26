@@ -18,6 +18,7 @@ import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryReadService;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryWriteService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,6 +31,9 @@ import java.util.Locale;
 @Service
 @RequiredArgsConstructor
 public class BodyPredictWriteService {
+
+    @Value("${health.analysis.api.url}")
+    private String fastApiUrl;
 
     private final UserRepository userRepository;
     private final BodyHistoryRepository bodyRepository;
