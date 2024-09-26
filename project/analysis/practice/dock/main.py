@@ -183,6 +183,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
 # 1-1. row_user_list / Spring 데이터 조회
 def get_user_list():
     response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/users")
+    # response = requests.get(f"https://health_backend/api/v1/users")
     user_data = response.json()  # 유저 전체 목록
     print(user_data)
     return user_data

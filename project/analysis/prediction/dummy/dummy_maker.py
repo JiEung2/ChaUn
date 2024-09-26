@@ -9,7 +9,7 @@ import os
 people_data = pd.read_csv('../statistics/updated_output.csv')
 
 # 테스트 코드
-for sample_id in range(10):
+for sample_id in range(50):
 # for sample_id in range(len(people_data)):
     sample_id = np.random.randint(0, len(people_data))
     person_data = people_data.iloc[sample_id]
@@ -247,7 +247,7 @@ for sample_id in range(10):
         df_monthly = df.resample('ME', on='date').mean()  # 월 단위로 평균 계산
 
         # 필요한 데이터만 선택해서 확인
-        df_monthly_weight = df_monthly[['est_weight']].copy()
+        df_monthly_weight = df_monthly[['weight']].copy()
 
         # 그래프 그리기 (남성은 파란색, 여성은 빨간색)
         plt.figure(figsize=(10, 6))
@@ -259,10 +259,10 @@ for sample_id in range(10):
         min_weight = 35
         max_weight = 105
 
-        plt.plot(df_monthly_weight.index, df_monthly_weight['est_weight'], marker=marker, linestyle='-', color=color)
+        plt.plot(df_monthly_weight.index, df_monthly_weight['weight'], marker=marker, linestyle='-', color=color)
         
         # 데이터 포인트 위에 수치 표시
-        for x, y in zip(df_monthly_weight.index, df_monthly_weight['est_weight']):
+        for x, y in zip(df_monthly_weight.index, df_monthly_weight['weight']):
             plt.text(x, y, f'{y:.1f}', ha='center', va='bottom', fontsize=8, color=color)
 
         # y축 범위를 성별에 맞춰 설정

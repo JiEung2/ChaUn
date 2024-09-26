@@ -2,13 +2,23 @@
 import os
 import numpy as np
 import pandas as pd
-import tensorflow
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Input, GRU, LSTM, Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
+
+# TensorFlow에서 사용 가능한 GPU 장치를 확인
+gpus = tf.config.list_physical_devices('GPU')
+
+if gpus:
+    print(f"GPU devices found: {len(gpus)}")
+    for gpu in gpus:
+        print(gpu)
+else:
+    print("No GPU found. Using CPU.")
 
 # csv를 불러와
 csv_dir = './dummy/outputs/csv'
@@ -61,13 +71,14 @@ y_combined = np.concatenate(all_y, axis=0).astype(np.float32)
 model = Sequential() # 모델 순차적 정의
 model.add(Input(shape=(X_combined.shape[1], X_combined.shape[2])))
 # GRU 레이어를 어느정도를 쓸건가?
-model.add(GRU(units=64, return_sequences=False)) # 모델 GRU 레이어 통과
-model.add(Dropout(0.3)) # 편향 방지 : 드랍 아웃 결정
+model.add(LSTM(units=64, dropout=0.2, return_sequences=True)) # 모델 GRU 레이어 통과
+model.add(LSTM(units=64, dropout=0.2)) # 모델 GRU 레이어 통과
+# model.add(Dropout(0.2)) # 편향 방지 : 드랍 아웃 결정
 model.add(Dense(64, activation = 'relu')) # Fully-Connected DL
 model.add(Dense(units=forecast_steps)) # 모델 Dense 레이어 통과 이후, 1차원으로 90개 출력 데이터
 
 # 모델 컴파일 - 회귀 모델에 적합한 MSE 선택, mae, mse 같이 확인
-opt = Adam(learning_rate=0.0001)
+opt = Adam(learning_rate=0.001)
 
 model.compile(optimizer = opt, loss='mse', metrics=['mae', 'mse'])
 

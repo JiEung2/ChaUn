@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import GRU, Dense, Dropout, Input
+from tensorflow.keras.layers import GRU, LSTM, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
 
 # fastapi
@@ -15,12 +15,21 @@ from tensorflow.keras.optimizers import Adam
 
 # 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
 def build_model(input_shape, forecast_steps):
-    model = Sequential()
-    model.add(Input(shape=input_shape))  # input_shape = (timesteps, features)
-    model.add(GRU(units=64, return_sequences=False)) 
-    model.add(Dropout(0.3)) 
-    model.add(Dense(64, activation='relu')) 
-    model.add(Dense(units=forecast_steps))  # 예측할 시점 수에 따라 output 설정
+    # model = Sequential()
+    # model.add(Input(shape=input_shape))  # input_shape = (timesteps, features)
+    # model.add(GRU(units=64)) 
+    # model.add(Dropout(0.3)) 
+    # model.add(Dense(64, activation='relu')) 
+    # model.add(Dense(units=forecast_steps))  # 예측할 시점 수에 따라 output 설정
+
+    model = Sequential() # 모델 순차적 정의
+    model.add(Input(shape=input_shape))
+    # GRU 레이어를 어느정도를 쓸건가?
+    model.add(LSTM(units=64, dropout=0.2, return_sequences=True)) # 모델 GRU 레이어 통과
+    model.add(LSTM(units=64, dropout=0.2)) # 모델 GRU 레이어 통과
+    # model.add(Dropout(0.2)) # 편향 방지 : 드랍 아웃 결정
+    model.add(Dense(64, activation = 'relu')) # Fully-Connected DL
+    model.add(Dense(units=forecast_steps)) # 모델 Dense 레이어 통과 이후, 1차원으로 90개 출력 데이터
     return model
 
 # 모델에 따른 가중치 불러오기
@@ -81,8 +90,9 @@ if __name__ == "__main__":
         predictions = make_predictions(model, X_test)
 
         # 실제 값 출력
-        print("Real Weight for the next 30 days:", df.loc[29, 'weight'])
-        print("Real Weight for the next 90 days:", df.loc[89, 'weight'])
+        print("Current Real Weight:", df.loc[magic_number:magic_number+7, 'weight'])
+        print("Real Weight for the next 30 days:", df.loc[magic_number+29, 'weight'])
+        print("Real Weight for the next 90 days:", df.loc[magic_number+89, 'weight'])
         
         # 예측 결과 출력
         print("Predictions for the next 30 days:", predictions[0][29])
