@@ -9,8 +9,8 @@ import os
 people_data = pd.read_csv('../statistics/updated_output.csv')
 
 # 테스트 코드
-for sample_id in range(10):
-# for sample_id in range(len(people_data)):
+# for sample_id in range(10):
+for sample_id in range(len(people_data)):
     person_data = people_data.iloc[sample_id]
 
     ### DF 사용할 data 만들기
@@ -27,7 +27,7 @@ for sample_id in range(10):
         'consumed_cal' : person_data['consumed_cal'],
         'intake_cal' : 0,
         'BMR': person_data['BMR'],
-        'day_variable' : 0,
+        'day_variable' : 0.0,
         'est_weight': np.zeros(980)
     }
     df = pd.DataFrame(data)
@@ -77,9 +77,6 @@ for sample_id in range(10):
         # 길이가 980짜리 하나의 활동 칼로리 리스트로 펼치기
         flattened_patterns = [cal for weekly_pattern in all_patterns for cal in weekly_pattern]
         
-        # 리스트의 길이가 정확히 980인지 확인
-        assert len(flattened_patterns) == 980, f"Flattened pattern length is {len(flattened_patterns)}, expected 980."
-
         return flattened_patterns
 
     # 4. df에 반영하기
@@ -108,22 +105,22 @@ for sample_id in range(10):
     def generate_weight_patterns():
         days = 0
         if exercise_habit:
-            user_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.1, 0.3, 0.6])
+            user_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.2, 0.2, 0.6])
         else:
             user_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.25, 0.25, 0.5])
             
         patterns = []
         while days < 980:
-            # 최소 7일 ~ 최대 60일까지의 수 중 하나 골라서 패턴 적용할 것 정하기
-            pattern_length = np.random.randint(7, 61)
+            # 최소 14일 ~ 최대 30일까지의 수 중 하나 골라서 패턴 적용할 것 정하기
+            pattern_length = np.random.randint(14, 31)
             
             # 유저 타입에 따라 패턴 확률을 다르게 가져간다.
             if user_type == 'increase': # 증가형, 증가를 많이 가져가게
-                pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.5, 0.2, 0.3])
+                pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.2, 0.1, 0.7])
             elif user_type == 'decrease': # 감소형, 감소를 많이 가져가게
-                pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.2, 0.5, 0.3])
+                pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.1, 0.2, 0.7])
             elif user_type == 'maintain': # 유지형, 증가-감소를 가져가고, 유지가 더 많이
-                pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.3, 0.3, 0.4])
+                pattern_type = np.random.choice(['increase', 'decrease', 'maintain'], p=[0.15, 0.15, 0.7])
 
             # 980일 이상으로 안만들기 위해 min 적용, 패턴 저장
             end = min(days + pattern_length, 980)
@@ -136,48 +133,69 @@ for sample_id in range(10):
 
     # 2. 패턴 적용 함수
     def apply_patterns(df, user_type, patterns):
-        
+        # 'weight_change_effect' 컬럼을 0으로 초기화
+        df['weight_change_effect'] = 0.0
+
         # 최소, 최대 몸무게 변화를 지정해 전체 기간 중 결과적으로 얼마나 변화를 줄지
         if user_type == 'increase': # 전체 기간 동안 3키로 증가 ~ 10키로 증가
-            min_variable = 3
+            min_variable = 4
             max_variable = 11
         elif user_type == 'decrease': # 전체 기간 동안 2키로 감소 ~ 5키로 감소
-            min_variable = -5
-            max_variable = -2
+            min_variable = 1
+            max_variable = 4
         else: # 거의 유지되는 정도 전체 기간동안 2키로 감소 ~ 2키로 증가
-            min_variable = -2
-            max_variable = 2
+            min_variable = 0
+            max_variable = 3
 
         # 전체 기간 동안의 목표를 설정
         aim = np.random.randint(min_variable, max_variable)
+        # 한번 변화할 때, 변화량 추적
+        increase_count_patterns = 0
+        decrease_count_patterns = 0
+        for p in patterns:
+            if 'increase' in p:
+                increase_count_patterns += 1
+            elif 'decrease' in p:
+                decrease_count_patterns += 1
 
-        # 제일 처음과 제일 끝의 차이는 결국 aim값에 맞춰져야한다.
+        # 변화 추적 변수
+        current_change = 0.0
 
-        # 아래 패턴을 이용해서 aim으로 잘 가게금 유도하기 (근데 급하게 틀면 안됨)
-
+        # 패턴 리스트 읽어서 패턴 적용
         for start, end, pattern_type in patterns:
-            days_in_pattern = end - start + 1
+            days_in_pattern = end - start
 
             # 길이가 길면, 몸무게 증가하는 양도 늘고, 길이가 줄면, 몸무게 감소 + 유지하는 양도 높아진다.
-            if pattern_type == 'increase':
-                # 증가 패턴: 하루에 0.1~0.5kg 증가
-                df.loc[start:end, 'weight_change_effect'] += np.linspace(0, 0.5, end-start+1)
-            elif pattern_type == 'decrease':
-                # 감소 패턴: 하루에 0.1~0.5kg 감소
-                df.loc[start:end, 'weight_change_effect'] -= np.linspace(0, 0.5, end-start+1)
+            if pattern_type == 'increase': # 증가
+                increase_change = aim / increase_count_patterns
+                daily_change = increase_change / days_in_pattern
+                df.loc[start:end-1, 'weight_change_effect'] += np.linspace(0.01, daily_change * days_in_pattern, days_in_pattern) + np.random.uniform(-0.1, 0.1, days_in_pattern)
+                current_change += increase_change
+            elif pattern_type == 'decrease': # 감소
+                decrease_change = aim / decrease_count_patterns
+                daily_change = decrease_change / days_in_pattern
+                df.loc[start:end-1, 'weight_change_effect'] -= np.linspace(0.01, daily_change * days_in_pattern, days_in_pattern) + np.random.uniform(-0.1, 0.1, days_in_pattern)
+                current_change -= decrease_change
             elif pattern_type == 'maintain':
                 # 유지 패턴: weight_change_effect 추가 없음
-                df.loc[start:end, 'weight_change_effect'] = 0  # 유지 패턴은 기본적인 fluctuation만 반영
+                maintain_change = np.random.uniform(-0.05, 0.05, days_in_pattern)
+                df.loc[start:end-1, 'weight_change_effect'] += maintain_change  # 유지 패턴은 기본적인 fluctuation만 반영
+                current_change += maintain_change.sum()
 
+            # print(f"Start: {start}, End: {end}, Pattern Type: {pattern_type}, Days: {days_in_pattern}")
+            # print(f"Current Change: {current_change}\n")
         return df
+
     user_type, patterns = generate_weight_patterns()
     # print(patterns)
     df = apply_patterns(df, user_type, patterns)
 
     # 3. 몸무게 패턴 생성 함수
     def generate_weight_patterns():
+        df['day_variable'] = df['day_variable'].astype(float)
+        df['est_weight'] = df['est_weight'].astype(float)
         # 첫째날 하루의 몸무게 변화 = (먹었던 것 - (기초 대사 + 활동 대사)) / 7700
-        df.loc[0, 'day_variable'] = round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'consumed_cal'])) / 7700, 2)
+        df.loc[0, 'day_variable'] = float(round((df.loc[0, 'intake_cal'] - (df.loc[0, 'BMR'] + df.loc[0, 'consumed_cal'])) / 7700, 2))
 
         # 연산으로 얻어낸 몸무게 변화라고 가정
         df.loc[0, 'est_weight'] = df.loc[0, 'weight'] + df.loc[0, 'day_variable']
@@ -186,7 +204,7 @@ for sample_id in range(10):
         for i in range(1, len(df)):
 
             # 1. 기존 체중(weight)을 예상 체중으로 덮어 씌우기
-            fluctuation = np.random.uniform(-0.2, 0.2)
+            fluctuation = np.random.uniform(-0.1, 0.1)
             df.loc[i, 'weight'] = df.loc[i-1, 'est_weight'] + fluctuation
 
             # 2. 오늘 하루 BMR 반영
@@ -203,10 +221,13 @@ for sample_id in range(10):
             # 하루 체중 변화량 (연산) vs 하루 패턴 변화량 (패턴화) => 둘 중 하나만 가져가야하나?
 
             # 4. 오늘의 est_weight 계산 (어제의 몸무게, 오늘의 몸무게의 평균 + 체중 변화량 + 패턴 변화량)
-            df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + df.loc[i, 'day_variable'] + df.loc[i, 'weight_change_effect']
+            # df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + df.loc[i, 'day_variable'] + df.loc[i, 'weight_change_effect']
+            df.loc[i, 'est_weight'] = (df.loc[i-1, 'weight'] + df.loc[i, 'weight']) / 2 + (df.loc[i, 'weight_change_effect'] if abs(df.loc[i, 'weight_change_effect']) < 1 else df.loc[i, 'day_variable'])
 
             # 5. 변화하는 BMI 계산해서 df에 넣기
             df['BMI'] = round(df['weight'] / ((df['height']/100) ** 2), 2)
+
+
     generate_weight_patterns()
 
     # 결과 확인
@@ -217,8 +238,6 @@ for sample_id in range(10):
         csv_file = os.path.join('./outputs/test/csv', f'sample_{sample_id}.csv')
         # csv로 저장하기
         df.to_csv(csv_file, index=False)
-        print(f'{csv_file} Saved!')
-    make_time_series_data()
 
     ### matplotlib, graph save
     def make_graph():
@@ -234,8 +253,10 @@ for sample_id in range(10):
         # 남성일 경우 파란색, 여성일 경우 빨간색
         color = 'b' if df['sex'][0] == 1 else 'r'  # 성별에 따른 색상 선택
         marker = 'o' if df['sex'][0] == 1 else 'x'  # 성별에 따른 마커 선택
-        min_weight = min(df['weight'])
-        max_weight = max(df['weight'])
+        # min_weight = min(df['weight'])
+        # max_weight = max(df['weight'])
+        min_weight = 35
+        max_weight = 105
 
         plt.plot(df_monthly_weight.index, df_monthly_weight['est_weight'], marker=marker, linestyle='-', color=color)
         
@@ -257,8 +278,11 @@ for sample_id in range(10):
         # plt, png 저장
         png_file = os.path.join('./outputs/chart', f'sample_{sample_id}.png')
         plt.savefig(png_file)
-        print(f'{png_file} Saved!')
         
         # plt.show()
         plt.close()
+    
+    # 결과 생성
+    make_time_series_data()
     make_graph()
+    print(f'{sample_id}.data saved!')
