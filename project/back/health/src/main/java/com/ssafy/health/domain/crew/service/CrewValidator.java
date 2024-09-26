@@ -22,4 +22,7 @@ public class CrewValidator {
         if (userCrew.getRole().equals(CrewRole.MEMBER)) throw new NotCrewLeaderException();
     }
 
+    public boolean isBattleReady(Crew crew) {
+        return crew.getBattleStatus();
+    }
 }
