@@ -3,13 +3,7 @@ package com.ssafy.health.domain.crew.controller;
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
-import com.ssafy.health.domain.crew.dto.response.CreateCrewSuccessDto;
-import com.ssafy.health.domain.crew.dto.response.CrewDetailResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewMembersResponseDto;
-import com.ssafy.health.domain.crew.dto.response.CrewScoreResponseDto;
-import com.ssafy.health.domain.crew.dto.response.JoinCrewSuccessDto;
-import com.ssafy.health.domain.crew.dto.response.SendCoinSuccessDto;
+import com.ssafy.health.domain.crew.dto.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -306,5 +300,41 @@ public interface CrewControllerApi {
             )
     })
     ApiResponse<BattleMatchResponseDto> getBattleStatus(@PathVariable("crew_id") Long crewId);
+
+
+    @Operation(
+            summary = "크루 배틀 랜덤 매칭 동의, 취소",
+            description = "크루 배틀 랜덤 매칭에 동의, 취소 합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 배틀 랜덤 매칭 동의 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "Success",
+                                      "data": {
+                                        "message": "크루 배틀 랜덤 매칭 동의에 성공하였습니다."
+                                      }
+                                    }
+                                    """
+                            ))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 배틀 랜덤 매칭 동의 취소 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "Success",
+                                      "data": {
+                                        "message": "크루 배틀 랜덤 매칭 동의를 취소하였습니다."
+                                      }
+                                    }
+                                    """
+                            ))
+            ),
+            
+    })
+    ApiResponse<BattleReadyStatusResponse> readyCrewBattle(@PathVariable("crew_id") Long crewId);
 
 }
