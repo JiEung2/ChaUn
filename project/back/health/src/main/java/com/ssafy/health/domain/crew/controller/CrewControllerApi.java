@@ -247,6 +247,7 @@ public interface CrewControllerApi {
                                     "  \"status\": 200,\n" +
                                     "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
+                                    "    \"battleId\": 1,\n" +
                                     "    \"myTeamName\": \"달리자크루\",\n" +
                                     "    \"myTeamScore\": 0,\n" +
                                     "    \"opponentTeamName\": \"크크크루\",\n" +
@@ -254,6 +255,15 @@ public interface CrewControllerApi {
                                     "    \"exerciseName\": \"러닝\",\n" +
                                     "    \"dDay\": 2\n" +
                                     "  }\n" +
+                                    "}"
+                            ))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "크루 배틀 생성 실패",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 409,\n" +
+                                    "  \"message\": \"이미 진행중인 배틀이 존재합니다.\",\n" +
+                                    "  \"data\": {}\n" +
                                     "}"
                             ))
             ),
