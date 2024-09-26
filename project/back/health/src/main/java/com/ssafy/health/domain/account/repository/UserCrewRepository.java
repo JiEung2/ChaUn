@@ -12,7 +12,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface UserCrewRepository extends JpaRepository<UserCrew, Long> {
-    List<UserCrew> findByUserId(Long userId);
+
+    @Query("SELECT uc FROM UserCrew uc JOIN FETCH uc.crew WHERE uc.user.id = :userId")
+    List<UserCrew> findByUserIdWithCrew(Long userId);
+
+    @Query("SELECT uc FROM UserCrew uc JOIN FETCH uc.user WHERE uc.crew.id = :crewId")
     List<UserCrew> findByCrewId(Long crewId);
 
     Optional<UserCrew> findByCrewIdAndUserId(Long crewId, Long userId);

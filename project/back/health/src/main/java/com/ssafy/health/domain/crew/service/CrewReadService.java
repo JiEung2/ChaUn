@@ -40,18 +40,10 @@ public class CrewReadService {
     private final ExerciseHistoryRepository exerciseHistoryRepository;
 
     public CrewListResponseDto getJoinedCrewList(Long userId) {
-        List<UserCrew> userCrewList = userCrewRepository.findByUserId(userId);
+        List<UserCrew> userCrewList = userCrewRepository.findByUserIdWithCrew(userId);
 
         List<CrewInfo> crewList = userCrewList.stream()
-                .map(userCrew -> {
-                    Crew crew = userCrew.getCrew();
-                    return CrewInfo.builder()
-                            .crewId(crew.getId())
-                            .crewName(crew.getName())
-                            .exerciseName(crew.getExercise().getName())
-                            .crewProfileImage(crew.getProfileImage())
-                            .build();
-                })
+                .map(userCrew -> createCrewInfo(userCrew.getCrew()))
                 .collect(Collectors.toList());
 
         return CrewListResponseDto.builder()
@@ -60,7 +52,7 @@ public class CrewReadService {
     }
 
     public CrewDetailResponseDto getCrewDetail(Long crewId) {
-        Crew crew = findCrewById(crewId);
+        Crew crew = crewRepository.findCrewWithExerciseById(crewId).orElseThrow(CrewNotFoundException::new);
         Long crewRanking = getCrewRanking(crew.getActivityScore() + crew.getBasicScore());
 
         Optional<BattleStatsDto> battleStats = battleRepository.countTotalAndWonBattles(crewId);
@@ -154,10 +146,6 @@ public class CrewReadService {
             return CrewListResponseDto.builder().crewList(Collections.emptyList()).build();
         }
         return createCrewListResponseDto(crewList);
-    }
-
-    private Crew findCrewById(Long crewId) {
-        return crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
     }
 
     private static List<CrewMemberInfo> getCrewMemberInfoList(List<UserExerciseTimeDto> userExerciseTimeList, Map<Long, User> userMap, List<UserCrew> userCrewList) {
