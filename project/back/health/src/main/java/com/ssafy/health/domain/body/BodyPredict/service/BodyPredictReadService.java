@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.body.BodyPredict.service;
 
 import com.ssafy.health.common.security.SecurityUtil;
+import com.ssafy.health.domain.body.BodyPredict.dto.ExerciseDetailDto;
 import com.ssafy.health.domain.body.BodyPredict.dto.response.BasicPredictionResponseDto;
 import com.ssafy.health.domain.body.BodyPredict.dto.response.ExtraPredictionResponseDto;
 import com.ssafy.health.domain.body.BodyPredict.entity.BodyBasicPrediction;
@@ -41,7 +42,7 @@ public class BodyPredictReadService {
                 .userId(extraPrediction.getUserId())
                 .p30(extraPrediction.getP30())
                 .p90(extraPrediction.getP90())
-                .exercise(ExtraPredictionResponseDto.ExerciseDetail.builder()
+                .exercise(ExerciseDetailDto.builder()
                         .exerciseId(extraPrediction.getExercise().getExerciseId())
                         .duration(extraPrediction.getExercise().getDuration())
                         .count(extraPrediction.getExercise().getCount())

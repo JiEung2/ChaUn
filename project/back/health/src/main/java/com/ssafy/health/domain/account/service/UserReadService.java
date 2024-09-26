@@ -7,8 +7,8 @@ import com.ssafy.health.domain.account.dto.response.UserDetailDto;
 import com.ssafy.health.domain.account.entity.RecommendedCrew;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
-import com.ssafy.health.domain.account.repository.mongodb.RecommendedCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
+import com.ssafy.health.domain.account.repository.mongodb.RecommendedCrewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
