@@ -163,13 +163,13 @@ public interface CrewControllerApi {
                                     "        \"nickname\": \"달리기 왕자\",\n" +
                                     "        \"userId\": 20,\n" +
                                     "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"thisWeekExerciseTime\": 123123\n" +
+                                    "        \"exerciseTime\": 123123\n" +
                                     "      },\n" +
                                     "      {\n" +
                                     "        \"nickname\": \"달리기 공주\",\n" +
                                     "        \"userId\": 21,\n" +
                                     "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"thisWeekExerciseTime\": 123123\n" +
+                                    "        \"exerciseTime\": 123123\n" +
                                     "      }\n" +
                                     "    ]\n" +
                                     "  }\n" +
@@ -219,13 +219,13 @@ public interface CrewControllerApi {
                                     "        \"nickname\": \"달리기 왕자\",\n" +
                                     "        \"userId\": 20,\n" +
                                     "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"thisWeekExerciseTime\": 123123\n" +
+                                    "        \"exerciseTime\": 123123\n" +
                                     "      },\n" +
                                     "      {\n" +
                                     "        \"nickname\": \"달리기 공주\",\n" +
                                     "        \"userId\": 21,\n" +
                                     "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"thisWeekExerciseTime\": 123121\n" +
+                                    "        \"exerciseTime\": 123121\n" +
                                     "      }\n" +
                                     "    ]\n" +
                                     "  }\n" +

@@ -1,16 +1,21 @@
 package com.ssafy.health.domain.battle.service;
 
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
+import com.ssafy.health.domain.battle.dto.response.BattleMemberRankingDto;
 import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
+import com.ssafy.health.domain.battle.exception.BattleNotFoundException;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
+import com.ssafy.health.domain.crew.dto.response.CrewMemberInfo;
 import com.ssafy.health.domain.crew.entity.Crew;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 import java.util.Optional;
 
+import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BattleReadService {
 
     private final BattleRepository battleRepository;
+    private final ExerciseHistoryRepository exerciseHistoryRepository;
 
     public BattleMatchResponseDto getBattleStatus(Long crewId) {
         Optional<Battle> battle = battleRepository.findBattleByCrewId(crewId, BattleStatus.STARTED);
@@ -40,6 +46,18 @@ public class BattleReadService {
                 .exerciseName(myCrew.getExercise().getName())
                 .battleStatus(battle.get().getStatus())
                 .dDay(calculateDDay())
+                .build();
+    }
+
+    public BattleMemberRankingDto getBattleMemberRanking(Long battleId) {
+        Battle battle = battleRepository.findById(battleId).orElseThrow(BattleNotFoundException::new);
+
+        List<CrewMemberInfo> homeCrewMemberRanking = exerciseHistoryRepository.findUserRankingsByCrewAndDateTime(battle.getHomeCrew().getId(), battle.getCreatedAt());
+        List<CrewMemberInfo> awayCrewMemberRanking = exerciseHistoryRepository.findUserRankingsByCrewAndDateTime(battle.getAwayCrew().getId(), battle.getCreatedAt());
+
+        return BattleMemberRankingDto.builder()
+                .homeCrewMembers(homeCrewMemberRanking)
+                .awayCrewMembers(awayCrewMemberRanking)
                 .build();
     }
 
