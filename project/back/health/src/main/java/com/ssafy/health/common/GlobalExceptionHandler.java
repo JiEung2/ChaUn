@@ -5,6 +5,7 @@ import com.ssafy.health.common.oauth.exception.InvalidRefreshToken;
 import com.ssafy.health.common.oauth.exception.NotFoundRefreshTokenException;
 import com.ssafy.health.domain.account.exception.*;
 import com.ssafy.health.domain.attendance.exception.AttendanceAlreadyExistsException;
+import com.ssafy.health.domain.battle.exception.BattleAlreadyExistsException;
 import com.ssafy.health.domain.battle.exception.BattleNotFoundException;
 import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundException;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
@@ -103,6 +104,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AttendanceAlreadyExistsException.class)
     public ResponseEntity<ApiResponse<Void>> handleAttendanceAlreadyExistsException(final AttendanceAlreadyExistsException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(BattleAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBattleAlreadyExistsException(final BattleAlreadyExistsException e) {
         ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
