@@ -3,7 +3,6 @@ import { http, HttpResponse } from 'msw';
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
 export const recordHandlers = [
-
   // 나의 특정 달의 체형 기록 조회
   http.get(`${baseUrl}/users/body`, ({ request }) => {
     const url = new URL(request.url);
@@ -17,13 +16,13 @@ export const recordHandlers = [
         data: {
           bodyHistoryDataList: [
             {
-              date: '2024-08-16T15:00:00',
+              date: '2024-09-16T15:00:00',
               weight: 75.5,
               skeletalMuscleMass: 30,
               bodyFatRatio: 20,
             },
             {
-              date: '2024-08-23T15:00:00',
+              date: '2024-09-23T15:00:00',
               weight: 74,
               skeletalMuscleMass: 29.5,
               bodyFatRatio: 21,

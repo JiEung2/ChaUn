@@ -18,22 +18,19 @@ type FormData = {
 };
 
 export default function BodyAddModal({ onClose }: BodyAddModalProps) {
-  const { register } = useForm<FormData>();
-
+  const { register, watch } = useForm<FormData>();
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   const [bodyData, setBodyData] = useState({
     height: 0,
     weight: 0,
-    skeletalMuscleMass: null as number | null, // 선택 사항
-    bodyFat: null as number | null, // 선택 사항
+    skeletalMuscleMass: null as number | null,
+    bodyFat: null as number | null,
     bodyMuscle: false,
     bodyShape: 0,
   });
 
-
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-
-  // 필수 필드만 검증하는 함수
+  // 체형 입력 검증 (필수 항목만 확인)
   const isRequiredBodyDataComplete = () => {
     const requiredBodyData = {
       height: bodyData.height,
@@ -43,29 +40,34 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
     };
 
     // 필수 데이터가 모두 입력되었는지 확인 (0이 아닌 경우 또는 값이 true여야 함)
-    return Object.values(requiredBodyData).every(value => {
+    return Object.values(requiredBodyData).every((value) => {
       return value !== 0 && value !== false;
     });
   };
 
-  // 모든 데이터가 입력되었는지 확인하는 함수
-  const checkDataCompletion = () => {
-    // 필수 데이터가 모두 입력되었는지 확인
-    const isBodyDataComplete = isRequiredBodyDataComplete();
+  // 식습관 입력 검증
+  const isEatingHabitsComplete = () => {
+    const mealsPerDay = watch('mealsPerDay');
+    const foodType = watch('foodType');
+    const snacksPerDay = watch('snacksPerDay');
+    const drinksPerDay = watch('drinksPerDay');
 
-    // 필수 데이터가 모두 입력된 경우에만 버튼 활성화 (선택 사항은 무시)
-    setIsButtonDisabled(!isBodyDataComplete);
+    return mealsPerDay && foodType && snacksPerDay && drinksPerDay;
   };
 
-  // useEffect: 데이터가 변경될 때마다 체크
-  useEffect(() => {
-    checkDataCompletion(); // 첫 번째 렌더링 시에도 검증 수행
-  }, [bodyData]); // bodyData만 실시간으로 추적
+  const checkDataCompletion = () => {
+    const isBodyDataComplete = isRequiredBodyDataComplete();
+    const isEatingComplete = isEatingHabitsComplete();
+    setIsButtonDisabled(!(isBodyDataComplete && isEatingComplete));
+  };
 
-  // 완료 버튼 클릭하면 데이터 전송 및 모달 닫기
+  useEffect(() => {
+    checkDataCompletion();
+  }, [bodyData, watch('mealsPerDay'), watch('foodType'), watch('snacksPerDay'), watch('drinksPerDay')]);
+
   const handleComplete = () => {
     if (!isButtonDisabled) {
-      // POST 요청 또는 다른 작업 수행
+      // POST 요청
       onClose();
     }
   };
@@ -73,12 +75,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
   return (
     <div className="bodyAddModal">
       <hr className="divider" />
-      <img
-        src={xCircle}
-        alt="Close"
-        className="closeIcon"
-        onClick={onClose}
-      />
+      <img src={xCircle} alt="Close" className="closeIcon" onClick={onClose} />
       <div>
         <h1 className="title">체형 입력</h1>
         <p className="description">보다 정확한 체형 분석 및 예측을 위해 체형과 식습관 정보를 입력해주세요.</p>
@@ -88,11 +85,10 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
         <EatingHabits register={register} />
       </div>
       <GeneralButton
-        buttonStyle={{ style: "floating", size: "semiTiny" }}
+        buttonStyle={{ style: 'floating', size: 'semiTiny' }}
         onClick={handleComplete}
         className="completedButton"
-        disabled={isButtonDisabled}
-      >
+        disabled={isButtonDisabled}>
         완료
       </GeneralButton>
     </div>
