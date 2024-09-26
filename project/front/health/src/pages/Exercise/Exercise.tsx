@@ -12,7 +12,7 @@ Modal.setAppElement('#root');
 
 export default function Exercise() {
   const [showModal, setShowModal] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<string | string[]>('운동 선택');
+  const [selectedExercise, setSelectedExercise] = useState<{ id: number; name: string } | null>(null);
   const [timer, setTimer] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
@@ -46,11 +46,13 @@ export default function Exercise() {
     return (seconds * 0.1).toFixed(2);
   };
 
-  const handleSelectExercise = (exercise: string | string[]) => {
-    if (exercise) {
-      setSelectedExercise(exercise);
+  const handleSelectExercise = (selected: { id: number; name: string } | { id: number; name: string }[]) => {
+    if (Array.isArray(selected)) {
+      setSelectedExercise(selected[0]);
+    } else {
+      setSelectedExercise(selected);
     }
-    setShowModal(false); 
+    setShowModal(false);
   };
 
   const handleCloseModal = () => {
@@ -66,12 +68,11 @@ export default function Exercise() {
   }, [intervalId]);
 
   return (
-    <div className='exerciseContainer'>
-      <div className='exerciseRecommendButton'>
+    <div className="exerciseContainer">
+      <div className="exerciseRecommendButton">
         <GeneralButton
           buttonStyle={{ style: 'semiOutlined', size: 'mini' }}
-          onClick={() => navigate('/exercise/recommend')}
-        >
+          onClick={() => navigate('/exercise/recommend')}>
           운동 추천
         </GeneralButton>
       </div>
@@ -80,32 +81,24 @@ export default function Exercise() {
         buttonStyle={{ style: 'primary', size: 'large' }}
         onClick={() => setShowModal(true)}
         className="selectExercise"
-        disabled={isRunning || isFinished || isStopped}
-      >
-        {Array.isArray(selectedExercise) ? selectedExercise.join(', ') : selectedExercise}
+        disabled={isRunning || isFinished || isStopped}>
+        {selectedExercise?.name || '운동 선택'}
       </GeneralButton>
 
       <Modal
         isOpen={showModal}
         onRequestClose={handleCloseModal}
         className="modalContent"
-        overlayClassName="modalOverlay"
-      >
-        <ExerciseModal 
-          onSelectExercise={handleSelectExercise} 
-          multiple={false} 
-          onClose={handleCloseModal}
-        />
+        overlayClassName="modalOverlay">
+        <ExerciseModal onSelectExercise={handleSelectExercise} multiple={false} onClose={handleCloseModal} />
       </Modal>
 
       {!isFinished ? (
         <>
-          <div className='timer'>
-            {new Date(timer * 1000).toISOString().substr(11, 8)}
-          </div>
-          <div className='timerButton'>
+          <div className="timer">{new Date(timer * 1000).toISOString().substr(11, 8)}</div>
+          <div className="timerButton">
             {!isRunning ? (
-              <button onClick={startTimer} disabled={Array.isArray(selectedExercise) || selectedExercise === '운동 선택'}>
+              <button onClick={startTimer} disabled={!selectedExercise}>
                 <img src={Start} alt="start" />
               </button>
             ) : (
@@ -129,7 +122,7 @@ export default function Exercise() {
             <div className="recordItem">
               <p>🔥 칼로리</p>
               <span className="kcal">{calculateCalories(timer)} kcal</span>
-            </div>            
+            </div>
           </div>
         </div>
       )}
