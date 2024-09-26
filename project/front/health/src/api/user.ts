@@ -6,3 +6,8 @@ export const getUserDetail = async (userId: number) => {
   const response = await axios.get(`${baseUrl}/users/:userId`, { params: { userId } });
   return response;
 };
+
+export const getUserWeight6 = async (userId: number) => {
+  const response = await axios.get(`${baseUrl}/users/:userId/weight`, { params: { userId } });
+  return response;
+};

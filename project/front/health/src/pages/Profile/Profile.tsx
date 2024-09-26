@@ -5,24 +5,23 @@ import Crew from '@/components/Crew/Crew';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto'; // Chart.js의 자동 등록을 위해 필요
 import './Profile.scss';
-import { getUserDetail } from '@/api/user';
-
-// 필요한 데이터
-// 몸무게 6개월 (params : userId)
-// 회원 디테일 (params : userId)
-// 운동 시간 (params : userId)
-// 가입된 크루 조회 (params : userId)
+import { getUserDetail, getUserWeight6 } from '@/api/user';
 
 export default function ProfilePage() {
   const { userId } = useParams<{ userId: string }>();
   const [userDetail, setUserDetail] = useState<{ nickname: string; coin: number } | null>(null);
+  const [userWeight, setUserWeight] = useState<{ date: string; weight: number }[]>([]);
 
   // 비동기로 사용자 프로필 데이터 받아오기
   const handleUserProfile = async (userId: string) => {
     try {
       const response = await getUserDetail(Number(userId));
+      const response2 = await getUserWeight6(Number(userId)); // weight 데이터를 받아오는 API
       const userData = response.data;
-      setUserDetail(userData); // 받아온 데이터를 상태로 저장
+      setUserDetail(userData);
+
+      const weightDataList = response2.data.weightDataList || [];
+      setUserWeight(weightDataList);
     } catch (error) {
       console.error('Error fetching user detail:', error);
     }
@@ -40,19 +39,44 @@ export default function ProfilePage() {
     // 나머지 크루 데이터 생략...
   ];
 
-  const [chartData] = useState({
-    labels: ['2024.03', '2024.04', '2024.05', '2024.06', '2024.07', '2024'],
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${String(date.getFullYear()).slice(2)}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+  };
+  // 차트 데이터를 weightDataList 기반으로 동적으로 설정
+  const chartData = {
+    labels: userWeight.map((data) => formatDate(data.date)), // x축을 날짜로 설정
     datasets: [
       {
         label: '체중 기록 (kg)',
-        data: [70, 72, 71, 73, 74, 72], // 체중 기록 예시 데이터
+        data: userWeight.map((data) => data.weight), // y축을 weight로 설정
         borderColor: '#A8C3FF',
         backgroundColor: '#CDE0FF',
         fill: false,
         tension: 0.1,
       },
     ],
-  });
+  };
+
+  const options = {
+    plugins: {
+      legend: {
+        display: true,
+        position: 'bottom' as const,
+        fullWidth: false,
+        labels: {
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: {
+            size: 10,
+          },
+          boxWidth: 8,
+          boxHeight: 8,
+          padding: 10,
+        },
+      },
+    },
+  };
 
   useEffect(() => {
     if (userId) {
@@ -61,7 +85,7 @@ export default function ProfilePage() {
   }, [userId]);
 
   const handleCrewClick = (crewId: number) => {
-    //TODO - 해당 크루 상세보기
+    // TODO - 해당 크루 상세보기
     console.log(crewId);
   };
 
@@ -80,8 +104,9 @@ export default function ProfilePage() {
       </div>
 
       <div className="chart-container">
-        <Line data={chartData} />
+        <Line data={chartData} options={options} />
       </div>
+
       <div className="crew-container">
         <h3>{userDetail?.nickname}님의 크루</h3>
 
