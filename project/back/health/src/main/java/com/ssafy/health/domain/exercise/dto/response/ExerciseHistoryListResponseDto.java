@@ -11,6 +11,7 @@ import java.util.List;
 public class ExerciseHistoryListResponseDto {
     List<ExerciseHistoryDetailDto> exerciseHistoryList;
 
+    @Getter
     @Builder
     public static class ExerciseHistoryDetailDto {
         private Long id;
