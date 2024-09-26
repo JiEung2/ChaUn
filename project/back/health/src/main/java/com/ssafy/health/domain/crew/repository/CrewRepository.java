@@ -17,8 +17,9 @@ public interface CrewRepository extends JpaRepository<Crew, Long> {
     @Query("SELECT c FROM Crew c " +
             "WHERE c.id NOT IN (SELECT b.homeCrew.id FROM Battle b WHERE b.status = 'STARTED')" +
             "AND c.id NOT IN (SELECT b.awayCrew.id FROM Battle b WHERE b.status = 'STARTED')" +
-            "AND c.battleStatus = true ")
-    List<Crew> findAvailableCrews();
+            "AND c.battleStatus = true " +
+            "AND c.id <> :currentCrewId")
+    List<Crew> findBattleReadyCrews(Long currentCrewId);
 
     @Query("SELECT COUNT(c) FROM Crew c WHERE (c.basicScore + c.activityScore) >= :totalScore")
     Long countCrewsWithHigherOrEqualScore(Integer totalScore);
