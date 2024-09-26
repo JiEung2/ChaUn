@@ -52,7 +52,8 @@ public class CrewController implements CrewControllerApi {
 
     @PostMapping("/crew/{crew_id}/coin/{coin_count}")
     public ApiResponse<SendCoinSuccessDto> sendCoin(@PathVariable("crew_id") Long crewId,
-                                                    @PathVariable("coin_count") Integer coin) throws InterruptedException {
+                                                    @PathVariable("coin_count") Integer coin)
+            throws InterruptedException {
         return ApiResponse.success(crewWriteService.sendCoin(crewId, coin));
     }
 
@@ -80,8 +81,9 @@ public class CrewController implements CrewControllerApi {
     public ApiResponse<BattleMatchResponseDto> getBattleStatus(@PathVariable("crew_id") Long crewId) {
         BattleMatchResponseDto battleStatus = battleReadService.getBattleStatus(crewId);
 
-        if (battleStatus.getBattleStatus() != BattleStatus.NONE)
+        if (battleStatus.getBattleStatus() != BattleStatus.NONE) {
             return ApiResponse.success(battleStatus);
+        }
 
         return ApiResponse.success(HttpStatus.NO_CONTENT.value(), battleStatus, "현재 진행 중인 배틀이 없습니다.");
     }
@@ -89,5 +91,10 @@ public class CrewController implements CrewControllerApi {
     @PostMapping("/crew/{crew_id}/battle/ready")
     public ApiResponse<BattleReadyStatusResponse> readyCrewBattle(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(crewWriteService.readyCrewBattle(crewId));
+    }
+
+    @GetMapping("/crew/ranking/{exercise_id}")
+    public ApiResponse<CrewListResponseDto> getCrewRankingByExercise(@PathVariable("exercise_id") Long exerciseId) {
+        return ApiResponse.success(crewReadService.getCrewRankingByExercise(exerciseId));
     }
 }
