@@ -33,4 +33,9 @@ public class BodyPredictController implements BodyPredictControllerApi {
         return ApiResponse.success(
                 bodyPredictWriteService.requestExtraAnalysis(dto), "추가 체형 예측을 요청하였습니다.");
     }
+
+    @PostMapping("/request-analysis")
+    public ApiResponse<AnalysisRequestDto> requestAnalysis() {
+        return ApiResponse.success(bodyPredictWriteService.requestPrediction(), "FastAPI Request");
+    }
 }

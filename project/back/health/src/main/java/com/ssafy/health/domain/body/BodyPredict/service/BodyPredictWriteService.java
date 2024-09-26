@@ -41,6 +41,12 @@ public class BodyPredictWriteService {
     private final ExerciseHistoryWriteService exerciseWriteService;
     private final ExerciseRepository exerciseRepository;
 
+    public AnalysisRequestDto requestPrediction() {
+        // TODO: 스프링 스케쥴러 이용, FastAPI에 분석 요청 보내기
+        ExerciseDetailDto dto = ExerciseDetailDto.builder().build();
+        return buildPredictionPayload(PredictionType.BASIC, dto);
+    }
+
     public AnalysisRequestDto requestExtraAnalysis(ExerciseDetailDto exerciseDetailDto) {
         // TODO: DTO 생성 후 FastAPI에 POST 요청
         return buildPredictionPayload(PredictionType.EXTRA, exerciseDetailDto);
