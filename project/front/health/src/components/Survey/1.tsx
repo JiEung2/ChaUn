@@ -56,7 +56,7 @@ export default function One({ handleNext }: { handleNext: () => void }) {
     try {
       if (isNicknameChecked === 3) {
         const response = await surveySubmit1(nickname, birthdate, selectedGender);
-        console.log(response);
+        // console.log(response);
         handleNext();
       }
     } catch (e) {
@@ -65,8 +65,7 @@ export default function One({ handleNext }: { handleNext: () => void }) {
   };
 
   // 다음 버튼 활성화 여부
-  const isFormValid =
-    nickname && isNicknameChecked === 3 && birthYear && birthMonth && birthDay && selectedGender;
+  const isFormValid = nickname && isNicknameChecked === 3 && birthYear && birthMonth && birthDay && selectedGender;
 
   return (
     <div className={styles.container}>

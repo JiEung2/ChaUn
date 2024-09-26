@@ -25,7 +25,7 @@ export default function SurveyPage() {
 
   const finishServey = () => {
     // TODO - 서버로 완료된 데이터를 보냄
-    console.log('finish');
+
     navigate('/surveyResult');
   };
   const renderSuervey = () => {
