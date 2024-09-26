@@ -74,6 +74,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(UserCrewNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleUserCrewNotFoundException(UserCrewNotFoundException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
     // 400 - Bad Request
 
     @ExceptionHandler(ExpiredRefreshToken.class)
@@ -92,6 +98,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleInsufficientCoinsException(final InsufficientCoinsException e) {
         ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    // 403 - FORBIDDEN
+
+    @ExceptionHandler(NotCrewLeaderException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNotCrewLeaderException(final NotCrewLeaderException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     // 409 - CONFLICT
