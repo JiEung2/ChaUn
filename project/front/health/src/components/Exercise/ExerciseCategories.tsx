@@ -3,12 +3,12 @@ import ExerciseList from './ExerciseList';
 import { getExercise } from '@/api/exercise';
 
 interface ExerciseCategoriesProps {
-  onSelect: (items: string[]) => void;
+  onSelect: (items: { id: number; name: string }[]) => void;
   multiple?: boolean;
 }
 
 export default function ExerciseCategories({ onSelect, multiple = false }: ExerciseCategoriesProps) {
-  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+  const [selectedExercises, setSelectedExercises] = useState<{ id: number; name: string }[]>([]);
   const [exerciseData, setExerciseData] = useState<any[]>([]);
   const MAX_SELECTION = 5;
 
@@ -25,7 +25,8 @@ export default function ExerciseCategories({ onSelect, multiple = false }: Exerc
     handlerExerciseData();
   }, []);
 
-  const handleSelect = (items: string[]) => {
+  // 선택한 운동을 객체 배열로 관리
+  const handleSelect = (items: { id: number; name: string }[]) => {
     if (multiple) {
       if (items.length > MAX_SELECTION) {
         return;
@@ -44,7 +45,7 @@ export default function ExerciseCategories({ onSelect, multiple = false }: Exerc
         <ExerciseList
           key={category.categoryName}
           title={category.categoryName}
-          items={category.exercises.map((exercise: any) => exercise.name)}
+          items={category.exercises}
           selectedItems={selectedExercises}
           onSelect={handleSelect}
           multiple={multiple}

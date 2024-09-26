@@ -4,11 +4,11 @@ import BodyWeightRecord from '@/components/Record/BodyWeightRecord';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
-import { getPredictBasic } from '@/api/record';
+import { getPredictBasic, postPredictExerciseDetail } from '@/api/record';
 
 export default function RecordPage() {
   const navigate = useNavigate();
-  const [exerciseType, setExerciseType] = useState('');
+  const [exerciseId, setExerciseId] = useState<number | null>(null);
   const [duration, setDuration] = useState('');
   const [day, setDay] = useState('');
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
@@ -34,6 +34,15 @@ export default function RecordPage() {
     }
   };
 
+  const handlePredictExerciseDetail = async (exerciseId: number, day: string, duration: string) => {
+    try {
+      const response = await postPredictExerciseDetail(exerciseId, Number(day), Number(duration));
+      console.log('예측 결과:', response.data);
+    } catch (e) {
+      console.error(`운동 예측 API 호출 중 에러 발생: ${e}`);
+    }
+  };
+
   useEffect(() => {
     handlePredictBasic();
     const fetchExerciseDays = () => {
@@ -47,21 +56,21 @@ export default function RecordPage() {
   }, []);
 
   useEffect(() => {
-    if (exerciseType && day && duration) {
+    if (exerciseId && day && duration) {
       setIsButtonEnabled(true);
     } else {
       setIsButtonEnabled(false);
     }
-  }, [exerciseType, day, duration]);
+  }, [exerciseId, day, duration]);
 
-  const handleShowBodyWeightRecord = () => {
+  const handleShowBodyWeightRecord = (exerciseId: number, day: string, duration: string) => {
     setShowBodyWeightRecord(true);
-    handlePredictBasic(); // 예측 데이터를 호출하여 업데이트
+    handlePredictExerciseDetail(exerciseId, day, duration);
   };
 
   const handleResetInput = () => {
     setShowBodyWeightRecord(false);
-    setExerciseType('');
+    setExerciseId(null);
     setDuration('');
     setDay('');
   };
@@ -90,11 +99,11 @@ export default function RecordPage() {
             </p>
             <ExerciseInput
               onShowPrediction={handleShowBodyWeightRecord}
-              setExerciseType={setExerciseType}
+              setExerciseId={setExerciseId}
               setDuration={setDuration}
               setDay={setDay}
               isButtonEnabled={isButtonEnabled}
-              exerciseType={exerciseType}
+              exerciseId={exerciseId ? String(exerciseId) : ''}
               duration={duration}
               day={day}
             />
@@ -102,7 +111,7 @@ export default function RecordPage() {
         ) : showBodyWeightRecord ? (
           <div className="predictionResult">
             <p className="predictionText">
-              <strong>민영님</strong>이 <strong>{exerciseType}</strong>을 하루 <strong>{duration}분</strong>, <br />
+              <strong>민영님</strong>이 선택한 운동을 하루 <strong>{duration}분</strong>, <br />
               <strong>총 {exerciseDays}일</strong> 추가로 진행했을 때 <br />
               예측되는 체형을 알려드릴게요!
             </p>
