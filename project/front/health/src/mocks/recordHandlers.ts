@@ -19,9 +19,27 @@ export const recordHandlers = [
   }),
 
   // 추가 체형 예측 조회
+  http.get(`${baseUrl}/users/predict/extra`, () => {
+    return HttpResponse.json({
+      status: 200,
+      message: 'Success',
+      data: {
+        userId: 1,
+        current: 73.23,
+        p30: 72.23,
+        p90: 70.3,
+        createdAt: '2024-09-20T05:10:42.658',
+        exercise: {
+          exerciseId: 3,
+          count: 2,
+          duration: 30,
+        },
+      },
+    });
+  }),
 
   // 추가 체형 예측 정보 전송
-  http.post(`${baseUrl}/users/predict/exercise-detail`, async ({ request }) => {
+  http.post(`${baseUrl}/users/predict/request-extra`, async ({ request }) => {
     const exercise = await request.json();
     const { exercise_id, count, duration } = exercise as {
       exercise_id: number;

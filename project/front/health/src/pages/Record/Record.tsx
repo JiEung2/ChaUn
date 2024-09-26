@@ -4,7 +4,7 @@ import BodyWeightRecord from '@/components/Record/BodyWeightRecord';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
-import { getPredictBasic, postPredictExerciseDetail } from '@/api/record';
+import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
 
 export default function RecordPage() {
   const navigate = useNavigate();
@@ -15,6 +15,11 @@ export default function RecordPage() {
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
   const [predictionData, setPredictionData] = useState([
+    { time: '현재', weight: 0 },
+    { time: '1달 후', weight: 0 },
+    { time: '3달 후', weight: 0 },
+  ]);
+  const [predictionExtraData, setPredictionExtraData] = useState([
     { time: '현재', weight: 0 },
     { time: '1달 후', weight: 0 },
     { time: '3달 후', weight: 0 },
@@ -34,10 +39,23 @@ export default function RecordPage() {
     }
   };
 
+  const handlePredictExtra = async () => {
+    try {
+      const response = await getPredictExtra();
+      const { current, p30, p90 } = response.data.data;
+      setPredictionExtraData([
+        { time: '현재', weight: current },
+        { time: '1달 후', weight: p30 },
+        { time: '3달 후', weight: p90 },
+      ]);
+    } catch (e) {
+      console.error(`API 호출 중 에러 발생: ${e}`);
+    }
+  };
+
   const handlePredictExerciseDetail = async (exerciseId: number, day: string, duration: string) => {
     try {
-      const response = await postPredictExerciseDetail(exerciseId, Number(day), Number(duration));
-      console.log('예측 결과:', response.data);
+      await postPredictExerciseDetail(exerciseId, Number(day), Number(duration));
     } catch (e) {
       console.error(`운동 예측 API 호출 중 에러 발생: ${e}`);
     }
@@ -66,6 +84,7 @@ export default function RecordPage() {
   const handleShowBodyWeightRecord = (exerciseId: number, day: string, duration: string) => {
     setShowBodyWeightRecord(true);
     handlePredictExerciseDetail(exerciseId, day, duration);
+    handlePredictExtra();
   };
 
   const handleResetInput = () => {
@@ -115,7 +134,7 @@ export default function RecordPage() {
               <strong>총 {exerciseDays}일</strong> 추가로 진행했을 때 <br />
               예측되는 체형을 알려드릴게요!
             </p>
-            <BodyWeightRecord data={predictionData} />
+            <BodyWeightRecord data={predictionExtraData} />
             <GeneralButton
               buttonStyle={{ style: 'primary', size: 'large' }}
               onClick={handleResetInput}
