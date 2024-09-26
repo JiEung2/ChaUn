@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.util.List;
 
+@Getter
 @Builder
 public class ExerciseAndCategoryDto {
     private String categoryName;
