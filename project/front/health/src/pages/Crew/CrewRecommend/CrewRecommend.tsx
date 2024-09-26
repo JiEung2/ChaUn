@@ -16,7 +16,6 @@ export default function CrewRecommend() {
   const [selectedCrewId, setSelectedCrewId] = useState(1);
   const [crews, setCrews] = useState<Crew[]>([]); // crews 배열을 상태로 관리
 
-  // 크루 추천 리스트 가져오기 (MSW로 대체 예정)
   useEffect(() => {
     const getCrewRecommendListData = async () => {
       try {
