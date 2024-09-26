@@ -1,8 +1,9 @@
 import BodyType from './BodyType';
 import GeneralButton from '../Button/GeneralButton';
 import styles from './2.module.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { surveySubmit2 } from '@/api/survey';
+
 interface TwoProps {
   handleNext: () => void;
   handlePrev: () => void;
@@ -12,12 +13,15 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
   const [bodyData, setBodyData] = useState({
     height: 0,
     weight: 0,
-    skeletalMuscleMass: 0,
-    bodyFat: 0,
+    skeletalMuscleMass: 0, // 필수 입력에서 제외
+    bodyFat: 0, // 필수 입력에서 제외
     bodyMuscle: false,
     bodyShape: 0,
   });
 
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // 체형 정보 변경 핸들러
   const handleBodyDataChange = (data: {
     height: number;
     weight: number;
@@ -29,11 +33,18 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
     setBodyData(data);
   };
 
-  const handleNextStep = () => {
-    // 여기에 bodyData에 대한 검증이나 서버 전송 등의 로직을 추가할 수 있습니다.
-    // console.log('Body Data:', bodyData);
+  // useEffect를 사용하여 bodyData가 업데이트될 때마다 유효성 검사를 수행
+  useEffect(() => {
+    // TODO - bodyShape을 number화 해서 유효성 검사에 추가하도록
+    const { height, weight } = bodyData;
+    // height, weight, bodyShape 값만 유효성 검사를 통해 버튼 활성화 여부 결정
+    setIsFormValid(height > 0 && weight > 0);
+  }, [bodyData]);
+
+  // 다음 단계로 이동
+  const handleNextStep = async () => {
     try {
-      const response = surveySubmit2(
+      const response = await surveySubmit2(
         bodyData.height,
         bodyData.weight,
         bodyData.skeletalMuscleMass,
@@ -42,8 +53,10 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
         Number(bodyData.bodyShape)
       );
       console.log(response);
-    } catch (e) {}
-    handleNext();
+      handleNext();
+    } catch (e) {
+      console.error('서버로 데이터 전송 중 에러 발생:', e);
+    }
   };
 
   return (
@@ -54,7 +67,11 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
         <GeneralButton buttonStyle={{ style: 'outlined', size: 'tiny' }} onClick={handlePrev}>
           이전
         </GeneralButton>
-        <GeneralButton buttonStyle={{ style: 'semiPrimary', size: 'tiny' }} onClick={handleNextStep}>
+        <GeneralButton
+          buttonStyle={{ style: 'semiPrimary', size: 'tiny' }}
+          onClick={handleNextStep}
+          disabled={!isFormValid} // 필수 값이 없으면 버튼 비활성화
+        >
           다음
         </GeneralButton>
       </div>
