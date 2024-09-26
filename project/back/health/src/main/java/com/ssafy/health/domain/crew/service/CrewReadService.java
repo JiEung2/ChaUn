@@ -63,7 +63,7 @@ public class CrewReadService {
         Crew crew = findCrewById(crewId);
         Long crewRanking = getCrewRanking(crew.getActivityScore() + crew.getBasicScore());
 
-        Optional<BattleStatsDto> battleStats= battleRepository.countTotalAndWonBattles(crewId);
+        Optional<BattleStatsDto> battleStats = battleRepository.countTotalAndWonBattles(crewId);
 
         Long totalBattlesCount = battleStats.get().totalBattles();
         Long winCount = battleStats.get().wonBattles();
@@ -136,7 +136,7 @@ public class CrewReadService {
         Float totalBasicScore = 0F;
         Float totalActivityScore = 0F;
 
-        for(UserCrew userCrew : userCrewList) {
+        for (UserCrew userCrew : userCrewList) {
             totalBasicScore += userCrew.getBasicScore();
             totalActivityScore += userCrew.getActivityScore();
         }
@@ -145,6 +145,15 @@ public class CrewReadService {
                 .basicScore(totalBasicScore)
                 .activityScore(totalActivityScore)
                 .build();
+    }
+
+    public CrewListResponseDto getCrewRankingByExercise(Long exerciseId) {
+        List<Crew> crewList = crewRepository.findByExerciseIdOrderByTotalScoreDesc(exerciseId);
+
+        if (crewList.isEmpty()) {
+            return CrewListResponseDto.builder().crewList(Collections.emptyList()).build();
+        }
+        return createCrewListResponseDto(crewList);
     }
 
     private Crew findCrewById(Long crewId) {
@@ -219,5 +228,24 @@ public class CrewReadService {
         return userCrewRepository.findByCrewIdAndUserId(crewId, SecurityUtil.getCurrentUserId())
                 .map(UserCrew::getRole)
                 .orElse(CrewRole.NOT_REGISTERED);
+    }
+
+    private CrewListResponseDto createCrewListResponseDto(List<Crew> crewList) {
+        List<CrewInfo> crewInfoList = crewList.stream()
+                .map(this::createCrewInfo)  // 위에서 정의한 createCrewInfo 사용
+                .collect(Collectors.toList());
+
+        return CrewListResponseDto.builder()
+                .crewList(crewInfoList)
+                .build();
+    }
+
+    private CrewInfo createCrewInfo(Crew crew) {
+        return CrewInfo.builder()
+                .crewId(crew.getId())
+                .crewName(crew.getName())
+                .crewProfileImage(crew.getProfileImage())
+                .exerciseName(crew.getExercise().getName())
+                .build();
     }
 }

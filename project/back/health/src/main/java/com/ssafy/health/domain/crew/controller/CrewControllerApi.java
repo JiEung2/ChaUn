@@ -347,4 +347,40 @@ public interface CrewControllerApi {
     })
     ApiResponse<BattleReadyStatusResponse> readyCrewBattle(@PathVariable("crew_id") Long crewId);
 
+    @Operation(
+            summary = "운동별 크루 랭킹 조회",
+            description = "해당 운동 크루의 현재 랭킹을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "크루 랭킹 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"memberList\": [\n" +
+                                    "      {\n" +
+                                    "        \"nickname\": \"달리기 왕자\",\n" +
+                                    "        \"userId\": 20,\n" +
+                                    "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
+                                    "        \"exerciseTime\": 123123\n" +
+                                    "      },\n" +
+                                    "      {\n" +
+                                    "        \"nickname\": \"달리기 공주\",\n" +
+                                    "        \"userId\": 21,\n" +
+                                    "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
+                                    "        \"exerciseTime\": 123121\n" +
+                                    "      }\n" +
+                                    "    ]\n" +
+                                    "  }\n" +
+                                    "}"
+                            )
+                    )
+            ),
+    })
+    ApiResponse<CrewListResponseDto> getCrewRankingByExercise(@PathVariable("exercise_id") Long exerciseId);
+
 }
