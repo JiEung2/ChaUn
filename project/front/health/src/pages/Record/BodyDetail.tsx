@@ -15,7 +15,6 @@ export default function BodyDetailPage() {
     { date: string; weight: number; skeletalMuscleMass: number; bodyFatRatio: number }[]
   >([]);
 
-
   const handleBodyRecord = async (year: number, month: number) => {
     try {
       const response = await getBodyRecord(year, month);
@@ -27,7 +26,6 @@ export default function BodyDetailPage() {
   };
 
   useEffect(() => {
-    console.log('렌더링 시 year:', year, 'month:', month);
     if (year && month) {
       handleBodyRecord(year, month);
     }
@@ -77,33 +75,34 @@ export default function BodyDetailPage() {
       </div>
 
       <div className="graphContainer">
-          <BodyDetailGraph
-            filteredData={bodyHistoryDataList.map((item) => ({
-              date: formatDate(item.date),
-              weight: item.weight,
-              muscle: item.skeletalMuscleMass,
-              fat: item.bodyFatRatio,
-            }))}
-          />
+        <BodyDetailGraph
+          filteredData={bodyHistoryDataList.map((item) => ({
+            date: formatDate(item.date),
+            weight: item.weight,
+            muscle: item.skeletalMuscleMass,
+            fat: item.bodyFatRatio,
+          }))}
+        />
       </div>
 
       {/* 타임라인 */}
-      {bodyHistoryDataList && bodyHistoryDataList.map((item: any) => (
-        <div className="timeline" key={item.date}>
-          <div className="timelineItem">
-            <div className="timelineDate">
-              <span className="dateIcon" />
-              {formatDate(item.date)}
-            </div>
+      {bodyHistoryDataList &&
+        bodyHistoryDataList.map((item: any) => (
+          <div className="timeline" key={item.date}>
+            <div className="timelineItem">
+              <div className="timelineDate">
+                <span className="dateIcon" />
+                {formatDate(item.date)}
+              </div>
 
-            <div className="timelineContent">
-              <p>몸무게: {item.weight}kg</p>
-              <p>골격근량: {item.skeletalMuscleMass}kg</p>
-              <p>체지방량: {item.bodyFatRatio}kg</p>
+              <div className="timelineContent">
+                <p>몸무게: {item.weight}kg</p>
+                <p>골격근량: {item.skeletalMuscleMass}kg</p>
+                <p>체지방량: {item.bodyFatRatio}kg</p>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
       {showModal && <BodyAddModal onClose={handleCloseModal} />}
     </div>
   );
