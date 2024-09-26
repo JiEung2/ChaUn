@@ -1,6 +1,8 @@
 package com.ssafy.health.domain.body.BodyPredict.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.health.common.security.SecurityUtil;
+import com.ssafy.health.common.util.RequestUtil;
 import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.account.entity.Gender;
 import com.ssafy.health.domain.account.entity.User;
@@ -19,6 +21,7 @@ import com.ssafy.health.domain.exercise.service.ExerciseHistoryReadService;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -40,6 +43,7 @@ public class BodyPredictWriteService {
     private final ExerciseHistoryReadService exerciseReadService;
     private final ExerciseHistoryWriteService exerciseWriteService;
     private final ExerciseRepository exerciseRepository;
+    private final RequestUtil requestUtil;
 
     public AnalysisRequestDto requestPrediction() {
         // TODO: 스프링 스케쥴러 이용, FastAPI에 분석 요청 보내기
@@ -47,9 +51,14 @@ public class BodyPredictWriteService {
         return buildPredictionPayload(PredictionType.BASIC, dto);
     }
 
-    public AnalysisRequestDto requestExtraAnalysis(ExerciseDetailDto exerciseDetailDto) {
-        // TODO: DTO 생성 후 FastAPI에 POST 요청
-        return buildPredictionPayload(PredictionType.EXTRA, exerciseDetailDto);
+    public AnalysisRequestDto requestExtraAnalysis(ExerciseDetailDto exerciseDetail) throws JsonProcessingException {
+        // TODO: API 요청 성공 유무에 따른 반환값 추가
+        Long userId = SecurityUtil.getCurrentUserId();
+        String apiUrl = fastApiUrl + "/users" + userId.toString() + "/body/prediction/fast-api";
+        // String apiUrl = "http://localhost:8000/api/v1/users/analysis/";
+        AnalysisRequestDto dto = buildPredictionPayload(PredictionType.EXTRA, exerciseDetail);
+        ResponseEntity<String> response = requestUtil.sendPostRequest(apiUrl, dto, String.class);
+        return dto;
     }
 
     private AnalysisRequestDto buildPredictionPayload(
