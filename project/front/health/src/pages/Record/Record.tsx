@@ -4,6 +4,7 @@ import BodyWeightRecord from '@/components/Record/BodyWeightRecord';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
+import { getPredictBasic } from '@/api/record';
 
 export default function RecordPage() {
   const navigate = useNavigate();
@@ -13,14 +14,28 @@ export default function RecordPage() {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
+  const [predictionData, setPredictionData] = useState([
+    { time: '현재', weight: 0 },
+    { time: '1달 후', weight: 0 },
+    { time: '3달 후', weight: 0 },
+  ]);
 
-  const data = [
-    { time: '현재', weight: 62.0 },
-    { time: '1달 후', weight: 61.3 },
-    { time: '3달 후', weight: 58.6 },
-  ];
+  const handlePredictBasic = async () => {
+    try {
+      const response = await getPredictBasic();
+      const { current, p30, p90 } = response.data.data;
+      setPredictionData([
+        { time: '현재', weight: current },
+        { time: '1달 후', weight: p30 },
+        { time: '3달 후', weight: p90 },
+      ]);
+    } catch (e) {
+      console.error(`API 호출 중 에러 발생: ${e}`);
+    }
+  };
 
   useEffect(() => {
+    handlePredictBasic();
     const fetchExerciseDays = () => {
       const dummyExerciseData = {
         exerciseDays: 2,
@@ -41,6 +56,7 @@ export default function RecordPage() {
 
   const handleShowBodyWeightRecord = () => {
     setShowBodyWeightRecord(true);
+    handlePredictBasic(); // 예측 데이터를 호출하여 업데이트
   };
 
   const handleResetInput = () => {
@@ -55,8 +71,7 @@ export default function RecordPage() {
       <GeneralButton
         buttonStyle={{ style: 'primary', size: 'large' }}
         onClick={() => navigate('/record/bodyDetail')}
-        className="bodyDetailButton"
-      >
+        className="bodyDetailButton">
         상세 체형 기록 조회
       </GeneralButton>
 
@@ -64,7 +79,7 @@ export default function RecordPage() {
         <p className="predictionText">
           <strong>민영님</strong>의 이번주 운동을 유지했을 때, 체형 예측 결과예요
         </p>
-        <BodyWeightRecord data={data} />
+        <BodyWeightRecord data={predictionData} />
       </div>
 
       <div>
@@ -91,12 +106,11 @@ export default function RecordPage() {
               <strong>총 {exerciseDays}일</strong> 추가로 진행했을 때 <br />
               예측되는 체형을 알려드릴게요!
             </p>
-            <BodyWeightRecord data={data} />
+            <BodyWeightRecord data={predictionData} />
             <GeneralButton
               buttonStyle={{ style: 'primary', size: 'large' }}
               onClick={handleResetInput}
-              className="resetButton"
-            >
+              className="resetButton">
               운동 다시 입력하기
             </GeneralButton>
           </div>
@@ -105,11 +119,11 @@ export default function RecordPage() {
             <p className="adviceText">
               <strong>민영님</strong>, <br />
               이번 주 운동을 <strong>{exerciseDays}회</strong> 진행하셨군요!
-            <p>
-              꾸준한 건강 관리 및 부상 방지를 위해 <br />
-              주 2~3회 운동을 권장하고 있습니다. <br />
-              다음 주도 힘내서 달려볼까요~?              
-            </p>
+              <p>
+                꾸준한 건강 관리 및 부상 방지를 위해 <br />
+                주 2~3회 운동을 권장하고 있습니다. <br />
+                다음 주도 힘내서 달려볼까요~?
+              </p>
             </p>
           </div>
         )}
