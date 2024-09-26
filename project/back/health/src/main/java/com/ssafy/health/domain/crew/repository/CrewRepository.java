@@ -2,6 +2,7 @@ package com.ssafy.health.domain.crew.repository;
 
 import com.ssafy.health.domain.crew.entity.Crew;
 import jakarta.persistence.LockModeType;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -24,6 +25,9 @@ public interface CrewRepository extends JpaRepository<Crew, Long> {
     @Query("SELECT COUNT(c) FROM Crew c WHERE (c.basicScore + c.activityScore) >= :totalScore")
     Long countCrewsWithHigherOrEqualScore(Integer totalScore);
 
-    @Query("SELECT c FROM Crew c JOIN c.exercise e WHERE e.id = :exerciseId ORDER BY (c.activityScore + c.basicScore) DESC")
+    @Query("SELECT c FROM Crew c JOIN FETCH c.exercise e WHERE e.id = :exerciseId ORDER BY (c.activityScore + c.basicScore) DESC")
     List<Crew> findByExerciseIdOrderByTotalScoreDesc(Long exerciseId);
+
+    @Query("SELECT c FROM Crew c JOIN FETCH c.exercise WHERE c.id = :crewId")
+    Optional<Crew> findCrewWithExerciseById(Long crewId);
 }

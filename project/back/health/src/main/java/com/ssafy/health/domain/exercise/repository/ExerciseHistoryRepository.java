@@ -17,6 +17,7 @@ public interface ExerciseHistoryRepository extends JpaRepository<ExerciseHistory
                                                                      LocalDateTime endTime);
 
     @Query("SELECT exerciseHistory FROM ExerciseHistory exerciseHistory " +
+            "JOIN FETCH exerciseHistory.user " +
             "WHERE exerciseHistory.user.id IN :userIdList " +
             "AND exerciseHistory.exerciseStartTime BETWEEN :startTime AND :endTime " +
             "ORDER BY exerciseHistory.user.nickname ASC ")
