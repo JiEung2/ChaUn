@@ -122,18 +122,11 @@ public class CrewReadService {
     }
 
     public CrewScoreResponseDto getCrewScore(Long crewId) {
-        List<UserCrew> userCrewList = userCrewRepository.findByCrewId(crewId);
-        Float totalBasicScore = 0F;
-        Float totalActivityScore = 0F;
-
-        for (UserCrew userCrew : userCrewList) {
-            totalBasicScore += userCrew.getBasicScore();
-            totalActivityScore += userCrew.getActivityScore();
-        }
+        Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
 
         return CrewScoreResponseDto.builder()
-                .basicScore(totalBasicScore)
-                .activityScore(totalActivityScore)
+                .basicScore(crew.getBasicScore())
+                .activityScore(crew.getActivityScore())
                 .build();
     }
 

@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.exercise.service;
 
 import com.ssafy.health.common.security.SecurityUtil;
+import com.ssafy.health.common.util.CrewBasicScoreLockException;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
@@ -8,6 +9,8 @@ import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
 import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundException;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
+import com.ssafy.health.domain.crew.entity.Crew;
+import com.ssafy.health.domain.crew.repository.CrewRepository;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.entity.Exercise;
@@ -15,9 +18,12 @@ import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
+import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -25,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExerciseHistoryWriteService {
 
     private final UserRepository userRepository;
+    private final CrewRepository crewRepository;
     private final UserCrewRepository userCrewRepository;
     private final ExerciseRepository exerciseRepository;
     private final BodyHistoryRepository bodyHistoryRepository;
@@ -36,7 +43,7 @@ public class ExerciseHistoryWriteService {
         return OXYGEN_INTAKE;
     }
 
-    public ExerciseHistorySaveResponseDto saveExerciseHistory(ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) {
+    public ExerciseHistorySaveResponseDto saveExerciseHistory(ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) throws InterruptedException{
         User user = findUserById(SecurityUtil.getCurrentUserId());
         Exercise exercise = findExerciseById(exerciseHistorySaveRequestDto.getExerciseId());
         Float burnedCalories = calculateBurnedCalories(user, exercise, exerciseHistorySaveRequestDto.getExerciseTime());
@@ -44,16 +51,41 @@ public class ExerciseHistoryWriteService {
         ExerciseHistory exerciseHistory = buildExerciseHistory(exerciseHistorySaveRequestDto, user, exercise, burnedCalories);
         exerciseHistoryRepository.save(exerciseHistory);
 
-        updateScore(user, exercise, burnedCalories);
+        Float basicScore = calculateBasicScore(burnedCalories);
+        updateUserCrewBasicScore(user, exercise, basicScore);
+        updateCrewBasicScore(user, exercise, basicScore);
 
         return ExerciseHistorySaveResponseDto.builder()
                 .burnedCalories(exerciseHistory.getBurnedCalories())
                 .build();
     }
 
-    private void updateScore(User user, Exercise exercise, Float burnedCalories) {
-        Float basicScore = calculateBasicScore(burnedCalories);
+    private void updateUserCrewBasicScore(User user, Exercise exercise, Float basicScore) {
         userCrewRepository.updateBasicScoreByUserAndExercise(user, exercise, basicScore);
+    }
+
+    private void updateCrewBasicScore(User user, Exercise exercise, Float basicScore) throws InterruptedException{
+        int maxRetries = 5;
+        int retryCount = 0;
+
+        while (retryCount < maxRetries) {
+            try {
+                List<Crew> crews = crewRepository.findCrewsByUserAndExercise(user, exercise);
+
+                crews.forEach(crew -> {
+                    crew.updateBasicScore(basicScore);
+                    crewRepository.save(crew);
+                });
+
+                return;
+
+            } catch (OptimisticLockException e) {
+                retryCount++;
+                Thread.sleep(50); // 대기 시간
+            }
+        }
+
+        throw new CrewBasicScoreLockException();
     }
 
     private ExerciseHistory buildExerciseHistory(ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto, User user, Exercise exercise, Float burnedCalories) {

@@ -241,7 +241,7 @@ public interface UserControllerApi {
                     )
             )
     })
-    ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto);
+    ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) throws InterruptedException;
 
     @Operation(
             summary = "자신의 특정 주의 운동 기록 조회",
