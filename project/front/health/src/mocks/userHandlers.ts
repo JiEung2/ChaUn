@@ -18,6 +18,21 @@ export const userHandlers = [
     });
   }),
 
+  // 회원 운동 시간
+  http.get(`${baseUrl}/users/:userId/exercise-time`, ({ params }) => {
+    const { userId } = params;
+    console.log(userId);
+
+    return HttpResponse.json({
+      status: 0,
+      message: 'Success',
+      data: {
+        todayExerciseTime: 12312,
+        thisWeekExerciseTime: 1231230,
+      },
+    });
+  }),
+
   // 몸무게 6개월
   http.get(`${baseUrl}/users/:userId/weight`, ({ params }) => {
     const { userId } = params;

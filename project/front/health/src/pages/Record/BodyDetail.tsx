@@ -98,7 +98,7 @@ export default function BodyDetailPage() {
               <div className="timelineContent">
                 <p>몸무게: {item.weight}kg</p>
                 <p>골격근량: {item.skeletalMuscleMass}kg</p>
-                <p>체지방량: {item.bodyFatRatio}kg</p>
+                <p>체지방률: {item.bodyFatRatio}%</p>
               </div>
             </div>
           </div>

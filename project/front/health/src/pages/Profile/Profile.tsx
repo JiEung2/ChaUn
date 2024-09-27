@@ -1,35 +1,59 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import Coin from '@/components/Coin/Coin';
 import Crew from '@/components/Crew/Crew';
 import { Line } from 'react-chartjs-2';
-import 'chart.js/auto'; // Chart.js의 자동 등록을 위해 필요
+import 'chart.js/auto';
 import './Profile.scss';
-import { getUserDetail, getUserWeight6 } from '@/api/user';
+import { getUserExerciseTime, getUserWeight6 } from '@/api/user';
+import CrewImg from '@/assets/image/customItem.jpg';
 
 export default function ProfilePage() {
   const { userId } = useParams<{ userId: string }>();
-  const [userDetail, setUserDetail] = useState<{ nickname: string; coin: number } | null>(null);
+  const [todayExerciseTime, setTodayExerciseTime] = useState<number>(0);
+  const [thisWeekExerciseTime, setThisWeekExerciseTime] = useState<number>(0);
   const [userWeight, setUserWeight] = useState<{ date: string; weight: number }[]>([]);
 
-  // 비동기로 사용자 프로필 데이터 받아오기
   const handleUserProfile = async (userId: string) => {
     try {
-      const response = await getUserDetail(Number(userId));
-      const response2 = await getUserWeight6(Number(userId)); // weight 데이터를 받아오는 API
-      const userData = response.data;
-      setUserDetail(userData);
+      const response1 = await getUserExerciseTime(Number(userId));
+      const response2 = await getUserWeight6(Number(userId));
 
-      const weightDataList = response2.data.weightDataList || [];
+      const exerciseTimeData = response1.data.data;
+      setTodayExerciseTime(exerciseTimeData.todayExerciseTime);
+      setThisWeekExerciseTime(exerciseTimeData.thisWeekExerciseTime);
+
+      const weightDataList = response2.data.data.weightDataList || [];
       setUserWeight(weightDataList);
     } catch (error) {
       console.error('Error fetching user detail:', error);
     }
   };
 
-  const [totalExerciseTime] = useState('150h 48m');
-  const [weeklyExerciseTime] = useState('20h 45m');
   const myCrews = [
+    {
+      id: 1,
+      imageUrl: CrewImg,
+      name: '달리는 번개라오라오',
+      tag: '런닝',
+    },
+    {
+      id: 1,
+      imageUrl: CrewImg,
+      name: '달리는 번개',
+      tag: '런닝',
+    },
+    {
+      id: 1,
+      imageUrl: CrewImg,
+      name: '달리는 번개',
+      tag: '런닝',
+    },
+    {
+      id: 1,
+      imageUrl: 'data:image/png;base64,...',
+      name: '달리는 번개',
+      tag: '런닝',
+    },
     {
       id: 1,
       imageUrl: 'data:image/png;base64,...',
@@ -39,17 +63,46 @@ export default function ProfilePage() {
     // 나머지 크루 데이터 생략...
   ];
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return `${String(date.getFullYear()).slice(2)}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+  // 6개월 전까지의 날짜 배열을 생성하는 함수
+  const generateLast6Months = () => {
+    const result = [];
+    const today = new Date();
+
+    for (let i = 0; i < 6; i++) {
+      const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      result.unshift(`${String(date.getFullYear()).slice(2)}.${String(date.getMonth() + 1).padStart(2, '0')}`);
+    }
+
+    return result;
   };
-  // 차트 데이터를 weightDataList 기반으로 동적으로 설정
+
+  const chartLabels = generateLast6Months();
+
+  // 날짜 포맷팅 함수: yyyy-mm-dd 형식의 날짜를 yy.mm 형식으로 변환
+  const formatDateToYearMonth = (dateString: string) => {
+    const date = new Date(dateString);
+    return `${String(date.getFullYear()).slice(2)}.${String(date.getMonth() + 1).padStart(2, '0')}`;
+  };
+
+  const fillWeightData = (weightDataList: { date: string; weight: number }[], chartLabels: string[]) => {
+    return chartLabels.map((label) => {
+      const foundData = weightDataList.find((data) => formatDateToYearMonth(data.date) === label);
+      return foundData ? foundData.weight : null;
+    });
+  };
+
+  const formatExerciseTime = (timeInMs: number) => {
+    const hours = Math.floor(timeInMs / (1000 * 60 * 60));
+    const minutes = Math.floor((timeInMs % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+  };
+
   const chartData = {
-    labels: userWeight.map((data) => formatDate(data.date)), // x축을 날짜로 설정
+    labels: chartLabels,
     datasets: [
       {
         label: '체중 기록 (kg)',
-        data: userWeight.map((data) => data.weight), // y축을 weight로 설정
+        data: fillWeightData(userWeight, chartLabels),
         borderColor: '#A8C3FF',
         backgroundColor: '#CDE0FF',
         fill: false,
@@ -72,8 +125,27 @@ export default function ProfilePage() {
           },
           boxWidth: 8,
           boxHeight: 8,
-          padding: 10,
+          padding: 1,
         },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+        },
+      },
+      y: {
+        title: {
+          display: true,
+        },
+      },
+    },
+    layout: {
+      padding: {
+        left: -10,
+        right: 20,
+        bottom: -5,
       },
     },
   };
@@ -91,26 +163,24 @@ export default function ProfilePage() {
 
   return (
     <div className="profileContainer">
+      <p className="titles">닉네임님</p>
       <div className="profileHeaderSection">
-        {userDetail && <h3 className="username">{userDetail.nickname}님</h3>}
-        {userDetail && <Coin amount={userDetail.coin} style="styled" />}
+        <div className="time">
+          <p className="timeTitle">오늘의 운동 시간</p>
+          <span>{formatExerciseTime(todayExerciseTime)}</span>
+          <p className="timeTitle">이번 주 운동 시간</p>
+          <span>{formatExerciseTime(thisWeekExerciseTime)}</span>
+        </div>
       </div>
 
-      <div className="exercise-summary">
-        <p>총 운동 시간</p>
-        <h1>{totalExerciseTime}</h1>
-        <p>이번 주 운동 시간</p>
-        <h1>{weeklyExerciseTime}</h1>
-      </div>
-
-      <div className="chart-container">
+      <div className="chartContainer">
         <Line data={chartData} options={options} />
       </div>
 
-      <div className="crew-container">
-        <h3>{userDetail?.nickname}님의 크루</h3>
+      <div className="crewContainer">
+        <p className="titles">닉네임님의 크루</p>
 
-        <div className="crew-list">
+        <div className="crewList">
           {myCrews.map((crew, index) => (
             <Crew
               key={index}
