@@ -2,28 +2,29 @@ package com.ssafy.health.domain.crew.service;
 
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.dto.response.UserExerciseTimeDto;
-import com.ssafy.health.domain.account.repository.UserRepository;
-import com.ssafy.health.domain.battle.dto.response.BattleStatsDto;
-import com.ssafy.health.domain.crew.dto.response.*;
-import com.ssafy.health.domain.crew.entity.CrewRole;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
-import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
+import com.ssafy.health.domain.account.repository.UserRepository;
+import com.ssafy.health.domain.battle.dto.response.BattleStatsDto;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
+import com.ssafy.health.domain.crew.dto.response.*;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto.CrewInfo;
 import com.ssafy.health.domain.crew.entity.Crew;
+import com.ssafy.health.domain.crew.entity.CrewRole;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
+import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -148,7 +149,7 @@ public class CrewReadService {
     public CrewMemberDailyExerciseTimeListDto getCrewMemberDailyExerciseTimeList(Long crewId) {
         List<User> crewMemberList = userRepository.findUserByCrewId(crewId);
         List<Long> crewMemberIdList = crewMemberList.stream()
-                        .map(User::getId).toList();
+                .map(User::getId).toList();
 
         Map<Long, Long> userExerciseTimeMap = getMembersTodayExerciseTime(crewMemberIdList);
 
@@ -243,17 +244,17 @@ public class CrewReadService {
                 .orElse(CrewRole.NOT_REGISTERED);
     }
 
-    private CrewListResponseDto createCrewListResponseDto(List<Crew> crewList) {
+    public CrewListResponseDto createCrewListResponseDto(List<Crew> crewList) {
         List<CrewInfo> crewInfoList = crewList.stream()
-                .map(this::createCrewInfo)  // 위에서 정의한 createCrewInfo 사용
-                .collect(Collectors.toList());
+                .map(this::createCrewInfo)
+                .toList();
 
         return CrewListResponseDto.builder()
                 .crewList(crewInfoList)
                 .build();
     }
 
-    private CrewInfo createCrewInfo(Crew crew) {
+    public CrewInfo createCrewInfo(Crew crew) {
         return CrewInfo.builder()
                 .crewId(crew.getId())
                 .crewName(crew.getName())
@@ -277,5 +278,4 @@ public class CrewReadService {
                 })
                 .collect(Collectors.toList());
     }
-
 }
