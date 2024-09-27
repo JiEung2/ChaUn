@@ -1,13 +1,14 @@
 package com.ssafy.health.domain.account.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.common.util.MonthlyRequestDto;
+import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
+import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
-import com.ssafy.health.common.util.MonthlyRequestDto;
-import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.WeeklyAndDailyExerciseTimeResponseDto;
@@ -89,7 +90,7 @@ public interface UserControllerApi {
             )
     })
     ApiResponse<WeeklyAndDailyExerciseTimeResponseDto> getWeeklyAndDailyExerciseTime();
-    
+
     @Operation(
             summary = "회원 이번주, 오늘 운동 시간 조회",
             description = "특정 회원의 이번주 운동시간과 오늘 운동시간을 조회합니다."
@@ -323,29 +324,27 @@ public interface UserControllerApi {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = """
                                     {
-                                      "status": 200,
-                                      "message": "Success",
-                                      "data": {
-                                        "userId": 1,
-                                        "crewRecommend": [
-                                          {
-                                            "crewId": 3,
-                                            "similarity": 0.2
-                                          },
-                                          {
-                                            "crewId": 6,
-                                            "similarity": 0.8
-                                          },
-                                          {
-                                            "crewId": 2,
-                                            "similarity": 1
-                                          }
-                                        ]
-                                      }
-                                    }
-                                    """
+                                       "status": 200,
+                                       "message": "",
+                                       "data": {
+                                         "crewList": [
+                                           {
+                                             "crewId": 1,
+                                             "crewName": "달리자",
+                                             "exerciseName": "러닝",
+                                             "crewProfileImage": "https://c106-chaun.s3.ap-northeast-2.amazonaws.com/file_uuid.jpeg"
+                                           },
+                                           {
+                                             "crewId": 2,
+                                             "crewName": "달리자",
+                                             "exerciseName": "러닝",
+                                             "crewProfileImage": "https://c106-chaun.s3.ap-northeast-2.amazonaws.com/file_uuid.jpeg"
+                                           }
+                                         ]
+                                       }
+                                     }"""
                             ))
             )
     })
-    ApiResponse<RecommendedCrewResponseDto> getRecommendedCrew();
+    ApiResponse<CrewListResponseDto> getRecommendedCrew();
 }
