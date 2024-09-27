@@ -1,7 +1,7 @@
 @use '@/styles/constants/colors.scss' as colors;
 @use '@/styles/constants/typographies.scss' as typo;
 
-.modalContainer {
+.bodyDetailModalContainer {
   position: fixed;
   top: 0;
   left: 0;
@@ -13,7 +13,7 @@
   align-items: center;
   z-index: 10000;
 
-  .modalContent {
+  .bodyDetailModalContent {
     background: colors.$white;
     padding: 20px;
     border-radius: 20px;

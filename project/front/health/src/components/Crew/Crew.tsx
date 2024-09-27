@@ -9,12 +9,10 @@ interface CrewProps {
 
 export default function Crew({ imageUrl, name, tag, onClick }: CrewProps) {
   return (
-    <div className="profile-card" onClick={onClick}>
-      <img src={imageUrl} alt={name} className="profile-image" />
-      <div className="profile-info">
-        <p className="profile-name">{name}</p>
-        <div className="profile-tag">{`# ${tag}`}</div>
-      </div>
+    <div className="crewProfileCard" onClick={onClick}>
+      <img src={imageUrl} alt={name} className="crewProfileImage" />
+      <p className="crewProfileName">{name}</p>
+      <div className="crewProfileTag">{`# ${tag}`}</div>
     </div>
   );
 }

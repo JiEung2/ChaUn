@@ -9,36 +9,20 @@ export const getBodyRecord = async (year: number, month: number) => {
       month,
     },
   });
-  console.log('record의 response', response);
   return response;
 };
 
-// type BodyHistory = {
-//   date: string;
-//   weight: number;
-//   skeletalMuscleMass: number;
-//   bodyFatRatio: number;
-// };
+export const getPredictBasic = async () => {
+  const response = await axios.get(`${baseUrl}/users/predict/basic`);
+  return response;
+};
 
-// type BodyHistoryResponse = {
-//   status: number;
-//   message: string;
-//   data: {
-//     bodyHistoryDataList: BodyHistory[];
-//   };
-// };
+export const getPredictExtra = async () => {
+  const response = await axios.get(`${baseUrl}/users/predict/extra`);
+  return response;
+};
 
-// export const getBodyRecord = async (year: number, month: number): Promise<BodyHistoryResponse> => {
-//   try {
-//     const response = await axios.get<BodyHistoryResponse>(`${baseUrl}/users/body`, {
-//       params: {
-//         year: year,
-//         month: month,
-//       },
-//     });
-//     return response.data;
-//   } catch (error) {
-//     console.error('API 호출 중 에러 발생:', error);
-//     throw new Error('Failed to fetch body record');
-//   }
-// };
+export const postPredictExerciseDetail = async (exercise_id: number, count: number, duration: number) => {
+  const response = await axios.post(`${baseUrl}/users/predict/request-extra`, { exercise_id, count, duration });
+  return response;
+};
