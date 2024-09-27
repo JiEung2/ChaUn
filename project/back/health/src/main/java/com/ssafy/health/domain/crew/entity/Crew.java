@@ -32,8 +32,8 @@ public class Crew extends BaseEntity {
     private Float averageAge;
     private String description;
     private Integer crewCoin;
-    private Integer basicScore;
-    private Integer activityScore;
+    private Float basicScore;
+    private Float activityScore;
     private Boolean battleStatus;
 
     @ManyToOne
@@ -51,8 +51,8 @@ public class Crew extends BaseEntity {
         this.crewCoin = 0;
         this.version = 1;
         this.battleStatus = false;
-        this.basicScore = 0;
-        this.activityScore = 0;
+        this.basicScore = 0F;
+        this.activityScore = 0F;
     }
 
     public void increaseCoin(Integer coin) {

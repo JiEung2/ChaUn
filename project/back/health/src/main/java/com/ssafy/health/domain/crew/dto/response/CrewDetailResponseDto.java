@@ -17,7 +17,7 @@ public class CrewDetailResponseDto {
     private Long totalBattlesCount;
     private Long winCount;
     private Float averageAge;
-    private Integer basicScore;
-    private Integer activityScore;
+    private Float basicScore;
+    private Float activityScore;
     private CrewRole role;
 }

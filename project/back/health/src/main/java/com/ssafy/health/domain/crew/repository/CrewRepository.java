@@ -23,7 +23,7 @@ public interface CrewRepository extends JpaRepository<Crew, Long> {
     List<Crew> findBattleReadyCrews(Long currentCrewId);
 
     @Query("SELECT COUNT(c) FROM Crew c WHERE (c.basicScore + c.activityScore) >= :totalScore")
-    Long countCrewsWithHigherOrEqualScore(Integer totalScore);
+    Long countCrewsWithHigherOrEqualScore(Float totalScore);
 
     @Query("SELECT c FROM Crew c JOIN FETCH c.exercise e WHERE e.id = :exerciseId ORDER BY (c.activityScore + c.basicScore) DESC")
     List<Crew> findByExerciseIdOrderByTotalScoreDesc(Long exerciseId);

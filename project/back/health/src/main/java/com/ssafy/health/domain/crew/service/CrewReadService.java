@@ -208,7 +208,7 @@ public class CrewReadService {
                 ));
     }
 
-    private Long getCrewRanking(Integer crewScore) {
+    private Long getCrewRanking(Float crewScore) {
         return crewRepository.countCrewsWithHigherOrEqualScore(crewScore);
     }
 
@@ -234,6 +234,8 @@ public class CrewReadService {
                 .crewName(crew.getName())
                 .crewProfileImage(crew.getProfileImage())
                 .exerciseName(crew.getExercise().getName())
+                .basicScore(crew.getBasicScore())
+                .activityScore(crew.getActivityScore())
                 .build();
     }
 }
