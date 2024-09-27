@@ -13,7 +13,7 @@ import com.ssafy.health.common.util.MonthlyRequestDto;
 import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
-import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
+import com.ssafy.health.domain.exercise.dto.response.WeeklyAndDailyExerciseTimeResponseDto;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryReadService;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryWriteService;
 import lombok.RequiredArgsConstructor;
@@ -40,9 +40,14 @@ public class UserController implements UserControllerApi {
         return ApiResponse.success(userWriteService.saveInfoSurvey(infoSurveyRequestDto));
     }
 
+    @GetMapping("/my/exercise-time")
+    public ApiResponse<WeeklyAndDailyExerciseTimeResponseDto> getWeeklyAndDailyExerciseTime() {
+        return ApiResponse.success(exerciseHistoryReadService.getWeeklyAndDailyExerciseTime());
+    }
+
     @GetMapping("/{user_id}/exercise-time")
-    public ApiResponse<ExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId) {
-        return ApiResponse.success(exerciseHistoryReadService.getExerciseTime(userId));
+    public ApiResponse<WeeklyAndDailyExerciseTimeResponseDto> getWeeklyAndDailyExerciseTime(@PathVariable("user_id") Long userId) {
+        return ApiResponse.success(exerciseHistoryReadService.getWeeklyAndDailyExerciseTime(userId));
     }
 
     @GetMapping("/{user_id}")
