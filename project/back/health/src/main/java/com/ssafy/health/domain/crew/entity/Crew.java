@@ -71,4 +71,8 @@ public class Crew extends BaseEntity {
         this.crewCoin -= coin;
     }
 
+    public void updateBasicScore(Float basicScore) {
+        this.basicScore += basicScore;
+    }
+
 }
