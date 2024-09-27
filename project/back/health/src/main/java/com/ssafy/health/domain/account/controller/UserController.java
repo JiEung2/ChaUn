@@ -71,7 +71,7 @@ public class UserController implements UserControllerApi {
     }
 
     @PostMapping("/exercise-history")
-    public ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) {
+    public ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) throws InterruptedException {
         return ApiResponse.success(exerciseHistoryWriteService.saveExerciseHistory(exerciseHistorySaveRequestDto));
     }
 
