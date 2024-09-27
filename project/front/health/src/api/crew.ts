@@ -8,8 +8,20 @@ export const getCrewRecommendList = async () => {
   return response;
 };
 // 크루 추천 상세 모달
-export const getCrewRecommendModal = async (crewId: number) => {
-  const response = await axios.get(`${baseURL}/users/crew-recommendation/${crewId}`);
+export const getCrewRecommendModal = async (crew_id: number) => {
+  const response = await axios.get(`${baseURL}/users/crew-recommendation/${crew_id}`);
   console.log(response);
+  return response;
+};
+
+// 크루 상세보기
+export const getCrewDetail = async (crew_id: number) => {
+  const response = await axios.get(`${baseURL}/crew/${crew_id}/detail`);
+  return response;
+};
+
+// 크루 내 랭킹 조회
+export const getCrewRanking = async (crew_id: number) => {
+  const response = await axios.get(`${baseURL}/crew/${crew_id}/ranking`);
   return response;
 };

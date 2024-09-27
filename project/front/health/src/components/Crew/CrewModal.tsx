@@ -5,8 +5,8 @@ import GeneralButton from '../Button/GeneralButton';
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 import { getCrewRecommendModal } from '@/api/crew';
 import { useEffect, useState } from 'react';
-import Coin from '../Coin/Coin';
-
+// import Coin from '../Coin/Coin';
+import { useNavigate } from 'react-router-dom';
 interface CrewModalProps {
   crewId: number;
   onClose: () => void;
@@ -40,7 +40,7 @@ interface RadarData {
 export default function CrewModal({ onClose, crewId }: CrewModalProps) {
   const [crewData, setCrewData] = useState<Crew | null>(null);
   const [radarData, setRadarData] = useState<RadarData | null>(null);
-
+  const navigate = useNavigate();
   const getCrewData = async () => {
     try {
       const response = await getCrewRecommendModal(crewId);
@@ -76,7 +76,9 @@ export default function CrewModal({ onClose, crewId }: CrewModalProps) {
   useEffect(() => {
     getCrewData();
   }, [crewId]);
-
+  const moveCrewDetail = () => {
+    navigate(`/crew/detail/${crewId}`);
+  };
   if (!crewData || !radarData) {
     return null; // crewData나 radarData가 없으면 모달을 렌더링하지 않음
   }
@@ -103,7 +105,9 @@ export default function CrewModal({ onClose, crewId }: CrewModalProps) {
           {/* radarData를 Radar 컴포넌트에 전달 */}
           <Radar data={radarData} options={{ maintainAspectRatio: false }} />
         </div>
-        <GeneralButton buttonStyle={{ style: 'primary', size: 'large' }}>상세보기</GeneralButton>
+        <GeneralButton buttonStyle={{ style: 'primary', size: 'large' }} onClick={moveCrewDetail}>
+          상세보기
+        </GeneralButton>
       </div>
     </div>
   );
