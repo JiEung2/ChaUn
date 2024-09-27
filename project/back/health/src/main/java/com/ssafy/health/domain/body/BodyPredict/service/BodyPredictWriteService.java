@@ -45,17 +45,27 @@ public class BodyPredictWriteService {
     private final ExerciseRepository exerciseRepository;
     private final RequestUtil requestUtil;
 
-    public AnalysisRequestDto requestPrediction() {
+    private String apiBaseUrlBuilder() {
+        Long userId = SecurityUtil.getCurrentUserId();
+        return fastApiUrl + "/users/" + userId.toString() + "/body/prediction";
+    }
+
+    public AnalysisRequestDto requestPrediction() throws JsonProcessingException {
+
         // TODO: 스프링 스케쥴러 이용, FastAPI에 분석 요청 보내기
+        String apiUrl = apiBaseUrlBuilder() + "/fast-api";
+
         ExerciseDetailDto dto = ExerciseDetailDto.builder().build();
+        AnalysisRequestDto requestDto = buildPredictionPayload(PredictionType.BASIC, dto);
+        requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
         return buildPredictionPayload(PredictionType.BASIC, dto);
     }
 
     public AnalysisRequestDto requestExtraAnalysis(ExerciseDetailDto exerciseDetail) throws JsonProcessingException {
+
         // TODO: API 요청 성공 유무에 따른 반환값 추가
-        Long userId = SecurityUtil.getCurrentUserId();
-        String apiUrl = fastApiUrl + "/users" + userId.toString() + "/body/prediction/fast-api";
-        // String apiUrl = "http://localhost:8000/api/v1/users/analysis/";
+        String apiUrl = apiBaseUrlBuilder() + "/extra/fast-api";
+
         AnalysisRequestDto dto = buildPredictionPayload(PredictionType.EXTRA, exerciseDetail);
         ResponseEntity<String> response = requestUtil.sendPostRequest(apiUrl, dto, String.class);
         return dto;
@@ -78,13 +88,8 @@ public class BodyPredictWriteService {
         // TODO: 추가 예측 요청일 경우 3개까지만 반환
         List<AnalysisRequestDto.UserExerciseData> exerciseBasicList = exerciseHistory.getExerciseHistoryList()
                 .stream()
-                .map(exercise -> AnalysisRequestDto.UserExerciseData.builder()
-                        .age(calculateAge(user.getBirthday()))
-                        .sex((user.getGender().equals(Gender.MAN)) ? 0 : 1)
-                        .bmi(bodyHistory.getWeight() / (bodyHistory.getHeight() * bodyHistory.getHeight()) * 10000)
-                        .weight(bodyHistory.getWeight())
-                        .calories(exercise.getBurnedCalories())
-                        .build()).toList();
+                .map(exercise -> exerciseDataBuilder(user, bodyHistory, exercise.getBurnedCalories()))
+                .toList();
 
         return AnalysisRequestDto.builder()
                 .exerciseDetail(
@@ -106,15 +111,20 @@ public class BodyPredictWriteService {
 
         // TODO: Frontend에서 2개 개수 제한이 없을 경우에 대한 처리
         for (int i = 0; i < exerciseDetail.getCount(); i++) {
-            exerciseDataList.add(AnalysisRequestDto.UserExerciseData.builder()
-                    .age(calculateAge(user.getBirthday()))
-                    .sex((user.getGender().equals(Gender.MAN)) ? 0 : 1)
-                    .bmi(bodyHistory.getWeight() / (bodyHistory.getHeight() * bodyHistory.getHeight()) * 10000)
-                    .weight(bodyHistory.getWeight())
-                    .calories(burnedCalories)
-                    .build());
+            exerciseDataList.add(exerciseDataBuilder(user, bodyHistory, burnedCalories));
         }
         return exerciseDataList;
+    }
+
+    private AnalysisRequestDto.UserExerciseData exerciseDataBuilder(
+            User user, BodyHistory bodyHistory, Float calories) {
+        return AnalysisRequestDto.UserExerciseData.builder()
+                .age(calculateAge(user.getBirthday()))
+                .sex((user.getGender().equals(Gender.MAN)) ? 1 : 2)
+                .bmi(bodyHistory.getWeight() / (bodyHistory.getHeight() * bodyHistory.getHeight()) * 10000)
+                .weight(bodyHistory.getWeight())
+                .calories(calories)
+                .build();
     }
 
     private User findUserById(Long userId) {

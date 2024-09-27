@@ -37,7 +37,7 @@ public class BodyPredictController implements BodyPredictControllerApi {
     }
 
     @PostMapping("/request-analysis")
-    public ApiResponse<AnalysisRequestDto> requestAnalysis() {
+    public ApiResponse<AnalysisRequestDto> requestAnalysis() throws JsonProcessingException {
         return ApiResponse.success(bodyPredictWriteService.requestPrediction(), "FastAPI Request");
     }
 }
