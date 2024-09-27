@@ -15,20 +15,12 @@ from tensorflow.keras.optimizers import Adam
 
 # 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
 def build_model(input_shape, forecast_steps):
-    # model = Sequential()
-    # model.add(Input(shape=input_shape))  # input_shape = (timesteps, features)
-    # model.add(GRU(units=64)) 
-    # model.add(Dropout(0.3)) 
-    # model.add(Dense(64, activation='relu')) 
-    # model.add(Dense(units=forecast_steps))  # 예측할 시점 수에 따라 output 설정
-
     model = Sequential() # 모델 순차적 정의
     model.add(Input(shape=input_shape))
     # GRU 레이어를 어느정도를 쓸건가?
-    model.add(LSTM(units=64, dropout=0.2, return_sequences=True)) # 모델 GRU 레이어 통과
-    model.add(LSTM(units=64, dropout=0.2)) # 모델 GRU 레이어 통과
-    # model.add(Dropout(0.2)) # 편향 방지 : 드랍 아웃 결정
-    model.add(Dense(64, activation = 'relu')) # Fully-Connected DL
+    model.add(LSTM(units=32, dropout=0.3, return_sequences=True)) # 모델 GRU 레이어 통과
+    model.add(LSTM(units=32, dropout=0.3)) # 모델 GRU 레이어 통과
+    model.add(Dense(64))
     model.add(Dense(units=forecast_steps)) # 모델 Dense 레이어 통과 이후, 1차원으로 90개 출력 데이터
     return model
 
@@ -71,8 +63,6 @@ if __name__ == "__main__":
         dataframes.append(df)  # 각 데이터프레임을 리스트에 추가
     
     for df in dataframes:
-        magic_number = np.random.randint(0, len(df)-97)
-        # magic 넘버를 기준으로 7일
         # X_test = np.array([
         #     [  2,        32.,        20.66,      49,       300.55997 ],
         #     [  2,        32.,        20.53,      48.7,  295.3654  ],
@@ -83,16 +73,16 @@ if __name__ == "__main__":
         #     [  2,        32.,        20.74,      49.2,   312.97836 ]
         # ])
         # 저런식으로 만들어야 됨.
-        selected_data = df.iloc[magic_number:magic_number + 7][['sex', 'age', 'BMI', 'weight', 'calories']].values
+        selected_data = df.iloc[180: 180+7][['sex', 'age', 'BMI', 'weight', 'calories']].values
         X_test = selected_data.reshape(1, timesteps, features)
 
         # 예측 수행
         predictions = make_predictions(model, X_test)
 
         # 실제 값 출력
-        print("Current Real Weight:", df.loc[magic_number:magic_number+7, 'weight'])
-        print("Real Weight for the next 30 days:", df.loc[magic_number+29, 'weight'])
-        print("Real Weight for the next 90 days:", df.loc[magic_number+89, 'weight'])
+        print("Current Real Weight:", df.loc[4:4+7, 'weight'])
+        print("Real Weight for the next 30 days:", df.loc[4+29, 'weight'])
+        print("Real Weight for the next 90 days:", df.loc[4+89, 'weight'])
         
         # 예측 결과 출력
         print("Predictions for the next 30 days:", predictions[0][29])

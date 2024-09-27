@@ -82,7 +82,7 @@ data = pd.read_csv(file_path)
 # n = 200000
 
 # 테스트 데이터
-n = 1200
+n = 20000
 
 # 데이터 출력 이후, 나이와 성별로 정렬
 result = generate_data(data, n)

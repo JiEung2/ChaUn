@@ -50,7 +50,7 @@ def calculate_accuracy(df, model, timesteps, features, forecast_steps):
             correct_predictions += 1
         if abs(real_weight_90 - predicted_90) <= 1:
             correct_predictions += 1
-
+        print(real_weight_30, predicted_30)
         total_predictions += 2  # 30일, 90일 예측 각각 1개씩
 
     # 정확도 계산
@@ -78,6 +78,7 @@ if __name__ == "__main__":
     total_accuracy = 0
     num_samples = 0
 
+    context = ''
     for file in csv_files:
         file_path = os.path.join(csv_path, file)
         df = pd.read_csv(file_path)
@@ -88,7 +89,12 @@ if __name__ == "__main__":
         num_samples += 1
 
         print(f"Accuracy for file {file}: {accuracy:.2f}%")
+        context += f'Accuracy for file {file}: {accuracy:.2f}%\n'
 
     # 전체 파일에 대한 평균 정확도 계산
     avg_accuracy = total_accuracy / num_samples
+    context += f'\nAverage accuracy across all samples: {avg_accuracy:.2f}%\n'
     print(f"Average accuracy across all samples: {avg_accuracy:.2f}%")
+
+    with open(f'./models/{weights_path[:-3]}', 'w') as f:
+        f.write(context)

@@ -10,15 +10,8 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 
-# TensorFlow에서 사용 가능한 GPU 장치를 확인
-gpus = tf.config.list_physical_devices('GPU')
-
-if gpus:
-    print(f"GPU devices found: {len(gpus)}")
-    for gpu in gpus:
-        print(gpu)
-else:
-    print("No GPU found. Using CPU.")
+print("Num GPUs Available: ", len(tf.config.experimental.list_physical_devices('GPU')))
+tf.test.gpu_device_name()
 
 # csv를 불러와
 csv_dir = './dummy/outputs/csv'
@@ -40,16 +33,21 @@ features = ['age', 'sex', 'BMI', 'weight', 'consumed_cal'] # 체중, 체중 연�
 timesteps = 7
 forecast_steps = 90
 
+scaler = MinMaxScaler()
+
 # 시계열 데이터를 timesteps로 자르고, 다중 스텝 예측을 위해 여러 값을 y로 설정
 def create_multi_step_sequences(data, time_steps, forecast_steps):
+    global scaler
     X, y = [], []
 
     # 필요한 피처만 선택
     data = data[features].copy()  # features 리스트에 있는 피처만 사용
 
-    for i in range(len(data) - time_steps - forecast_steps):
-        X.append(data.iloc[i:i + time_steps].values)
-        y.append(data.iloc[i + time_steps:i + forecast_steps + time_steps, 3].values)  # DataFrame에서의 col index = 3
+    scaled_data = scaler.fit_transform(data)
+
+    for i in range(len(scaled_data) - time_steps - forecast_steps):
+        X.append(scaled_data[i:i + time_steps].values)
+        y.append(scaled_data[i + time_steps:i + forecast_steps + time_steps, 3])  # DataFrame에서의 col index = 3
     return np.array(X), np.array(y)
 
 # 사용자별 데이터 전처리 및 시계열 분할
@@ -71,10 +69,10 @@ y_combined = np.concatenate(all_y, axis=0).astype(np.float32)
 model = Sequential() # 모델 순차적 정의
 model.add(Input(shape=(X_combined.shape[1], X_combined.shape[2])))
 # GRU 레이어를 어느정도를 쓸건가?
-model.add(LSTM(units=64, dropout=0.2, return_sequences=True)) # 모델 GRU 레이어 통과
-model.add(LSTM(units=64, dropout=0.2)) # 모델 GRU 레이어 통과
+model.add(LSTM(units=32, dropout=0.3, return_sequences=True)) # 모델 GRU 레이어 통과
+model.add(LSTM(units=32, dropout=0.3)) # 모델 GRU 레이어 통과
 # model.add(Dropout(0.2)) # 편향 방지 : 드랍 아웃 결정
-model.add(Dense(64, activation = 'relu')) # Fully-Connected DL
+model.add(Dense(64)) # Fully-Connected DL
 model.add(Dense(units=forecast_steps)) # 모델 Dense 레이어 통과 이후, 1차원으로 90개 출력 데이터
 
 # 모델 컴파일 - 회귀 모델에 적합한 MSE 선택, mae, mse 같이 확인
@@ -92,7 +90,7 @@ checkpoint = ModelCheckpoint("./models/modelv1.weights.h5", monitor='val_loss', 
 early_stopping = EarlyStopping(monitor='val_loss', min_delta=0.01, patience=10, restore_best_weights=True)
 
 # 모델 학습 | train : val = 8 : 2 (user 12000; 9600 : 2400)
-hist = model.fit(X_combined, y_combined, epochs=500, batch_size=32, validation_split=0.2, callbacks=[early_stopping, checkpoint])
+hist = model.fit(X_combined, y_combined, epochs=200, batch_size=128, validation_split=0.2, callbacks=[early_stopping, checkpoint])
 
 # 학습 결과 출력
 print("모델 학습 완료!")
@@ -121,3 +119,43 @@ plt.show()
 # plt, png 저장
 png_file = os.path.join('./models/', f'model_ver.png')
 plt.savefig(png_file)
+
+### 예측 파트
+def predict_future(model, last_sequence, steps, scaler):
+    future_predictions = []
+    current_sequence = last_sequence.copy()
+    
+    for _ in range(steps):
+        # 현재 시퀀스로 다음 스텝 예측
+        next_step = model.predict(current_sequence.reshape(1, timesteps, -1))
+        
+        # 예측된 값(체중)을 future_predictions에 추가
+        future_predictions.append(next_step[0, 0])
+        
+        # 현재 시퀀스 업데이트
+        current_sequence = np.roll(current_sequence, -1, axis=0)
+        current_sequence[-1] = next_step[0]
+    
+    # 예측된 값들을 원래 스케일로 변환
+    future_predictions = np.array(future_predictions).reshape(-1, 1)
+    original_scale_predictions = scaler.inverse_transform(np.hstack([np.zeros((len(future_predictions), 3)), future_predictions, np.zeros((len(future_predictions), 1))]))[:, 3]
+    
+    return original_scale_predictions
+
+# 예측 실행 및 결과 출력
+last_sequence = X_combined[-1]
+future_predictions = predict_future(model, last_sequence, forecast_steps, scaler)
+
+print("Future weight predictions:")
+for i, pred in enumerate(future_predictions):
+    print(f"Day {i+1}: {pred:.2f} kg")
+
+# 예측 결과 시각화
+plt.figure(figsize=(12, 6))
+plt.plot(range(forecast_steps), future_predictions, label='Predicted Weight')
+plt.title('Future Weight Predictions')
+plt.xlabel('Days')
+plt.ylabel('Weight (kg)')
+plt.legend()
+plt.grid(True)
+plt.show()

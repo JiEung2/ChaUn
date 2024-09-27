@@ -9,9 +9,9 @@ import os
 people_data = pd.read_csv('../statistics/updated_output.csv')
 
 # 테스트 코드
-for sample_id in range(50):
-# for sample_id in range(len(people_data)):
-    sample_id = np.random.randint(0, len(people_data))
+# for sample_id in range(50):
+for sample_id in range(len(people_data)):
+    # sample_id = np.random.randint(0, len(people_data))
     person_data = people_data.iloc[sample_id]
 
     ### DF 사용할 data 만들기
@@ -236,7 +236,7 @@ for sample_id in range(50):
 
     ### person_time_series_raw_data save
     def make_time_series_data():
-        csv_file = os.path.join('./outputs/test/csv', f'sample_{sample_id}.csv')
+        csv_file = os.path.join('./outputs/csv', f'sample_{sample_id}.csv')
         # csv로 저장하기
         df.to_csv(csv_file, index=False)
 
@@ -277,7 +277,7 @@ for sample_id in range(50):
         plt.grid(True)
 
         # plt, png 저장
-        png_file = os.path.join('./outputs/test/chart', f'sample_{sample_id}.png')
+        png_file = os.path.join('./outputs/chart', f'sample_{sample_id}.png')
         plt.savefig(png_file)
         
         # plt.show()
