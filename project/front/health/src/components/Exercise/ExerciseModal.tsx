@@ -5,16 +5,16 @@ import XCircle from '@/assets/svg/xCircle.svg';
 import './ExerciseModal.scss';
 
 interface ExerciseModalProps {
-  onSelectExercise: (selected: string | string[]) => void;
+  onSelectExercise: (selected: { id: number; name: string } | { id: number; name: string }[]) => void;
   onClose: () => void;
   multiple?: boolean;
 }
 
 export default function ExerciseModal({ onSelectExercise, onClose, multiple = false }: ExerciseModalProps) {
-  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+  const [selectedExercises, setSelectedExercises] = useState<{ id: number; name: string }[]>([]);
 
-  const handleSelectExercises = (exercises: string | string[]) => {
-    if (typeof exercises === 'string') {
+  const handleSelectExercises = (exercises: { id: number; name: string } | { id: number; name: string }[]) => {
+    if (!Array.isArray(exercises)) {
       setSelectedExercises([exercises]);
     } else {
       setSelectedExercises(exercises);
@@ -29,13 +29,8 @@ export default function ExerciseModal({ onSelectExercise, onClose, multiple = fa
 
   return (
     <div className="exerciseModal">
-      <hr className='hr' />
-      <img 
-        src={XCircle}
-        alt="xCircle"
-        className="xCircle"
-        onClick={onClose}
-      />
+      <hr className="hr" />
+      <img src={XCircle} alt="xCircle" className="xCircle" onClick={onClose} />
       <div className="scrollableContent">
         <ExerciseCategories onSelect={handleSelectExercises} multiple={multiple} />
       </div>
@@ -43,8 +38,7 @@ export default function ExerciseModal({ onSelectExercise, onClose, multiple = fa
         buttonStyle={{ style: 'floating', size: 'semiTiny' }}
         onClick={handleComplete}
         disabled={selectedExercises.length === 0}
-        className="complete"
-      >
+        className="complete">
         완료
       </GeneralButton>
     </div>

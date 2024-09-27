@@ -6,15 +6,29 @@ import createIcon from '../../assets/svg/crewCreate.svg';
 import recommendIcon from '../../assets/svg/crewRecommend.svg';
 import rankingIcon from '../../assets/svg/crewRanking.svg';
 import '../Crew/Crew.scss';
+import { useQuery } from '@tanstack/react-query';
+import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
 
 export default function CrewPage() {
-  // const crews = [
-  //   { id: 1, name: '달리는 번개', tag: '#러닝' },
-  //   { id: 2, name: '달리는 번개', tag: '#러닝' },
-  //   { id: 3, name: '달리는 번개', tag: '#러닝' },
-  //   { id: 4, name: '달리는 번개', tag: '#러닝' },
-  // ];
   const navigate = useNavigate();
+
+  const crew_id = 123;
+  const { data, error, isLoading } = useQuery<CrewBattleStatusResponse>({
+    queryKey: ['crewBattleStatus', crew_id],
+    queryFn: ({ queryKey }) => fetchCrewBattleStatus(Number(queryKey[1])), // queryKey에서 crew_id를 추출하여 전달
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error fetching battle status: {error.message}</div>;
+  }
+
+  const battleData = data?.data;
+  // console.log(battleData);
+
   return (
     <>
       <div className="my-crew">
@@ -22,14 +36,13 @@ export default function CrewPage() {
         {/* <CrewList crews={crews} /> */}
       </div>
       <BattleBoard
-        status="finished"
-        ourTeamName="으랏차차"
-        opponentTeamName="3대 500만원"
-        ourTeamSport="헬스"
-        opponentTeamSport="헬스"
-        ourTeamScore={1200}
-        opponentTeamScore={1200}
-        dDay="3"
+        myTeamName={battleData?.myTeamName || 'No Battle'}
+        myTeamScore={battleData?.myTeamScore || 0}
+        opponentTeamName={battleData?.opponentTeamName || 'No Opponent'}
+        opponentTeamScore={battleData?.opponentTeamScore || 0}
+        exerciseName={battleData?.exerciseName || 'N/A'}
+        dDay={battleData?.dDay || 0}
+        battleStatus={battleData?.battleStatus === 'NONE' ? 'STARTED' : 'FINISHED'}
       />
       <div className="buttonSection">
         <div className="crewButtonSection">

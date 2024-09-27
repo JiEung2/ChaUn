@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import GeneralButton from '@/components/Button/GeneralButton';
 import xCircle from '@/assets/svg/xCircle.svg';
@@ -33,18 +33,43 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-  // BodyType 컴포넌트에서 전달받는 데이터 처리
-  const handleBodyDataChange = (data: BodyData) => {
-    setBodyData(data);
+  const [bodyData, setBodyData] = useState({
+    height: 0,
+    weight: 0,
+    skeletalMuscleMass: null as number | null,
+    bodyFat: null as number | null,
+    bodyMuscle: false,
+    bodyShape: 0,
+  });
 
     // 모든 필드가 입력되었는지 확인
     const isDataComplete = Object.values(data).every((value) => value !== 0 && value !== false);
     setIsButtonDisabled(!isDataComplete); // 모든 필드가 입력되면 버튼 활성화
   };
 
-  // 완료 버튼 클릭 시 모달을 닫는 함수
+  // 식습관 입력 검증
+  const isEatingHabitsComplete = () => {
+    const mealsPerDay = watch('mealsPerDay');
+    const foodType = watch('foodType');
+    const snacksPerDay = watch('snacksPerDay');
+    const drinksPerDay = watch('drinksPerDay');
+
+    return mealsPerDay && foodType && snacksPerDay && drinksPerDay;
+  };
+
+  const checkDataCompletion = () => {
+    const isBodyDataComplete = isRequiredBodyDataComplete();
+    const isEatingComplete = isEatingHabitsComplete();
+    setIsButtonDisabled(!(isBodyDataComplete && isEatingComplete));
+  };
+
+  useEffect(() => {
+    checkDataCompletion();
+  }, [bodyData, watch('mealsPerDay'), watch('foodType'), watch('snacksPerDay'), watch('drinksPerDay')]);
+
   const handleComplete = () => {
     if (!isButtonDisabled) {
+      // POST 요청
       onClose();
     }
   };
@@ -58,7 +83,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
         <p className="description">보다 정확한 체형 분석 및 예측을 위해 체형과 식습관 정보를 입력해주세요.</p>
       </div>
       <div className="scrollableContent">
-        <BodyType onBodyDataChange={handleBodyDataChange} />
+        <BodyType onBodyDataChange={setBodyData} />
         <EatingHabits register={register} />
       </div>
       <GeneralButton

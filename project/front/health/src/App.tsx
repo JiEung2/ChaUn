@@ -16,33 +16,37 @@ import Alarm from './pages/Alarm/Alarm';
 import Mypage from './pages/Mypage/Mypage';
 import Profile from './pages/Profile/Profile';
 import MyCrew from './pages/Crew/MyCrew/MyCrew';
-import CrewDeatil from './pages/Crew/CrewDetail/CrewDetail';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+const queryClient = new QueryClient();
+
 export default function App() {
   return (
-    <Router>
-      <div>
-        <Routes>
-          <Route element={<CommonLayout />}>
-            <Route path="/" element={<Login />} />
-            <Route path="/survey" element={<Survey />} />
-            <Route path="/surveyResult" element={<SurveyResult />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/home/calendar" element={<Calendar />} />
-            <Route path="/home/quest" element={<Quest />} />
-            <Route path="/exercise/recommend" element={<ExerciseRecommend />} />
-            <Route path="/exercise" element={<Exercise />} />
-            <Route path="/record" element={<Record />} />
-            <Route path="/record/bodyDetail" element={<BodyDetail />} />
-            <Route path="/crew" element={<Crew />} />
-            <Route path="/crew/recommend" element={<CrewRecommend />} />
-            <Route path="/mypage" element={<Mypage />} />
-            <Route path="/alarm" element={<Alarm />} />
-            <Route path="/profile/:userId" element={<Profile />} />
-            <Route path="/crew/mycrew/" element={<MyCrew />} />
-            <Route path="/crew/detail/:crewId" element={<CrewDeatil />} />
-          </Route>
-        </Routes>
-      </div>
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <div>
+          <Routes>
+            <Route element={<CommonLayout />}>
+              <Route path="/" element={<Login />} />
+              <Route path="/survey" element={<Survey />} />
+              <Route path="/surveyResult" element={<SurveyResult />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/home/calendar" element={<Calendar />} />
+              <Route path="/home/quest" element={<Quest />} />
+              <Route path="/exercise/recommend" element={<ExerciseRecommend />} />
+              <Route path="/exercise" element={<Exercise />} />
+              <Route path="/record" element={<Record />} />
+              <Route path="/record/bodyDetail" element={<BodyDetail />} />
+              <Route path="/crew" element={<Crew />} />
+              <Route path="/crew/recommend" element={<CrewRecommend />} />
+              <Route path="/mypage" element={<Mypage />} />
+              <Route path="/alarm" element={<Alarm />} />
+              <Route path="/profile/:userId" element={<Profile />} />
+              <Route path="/crew/mycrew/" element={<MyCrew />} />
+            </Route>
+          </Routes>
+        </div>
+      </Router>
+    </QueryClientProvider>
   );
 }

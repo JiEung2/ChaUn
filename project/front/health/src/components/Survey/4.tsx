@@ -1,6 +1,6 @@
 import GeneralButton from '../Button/GeneralButton';
 import ExerciseCategories from '../Exercise/ExerciseCategories';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './4.module.scss';
 
 interface FourProps {
@@ -9,23 +9,21 @@ interface FourProps {
 }
 
 export default function Four({ finishServey, handlePrev }: FourProps) {
-  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+  const [selectedExercises, setSelectedExercises] = useState<{ id: number; name: string }[]>([]);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   // 운동 선택 핸들러
-  const handleSelectExercises = (exercises: string | string[]) => {
-    if (typeof exercises === 'string') {
-      if (selectedExercises.length < 5 && !selectedExercises.includes(exercises)) {
-        setSelectedExercises((prev) => [...prev, exercises]);
-      }
-    } else {
-      if (exercises.length <= 5) {
-        setSelectedExercises(exercises);
-      }
+  const handleSelectExercises = (exercises: { id: number; name: string }[]) => {
+    // 선택된 운동이 5개 미만이고, 이미 선택된 운동이 아닐 경우
+    if (exercises.length < 5 && !selectedExercises.some(e => exercises.some(ex => ex.id === e.id))) {
+      setSelectedExercises((prev) => [...prev, ...exercises]);
     }
   };
 
-  // 선택한 운동이 5개일 때만 다음 버튼 활성화
-  const isFormValid = selectedExercises.length > 0 && selectedExercises.length <= 5;
+  // 상태 유효성 검사
+  useEffect(() => {
+    setIsFormValid(selectedExercises.length > 0 && selectedExercises.length <= 5);
+  }, [selectedExercises]);
 
   return (
     <div className={styles.container}>
