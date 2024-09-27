@@ -52,7 +52,7 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
         bodyData.bodyMuscle,
         Number(bodyData.bodyShape)
       );
-      // console.log(response);
+      console.log(response);
       handleNext();
     } catch (e) {
       console.error('서버로 데이터 전송 중 에러 발생:', e);
