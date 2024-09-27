@@ -23,7 +23,7 @@ export interface CrewBattleStatusResponse {
   };
 }
 
-export const fetchCrewBattleStatus = async (crew_id: string): Promise<CrewBattleStatusResponse> => {
+export const fetchCrewBattleStatus = async (crew_id: number): Promise<CrewBattleStatusResponse> => {
   const response = await axios.get(`${baseURL}/crew/${crew_id}/battle`);
   return response.data;
 };
