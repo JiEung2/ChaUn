@@ -75,7 +75,7 @@ public interface CrewControllerApi {
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
-                    description = "가입된 크루 조회 성공",
+                    description = "가입된 크루 조회 완료",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
@@ -87,13 +87,17 @@ public interface CrewControllerApi {
                                     "        \"crewId\": 2,\n" +
                                     "        \"crewName\": \"달리자\",\n" +
                                     "        \"exerciseName\": \"러닝\",\n" +
-                                    "        \"crewProfileImage\": \"crew-profile-image.jpg\"\n" +
+                                    "        \"crewProfileImage\": \"crew-profile-image.jpg\",\n" +
+                                    "        \"basicScore\": 0.0, \n"+
+                                    "        \"activityScore\": 0.0 \n"+
                                     "      },\n" +
                                     "      {\n" +
                                     "        \"crewId\": 3,\n" +
                                     "        \"crewName\": \"달리자\",\n" +
                                     "        \"exerciseName\": \"러닝\",\n" +
-                                    "        \"crewProfileImage\": \"crew-profile-image.jpg\"\n" +
+                                    "        \"crewProfileImage\": \"crew-profile-image.jpg\",\n" +
+                                    "        \"basicScore\": 0.0, \n"+
+                                    "        \"activityScore\": 0.0 \n"+
                                     "      }\n" +
                                     "    ]\n" +
                                     "  }\n" +
@@ -151,7 +155,7 @@ public interface CrewControllerApi {
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
-                    description = "크루 멤버 조회 성공",
+                    description = "크루 멤버 조회 완료",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
@@ -201,13 +205,13 @@ public interface CrewControllerApi {
     ApiResponse<CrewScoreResponseDto> getCrewScore(@PathVariable("crew_id") Long crewId);
 
     @Operation(
-            summary = "크루 랭킹 조회",
+            summary = "크루 내 멤버 랭킹 조회",
             description = "크루의 현재 랭킹을 조회합니다."
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
-                    description = "크루 랭킹 성공",
+                    description = "크루 내 멤버 랭킹 조회 완료",
                     content = @Content(
                             mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
@@ -251,7 +255,7 @@ public interface CrewControllerApi {
                                     "    \"myTeamName\": \"달리자크루\",\n" +
                                     "    \"myTeamScore\": 0,\n" +
                                     "    \"opponentTeamName\": \"크크크루\",\n" +
-                                    "    \"opponentTeamScore\": 0,\n" +
+                                    "    \"opponentTeamScore\": 0.0,\n" +
                                     "    \"exerciseName\": \"러닝\",\n" +
                                     "    \"dDay\": 2\n" +
                                     "  }\n" +
@@ -282,9 +286,9 @@ public interface CrewControllerApi {
                                     "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
                                     "    \"myTeamName\": \"달리자크루\",\n" +
-                                    "    \"myTeamScore\": 400,\n" +
+                                    "    \"myTeamScore\": 400.0,\n" +
                                     "    \"opponentTeamName\": \"크크크루\",\n" +
-                                    "    \"opponentTeamScore\": 500,\n" +
+                                    "    \"opponentTeamScore\": 500.0,\n" +
                                     "    \"exerciseName\": \"러닝\",\n" +
                                     "    \"battleStatus\": \"STARTED\",\n" +
                                     "    \"dDay\": 2\n" +
@@ -299,9 +303,9 @@ public interface CrewControllerApi {
                                     "  \"message\": \"현재 진행 중인 배틀이 없습니다.\",\n" +
                                     "  \"data\": {\n" +
                                     "    \"myTeamName\": \"No Battle\",\n" +
-                                    "    \"myTeamScore\": 0,\n" +
+                                    "    \"myTeamScore\": 0.0,\n" +
                                     "    \"opponentTeamName\": \"No Opponent\",\n" +
-                                    "    \"opponentTeamScore\": 0,\n" +
+                                    "    \"opponentTeamScore\": 0.0,\n" +
                                     "    \"exerciseName\": \"N/A\",\n" +
                                     "    \"battleStatus\": \"NONE\",\n" +
                                     "    \"dDay\": 0\n" +
@@ -361,18 +365,22 @@ public interface CrewControllerApi {
                                     "  \"status\": 200,\n" +
                                     "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
-                                    "    \"memberList\": [\n" +
+                                    "    \"crewList\": [\n" +
                                     "      {\n" +
-                                    "        \"nickname\": \"달리기 왕자\",\n" +
-                                    "        \"userId\": 20,\n" +
-                                    "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"exerciseTime\": 123123\n" +
+                                    "        \"crewId\": 2,\n" +
+                                    "        \"crewName\": \"달리자\",\n" +
+                                    "        \"exerciseName\": \"러닝\",\n" +
+                                    "        \"crewProfileImage\": \"crew-profile-image.jpg\",\n" +
+                                    "        \"basicScore\": 0.0, \n"+
+                                    "        \"activityScore\": 0.0 \n"+
                                     "      },\n" +
                                     "      {\n" +
-                                    "        \"nickname\": \"달리기 공주\",\n" +
-                                    "        \"userId\": 21,\n" +
-                                    "        \"userProfileImage\": \"crew-profile-image.jpg\",\n" +
-                                    "        \"exerciseTime\": 123121\n" +
+                                    "        \"crewId\": 3,\n" +
+                                    "        \"crewName\": \"달리자\",\n" +
+                                    "        \"exerciseName\": \"러닝\",\n" +
+                                    "        \"crewProfileImage\": \"crew-profile-image.jpg\",\n" +
+                                    "        \"basicScore\": 0.0, \n"+
+                                    "        \"activityScore\": 0.0 \n"+
                                     "      }\n" +
                                     "    ]\n" +
                                     "  }\n" +
