@@ -1,13 +1,15 @@
 package com.ssafy.health.domain.body.BodyPredict.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.domain.body.BodyPredict.dto.ExerciseDetailDto;
+import com.ssafy.health.domain.body.BodyPredict.dto.request.AnalysisRequestDto;
 import com.ssafy.health.domain.body.BodyPredict.dto.response.BasicPredictionResponseDto;
 import com.ssafy.health.domain.body.BodyPredict.dto.response.ExtraPredictionResponseDto;
 import com.ssafy.health.domain.body.BodyPredict.service.BodyPredictReadService;
+import com.ssafy.health.domain.body.BodyPredict.service.BodyPredictWriteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/users/predict")
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BodyPredictController implements BodyPredictControllerApi {
 
     private final BodyPredictReadService bodyPredictReadService;
+    private final BodyPredictWriteService bodyPredictWriteService;
 
     @GetMapping("/basic")
     public ApiResponse<BasicPredictionResponseDto> getBasicPrediction() {
@@ -24,5 +27,17 @@ public class BodyPredictController implements BodyPredictControllerApi {
     @GetMapping("/extra")
     public ApiResponse<ExtraPredictionResponseDto> getExtraPrediction() {
         return ApiResponse.success(bodyPredictReadService.getExtraPrediction());
+    }
+
+    @PostMapping("/request-extra")
+    public ApiResponse<AnalysisRequestDto> requestExtraAnalysis(@RequestBody ExerciseDetailDto dto)
+            throws JsonProcessingException {
+        return ApiResponse.success(
+                bodyPredictWriteService.requestExtraAnalysis(dto), "추가 체형 예측을 요청하였습니다.");
+    }
+
+    @PostMapping("/request-analysis")
+    public ApiResponse<AnalysisRequestDto> requestAnalysis() {
+        return ApiResponse.success(bodyPredictWriteService.requestPrediction(), "FastAPI Request");
     }
 }

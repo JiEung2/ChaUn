@@ -32,6 +32,10 @@ public class ExerciseHistoryWriteService {
 
     private final Float OXYGEN_INTAKE = 3.5F;
 
+    public Float getOxygenIntake() {
+        return OXYGEN_INTAKE;
+    }
+
     public ExerciseHistorySaveResponseDto saveExerciseHistory(ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) {
         User user = findUserById(SecurityUtil.getCurrentUserId());
         Exercise exercise = findExerciseById(exerciseHistorySaveRequestDto.getExerciseId());
