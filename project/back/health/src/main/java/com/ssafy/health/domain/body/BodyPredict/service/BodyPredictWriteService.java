@@ -78,13 +78,8 @@ public class BodyPredictWriteService {
         // TODO: 추가 예측 요청일 경우 3개까지만 반환
         List<AnalysisRequestDto.UserExerciseData> exerciseBasicList = exerciseHistory.getExerciseHistoryList()
                 .stream()
-                .map(exercise -> AnalysisRequestDto.UserExerciseData.builder()
-                        .age(calculateAge(user.getBirthday()))
-                        .sex((user.getGender().equals(Gender.MAN)) ? 0 : 1)
-                        .bmi(bodyHistory.getWeight() / (bodyHistory.getHeight() * bodyHistory.getHeight()) * 10000)
-                        .weight(bodyHistory.getWeight())
-                        .calories(exercise.getBurnedCalories())
-                        .build()).toList();
+                .map(exercise -> exerciseDataBuilder(user, bodyHistory, exercise.getBurnedCalories()))
+                .toList();
 
         return AnalysisRequestDto.builder()
                 .exerciseDetail(
@@ -106,15 +101,20 @@ public class BodyPredictWriteService {
 
         // TODO: Frontend에서 2개 개수 제한이 없을 경우에 대한 처리
         for (int i = 0; i < exerciseDetail.getCount(); i++) {
-            exerciseDataList.add(AnalysisRequestDto.UserExerciseData.builder()
-                    .age(calculateAge(user.getBirthday()))
-                    .sex((user.getGender().equals(Gender.MAN)) ? 0 : 1)
-                    .bmi(bodyHistory.getWeight() / (bodyHistory.getHeight() * bodyHistory.getHeight()) * 10000)
-                    .weight(bodyHistory.getWeight())
-                    .calories(burnedCalories)
-                    .build());
+            exerciseDataList.add(exerciseDataBuilder(user, bodyHistory, burnedCalories));
         }
         return exerciseDataList;
+    }
+
+    private AnalysisRequestDto.UserExerciseData exerciseDataBuilder(
+            User user, BodyHistory bodyHistory, Float calories) {
+        return AnalysisRequestDto.UserExerciseData.builder()
+                .age(calculateAge(user.getBirthday()))
+                .sex((user.getGender().equals(Gender.MAN)) ? 1 : 2)
+                .bmi(bodyHistory.getWeight() / (bodyHistory.getHeight() * bodyHistory.getHeight()) * 10000)
+                .weight(bodyHistory.getWeight())
+                .calories(calories)
+                .build();
     }
 
     private User findUserById(Long userId) {
