@@ -10,7 +10,7 @@ import com.ssafy.health.common.util.MonthlyRequestDto;
 import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
-import com.ssafy.health.domain.exercise.dto.response.ExerciseTimeResponseDto;
+import com.ssafy.health.domain.exercise.dto.response.WeeklyAndDailyExerciseTimeResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -67,8 +67,8 @@ public interface UserControllerApi {
     ApiResponse<InfoSurveySuccessDto> saveInfoSurvey(@RequestBody InfoSurveyRequestDto infoSurveyRequestDto);
 
     @Operation(
-            summary = "회원 운동 시간 조회",
-            description = "특정 회원의 총 운동시간과 이번 달 운동시간을 조회합니다."
+            summary = "본인의 이번주, 오늘 운동 시간 조회",
+            description = "본인의 이번주 운동시간과 오늘 운동시간을 조회합니다."
     )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -80,15 +80,39 @@ public interface UserControllerApi {
                                     "  \"status\": 200,\n" +
                                     "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
-                                    "    \"totalExerciseTime\": 0,\n" +
-                                    "    \"monthlyAccumulatedExerciseTime\": 0\n" +
+                                    "    \"weeklyAccumulatedExerciseTime\": 0,\n" +
+                                    "    \"dailyAccumulatedExerciseTime\": 0\n" +
                                     "  }\n" +
                                     "}"
                             )
                     )
             )
     })
-    ApiResponse<ExerciseTimeResponseDto> getExerciseTime(@PathVariable("user_id") Long userId);
+    ApiResponse<WeeklyAndDailyExerciseTimeResponseDto> getWeeklyAndDailyExerciseTime();
+    
+    @Operation(
+            summary = "회원 이번주, 오늘 운동 시간 조회",
+            description = "특정 회원의 이번주 운동시간과 오늘 운동시간을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "회원 운동 시간 조회 완료",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"\",\n" +
+                                    "  \"data\": {\n" +
+                                    "    \"weeklyAccumulatedExerciseTime\": 0,\n" +
+                                    "    \"dailyAccumulatedExerciseTime\": 0\n" +
+                                    "  }\n" +
+                                    "}"
+                            )
+                    )
+            )
+    })
+    ApiResponse<WeeklyAndDailyExerciseTimeResponseDto> getWeeklyAndDailyExerciseTime(@PathVariable("user_id") Long userId);
 
     @Operation(
             summary = "회원 디테일 조회",
