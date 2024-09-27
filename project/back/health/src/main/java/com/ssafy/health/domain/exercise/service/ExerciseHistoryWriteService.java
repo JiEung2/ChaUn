@@ -9,6 +9,7 @@ import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
 import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundException;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
+import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
@@ -21,6 +22,8 @@ import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -67,11 +70,18 @@ public class ExerciseHistoryWriteService {
 
         while (retryCount < maxRetries) {
             try {
-                crewRepository.updateCrewBasicScoreByUserAndExercise(user, exercise, basicScore);
+                List<Crew> crews = crewRepository.findCrewsByUserAndExercise(user, exercise);
+
+                crews.forEach(crew -> {
+                    crew.updateBasicScore(basicScore);
+                    crewRepository.save(crew);
+                });
+
                 return;
+
             } catch (OptimisticLockException e) {
                 retryCount++;
-                Thread.sleep(50);
+                Thread.sleep(50); // 대기 시간
             }
         }
 
