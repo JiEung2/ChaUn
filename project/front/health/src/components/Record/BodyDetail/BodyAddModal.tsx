@@ -5,6 +5,7 @@ import xCircle from '@/assets/svg/xCircle.svg';
 import BodyType from '@/components/Survey/BodyType';
 import EatingHabits from '@/components/Survey/EatingHabits';
 import './BodyAddModal.scss';
+import { surveySubmit2, surveySubmit3 } from '@/api/survey';
 
 interface BodyAddModalProps {
   onClose: () => void;
@@ -13,22 +14,27 @@ interface BodyAddModalProps {
 interface BodyData {
   height: number;
   weight: number;
-  skeletalMuscleMass: number | null;
-  bodyFat: number | null;
+  skeletalMuscleMass: number;
+  bodyFat: number;
   bodyMuscle: boolean;
   bodyShape: number;
 }
 
 export default function BodyAddModal({ onClose }: BodyAddModalProps) {
-  const { register, watch } = useForm(); // react-hook-form의 watch 메서드를 통해 폼 필드 추적
+  const { register, watch } = useForm();
   const [bodyData, setBodyData] = useState<BodyData>({
     height: 0,
     weight: 0,
-    skeletalMuscleMass: null,
-    bodyFat: null,
+    skeletalMuscleMass: 0,
+    bodyFat: 0,
     bodyMuscle: false,
     bodyShape: 0,
   });
+
+  const mealsPerDay = watch('mealsPerDay');
+  const foodType = watch('foodType');
+  const snacksPerDay = watch('snacksPerDay');
+  const drinksPerDay = watch('drinksPerDay');
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
@@ -39,11 +45,6 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
 
   // 식습관 입력 검증
   const isEatingHabitsComplete = () => {
-    const mealsPerDay = watch('mealsPerDay');
-    const foodType = watch('foodType');
-    const snacksPerDay = watch('snacksPerDay');
-    const drinksPerDay = watch('drinksPerDay');
-
     return mealsPerDay && foodType && snacksPerDay && drinksPerDay;
   };
 
@@ -56,12 +57,23 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
 
   useEffect(() => {
     checkDataCompletion();
-  }, [bodyData, watch('mealsPerDay'), watch('foodType'), watch('snacksPerDay'), watch('drinksPerDay')]);
+  }, [bodyData, mealsPerDay, foodType, snacksPerDay, drinksPerDay]);
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (!isButtonDisabled) {
-      // POST 요청 실행
-      onClose();
+      try {
+        // 몸 데이터 전송 (surveySubmit2)
+        const { height, weight, skeletalMuscleMass, bodyFat, bodyMuscle, bodyShape } = bodyData;
+        await surveySubmit2(height, weight, skeletalMuscleMass, bodyFat, bodyMuscle, bodyShape);
+
+        // 식습관 데이터 전송 (surveySubmit3)
+        await surveySubmit3(mealsPerDay, foodType, snacksPerDay, drinksPerDay);
+
+        onClose(); // 모든 API 전송 성공 시 모달 닫기
+      } catch (error) {
+        console.error('Error submitting survey:', error);
+        alert('오류가 발생했습니다. 다시 시도해 주세요.');
+      }
     }
   };
 

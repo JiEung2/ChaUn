@@ -11,7 +11,7 @@ interface BodyDetailModalProps {
 }
 
 export default function BodyDetailModal({ filteredData, onClose }: BodyDetailModalProps) {
-  const createLineData = (label: string, color: string, key: keyof typeof filteredData[0]) => ({
+  const createLineData = (label: string, color: string, key: keyof (typeof filteredData)[0]) => ({
     labels: filteredData.map((item) => `${item.date.split('.')[2]}일`),
     datasets: [
       {
@@ -68,9 +68,9 @@ export default function BodyDetailModal({ filteredData, onClose }: BodyDetailMod
     <div className="bodyDetailModalContainer">
       <div className="bodyDetailModalContent">
         <img src={xCircle} alt="xCircle" className="xCircle" onClick={onClose} />
-        <Chart type="line" data={createLineData('몸무게', '#4bc0c0', 'weight')} options={lineOptions} />
-        <Chart type="line" data={createLineData('골격근량', '#36a2eb', 'muscle')} options={lineOptions} />
-        <Chart type="line" data={createLineData('체지방량', '#ff6384', 'fat')} options={lineOptions} />
+        <Chart type="line" data={createLineData('몸무게 (kg)', '#4bc0c0', 'weight')} options={lineOptions} />
+        <Chart type="line" data={createLineData('골격근량 (kg)', '#36a2eb', 'muscle')} options={lineOptions} />
+        <Chart type="line" data={createLineData('체지방률 (%)', '#ff6384', 'fat')} options={lineOptions} />
       </div>
     </div>
   );

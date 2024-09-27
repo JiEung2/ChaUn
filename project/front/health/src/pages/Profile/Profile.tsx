@@ -156,7 +156,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <div className="chartContainer">
+      <div className="userChartContainer">
         <Line data={chartData} options={options} />
       </div>
 
