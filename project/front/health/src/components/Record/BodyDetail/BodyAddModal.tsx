@@ -13,38 +13,28 @@ interface BodyAddModalProps {
 interface BodyData {
   height: number;
   weight: number;
-  skeletalMuscleMass: number;
-  bodyFat: number;
+  skeletalMuscleMass: number | null;
+  bodyFat: number | null;
   bodyMuscle: boolean;
   bodyShape: number;
 }
 
 export default function BodyAddModal({ onClose }: BodyAddModalProps) {
-  const { register } = useForm(); // react-hook-form을 사용하여 register 정의
+  const { register, watch } = useForm(); // react-hook-form의 watch 메서드를 통해 폼 필드 추적
   const [bodyData, setBodyData] = useState<BodyData>({
     height: 0,
     weight: 0,
-    skeletalMuscleMass: 0,
-    bodyFat: 0,
+    skeletalMuscleMass: null,
+    bodyFat: null,
     bodyMuscle: false,
     bodyShape: 0,
   });
-  console.log(bodyData);
 
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-  const [bodyData, setBodyData] = useState({
-    height: 0,
-    weight: 0,
-    skeletalMuscleMass: null as number | null,
-    bodyFat: null as number | null,
-    bodyMuscle: false,
-    bodyShape: 0,
-  });
-
-    // 모든 필드가 입력되었는지 확인
-    const isDataComplete = Object.values(data).every((value) => value !== 0 && value !== false);
-    setIsButtonDisabled(!isDataComplete); // 모든 필드가 입력되면 버튼 활성화
+  // 필수 몸 데이터 입력 검증 함수
+  const isRequiredBodyDataComplete = () => {
+    return bodyData.height > 0 && bodyData.weight > 0 && bodyData.bodyShape !== 0;
   };
 
   // 식습관 입력 검증
@@ -57,6 +47,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
     return mealsPerDay && foodType && snacksPerDay && drinksPerDay;
   };
 
+  // 데이터 완료 여부를 검증하고 버튼 활성화 상태를 업데이트
   const checkDataCompletion = () => {
     const isBodyDataComplete = isRequiredBodyDataComplete();
     const isEatingComplete = isEatingHabitsComplete();
@@ -69,7 +60,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
 
   const handleComplete = () => {
     if (!isButtonDisabled) {
-      // POST 요청
+      // POST 요청 실행
       onClose();
     }
   };

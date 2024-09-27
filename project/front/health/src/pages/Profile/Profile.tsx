@@ -5,63 +5,47 @@ import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import './Profile.scss';
 import { getUserExerciseTime, getUserWeight6 } from '@/api/user';
-import CrewImg from '@/assets/image/customItem.jpg';
+import { getUserCrewList } from '@/api/crew';
 
 export default function ProfilePage() {
   const { userId } = useParams<{ userId: string }>();
   const [todayExerciseTime, setTodayExerciseTime] = useState<number>(0);
   const [thisWeekExerciseTime, setThisWeekExerciseTime] = useState<number>(0);
   const [userWeight, setUserWeight] = useState<{ date: string; weight: number }[]>([]);
+  const [userCrewList, setUserCrewList] = useState<
+    {
+      crewId: number;
+      crewName: string;
+      exerciseName: string;
+      crewProfileImage: string;
+    }[]
+  >([]);
 
   const handleUserProfile = async (userId: string) => {
     try {
-      const response1 = await getUserExerciseTime(Number(userId));
-      const response2 = await getUserWeight6(Number(userId));
+      // API 호출을 병렬로 처리
+      const [response1, response2, response3] = await Promise.all([
+        getUserExerciseTime(Number(userId)),
+        getUserWeight6(Number(userId)),
+        getUserCrewList(Number(userId)),
+      ]);
 
+      // 운동 시간 데이터 처리
       const exerciseTimeData = response1.data.data;
-      setTodayExerciseTime(exerciseTimeData.todayExerciseTime);
-      setThisWeekExerciseTime(exerciseTimeData.thisWeekExerciseTime);
+      setTodayExerciseTime(exerciseTimeData.dailyAccumulatedExerciseTime);
+      setThisWeekExerciseTime(exerciseTimeData.weeklyAccumulatedExerciseTime);
 
+      // 체중 데이터 처리
       const weightDataList = response2.data.data.weightDataList || [];
       setUserWeight(weightDataList);
+
+      // 크루 리스트 데이터 처리
+      const crewList = response3.data.crewList || [];
+      setUserCrewList(crewList);
     } catch (error) {
       console.error('Error fetching user detail:', error);
     }
   };
-
-  const myCrews = [
-    {
-      id: 1,
-      imageUrl: CrewImg,
-      name: '달리는 번개라오라오',
-      tag: '런닝',
-    },
-    {
-      id: 1,
-      imageUrl: CrewImg,
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    {
-      id: 1,
-      imageUrl: CrewImg,
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    {
-      id: 1,
-      imageUrl: 'data:image/png;base64,...',
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    {
-      id: 1,
-      imageUrl: 'data:image/png;base64,...',
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    // 나머지 크루 데이터 생략...
-  ];
 
   // 6개월 전까지의 날짜 배열을 생성하는 함수
   const generateLast6Months = () => {
@@ -157,8 +141,7 @@ export default function ProfilePage() {
   }, [userId]);
 
   const handleCrewClick = (crewId: number) => {
-    // TODO - 해당 크루 상세보기
-    console.log(crewId);
+    console.log(crewId); // TODO - 해당 크루 상세보기
   };
 
   return (
@@ -181,15 +164,19 @@ export default function ProfilePage() {
         <p className="titles">닉네임님의 크루</p>
 
         <div className="crewList">
-          {myCrews.map((crew, index) => (
-            <Crew
-              key={index}
-              imageUrl={crew.imageUrl}
-              name={crew.name}
-              tag={crew.tag}
-              onClick={() => handleCrewClick(crew.id)}
-            />
-          ))}
+          {userCrewList.length > 0 ? (
+            userCrewList.map((crew) => (
+              <Crew
+                key={crew.crewId}
+                imageUrl={crew.crewProfileImage}
+                name={crew.crewName}
+                tag={crew.exerciseName}
+                onClick={() => handleCrewClick(crew.crewId)}
+              />
+            ))
+          ) : (
+            <p>해당 크루가 없습니다.</p>
+          )}
         </div>
       </div>
     </div>
