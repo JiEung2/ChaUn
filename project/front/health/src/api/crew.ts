@@ -29,22 +29,21 @@ export const getCrewRanking = async (crew_id: number) => {
 
 // 크루 배틀 현황 조회
 export interface CrewBattleStatusResponse {
-  status: number;
-  message: string;
-  data: {
-    battleId: number;
-    myTeamName: string;
-    myTeamScore: number;
-    opponentTeamName: string;
-    opponentTeamScore: number;
-    exerciseName: string;
-    dDay: number;
-    battleStatus: string;
-  };
+  // status: number;
+  // message: string;
+  // data: {
+  battleId: number;
+  myTeamName: string;
+  myTeamScore: number;
+  opponentTeamName: string;
+  opponentTeamScore: number;
+  exerciseName: string;
+  dDay: number;
+  battleStatus: string;
+  // };
 }
 
 export const fetchCrewBattleStatus = async (crew_id: number): Promise<CrewBattleStatusResponse> => {
   const response = await axios.get(`${baseURL}/crew/${crew_id}/battle`);
   return response.data;
-
 };

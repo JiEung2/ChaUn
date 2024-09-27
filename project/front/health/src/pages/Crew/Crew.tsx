@@ -8,14 +8,15 @@ import rankingIcon from '../../assets/svg/crewRanking.svg';
 import '../Crew/Crew.scss';
 import { useQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
+import querykeys from '@/utils/querykeys';
 
 export default function CrewPage() {
   const navigate = useNavigate();
 
   const crew_id = 123;
   const { data, error, isLoading } = useQuery<CrewBattleStatusResponse>({
-    queryKey: ['crewBattleStatus', crew_id],
-    queryFn: ({ queryKey }) => fetchCrewBattleStatus(Number(queryKey[1])), // queryKey에서 crew_id를 추출하여 전달
+    queryKey: [querykeys.BATTLE_STATUS, crew_id],
+    queryFn: () => fetchCrewBattleStatus(Number(crew_id)), // queryKey에서 crew_id를 추출하여 전달
   });
 
   if (isLoading) {
@@ -26,8 +27,7 @@ export default function CrewPage() {
     return <div>Error fetching battle status: {error.message}</div>;
   }
 
-  const battleData = data?.data;
-  // console.log(battleData);
+  console.log(data);
 
   return (
     <>
@@ -36,13 +36,13 @@ export default function CrewPage() {
         {/* <CrewList crews={crews} /> */}
       </div>
       <BattleBoard
-        myTeamName={battleData?.myTeamName || 'No Battle'}
-        myTeamScore={battleData?.myTeamScore || 0}
-        opponentTeamName={battleData?.opponentTeamName || 'No Opponent'}
-        opponentTeamScore={battleData?.opponentTeamScore || 0}
-        exerciseName={battleData?.exerciseName || 'N/A'}
-        dDay={battleData?.dDay || 0}
-        battleStatus={battleData?.battleStatus === 'NONE' ? 'STARTED' : 'FINISHED'}
+        myTeamName={data?.myTeamName || 'No Battle'}
+        myTeamScore={data?.myTeamScore || 0}
+        opponentTeamName={data?.opponentTeamName || 'No Opponent'}
+        opponentTeamScore={data?.opponentTeamScore || 0}
+        exerciseName={data?.exerciseName || 'N/A'}
+        dDay={data?.dDay || 0}
+        battleStatus={data?.battleStatus === 'NONE' ? 'STARTED'}
       />
       <div className="buttonSection">
         <div className="crewButtonSection">

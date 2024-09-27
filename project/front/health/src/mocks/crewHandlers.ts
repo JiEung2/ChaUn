@@ -45,6 +45,20 @@ const memberList = [
     exerciseTime: 123121,
   },
 ];
+const battleStatus = {
+  // status: 200,
+  // message: 'Success',
+  // data: {
+  battleId: 1,
+  myTeamName: '달리자크루',
+  myTeamScore: 0,
+  opponentTeamName: '크크크루',
+  opponentTeamScore: 0,
+  exerciseName: '러닝',
+  dDay: 2,
+  battleStatus: 'STARTED',
+  // },
+};
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
   http.get(`${baseUrl}/users/crew-recommendation`, () => {
@@ -83,5 +97,13 @@ export const crewHandlers = [
     console.log('크루 내 랭킹 조회의 크루 id', numberCrewId);
 
     return HttpResponse.json(memberList, { status: 200 });
+  }),
+
+  // 배틀 현황 조회
+  http.get(`${baseUrl}/crew/:crew_id/battle`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('크루 아이디', crew_id);
+
+    return HttpResponse.json(battleStatus, { status: 200 });
   }),
 ];

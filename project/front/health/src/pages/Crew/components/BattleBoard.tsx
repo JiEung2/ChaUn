@@ -20,6 +20,7 @@ export default function BattleBoard({
   battleStatus,
 }: BattleBoardProps) {
   const renderContent = () => {
+    console.log('떠라', battleStatus);
     switch (battleStatus) {
       case 'NONE':
         return (
