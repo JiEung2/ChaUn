@@ -45,7 +45,13 @@ public class BodyPredictWriteService {
     private final ExerciseRepository exerciseRepository;
     private final RequestUtil requestUtil;
 
-    public AnalysisRequestDto requestPrediction() {
+    private String apiBaseUrlBuilder() {
+        Long userId = SecurityUtil.getCurrentUserId();
+        return fastApiUrl + "/users/" + userId.toString() + "/body/prediction";
+    }
+
+    public AnalysisRequestDto requestPrediction() throws JsonProcessingException {
+
         // TODO: 스프링 스케쥴러 이용, FastAPI에 분석 요청 보내기
         ExerciseDetailDto dto = ExerciseDetailDto.builder().build();
         return buildPredictionPayload(PredictionType.BASIC, dto);
@@ -54,8 +60,7 @@ public class BodyPredictWriteService {
     public AnalysisRequestDto requestExtraAnalysis(ExerciseDetailDto exerciseDetail) throws JsonProcessingException {
 
         // TODO: API 요청 성공 유무에 따른 반환값 추가
-        Long userId = SecurityUtil.getCurrentUserId();
-        String apiUrl = fastApiUrl + "/users" + userId.toString() + "/body/prediction/extra/fast-api";
+        String apiUrl = apiBaseUrlBuilder() + "/extra/fast-api";
 
         AnalysisRequestDto dto = buildPredictionPayload(PredictionType.EXTRA, exerciseDetail);
         ResponseEntity<String> response = requestUtil.sendPostRequest(apiUrl, dto, String.class);
