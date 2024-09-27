@@ -34,13 +34,6 @@ public interface CrewRepository extends JpaRepository<Crew, Long> {
     @Query("SELECT c FROM Crew c JOIN FETCH c.exercise WHERE c.id = :crewId")
     Optional<Crew> findCrewWithExerciseById(Long crewId);
 
-    @Modifying
-    @Query("UPDATE Crew c " +
-            "SET c.basicScore = c.basicScore + :basicScore " +
-            "WHERE c IN (" +
-            "    SELECT uc.crew FROM UserCrew uc " +
-            "    WHERE uc.user = :user " +
-            "    AND uc.crew.exercise = :exercise" +
-            ")")
-    void updateCrewBasicScoreByUserAndExercise(User user, Exercise exercise, Float basicScore);
+    @Query("SELECT uc.crew FROM UserCrew uc WHERE uc.user = :user AND uc.crew.exercise = :exercise")
+    List<Crew> findCrewsByUserAndExercise(User user, Exercise exercise);
 }
