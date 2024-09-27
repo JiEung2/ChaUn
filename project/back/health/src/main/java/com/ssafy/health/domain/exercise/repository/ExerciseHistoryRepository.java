@@ -16,12 +16,13 @@ public interface ExerciseHistoryRepository extends JpaRepository<ExerciseHistory
     List<ExerciseHistory> findByUserIdAndExerciseStartTimeBetween(Long userId, LocalDateTime startTime,
                                                                      LocalDateTime endTime);
 
-    @Query("SELECT exerciseHistory FROM ExerciseHistory exerciseHistory " +
-            "JOIN FETCH exerciseHistory.user " +
+    @Query("SELECT exerciseHistory.user.id, SUM(exerciseHistory.exerciseDuration) " +
+            "FROM ExerciseHistory exerciseHistory " +
             "WHERE exerciseHistory.user.id IN :userIdList " +
             "AND exerciseHistory.exerciseStartTime BETWEEN :startTime AND :endTime " +
-            "ORDER BY exerciseHistory.user.nickname ASC ")
-    List<ExerciseHistory> findByUserIdInAndCreatedAtBetween(List<Long> userIdList, LocalDateTime startTime, LocalDateTime endTime);
+            "GROUP BY exerciseHistory.user.id " +
+            "ORDER BY exerciseHistory.user.nickname ASC")
+    List<Object[]> findUserExerciseDurationSumByUserIdInAndCreatedAtBetween(List<Long> userIdList, LocalDateTime startTime, LocalDateTime endTime);
 
     @Query("SELECT new com.ssafy.health.domain.account.dto.response.UserExerciseTimeDto(exerciseHistory.user.id, SUM (exerciseHistory.exerciseDuration))" +
             "FROM ExerciseHistory exerciseHistory " +

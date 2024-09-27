@@ -391,4 +391,49 @@ public interface CrewControllerApi {
     })
     ApiResponse<CrewListResponseDto> getCrewRankingByExercise(@PathVariable("exercise_id") Long exerciseId);
 
+
+    @Operation(
+            summary = "특정 크루의 크루원들의 오늘 운동시간 조회",
+            description = "특정 크루의 모든 크루원들의 오늘 운동 시간을 반환합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "운동 시간 조회 성공",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                    {
+                      "status": 200,
+                      "message": "Success",
+                      "data": {
+                        "exerciseTimeList": [
+                          {
+                            "userId": 1,
+                            "nickname": "JiEung",
+                            "exerciseTime": 0
+                          },
+                          {
+                            "userId": 2,
+                            "nickname": "JiEung2",
+                            "exerciseTime": 0
+                          }
+                        ]
+                      }
+                    }
+                    """
+                            )
+                    )
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "크루 ID가 존재하지 않음",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                    {
+                      "status": 404,
+                      "message": "",
+                      "data": null
+                    }
+                    """
+                            )
+                    )
+            )
+    })
+    ApiResponse<CrewMemberDailyExerciseTimeListDto> getCrewMemberDailyExerciseTimeList(@PathVariable("crew_id") Long crewId);
 }
