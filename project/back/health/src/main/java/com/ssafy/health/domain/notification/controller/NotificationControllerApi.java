@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -30,20 +29,50 @@ public interface NotificationControllerApi {
                                       "message": "Success",
                                       "data": [
                                         {
-                                          "notificationId": 1,
-                                          "notificationType": "SURVEY",
-                                          "additionalData": null,
-                                          "content": "테스트 알림 1",
-                                          "createdAt": "2024-09-20T00:00:00"
-                                        },
-                                        {
-                                          "notificationId": 2,
+                                          "notificationId": 5,
                                           "notificationType": "BATTLE",
                                           "additionalData": {
-                                            "battleId": 1
+                                            "battleDetail": {
+                                              "myTeamName": "달리자크루",
+                                              "myTeamScore": 400,
+                                              "opponentTeamName": "크크크루",
+                                              "opponentTeamScore": 500,
+                                              "exerciseName": "러닝",
+                                              "battleStatus": "FINISHED"
+                                            },
+                                            "coinDetail": {
+                                              "crewCoin": 200,
+                                              "myCoin": 50
+                                            }
                                           },
-                                          "content": "테스트 알림 2",
-                                          "createdAt": "2024-09-20T00:00:00"
+                                          "content": "크루 배틀이 종료되었어요! 결과를 확인하세요!",
+                                          "createdAt": "2024-09-27T14:28:26.1466152"
+                                        },
+                                        {
+                                          "notificationId": 4,
+                                          "notificationType": "BATTLE",
+                                          "additionalData": {
+                                            "battleDetail": {
+                                              "myTeamName": "달리자크루",
+                                              "myTeamScore": 400,
+                                              "opponentTeamName": "크크크루",
+                                              "opponentTeamScore": 500,
+                                              "exerciseName": "러닝",
+                                              "battleStatus": "STARTED"
+                                            },
+                                            "coinDetail": null
+                                          },
+                                          "content": "크루 배틀이 시작되었어요! 현황을 확인하세요!",
+                                          "createdAt": "2024-09-27T14:28:26.008885"
+                                        },
+                                        {
+                                          "notificationId": 1,
+                                          "notificationType": "SURVEY",
+                                          "additionalData": {
+                                            "lastSurveyedDate": null
+                                          },
+                                          "content": "체형 입력을 통해 정확도 높은 예측을 받아보세요!",
+                                          "createdAt": "2024-09-27T14:14:13.869796"
                                         }
                                       ]
                                     }"""
