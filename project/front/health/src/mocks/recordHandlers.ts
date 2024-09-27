@@ -83,4 +83,6 @@ export const recordHandlers = [
       return HttpResponse.error();
     }
   }),
+
+  // 회원 체형 설문 조사
 ];

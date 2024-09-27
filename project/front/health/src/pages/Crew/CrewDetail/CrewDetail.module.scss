@@ -1,0 +1,126 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.crewInfoContainer {
+  background-color: colors.$white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0;
+  gap: 10px;
+
+  .crewInfoHeader {
+    display: flex;
+    flex-direction: row;
+
+    img.crewProfileImage {
+      // .crewInfoHeader에 직접 적용
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .crewInfoTitle {
+      display: flex;
+      align-items: center;
+
+      .crewName {
+        font-size: 20px;
+        // margin-right: 10px;
+        margin: 0px 10px 0px 0px;
+      }
+
+      .exerciseTag {
+        background-color: colors.$blue;
+        color: colors.$white;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 14px;
+      }
+      img {
+        margin-left: 10px;
+      }
+    }
+
+    .crewDescription {
+      margin: 10px 0;
+      font-size: 14px;
+      color: #555;
+    }
+  }
+
+  .applyButton {
+    background-color: colors.$blue;
+    color: colors.$white;
+    width: 273px;
+    height: 30px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 8.5px;
+  }
+
+  .crewInfoDetails {
+    margin-top: 15px;
+    font-size: 14px;
+    color: colors.$darkGray;
+
+    p {
+      margin: 5px 0;
+    }
+  }
+}
+.crewCoins {
+  display: flex;
+  align-items: center;
+  //   width: 100px;
+  //   height: 22px;
+  padding: 8px;
+  //   justify-content: space-evenly;
+}
+
+.crewRankingContainer {
+  margin-bottom: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(213, 244, 255, 1) 0%,
+    rgba(234, 250, 255, 1) 58%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+  margin: 20px -30px 0px -30px;
+  padding: 20px 0 10px 0;
+  max-height: 288px;
+
+  .rankingList {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+  }
+  .rankingItem {
+    background-color: colors.$white;
+    width: 280px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .memberProfileImageSmall {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: colors.$darkGray;
+  }
+
+  span {
+    margin: 0 10px;
+  }
+}

@@ -10,15 +10,27 @@ interface BodyAddModalProps {
   onClose: () => void;
 }
 
-type FormData = {
-  mealsPerDay: string;
-  foodType: string;
-  snacksPerDay: string;
-  drinksPerDay: string;
-};
+interface BodyData {
+  height: number;
+  weight: number;
+  skeletalMuscleMass: number;
+  bodyFat: number;
+  bodyMuscle: boolean;
+  bodyShape: number;
+}
 
 export default function BodyAddModal({ onClose }: BodyAddModalProps) {
-  const { register, watch } = useForm<FormData>();
+  const { register } = useForm(); // react-hook-form을 사용하여 register 정의
+  const [bodyData, setBodyData] = useState<BodyData>({
+    height: 0,
+    weight: 0,
+    skeletalMuscleMass: 0,
+    bodyFat: 0,
+    bodyMuscle: false,
+    bodyShape: 0,
+  });
+  console.log(bodyData);
+
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   const [bodyData, setBodyData] = useState({
@@ -30,19 +42,9 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
     bodyShape: 0,
   });
 
-  // 체형 입력 검증 (필수 항목만 확인)
-  const isRequiredBodyDataComplete = () => {
-    const requiredBodyData = {
-      height: bodyData.height,
-      weight: bodyData.weight,
-      bodyMuscle: bodyData.bodyMuscle,
-      bodyShape: bodyData.bodyShape,
-    };
-
-    // 필수 데이터가 모두 입력되었는지 확인 (0이 아닌 경우 또는 값이 true여야 함)
-    return Object.values(requiredBodyData).every((value) => {
-      return value !== 0 && value !== false;
-    });
+    // 모든 필드가 입력되었는지 확인
+    const isDataComplete = Object.values(data).every((value) => value !== 0 && value !== false);
+    setIsButtonDisabled(!isDataComplete); // 모든 필드가 입력되면 버튼 활성화
   };
 
   // 식습관 입력 검증
