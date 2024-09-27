@@ -11,23 +11,23 @@ interface BodyAddModalProps {
 }
 
 interface BodyData {
-  height: string;
-  weight: string;
-  skeletalMuscleMass: string;
-  bodyFat: string;
-  bodyMuscle: string;
-  bodyShape: string;
+  height: number;
+  weight: number;
+  skeletalMuscleMass: number;
+  bodyFat: number;
+  bodyMuscle: boolean;
+  bodyShape: number;
 }
 
 export default function BodyAddModal({ onClose }: BodyAddModalProps) {
   const { register } = useForm(); // react-hook-form을 사용하여 register 정의
   const [bodyData, setBodyData] = useState<BodyData>({
-    height: '',
-    weight: '',
-    skeletalMuscleMass: '',
-    bodyFat: '',
-    bodyMuscle: '',
-    bodyShape: ''
+    height: 0,
+    weight: 0,
+    skeletalMuscleMass: 0,
+    bodyFat: 0,
+    bodyMuscle: false,
+    bodyShape: 0,
   });
   console.log(bodyData);
 
@@ -38,7 +38,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
     setBodyData(data);
 
     // 모든 필드가 입력되었는지 확인
-    const isDataComplete = Object.values(data).every(value => value.trim() !== '');
+    const isDataComplete = Object.values(data).every((value) => value !== 0 && value !== false);
     setIsButtonDisabled(!isDataComplete); // 모든 필드가 입력되면 버튼 활성화
   };
 
@@ -52,12 +52,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
   return (
     <div className="bodyAddModal">
       <hr className="divider" />
-      <img
-        src={xCircle}
-        alt="Close"
-        className="closeIcon"
-        onClick={onClose}
-      />
+      <img src={xCircle} alt="Close" className="closeIcon" onClick={onClose} />
       <div>
         <h1 className="title">체형 입력</h1>
         <p className="description">보다 정확한 체형 분석 및 예측을 위해 체형과 식습관 정보를 입력해주세요.</p>
@@ -67,11 +62,10 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
         <EatingHabits register={register} />
       </div>
       <GeneralButton
-        buttonStyle={{ style: "floating", size: "semiTiny" }}
+        buttonStyle={{ style: 'floating', size: 'semiTiny' }}
         onClick={handleComplete}
         className="completedButton"
-        disabled={isButtonDisabled}
-      >
+        disabled={isButtonDisabled}>
         완료
       </GeneralButton>
     </div>
