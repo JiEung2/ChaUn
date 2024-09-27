@@ -12,9 +12,10 @@ import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew'
 export default function CrewPage() {
   const navigate = useNavigate();
 
+  const crew_id = 123;
   const { data, error, isLoading } = useQuery<CrewBattleStatusResponse>({
-    queryKey: ['crewBattleStatus'],
-    queryFn: fetchCrewBattleStatus, // Function that fetches the data
+    queryKey: ['crewBattleStatus', crew_id],
+    queryFn: ({ queryKey }) => fetchCrewBattleStatus(Number(queryKey[1])), // queryKey에서 crew_id를 추출하여 전달
   });
 
   if (isLoading) {
@@ -26,6 +27,7 @@ export default function CrewPage() {
   }
 
   const battleData = data?.data;
+  // console.log(battleData);
 
   return (
     <>
@@ -39,7 +41,7 @@ export default function CrewPage() {
         opponentTeamName={battleData?.opponentTeamName || 'No Opponent'}
         opponentTeamScore={battleData?.opponentTeamScore || 0}
         exerciseName={battleData?.exerciseName || 'N/A'}
-        dDay={battleData?.dDay.toString() || '0'}
+        dDay={battleData?.dDay || 0}
         battleStatus={battleData?.battleStatus === 'NONE' ? 'STARTED' : 'FINISHED'}
       />
       <div className="buttonSection">
