@@ -52,10 +52,11 @@ public class BodyPredictWriteService {
     }
 
     public AnalysisRequestDto requestExtraAnalysis(ExerciseDetailDto exerciseDetail) throws JsonProcessingException {
+
         // TODO: API 요청 성공 유무에 따른 반환값 추가
         Long userId = SecurityUtil.getCurrentUserId();
-        String apiUrl = fastApiUrl + "/users" + userId.toString() + "/body/prediction/fast-api";
-        // String apiUrl = "http://localhost:8000/api/v1/users/analysis/";
+        String apiUrl = fastApiUrl + "/users" + userId.toString() + "/body/prediction/extra/fast-api";
+
         AnalysisRequestDto dto = buildPredictionPayload(PredictionType.EXTRA, exerciseDetail);
         ResponseEntity<String> response = requestUtil.sendPostRequest(apiUrl, dto, String.class);
         return dto;
