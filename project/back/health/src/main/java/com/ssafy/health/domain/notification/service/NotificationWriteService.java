@@ -5,8 +5,10 @@ import com.ssafy.health.common.fcm.service.FcmService;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserRepository;
+import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
+import com.ssafy.health.domain.battle.service.BattleReadService;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.dto.response.StatusUpdateResponseDto;
@@ -15,7 +17,6 @@ import com.ssafy.health.domain.notification.entity.NotificationStatus;
 import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,6 +35,7 @@ public class NotificationWriteService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final FcmService fcmService;
+    private final BattleReadService battleReadService;
 
     public void createBodySurveyNotification(NotificationRequestDto dto)
             throws ExecutionException, InterruptedException {
@@ -61,7 +63,13 @@ public class NotificationWriteService {
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
-        additionalData.put("battleId", battleId);
+        Map<String, Object> coinDetail = new HashMap<>();
+        BattleMatchResponseDto battleData = battleReadService.getBattleStatus(battleId);
+        additionalData.put("battleDetail", battleData);
+
+        // TODO: 배틀 종료 시 코인 부여 기능 구현되면 코인 정보 추가
+        additionalData.put("coinDetail", battleData.getBattleStatus().equals(BattleStatus.STARTED) ?
+                null : coinDetail);
 
         BattleStatus status = battleRepository.findById(battleId).orElseThrow().getStatus();
         String message = (status.equals(BattleStatus.STARTED) ? BATTLE_START.getMessage() : BATTLE_END.getMessage());
