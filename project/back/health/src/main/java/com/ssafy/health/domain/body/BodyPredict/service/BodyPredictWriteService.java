@@ -53,7 +53,11 @@ public class BodyPredictWriteService {
     public AnalysisRequestDto requestPrediction() throws JsonProcessingException {
 
         // TODO: 스프링 스케쥴러 이용, FastAPI에 분석 요청 보내기
+        String apiUrl = apiBaseUrlBuilder() + "/fast-api";
+
         ExerciseDetailDto dto = ExerciseDetailDto.builder().build();
+        AnalysisRequestDto requestDto = buildPredictionPayload(PredictionType.BASIC, dto);
+        requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
         return buildPredictionPayload(PredictionType.BASIC, dto);
     }
 
