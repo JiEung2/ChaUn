@@ -16,5 +16,7 @@ public class CrewListResponseDto {
         private String crewName;
         private String exerciseName;
         private String crewProfileImage;
+        private Float basicScore;
+        private Float activityScore;
     }
 }

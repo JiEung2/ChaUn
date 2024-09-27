@@ -64,9 +64,9 @@ public class BattleReadService {
     private BattleMatchResponseDto createEmptyBattleResponse(){
         return BattleMatchResponseDto.builder()
                 .myCrewName("No Battle")
-                .myCrewScore(0)
+                .myCrewScore(0F)
                 .opponentCrewName("No Opponent")
-                .opponentCrewScore(0)
+                .opponentCrewScore(0F)
                 .exerciseName("N/A")
                 .battleStatus(BattleStatus.NONE)
                 .dDay(0)
