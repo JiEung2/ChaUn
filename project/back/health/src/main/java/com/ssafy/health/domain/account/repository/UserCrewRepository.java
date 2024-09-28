@@ -29,4 +29,7 @@ public interface UserCrewRepository extends JpaRepository<UserCrew, Long> {
     void updateBasicScoreByUserAndExercise(@Param("user") User user,
                                            @Param("exercise") Exercise exercise,
                                            @Param("basicScore") Float basicScore);
+
+    @Query("SELECT uc FROM UserCrew uc JOIN FETCH uc.user WHERE uc.crew.id = :crewId ORDER BY (uc.basicScore + uc.activityScore) DESC ")
+    List<UserCrew> findUserByCrewIdOrderByScore(Long crewId);
 }
