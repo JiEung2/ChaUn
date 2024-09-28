@@ -1,9 +1,15 @@
 package com.ssafy.health.domain.battle.service;
 
+import com.ssafy.health.domain.account.entity.User;
+import com.ssafy.health.domain.account.entity.UserCrew;
+import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.battle.dto.response.BattleAndCrewDto;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.Battle;
+import com.ssafy.health.domain.battle.entity.BattleStatus;
+import com.ssafy.health.domain.battle.entity.RankHistory;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
+import com.ssafy.health.domain.battle.repository.RankHistoryRepository;
 import com.ssafy.health.domain.coin.service.CoinService;
 import com.ssafy.health.domain.coin.service.CoinValidator;
 import com.ssafy.health.domain.crew.entity.Crew;
@@ -26,10 +32,12 @@ import static com.ssafy.health.domain.coin.CoinCost.*;
 @RequiredArgsConstructor
 public class BattleWriteService {
 
-    private final BattleRepository battleRepository;
-    private final BattleValidator battleValidator;
-    private final CrewRepository crewRepository;
     private final CoinService coinService;
+    private final CrewRepository crewRepository;
+    private final BattleRepository battleRepository;
+    private final UserCrewRepository userCrewRepository;
+    private final RankHistoryRepository rankHistoryRepository;
+    private final BattleValidator battleValidator;
     private final CoinValidator coinValidator;
 
     public BattleMatchResponseDto startBattle(Long crewId) {
@@ -57,6 +65,72 @@ public class BattleWriteService {
                 .opponentCrewScore(0F)
                 .dDay(calculateDDay())
                 .build();
+    }
+
+    public void finishBattles() {
+        List<Battle> ongoingBattles = battleRepository.findByStatus(BattleStatus.FINISHED);
+
+        ongoingBattles.forEach(battle -> {
+            battle.finishBattle();
+            battleRepository.save(battle);
+
+            Crew[] crews = determineWinningCrew(battle);
+            Crew winningCrew = crews[0];
+            List<UserCrew> winningUserCrewList = findUserCrewOrderByScore(winningCrew);
+            List<User> winningCrewMemberList = winningUserCrewList.stream().map(UserCrew::getUser).toList();
+            coinService.distributeBattleRewards(winningCrewMemberList);
+            //Todo: 알림 보내는 기능 추가
+
+            saveRankHistory(winningUserCrewList, winningCrew);
+            resetScore(winningCrew, winningUserCrewList);
+
+            Crew losingCrew = crews[1];
+            List<UserCrew> losingUserCrewList = findUserCrewOrderByScore(losingCrew);
+            List<User> losingCrewMemberList = losingUserCrewList.stream().map(UserCrew::getUser).toList();
+            //Todo: 알림 보내는 기능 추가
+
+            saveRankHistory(losingUserCrewList, losingCrew);
+            resetScore(losingCrew, losingUserCrewList);
+
+        });
+    }
+
+    private Crew[] determineWinningCrew(Battle battle) {
+        if (battle.getHomeCrewScore() > battle.getAwayCrewScore()) {
+            return new Crew[]{battle.getHomeCrew(), battle.getAwayCrew()};
+        }
+        return new Crew[] {battle.getAwayCrew(), battle.getHomeCrew()};
+    }
+
+    private List<UserCrew> findUserCrewOrderByScore(Crew crew) {
+        return userCrewRepository.findUserByCrewIdOrderByScore(crew.getId());
+    }
+
+    private void saveRankHistory(List<UserCrew> userCrewList, Crew crew) {
+        for(int i = 0; i < userCrewList.size(); i++){
+            UserCrew userCrew = userCrewList.get(i);
+            rankHistoryRepository.save(RankHistory.builder()
+                    .user(userCrew.getUser())
+                    .crew(crew)
+                    .ranking(i)
+                    .basicScore(userCrew.getBasicScore())
+                    .activityScore(userCrew.getActivityScore())
+                    .endDate(LocalDate.now().minusDays(1))
+                    .build());
+        }
+    }
+
+    private void resetScore(Crew crew, List<UserCrew> userCrew) {
+        resetCrewScore(crew);
+        resetUserCrewScore(userCrew);
+    }
+
+    private void resetCrewScore(Crew crew) {
+        crew.resetScores();
+    }
+
+    private void resetUserCrewScore(List<UserCrew> userCrewList) {
+        userCrewList.forEach(UserCrew::resetScores);
     }
 
     private Integer calculateDDay() {
