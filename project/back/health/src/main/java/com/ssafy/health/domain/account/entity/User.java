@@ -82,6 +82,10 @@ public class User extends BaseEntity {
         this.dailyCaloricIntake = dailyCaloricIntake;
     }
 
+    public void increaseCoin(Integer coin) {
+        this.coin += coin;
+    }
+
     public void decreaseCoin(Integer coin) {
         this.coin -= coin;
     }
