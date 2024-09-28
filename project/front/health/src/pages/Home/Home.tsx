@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
+import { useQuery } from 'react-query';
 import QuestIcon from '../../assets/svg/quest.svg';
 import CalendarIcon from '../../assets/svg/calendar.svg';
 import StyledButton from '../../components/Button/StyledButton';
@@ -11,41 +12,51 @@ import 'chart.js/auto';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
+import { exerciseTime } from '@/api/home';
 
 Chart.register(annotationPlugin);
-
-interface ChartDataInterface {
-  day: string;
-  time?: number;
-  calories?: number;
+interface ExerciseTimeResponse {
+  dailyAccumulatedExerciseTime: number;
+  weeklyAccumulatedExerciseTime: number;
 }
 
-interface CharacterContent {
-  nickname: string;
-  todayTime: string;
-  weeklyTime: string;
+// 데이터 fetch 함수
+function useExerciseTime(userId: number) {
+  return useQuery<ExerciseTimeResponse>(['exerciseTime', userId], () => exerciseTime(userId), {
+    suspense: true, // Suspense 활성화
+  });
 }
 
-const characterContent: CharacterContent = {
-  nickname: '민영',
-  todayTime: '1h 48m',
-  weeklyTime: '16h 45m',
-};
+function formatTime(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}h ${mins}m`;
+}
 
-const chartData: ChartDataInterface[] = [
-  { day: '일', time: 30, calories: 200 },
-  { day: '월', time: 40, calories: 250 },
-  { day: '화', time: 120, calories: 300 },
-  { day: '수', time: 60, calories: 350 },
-  { day: '목', time: 0, calories: 0 },
-  { day: '금', time: 100, calories: 450 },
-  { day: '토', time: 150, calories: 500 },
-];
-
-export default function HomePage() {
+function HomePageContent({ userId }: { userId: number }) {
   const navigate = useNavigate();
   const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
+
+  // 데이터 가져오기
+  const { data } = useExerciseTime(userId);
+
+  // msw에서 모킹된 API 응답을 사용하여 운동 시간을 표시
+  const characterContent = {
+    nickname: '민영',
+    todayTime: formatTime(data?.dailyAccumulatedExerciseTime || 0), // dailyAccumulatedExerciseTime 사용
+    weeklyTime: formatTime(data?.weeklyAccumulatedExerciseTime || 0), // weeklyAccumulatedExerciseTime 사용
+  };
+
+  const chartData = [
+    { day: '일', time: 30, calories: 200 },
+    { day: '월', time: 40, calories: 250 },
+    { day: '화', time: 120, calories: 300 },
+    { day: '수', time: 60, calories: 350 },
+    { day: '목', time: 0, calories: 0 },
+    { day: '금', time: 100, calories: 450 },
+    { day: '토', time: 150, calories: 500 },
+  ];
 
   // 그래프 클릭 시 칼로리 값을 설정하는 함수
   const handleChartClick = (_: any, elements: any) => {
@@ -132,14 +143,13 @@ export default function HomePage() {
     },
   };
 
-  // null 값 처리하는 함수
   const processedChartData = chartData.map((data) => ({
     ...data,
     time: data.time || 0,
     calories: data.calories || 0,
   }));
 
-  const data = {
+  const dataConfig = {
     labels: processedChartData.map((data) => data.day),
     datasets: [
       {
@@ -184,7 +194,7 @@ export default function HomePage() {
 
       <div className="chartSection">
         <p className="chartTitle">이번 주 운동 그래프</p>
-        <Line data={data} options={options} />
+        <Line data={dataConfig} options={options} />
       </div>
 
       <div className="buttonSection">
@@ -206,5 +216,15 @@ export default function HomePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Suspense를 통해 비동기 데이터 처리
+export default function HomePage() {
+  const userId = 1; // 사용자의 ID를 여기에 전달
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomePageContent userId={userId} />
+    </Suspense>
   );
 }
