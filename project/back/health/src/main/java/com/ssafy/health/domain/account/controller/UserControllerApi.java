@@ -5,6 +5,7 @@ import com.ssafy.health.common.util.MonthlyRequestDto;
 import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
+import com.ssafy.health.domain.account.dto.request.FavoredExercisesRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
@@ -174,6 +175,24 @@ public interface UserControllerApi {
             ),
     })
     ApiResponse<CaloriesSurveySuccessDto> saveCaloriesSurvey(@RequestBody CaloriesSurveyRequestDto caloriesSurveyRequestDto);
+
+    @Operation(
+            summary = "회원 식습관 설문조사",
+            description = "회원 식습관을 입력받아 평균 하루 섭취 칼로리를 계산합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 식습관 설문조사 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"선호하는 운동 설문조사를 완료했습니다.\",\n" +
+                                    "  \"data\": {\n" +
+                                    "  }\n" +
+                                    "}"
+                            ))
+            ),
+    })
+    ApiResponse<FavoredExerciseSurveySuccessDto> saveFavoredExercises(@RequestBody FavoredExercisesRequestDto requestDto);
 
     @Operation(
             summary = "알림 수신 기기 등록",
