@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     List<Exercise> findByCategory(Category category);
+    List<Exercise> findByIdIn(List<Long> exerciseIdList);
 }
