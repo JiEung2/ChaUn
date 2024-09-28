@@ -47,4 +47,9 @@ public class UserCrew extends BaseEntity {
         this.basicScore = 0F;
         this.activityScore = 0F;
     }
+
+    public void resetScores() {
+        this.basicScore = 0F;
+        this.activityScore = 0F;
+    }
 }
