@@ -5,6 +5,7 @@ import com.ssafy.health.common.util.MonthlyRequestDto;
 import com.ssafy.health.common.util.WeeklyRequestDto;
 import com.ssafy.health.domain.account.dto.request.CaloriesSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
+import com.ssafy.health.domain.account.dto.request.FavoredExercisesRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.account.service.UserReadService;
@@ -64,6 +65,11 @@ public class UserController implements UserControllerApi {
     @PostMapping("/survey/eating-habits")
     public ApiResponse<CaloriesSurveySuccessDto> saveCaloriesSurvey(@RequestBody CaloriesSurveyRequestDto caloriesSurveyRequestDto) {
         return ApiResponse.success(userWriteService.saveDailyCalories(caloriesSurveyRequestDto));
+    }
+
+    @PostMapping("/survey/favorite-exercises")
+    public ApiResponse<FavoredExerciseSurveySuccessDto> saveFavoredExercises(@RequestBody FavoredExercisesRequestDto requestDto) {
+        return ApiResponse.success(userWriteService.saveFavoredExercises(requestDto));
     }
 
     @GetMapping("/survey")
