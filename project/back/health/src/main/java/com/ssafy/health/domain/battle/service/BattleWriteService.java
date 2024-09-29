@@ -68,7 +68,7 @@ public class BattleWriteService {
     }
 
     public void finishBattles() {
-        List<Battle> ongoingBattles = battleRepository.findByStatus(BattleStatus.FINISHED);
+        List<Battle> ongoingBattles = battleRepository.findByStatus(BattleStatus.STARTED);
 
         ongoingBattles.forEach(battle -> {
             battle.finishBattle();
@@ -112,7 +112,7 @@ public class BattleWriteService {
             rankHistoryRepository.save(RankHistory.builder()
                     .user(userCrew.getUser())
                     .crew(crew)
-                    .ranking(i)
+                    .ranking(i+1)
                     .basicScore(userCrew.getBasicScore())
                     .activityScore(userCrew.getActivityScore())
                     .endDate(LocalDate.now().minusDays(1))
