@@ -1,0 +1,67 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.crewCreate {
+  padding: 20px;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  &__form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    label {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    input[type='text'] {
+      width: 250px;
+      padding: 10px;
+      border: 1px solid colors.$littleDarkGray;
+      border-radius: 5px;
+      font-size: 1rem;
+
+      &::placeholder {
+        color: colors.$darkGray;
+      }
+    }
+  }
+
+  &__input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    input {
+      flex: 1;
+    }
+  }
+}
+.validationButton,
+.exerciseSelectButton {
+  background-color: colors.$blue;
+  color: colors.$white;
+  border: none;
+  border-radius: 5px;
+  width: 70px;
+  height: 40px;
+  cursor: pointer;
+  @include typo.description;
+}
+.submitButton {
+  background-color: colors.$blue;
+  color: colors.$white;
+  border: none;
+  border-radius: 5px;
+  width: 330px;
+  height: 40px;
+  cursor: pointer;
+  @include typo.description;
+  margin-top: 40px;
+}
