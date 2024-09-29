@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './MyCrew.scss';
-import Coin from '../../../assets/svg/coin.svg';
+import Coin from '@/components/Coin/Coin';
 import QuestItem from '../../../components/Home/Quest/QuestItem';
 import Plus from '../../../assets/svg/plus.svg';
 import Minus from '../../../assets/svg/minus.svg';
@@ -152,8 +152,7 @@ export default function MyCrew() {
             </div>
             <p className="crewDescription">{crewInfo.description}</p>
             <div className="crewCoins">
-              <img src={Coin} alt="coin" />
-              <span>{crewCoins}</span>
+              <Coin amount={crewInfo.crewCoins} style="styled" />
               <button className="deposit" onClick={toggleDepositModal}>
                 모금하기
               </button>
@@ -279,9 +278,9 @@ export default function MyCrew() {
             <div className="modalBody">
               <div className="coinSelector">
                 <img src={Minus} className="decrement" onClick={decrementCoins}></img>
-                <span className="coinAmount">
-                  <img src={Coin} alt="coin" /> {selectedCoins}
-                </span>
+                <div className="coinContainer">
+                  <Coin amount={crewInfo.crewCoins} style="styled" />
+                </div>
                 <img src={Plus} className="increment" onClick={incrementCoins}></img>
               </div>
               <div className="depositButton" onClick={handleDeposit}>
