@@ -4,11 +4,13 @@ import battleStartIcon from '@/assets/svg/crewRecommend.svg';
 import questIcon from '@/assets/svg/homeIcon1.svg';
 import battleFinishIcon from '@/assets/svg/crewRanking.svg';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import RightArrow from '@/assets/svg/rightArrow.svg';
 import { format } from 'date-fns';
 import { getNotificationList, patchNotification } from '@/api/alarm';
 import AlarmModal from '@/components/Alarm/AlarmModal';
+import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
+import querykeys from '@/utils/querykeys';
 
 interface Notification {
   notificationId: number;
@@ -30,19 +32,25 @@ interface Notification {
 
 export default function AlarmPage() {
   const navigate = useNavigate();
-  const [alarms, setAlarms] = useState<Notification[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAlarm, setSelectedAlarm] = useState<Notification | null>(null);
 
-  // 알림 목록을 가져오는 함수
-  const handleAlarms = async () => {
-    try {
-      const response = await getNotificationList();
-      setAlarms(response.data.data); // API 응답이 제대로 도착하면 데이터 설정
-    } catch (e) {
-      console.error(`API 호출 중 에러 발생: ${e}`);
-    }
-  };
+  // 알림 목록 가져오기
+  const { data: alarmList } = useSuspenseQuery({
+    queryKey: [querykeys.NOTIFICATION],
+    queryFn: () => getNotificationList(),
+  });
+
+  // 알림 상태 변경을 위한 mutation 생성
+  const patchNotificationMutation = useMutation({
+    mutationFn: (notificationId: number) => patchNotification(notificationId),
+    onSuccess: () => {
+      console.log('알림이 성공적으로 업데이트되었습니다.');
+    },
+    onError: (error) => {
+      console.error('알림 업데이트 중 오류 발생:', error);
+    },
+  });
 
   // 알림 타입에 따라 다른 페이지로 이동 설정
   const handleNavigation = (alarm: Notification) => {
@@ -51,22 +59,22 @@ export default function AlarmPage() {
       switch (battleStatus) {
         case 'STARTED':
           navigate(`/crew/${battleId}/crewbattle`);
-          patchNotification(alarm.notificationId);
+          patchNotificationMutation.mutate(alarm.notificationId);
           break;
         case 'FINISHED':
           setSelectedAlarm(alarm);
           setIsModalOpen(true);
-          patchNotification(alarm.notificationId);
+          patchNotificationMutation.mutate(alarm.notificationId);
           break;
         default:
           break;
       }
     } else if (alarm.notificationType === 'SURVEY') {
       navigate('/record/bodyDetail');
-      patchNotification(alarm.notificationId);
+      patchNotificationMutation.mutate(alarm.notificationId);
     } else if (alarm.notificationType === 'QUEST') {
       navigate('/home/quest');
-      patchNotification(alarm.notificationId);
+      patchNotificationMutation.mutate(alarm.notificationId);
     }
   };
 
@@ -84,7 +92,7 @@ export default function AlarmPage() {
     } else if (alarm.notificationType === 'QUEST') {
       return questIcon;
     }
-    return bodyIcon; // 기본 아이콘
+    return bodyIcon;
   };
 
   // 날짜 포맷팅 함수 (24.07.01 08:02 형식)
@@ -93,13 +101,9 @@ export default function AlarmPage() {
     return format(date, 'yy.MM.dd HH:mm');
   };
 
-  useEffect(() => {
-    handleAlarms();
-  }, []);
-
   return (
     <div className="alarmContainer">
-      {alarms.map((alarm) => (
+      {alarmList.data.data.map((alarm: any) => (
         <div className="alarmItemContainer" key={alarm.notificationId}>
           <img src={getIcon(alarm)} alt="Icon" className="alarmIcon" />
           <div className="messageContainer">
