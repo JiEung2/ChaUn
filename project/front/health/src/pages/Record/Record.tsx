@@ -4,7 +4,7 @@ import BodyWeightRecord from '@/components/Record/BodyWeightRecord';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
 import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
 import { getWeeklyExerciseRecord } from '@/api/exercise';
 import queryKeys from '@/utils/querykeys';
@@ -18,10 +18,23 @@ export default function RecordPage() {
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
 
+  // 운동 예측 데이터 POST 요청을 위한 useMutation
+  const mutation = useMutation({
+    mutationFn: ({ exerciseId, day, duration }: { exerciseId: number; day: string; duration: string }) =>
+      postPredictExerciseDetail(exerciseId, Number(day), Number(duration)),
+    onSuccess: () => {
+      console.log('운동 예측 요청 성공');
+    },
+    onError: (error) => {
+      console.error(`운동 예측 요청 중 에러 발생: ${error}`);
+    },
+  });
+
   const { data: weeklyExerciseTime } = useSuspenseQuery({
     queryKey: [queryKeys.EXERCISE_HISTORY_WEEK],
     queryFn: () => getWeeklyExerciseRecord(),
   });
+
   const { data: predictionData } = useSuspenseQuery({
     queryKey: [queryKeys.MY_BODY_PREDICT],
     queryFn: getPredictBasic,
@@ -48,18 +61,10 @@ export default function RecordPage() {
     },
   });
 
-  const handlePredictExerciseDetail = async (exerciseId: number, day: string, duration: string) => {
-    try {
-      await postPredictExerciseDetail(exerciseId, Number(day), Number(duration));
-    } catch (e) {
-      console.error(`운동 예측 API 호출 중 에러 발생: ${e}`);
-    }
-  };
-
   useEffect(() => {
     const weeklyExerciseCount = weeklyExerciseTime.data.data.exerciseHistoryList.length;
     setExerciseDays(weeklyExerciseCount);
-  }, []);
+  }, [weeklyExerciseTime]);
 
   useEffect(() => {
     if (exerciseId && day && duration) {
@@ -71,7 +76,7 @@ export default function RecordPage() {
 
   const handleShowBodyWeightRecord = (exerciseId: number, day: string, duration: string) => {
     setShowBodyWeightRecord(true);
-    handlePredictExerciseDetail(exerciseId, day, duration);
+    mutation.mutate({ exerciseId, day, duration });
   };
 
   const handleResetInput = () => {
