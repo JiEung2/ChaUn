@@ -75,4 +75,10 @@ public class Crew extends BaseEntity {
         this.basicScore += basicScore;
     }
 
+    public void updateActivityScore(Float activityScore) { this.activityScore += activityScore; }
+
+    public void resetScores() {
+        this.basicScore = 0F;
+        this.activityScore = 0F;
+    }
 }

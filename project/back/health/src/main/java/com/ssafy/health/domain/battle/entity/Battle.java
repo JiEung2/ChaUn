@@ -1,7 +1,6 @@
 package com.ssafy.health.domain.battle.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import com.ssafy.health.domain.battle.dto.request.BattleRegisterDto;
 import com.ssafy.health.domain.crew.entity.Crew;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -42,6 +41,10 @@ public class Battle extends BaseEntity {
         this.status = BattleStatus.STARTED;
         this.homeCrewScore = 0F;
         this.awayCrewScore = 0F;
+    }
+
+    public void finishBattle() {
+        this.status = BattleStatus.FINISHED;
     }
 
 }

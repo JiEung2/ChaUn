@@ -1,10 +1,10 @@
 package com.ssafy.health.domain.battle.repository;
 
-import com.ssafy.health.domain.battle.dto.response.BattleAndCrewDto;
 import com.ssafy.health.domain.battle.dto.response.BattleStatsDto;
 import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.crew.entity.Crew;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -28,4 +28,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
 
     @Query("SELECT b FROM Battle b WHERE (b.homeCrew.id = :crewId OR b.awayCrew.id = :crewId) AND b.status = :status")
     Optional<Battle> findBattleByCrewId(Long crewId, BattleStatus status);
+
+    @Query("SELECT DISTINCT b FROM Battle b JOIN FETCH b.awayCrew ac JOIN FETCH b.homeCrew hc WHERE b.status = :status")
+    List<Battle> findByStatus(BattleStatus status);
 }
