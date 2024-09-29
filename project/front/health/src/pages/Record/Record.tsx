@@ -4,7 +4,9 @@ import BodyWeightRecord from '@/components/Record/BodyWeightRecord';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
+import { useSuspenseQuery } from '@tanstack/react-query'; // SuspenseQuery 사용
 import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
+import queryKeys from '@/utils/querykeys';
 
 export default function RecordPage() {
   const navigate = useNavigate();
@@ -14,44 +16,34 @@ export default function RecordPage() {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
-  const [predictionData, setPredictionData] = useState([
-    { time: '현재', weight: 0 },
-    { time: '1달 후', weight: 0 },
-    { time: '3달 후', weight: 0 },
-  ]);
-  const [predictionExtraData, setPredictionExtraData] = useState([
-    { time: '현재', weight: 0 },
-    { time: '1달 후', weight: 0 },
-    { time: '3달 후', weight: 0 },
-  ]);
 
-  const handlePredictBasic = async () => {
-    try {
-      const response = await getPredictBasic();
+  // 기본 예측 데이터 가져오기 (SuspenseQuery)
+  const { data: predictionData } = useSuspenseQuery({
+    queryKey: [queryKeys.MY_BODY_PREDICT],
+    queryFn: getPredictBasic,
+    select: (response) => {
       const { current, p30, p90 } = response.data.data;
-      setPredictionData([
+      return [
         { time: '현재', weight: current },
         { time: '1달 후', weight: p30 },
         { time: '3달 후', weight: p90 },
-      ]);
-    } catch (e) {
-      console.error(`API 호출 중 에러 발생: ${e}`);
-    }
-  };
+      ];
+    },
+  });
 
-  const handlePredictExtra = async () => {
-    try {
-      const response = await getPredictExtra();
+  // 추가 예측 데이터 가져오기 (SuspenseQuery)
+  const { data: predictionExtraData } = useSuspenseQuery({
+    queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
+    queryFn: getPredictExtra,
+    select: (response) => {
       const { current, p30, p90 } = response.data.data;
-      setPredictionExtraData([
+      return [
         { time: '현재', weight: current },
         { time: '1달 후', weight: p30 },
         { time: '3달 후', weight: p90 },
-      ]);
-    } catch (e) {
-      console.error(`API 호출 중 에러 발생: ${e}`);
-    }
-  };
+      ];
+    },
+  });
 
   const handlePredictExerciseDetail = async (exerciseId: number, day: string, duration: string) => {
     try {
@@ -62,7 +54,6 @@ export default function RecordPage() {
   };
 
   useEffect(() => {
-    handlePredictBasic();
     const fetchExerciseDays = () => {
       const dummyExerciseData = {
         exerciseDays: 2,
@@ -84,7 +75,6 @@ export default function RecordPage() {
   const handleShowBodyWeightRecord = (exerciseId: number, day: string, duration: string) => {
     setShowBodyWeightRecord(true);
     handlePredictExerciseDetail(exerciseId, day, duration);
-    handlePredictExtra();
   };
 
   const handleResetInput = () => {
