@@ -4,8 +4,11 @@ import com.ssafy.health.common.s3.service.S3Service;
 import com.ssafy.health.domain.body.BodyType.entity.BodyType;
 import com.ssafy.health.domain.body.BodyType.repository.BodyTypeRepository;
 import com.ssafy.health.domain.character.dto.request.CharacterSaveRequestDto;
+import com.ssafy.health.domain.character.dto.request.PartsSaveRequestDto;
 import com.ssafy.health.domain.character.dto.response.CharacterSaveSuccessDto;
+import com.ssafy.health.domain.character.dto.response.PartsSaveSuccessDto;
 import com.ssafy.health.domain.character.entity.Character;
+import com.ssafy.health.domain.character.entity.Parts;
 import com.ssafy.health.domain.character.respository.CharacterRepository;
 import com.ssafy.health.domain.character.respository.PartsRepository;
 import java.io.IOException;
@@ -39,6 +42,19 @@ public class CharacterWriteService {
                 .build());
 
         return new CharacterSaveSuccessDto();
+    }
+
+    public PartsSaveSuccessDto saveParts(PartsSaveRequestDto requestDto, MultipartFile partImage) throws IOException {
+        String savedPartImage = s3Service.uploadFile(partImage);
+
+        partsRepository.save(Parts.builder()
+                .name(requestDto.getName())
+                .partsType(requestDto.getPartsType())
+                .cost(requestDto.getCost())
+                .partsImage(savedPartImage)
+                .build());
+
+        return new PartsSaveSuccessDto();
     }
 
 }
