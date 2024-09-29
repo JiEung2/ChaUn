@@ -4,13 +4,13 @@ import ExerciseItem from '@/components/Exercise/ExerciseItem';
 import DailyRecord from '../../../components/Home/Calendar/DailyRecord';
 import CustomCalendar from '../../../components/Home/Calendar/CustomCalendar';
 import './Calendar.scss';
-
+//TODO - 특정 달의 운동 기록을 모두 가져와 캘린더로 필터링하여 보여주는 방식?
 export default function CalendarPage() {
   const today = new Date();
   today.setHours(12, 0, 0, 0); // 시간을 정오로 설정하여 UTC 변환 시 날짜 오류 방지
   const todayString = today.toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState<string | null>(todayString);
-  
+
   const [records] = useState<
     Record<
       string,
@@ -28,11 +28,7 @@ export default function CalendarPage() {
     },
   });
 
-  const [exerciseDates] = useState<Date[]>([
-    new Date('2024-09-10'),
-    new Date('2024-09-09'),
-    new Date('2024-09-07'),
-  ]);
+  const [exerciseDates] = useState<Date[]>([new Date('2024-09-10'), new Date('2024-09-09'), new Date('2024-09-07')]);
 
   const [attendanceDates, setAttendanceDates] = useState<Date[]>([]);
   const [isAttendance, setIsAttendance] = useState<boolean>(false);
@@ -96,11 +92,10 @@ export default function CalendarPage() {
         buttonStyle={{ style: 'semiPrimary', size: 'large' }}
         onClick={handleAttendance}
         disabled={isAttendance}
-        className='attendance'
-      >
+        className="attendance">
         출석하기
       </GeneralButton>
-      <hr className='attendanceHr'/>
+      <hr className="attendanceHr" />
       {selectedDate && (
         <>
           <div>{formatDate(selectedDate)}</div>
@@ -118,10 +113,7 @@ export default function CalendarPage() {
                 ))}
             </div>
             {record && record.types[activeTab] ? (
-              <DailyRecord
-                time={record.types[activeTab].time}
-                calories={record.types[activeTab].calories}
-              />
+              <DailyRecord time={record.types[activeTab].time} calories={record.types[activeTab].calories} />
             ) : (
               <p>해당 날짜에 운동 기록이 없습니다.</p>
             )}

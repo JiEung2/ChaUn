@@ -10,7 +10,7 @@ async function startApp() {
   if (import.meta.env.VITE_APP_STATE === 'development') {
     console.log('개발 환경에서 MSW를 활성화합니다.');
     await worker.start({
-      onUnhandledRequest: 'bypass', // 핸들러가 없는 요청은 실제 네트워크 요청을 통과시킴
+      onUnhandledRequest: 'bypass',
     });
   }
 
