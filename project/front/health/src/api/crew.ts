@@ -4,8 +4,9 @@ const baseURL = import.meta.env.VITE_APP_BASE_URL;
 
 //추천 크루 리스트
 export const getCrewRecommendList = async () => {
-  const response = await axios.get(`${baseURL}/users/crew-recommendation`);
-  return response;
+  const response = await axios.get(`${baseURL}/users/recommend-crew`);
+  console.log('크루 추천 리스트', response);
+  return response.data;
 };
 
 // 크루 추천 상세 모달
@@ -46,5 +47,4 @@ export interface CrewBattleStatusResponse {
 export const fetchCrewBattleStatus = async (crew_id: number): Promise<CrewBattleStatusResponse> => {
   const response = await axios.get(`${baseURL}/crew/${crew_id}/battle`);
   return response.data;
-
 };

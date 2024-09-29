@@ -6,6 +6,11 @@ export const userHandlers = [
   // 회원 디테일
   http.get(`${baseUrl}/users/:userId`, ({ params }) => {
     const { userId } = params;
+    // userId가 'recommend-crew'가 아닌 경우에만 처리
+    if (userId === 'recommend-crew') {
+      return;
+    }
+
     console.log(userId);
 
     return HttpResponse.json({

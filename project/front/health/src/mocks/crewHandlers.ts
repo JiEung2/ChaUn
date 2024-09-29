@@ -1,19 +1,21 @@
 import { http, HttpResponse } from 'msw';
 
+// 크루 추천 목록
 const crewList = [
   {
     crewId: 1,
     crewName: '달리자',
     exerciseName: '러닝',
-    crewProfileImage: 'crew-profile-image.jpg',
+    crewProfileImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/file_uuid.jpeg',
   },
   {
     crewId: 2,
     crewName: '달리자',
     exerciseName: '러닝',
-    crewProfileImage: 'crew-profile-image.jpg',
+    crewProfileImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/file_uuid.jpeg',
   },
 ];
+
 const crewDetail = [
   {
     crewId: 1,
@@ -47,7 +49,8 @@ const memberList = [
 ];
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
-  http.get(`${baseUrl}/users/crew-recommendation`, () => {
+  http.get(`${baseUrl}/users/recommend-crew`, () => {
+    console.log('크루 추천 목록 조회');
     return HttpResponse.json(crewList, { status: 200 });
   }),
 
