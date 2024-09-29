@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import GeneralButton from '@/components/Button/GeneralButton';
-import xCircle from '@/assets/svg/xCircle.svg';
-import BodyType from '@/components/Survey/BodyType';
-import EatingHabits from '@/components/Survey/EatingHabits';
+// import GeneralButton from '@/components/Button/GeneralButton';
+// import xCircle from '@/assets/svg/xCircle.svg';
+// import BodyType from '@/components/Survey/BodyType';
+// import EatingHabits from '@/components/Survey/EatingHabits';
 import './BodyAddModal.scss';
 import { surveySubmit2, surveySubmit3 } from '@/api/survey';
 
@@ -81,6 +81,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
 
   return (
     <div className="bodyAddModal">
+      {/* 
       <hr className="divider" />
       <img src={xCircle} alt="Close" className="closeIcon" onClick={onClose} />
       <div>
@@ -98,6 +99,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
         disabled={!isFormValid}>
         완료
       </GeneralButton>
+      */}
     </div>
   );
 }

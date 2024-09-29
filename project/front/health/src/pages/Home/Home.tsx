@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
+import { useQuery } from 'react-query';
 import QuestIcon from '../../assets/svg/quest.svg';
 import CalendarIcon from '../../assets/svg/calendar.svg';
 import StyledButton from '../../components/Button/StyledButton';
@@ -11,49 +12,75 @@ import 'chart.js/auto';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
+import { exerciseTime, exerciseRecord } from '@/api/home';
 
 Chart.register(annotationPlugin);
 
-interface ChartDataInterface {
+interface ExerciseTimeResponse {
+  dailyAccumulatedExerciseTime: number;
+  weeklyAccumulatedExerciseTime: number;
+}
+interface ChartData {
   day: string;
-  time?: number;
-  calories?: number;
+  time: number;
+  calories: number;
+}
+interface ExerciseRecord {
+  createdAt: string;
+  exerciseDuration: number; // 초 단위의 운동 시간
+  burnedCalories: number; // 소모된 칼로리
+}
+// 데이터 fetch 함수
+function useExerciseTime() {
+  return useQuery<ExerciseTimeResponse>(['exerciseTime'], () => exerciseTime(), {
+    suspense: true, // Suspense 활성화
+  });
 }
 
-interface CharacterContent {
-  nickname: string;
-  todayTime: string;
-  weeklyTime: string;
+function useExerciseRecord(year: number, month: number, week: number) {
+  return useQuery<ExerciseRecord>(['exerciseRecord', year, month, week], () => exerciseRecord(year, month, week), {
+    suspense: true, // Suspense 활성화
+  });
 }
 
-const characterContent: CharacterContent = {
-  nickname: '민영',
-  todayTime: '1h 48m',
-  weeklyTime: '16h 45m',
-};
+function formatTime(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}h ${mins}m`;
+}
 
-const chartData: ChartDataInterface[] = [
-  { day: '일', time: 30, calories: 200 },
-  { day: '월', time: 40, calories: 250 },
-  { day: '화', time: 120, calories: 300 },
-  { day: '수', time: 60, calories: 350 },
-  { day: '목', time: 0, calories: 0 },
-  { day: '금', time: 100, calories: 450 },
-  { day: '토', time: 150, calories: 500 },
-];
-
-export default function HomePage() {
+function HomePageContent() {
   const navigate = useNavigate();
   const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
+
+  // 데이터 가져오기
+  const { data: exerciseTimeData } = useExerciseTime();
+  const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 3); // 임의로 2024년 9월 3주차 데이터 사용
+
+  // msw에서 모킹된 API 응답을 사용하여 운동 시간을 표시
+  const characterContent = {
+    nickname: '민영',
+    todayTime: formatTime(exerciseTimeData?.dailyAccumulatedExerciseTime || 0),
+    weeklyTime: formatTime(exerciseTimeData?.weeklyAccumulatedExerciseTime || 0),
+  };
+
+  // exerciseRecordData에서 chart에 맞는 형식으로 변환
+  const chartData = Array.isArray(exerciseRecordData)
+    ? exerciseRecordData.map((record: any) => ({
+        day: new Date(record.createdAt).toLocaleDateString('ko-KR', { weekday: 'short' }),
+        time: record.exerciseDuration / 60, // 초 단위를 분으로 변환
+        calories: record.burnedCalories,
+      }))
+    : [];
 
   // 그래프 클릭 시 칼로리 값을 설정하는 함수
   const handleChartClick = (_: any, elements: any) => {
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
       const clickedData = chartData[clickedElementIndex];
-      setSelectedCalories(clickedData.calories || 0); // 선택된 칼로리 값 설정
-      setClickedIndex(clickedElementIndex); // 클릭된 인덱스를 설정
+      setSelectedCalories(clickedData.calories || 0);
+      setClickedIndex(clickedElementIndex);
     }
   };
 
@@ -84,8 +111,8 @@ export default function HomePage() {
                 {
                   type: 'label' as const,
                   xValue: chartData[clickedIndex].day,
-                  yValue: chartData[clickedIndex].time || 0, // null 값을 0으로 처리
-                  content: [`${chartData[clickedIndex].time || 0} 분`, `${selectedCalories || 0} kcal`], // null 값을 0으로 처리
+                  yValue: chartData[clickedIndex].time || 0,
+                  content: [`${chartData[clickedIndex].time || 0} 분`, `${selectedCalories || 0} kcal`],
                   enabled: true,
                   font: {
                     size: 10,
@@ -97,11 +124,7 @@ export default function HomePage() {
                     left: 5,
                     right: 5,
                   },
-                  yAdjust:
-                    chartData[clickedIndex].time === 0 ||
-                    (chartData[clickedIndex].time && chartData[clickedIndex].time <= 100)
-                      ? -20
-                      : 20, // 위아래 조정
+                  yAdjust: chartData[clickedIndex].time <= 100 ? -20 : 20,
                   xAdjust: clickedIndex === 0 ? 20 : clickedIndex === chartData.length - 1 ? -20 : 0,
                 },
               ]
@@ -132,19 +155,12 @@ export default function HomePage() {
     },
   };
 
-  // null 값 처리하는 함수
-  const processedChartData = chartData.map((data) => ({
-    ...data,
-    time: data.time || 0,
-    calories: data.calories || 0,
-  }));
-
-  const data = {
-    labels: processedChartData.map((data) => data.day),
+  const dataConfig = {
+    labels: chartData.map((data: ChartData) => data.day),
     datasets: [
       {
         label: '운동 시간 (분)',
-        data: processedChartData.map((data) => data.time),
+        data: chartData.map((data: ChartData) => data.time),
         borderColor: '#FF6384',
         backgroundColor: '#FF6384',
         fill: false,
@@ -184,7 +200,7 @@ export default function HomePage() {
 
       <div className="chartSection">
         <p className="chartTitle">이번 주 운동 그래프</p>
-        <Line data={data} options={options} />
+        <Line data={dataConfig} options={options} />
       </div>
 
       <div className="buttonSection">
@@ -206,5 +222,14 @@ export default function HomePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Suspense를 통해 비동기 데이터 처리
+export default function HomePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomePageContent />
+    </Suspense>
   );
 }

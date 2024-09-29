@@ -48,7 +48,6 @@ const memberList = [
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
   http.get(`${baseUrl}/users/crew-recommendation`, () => {
-    //TODO - 현재 유사도만 주는데, 크루 데이터를 받아올 수 있는지?
     return HttpResponse.json(crewList, { status: 200 });
   }),
 
