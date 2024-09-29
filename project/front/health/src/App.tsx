@@ -42,7 +42,7 @@ export default function App() {
               <Route path="/mypage" element={<Mypage />} />
               <Route path="/alarm" element={<Alarm />} />
               <Route path="/profile/:userId" element={<Profile />} />
-              <Route path="/crew/mycrew/" element={<MyCrew />} />
+              <Route path="/crew/mycrew/:crewId" element={<MyCrew />} />
             </Route>
           </Routes>
         </div>
