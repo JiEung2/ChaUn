@@ -1,9 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getCrewDetail } from '@/api/crew';
+import { getCrewDetail, getCrewRanking } from '@/api/crew';
 import Coin from '@/components/Coin/Coin';
 import styles from './CrewDetail.module.scss';
-import { getCrewRanking } from '@//api/crew';
 interface CrewInfo {
   crewProfileImage: string;
   crewName: string;
@@ -26,7 +25,7 @@ interface Member {
 }
 
 const CrewDetail = () => {
-  const { crewId } = useParams<{ crewId: string }>();
+  const { crew_id } = useParams<{ crew_id: string }>();
   const [crewInfo, setCrewInfo] = useState<CrewInfo>({
     crewProfileImage: '',
     exerciseName: '',
@@ -68,7 +67,7 @@ const CrewDetail = () => {
   const getCrewDetailData = async () => {
     try {
       // TODO - Number로 크루 아이디 변환 잘 되는지 확인하기
-      const numberCrewId = Number(crewId);
+      const numberCrewId = Number(crew_id);
       const response = await getCrewDetail(numberCrewId);
       console.log('크루 디테일 데이터', response);
       setCrewInfo(response.data);
@@ -78,6 +77,7 @@ const CrewDetail = () => {
   };
 
   const getCrewRankingData = async (sendCrewId: string) => {
+    console.log('크루 아이디', sendCrewId);
     try {
       const response = await getCrewRanking(Number(sendCrewId));
       console.log('크루 랭킹 데이터', response);
@@ -89,10 +89,7 @@ const CrewDetail = () => {
   // crewId를 number로 변환하는 로직 필요
   useEffect(() => {
     getCrewDetailData();
-
-    if (crewId) {
-      getCrewRankingData(crewId);
-    }
+    getCrewRankingData(crew_id!); // crew_id가 undefinedd일 때 가장 먼저 확인
   }, []);
   //TODO - 이미 가입된 크루일 떄 가입 신청 비활성화
   return (

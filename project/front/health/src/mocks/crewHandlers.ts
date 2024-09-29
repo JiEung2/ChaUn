@@ -16,38 +16,21 @@ const crewList = [
   },
 ];
 
-const crewDetail = [
-  {
-    crewId: 1,
-    crewName: '달리는 번개',
-    exerciseName: '러닝',
-    profileImage: 'crew-profile-image.jpg',
-    description: '번개맨보다 빠른 러너들의 모임',
-    crewCoins: 300,
-    crewRanking: 3,
-    totalBattleCount: 10,
-    winCount: 7,
-    averageAge: 29,
-    activityScore: 1200,
-    basicScore: 850,
-    role: 'LEADER',
-  },
-  {
-    crewId: 2,
-    crewName: '달리는 번개',
-    exerciseName: '러닝',
-    profileImage: 'crew-profile-image.jpg',
-    description: '번개맨보다 빠른 러너들의 모임',
-    crewCoins: 300,
-    crewRanking: 3,
-    totalBattleCount: 10,
-    winCount: 7,
-    averageAge: 29,
-    activityScore: 1200,
-    basicScore: 850,
-    role: 'LEADER',
-  },
-];
+const crewDetail = {
+  crewId: 1,
+  crewName: '달리는 번개',
+  exerciseName: '러닝',
+  profileImage: 'crew-profile-image.jpg',
+  description: '번개맨보다 빠른 러너들의 모임',
+  crewCoins: 300,
+  crewRanking: 3,
+  totalBattleCount: 10,
+  winCount: 7,
+  averageAge: 29,
+  activityScore: 1200,
+  basicScore: 850,
+  role: 'LEADER',
+};
 const memberList = [
   {
     nickname: '달리기 왕자',
