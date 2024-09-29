@@ -31,4 +31,10 @@ public class CharacterController {
                 characterWriteService.saveCharacter(characterSaveRequestDto, characterImage, characterFile));
     }
 
+    @PostMapping("/parts")
+    public ApiResponse<PartsSaveSuccessDto> saveParts(
+            @Valid @RequestPart("partsSaveRequestDto") PartsSaveRequestDto partsSaveRequestDto,
+            @RequestPart("partImage") MultipartFile partImage) throws IOException {
+        return ApiResponse.success(characterWriteService.saveParts(partsSaveRequestDto, partImage));
+    }
 }
