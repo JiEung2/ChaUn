@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface UserQuestRepository extends JpaRepository<UserQuest, Long> {
 
-    @Query("SELECT q FROM UserQuest q WHERE q.status IN :status")
+    @Query("SELECT q FROM UserQuest q WHERE q.user = :user AND q.status IN :status")
     List<UserQuest> findAllByUserAndStatus(User user, List<QuestStatus> status);
 }

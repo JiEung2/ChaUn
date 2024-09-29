@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface CrewQuestRepository extends JpaRepository<CrewQuest, Long> {
 
-    @Query("SELECT q FROM CrewQuest q WHERE q.status IN :status")
+    @Query("SELECT q FROM CrewQuest q WHERE q.crew = :crew AND q.status IN :status")
     List<CrewQuest> findAllByCrewAndStatus(Crew crew, List<QuestStatus> status);
 }
