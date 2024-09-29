@@ -5,6 +5,7 @@ import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.crew.entity.Crew;
+import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
 import com.ssafy.health.domain.quest.dto.response.QuestResponseDto;
 import com.ssafy.health.domain.quest.entity.*;
@@ -62,6 +63,8 @@ public class QuestReadService {
     }
 
     private Crew findCrewById(Long crewId) {
-        return crewRepository.findByIdWithOptimisticLock(crewId);
+        // TODO: 낙관적 락을 사용한 쿼리 시 오류 해결
+        // return crewRepository.findByIdWithOptimisticLock(crewId);
+        return crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
     }
 }
