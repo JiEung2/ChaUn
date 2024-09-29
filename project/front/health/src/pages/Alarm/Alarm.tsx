@@ -1,106 +1,131 @@
 import './Alarm.scss';
-import Icon from '@/assets/svg/home/Icon2.svg';
+import bodyIcon from '@/assets/svg/home/Icon2.svg';
+import battleStartIcon from '@/assets/svg/crewRecommend.svg';
+import questIcon from '@/assets/svg/homeIcon1.svg';
+import battleFinishIcon from '@/assets/svg/crewRanking.svg';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import RightArrow from '@/assets/svg/rightArrow.svg';
 import { format } from 'date-fns';
-import BattleBoard from '../Crew/components/BattleBoard';
+import { getNotificationList, patchNotification } from '@/api/alarm';
+import AlarmModal from '@/components/Alarm/AlarmModal';
 
-interface AlarmData {
+interface Notification {
   notificationId: number;
   notificationType: string;
-  additionalData?: any[] | null;
+  additionalData?: {
+    battleDetail: {
+      myTeamName: string;
+      myTeamScore: number;
+      opponentTeamName: string;
+      opponentTeamScore: number;
+      exerciseName: string;
+      battleStatus: string;
+      battleId: number;
+    };
+  };
   content: string;
   createdAt: string;
 }
 
-interface AlarmPageProps {
-  alarms?: AlarmData[]; // 알림 데이터를 props로 받음 (optional로 변경)
-}
-
-// 화살표 누르면 notificationId를 패치로 보내주기
-// get으로 받을 때 additonalData : 코인
-// 샘플 데이터
-const sampleAlarmData: AlarmData[] = [
-  {
-    notificationId: 1,
-    notificationType: 'BODY_SURVEY',
-    additionalData: null,
-    content: '테스트 알림 1',
-    createdAt: '2024-09-20T00:00:00',
-  },
-  {
-    notificationId: 2,
-    notificationType: 'BATTLE_FINISHED',
-    additionalData: [{ battleId: 1 }],
-    content: '테스트 알림 2',
-    createdAt: '2024-09-20T00:00:00',
-  },
-];
-
-export default function AlarmPage({ alarms = sampleAlarmData }: AlarmPageProps) {
+export default function AlarmPage() {
   const navigate = useNavigate();
+  const [alarms, setAlarms] = useState<Notification[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedAlarm, setSelectedAlarm] = useState<Notification | null>(null);
 
-  // const handleCloseModal = () => {
-  //   setIsModalOpen(false);
-  // };
+  // 알림 목록을 가져오는 함수
+  const handleAlarms = async () => {
+    try {
+      const response = await getNotificationList();
+      setAlarms(response.data.data); // API 응답이 제대로 도착하면 데이터 설정
+    } catch (e) {
+      console.error(`API 호출 중 에러 발생: ${e}`);
+    }
+  };
 
   // 알림 타입에 따라 다른 페이지로 이동 설정
-  const handleNavigation = (notificationType: string) => {
-    switch (notificationType) {
-      case 'BODY_SURVEY':
-        navigate('/record/bodyDetail');
-        break;
-      case 'BATTLE':
-        navigate('/battle/result');
-        break;
-      case 'BATTLE_STARTED':
-        navigate('/battle/status');
-        break;
-      case 'BATTLE_FINISHED':
-        setIsModalOpen(true);
-        break;
-      default:
-        break;
+  const handleNavigation = (alarm: Notification) => {
+    if (alarm.notificationType === 'BATTLE' && alarm.additionalData) {
+      const { battleStatus, battleId } = alarm.additionalData.battleDetail;
+      switch (battleStatus) {
+        case 'STARTED':
+          navigate(`/crew/${battleId}/crewbattle`);
+          patchNotification(alarm.notificationId);
+          break;
+        case 'FINISHED':
+          setSelectedAlarm(alarm);
+          setIsModalOpen(true);
+          patchNotification(alarm.notificationId);
+          break;
+        default:
+          break;
+      }
+    } else if (alarm.notificationType === 'SURVEY') {
+      navigate('/record/bodyDetail');
+      patchNotification(alarm.notificationId);
+    } else if (alarm.notificationType === 'QUEST') {
+      navigate('/home/quest');
+      patchNotification(alarm.notificationId);
     }
+  };
+
+  // 아이콘 선택 함수
+  const getIcon = (alarm: Notification) => {
+    if (alarm.notificationType === 'BATTLE' && alarm.additionalData) {
+      const { battleStatus } = alarm.additionalData.battleDetail;
+      if (battleStatus === 'STARTED') {
+        return battleStartIcon;
+      } else if (battleStatus === 'FINISHED') {
+        return battleFinishIcon;
+      }
+    } else if (alarm.notificationType === 'SURVEY') {
+      return bodyIcon;
+    } else if (alarm.notificationType === 'QUEST') {
+      return questIcon;
+    }
+    return bodyIcon; // 기본 아이콘
   };
 
   // 날짜 포맷팅 함수 (24.07.01 08:02 형식)
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return format(date, 'yy.MM.dd HH:mm'); // 원하는 형식으로 변환
+    return format(date, 'yy.MM.dd HH:mm');
   };
+
+  useEffect(() => {
+    handleAlarms();
+  }, []);
 
   return (
     <div className="alarmContainer">
       {alarms.map((alarm) => (
         <div className="alarmItemContainer" key={alarm.notificationId}>
-          <img src={Icon} alt="Icon" className="alarmIcon" />
+          <img src={getIcon(alarm)} alt="Icon" className="alarmIcon" />
           <div className="messageContainer">
             <p className="message">{alarm.content}</p>
-            <p className="date">{formatDate(alarm.createdAt)}</p> {/* 날짜 포맷팅 */}
+            <p className="date">{formatDate(alarm.createdAt)}</p>
           </div>
-          <img
-            src={RightArrow}
-            alt="moveArrow"
-            className="arrow"
-            onClick={() => handleNavigation(alarm.notificationType)} // 알림 타입에 따라 이동
-          />
+          <img src={RightArrow} alt="moveArrow" className="arrow" onClick={() => handleNavigation(alarm)} />
         </div>
       ))}
-      {isModalOpen && (
-        <>
-          <BattleBoard
-            status="finished"
-            ourTeamName="으랏차챠"
-            opponentTeamName="3대 500만원"
-            ourTeamSport="헬스"
-            opponentTeamSport="헬스"
-            ourTeamScore={1200}
-            opponentTeamScore={1200}
-          />
-        </>
+
+      {isModalOpen && selectedAlarm && selectedAlarm.additionalData && (
+        <AlarmModal
+          data={{
+            battleId: selectedAlarm.additionalData.battleDetail.battleId,
+            ourTeamName: selectedAlarm.additionalData.battleDetail.myTeamName,
+            ourTeamSport: selectedAlarm.additionalData.battleDetail.exerciseName,
+            ourTeamScore: selectedAlarm.additionalData.battleDetail.myTeamScore,
+            opponentTeamName: selectedAlarm.additionalData.battleDetail.opponentTeamName,
+            opponentTeamSport: selectedAlarm.additionalData.battleDetail.exerciseName,
+            opponentTeamScore: selectedAlarm.additionalData.battleDetail.opponentTeamScore,
+            crewCoins: 100,
+            myCoin: 50, // 실제 데이터를 받아와야 함
+          }}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       )}
     </div>
   );

@@ -4,4 +4,12 @@ import { recordHandlers } from './recordHandlers';
 import { crewHandlers } from './crewHandlers';
 import { exerciseHandlers } from './exerciseHandlers';
 import { userHandlers } from './userHandlers';
-export const worker = setupWorker(...recordHandlers, ...surveyHandlers, ...exerciseHandlers, ...userHandlers, ...crewHandlers);
+import { alarmHandlers } from './alarmHandlers';
+export const worker = setupWorker(
+  ...recordHandlers,
+  ...surveyHandlers,
+  ...exerciseHandlers,
+  ...userHandlers,
+  ...crewHandlers,
+  ...alarmHandlers
+);
