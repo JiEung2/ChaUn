@@ -42,4 +42,30 @@ export const exerciseHandlers = [
       ],
     });
   }),
+
+  // 이번주 운동 기록 조회
+  http.get(`${baseUrl}/users/exercise-history/week`, () => {
+    return HttpResponse.json({
+      status: 200,
+      message: '',
+      data: {
+        exerciseHistoryList: [
+          {
+            id: 1,
+            exerciseDuration: 3600,
+            burnedCalories: 560,
+            exerciseName: '러닝',
+            createdAt: '2024-09-16T15:00:00',
+          },
+          {
+            id: 2,
+            exerciseDuration: 1800,
+            burnedCalories: 300,
+            exerciseName: '수영',
+            createdAt: '2024-09-17T10:00:00',
+          },
+        ],
+      },
+    });
+  }),
 ];

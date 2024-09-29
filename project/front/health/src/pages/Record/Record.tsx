@@ -4,8 +4,9 @@ import BodyWeightRecord from '@/components/Record/BodyWeightRecord';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
-import { useSuspenseQuery } from '@tanstack/react-query'; // SuspenseQuery 사용
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
+import { getWeeklyExerciseRecord } from '@/api/exercise';
 import queryKeys from '@/utils/querykeys';
 
 export default function RecordPage() {
@@ -17,7 +18,10 @@ export default function RecordPage() {
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
 
-  // 기본 예측 데이터 가져오기 (SuspenseQuery)
+  const { data: weeklyExerciseTime } = useSuspenseQuery({
+    queryKey: [queryKeys.EXERCISE_HISTORY_WEEK],
+    queryFn: () => getWeeklyExerciseRecord(),
+  });
   const { data: predictionData } = useSuspenseQuery({
     queryKey: [queryKeys.MY_BODY_PREDICT],
     queryFn: getPredictBasic,
@@ -31,7 +35,6 @@ export default function RecordPage() {
     },
   });
 
-  // 추가 예측 데이터 가져오기 (SuspenseQuery)
   const { data: predictionExtraData } = useSuspenseQuery({
     queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
     queryFn: getPredictExtra,
@@ -54,14 +57,8 @@ export default function RecordPage() {
   };
 
   useEffect(() => {
-    const fetchExerciseDays = () => {
-      const dummyExerciseData = {
-        exerciseDays: 2,
-      };
-      setExerciseDays(dummyExerciseData.exerciseDays);
-    };
-
-    fetchExerciseDays();
+    const weeklyExerciseCount = weeklyExerciseTime.data.data.exerciseHistoryList.length;
+    setExerciseDays(weeklyExerciseCount);
   }, []);
 
   useEffect(() => {

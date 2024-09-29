@@ -6,3 +6,8 @@ export const getExercise = async () => {
   const response = await axios.get(`${baseUrl}/exercise`);
   return response;
 };
+
+export const getWeeklyExerciseRecord = async () => {
+  const response = await axios.get(`${baseUrl}/users/exercise-history/week`);
+  return response;
+};
