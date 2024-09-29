@@ -32,6 +32,21 @@ const crewDetail = [
     basicScore: 850,
     role: 'LEADER',
   },
+  {
+    crewId: 2,
+    crewName: '달리는 번개',
+    exerciseName: '러닝',
+    profileImage: 'crew-profile-image.jpg',
+    description: '번개맨보다 빠른 러너들의 모임',
+    crewCoins: 300,
+    crewRanking: 3,
+    totalBattleCount: 10,
+    winCount: 7,
+    averageAge: 29,
+    activityScore: 1200,
+    basicScore: 850,
+    role: 'LEADER',
+  },
 ];
 const memberList = [
   {
@@ -50,7 +65,7 @@ const memberList = [
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
   http.get(`${baseUrl}/users/recommend-crew`, () => {
-    console.log('크루 추천 목록 조회');
+    // console.log('크루 추천 목록 조회');
     return HttpResponse.json(crewList, { status: 200 });
   }),
 
