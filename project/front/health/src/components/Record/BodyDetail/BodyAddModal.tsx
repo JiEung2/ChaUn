@@ -31,49 +31,51 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
     bodyShape: 0,
   });
 
+  // 식습관 데이터를 watch로 감시
   const mealsPerDay = watch('mealsPerDay');
   const foodType = watch('foodType');
   const snacksPerDay = watch('snacksPerDay');
   const drinksPerDay = watch('drinksPerDay');
 
-  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const [isFormValid, setIsFormValid] = useState(false);
 
-  // 필수 몸 데이터 입력 검증 함수
-  const isRequiredBodyDataComplete = () => {
-    return bodyData.height > 0 && bodyData.weight > 0 && bodyData.bodyShape !== 0;
+  // 필수 몸 데이터 및 식습관 데이터 입력 검증 함수
+  const validateForm = () => {
+    const { height, weight } = bodyData;
+    const isBodyDataValid = height > 0 && weight > 0;
+    const isEatingHabitsValid = mealsPerDay && foodType && snacksPerDay && drinksPerDay;
+
+    // 몸 데이터와 식습관 데이터가 모두 유효할 때만 버튼 활성화
+    setIsFormValid(isBodyDataValid && isEatingHabitsValid);
   };
 
-  // 식습관 입력 검증
-  const isEatingHabitsComplete = () => {
-    return mealsPerDay && foodType && snacksPerDay && drinksPerDay;
+  // BodyType 데이터 변경 핸들러
+  const handleBodyDataChange = (data: {
+    height: number;
+    weight: number;
+    skeletalMuscleMass: number;
+    bodyFat: number;
+    bodyMuscle: boolean;
+    bodyShape: number;
+  }) => {
+    setBodyData(data);
   };
 
-  // 데이터 완료 여부를 검증하고 버튼 활성화 상태를 업데이트
-  const checkDataCompletion = () => {
-    const isBodyDataComplete = isRequiredBodyDataComplete();
-    const isEatingComplete = isEatingHabitsComplete();
-    setIsButtonDisabled(!(isBodyDataComplete && isEatingComplete));
-  };
-
+  // bodyData 또는 식습관 데이터가 변경될 때마다 유효성 검사
   useEffect(() => {
-    checkDataCompletion();
+    validateForm();
   }, [bodyData, mealsPerDay, foodType, snacksPerDay, drinksPerDay]);
 
+  // 다음 단계로 이동 및 데이터 전송 함수
   const handleComplete = async () => {
-    if (!isButtonDisabled) {
-      try {
-        // 몸 데이터 전송 (surveySubmit2)
-        const { height, weight, skeletalMuscleMass, bodyFat, bodyMuscle, bodyShape } = bodyData;
-        await surveySubmit2(height, weight, skeletalMuscleMass, bodyFat, bodyMuscle, bodyShape);
-
-        // 식습관 데이터 전송 (surveySubmit3)
-        await surveySubmit3(mealsPerDay, foodType, snacksPerDay, drinksPerDay);
-
-        onClose(); // 모든 API 전송 성공 시 모달 닫기
-      } catch (error) {
-        console.error('Error submitting survey:', error);
-        alert('오류가 발생했습니다. 다시 시도해 주세요.');
-      }
+    try {
+      const { height, weight, skeletalMuscleMass, bodyFat, bodyMuscle, bodyShape } = bodyData;
+      await surveySubmit2(height, weight, skeletalMuscleMass, bodyFat, bodyMuscle, bodyShape);
+      await surveySubmit3(mealsPerDay, foodType, snacksPerDay, drinksPerDay);
+      onClose();
+    } catch (error) {
+      console.error('데이터 전송 중 오류:', error);
+      alert('오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
 
@@ -86,14 +88,14 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
         <p className="description">보다 정확한 체형 분석 및 예측을 위해 체형과 식습관 정보를 입력해주세요.</p>
       </div>
       <div className="scrollableContent">
-        <BodyType onBodyDataChange={setBodyData} />
+        <BodyType onBodyDataChange={handleBodyDataChange} />
         <EatingHabits register={register} />
       </div>
       <GeneralButton
         buttonStyle={{ style: 'floating', size: 'semiTiny' }}
         onClick={handleComplete}
         className="completedButton"
-        disabled={isButtonDisabled}>
+        disabled={!isFormValid}>
         완료
       </GeneralButton>
     </div>
