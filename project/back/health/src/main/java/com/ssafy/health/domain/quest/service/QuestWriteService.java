@@ -32,8 +32,21 @@ public class QuestWriteService {
     }
 
     // TODO: 스프링 스케줄러 사용하여 일별, 월별 퀘스트 생성
+    // TODO: 주기별 퀘스트 생성 시 해당 주기에 이미 퀘스트가 생성되어 있다면 예외 처리
     public void createDailyQuest() {
         List<Quest> questList = questRepository.findAllByPeriod(QuestPeriod.DAILY);
+        List<User> userList = userRepository.findAll();
+
+        // 유저 퀘스트 생성
+        questList.forEach(quest ->
+                userList.forEach(user -> userQuestRepository.save(UserQuest.builder()
+                        .quest(quest)
+                        .user(user)
+                        .build())));
+    }
+
+    public void createMonthlyQuest() {
+        List<Quest> questList = questRepository.findAllByPeriod(QuestPeriod.MONTHLY);
         List<User> userList = userRepository.findAll();
 
         // 유저 퀘스트 생성
