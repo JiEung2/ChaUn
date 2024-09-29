@@ -79,7 +79,7 @@ export default function One({ handleNext }: { handleNext: () => void }) {
   return (
     <div className={styles.container}>
       <h1 className="title">기본 정보</h1>
-      <h1>닉네임</h1>
+      <h3>닉네임</h3>
       <div className={styles['inputWrapper']}>
         <Input placeholder="" size="large" onChange={handleNincknameChange} value={nickname} />
         <GeneralButton buttonStyle={{ style: 'check', size: 'small' }} onClick={handleNincknameCheck}>
