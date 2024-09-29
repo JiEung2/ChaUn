@@ -19,7 +19,7 @@ public class CrewQuest extends BaseEntity {
     private Long id;
 
     @NotNull
-    private Boolean questCompleted;
+    private QuestStatus status;
 
     @ManyToOne
     @JoinColumn(name = "crew_id")
@@ -33,6 +33,6 @@ public class CrewQuest extends BaseEntity {
     public CrewQuest(Crew crew, Quest quest) {
         this.crew = crew;
         this.quest = quest;
-        this.questCompleted = Boolean.FALSE;
+        this.status = QuestStatus.CREATED;
     }
 }
