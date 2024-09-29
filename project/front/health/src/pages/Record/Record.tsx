@@ -97,7 +97,7 @@ export default function RecordPage() {
 
       <div className="currentPrediction">
         <p className="predictionText">
-          <strong>민영님</strong>의 이번주 운동을 유지했을 때, 체형 예측 결과예요
+          <strong>민영님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
         </p>
         <BodyWeightRecord data={predictionData} />
       </div>
