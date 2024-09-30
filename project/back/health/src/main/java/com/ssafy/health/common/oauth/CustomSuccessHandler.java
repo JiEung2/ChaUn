@@ -49,14 +49,21 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshService.addRefreshToken(username, refreshToken, 86400000L);
 
         //응답 설정
-        response.addCookie(cookieService.createCookie("access", accessToken));
-        response.addCookie(cookieService.createCookie("refresh", refreshToken));
+//        response.addCookie(cookieService.createCookie("access", accessToken));
+//        response.addCookie(cookieService.createCookie("refresh", refreshToken));
+        addCookieWithSameSite(response, "access", accessToken, 600000000L);
+        addCookieWithSameSite(response, "refresh", refreshToken, 86400000L);
         response.setStatus(HttpStatus.OK.value());
 
         System.out.println("access = " + accessToken);
         System.out.println("refresh = " + refreshToken);
 
         response.sendRedirect("http://localhost:5173/oauth");
+    }
+
+    private void addCookieWithSameSite(HttpServletResponse response, String name, String value, long maxAge) {
+        String cookieString = String.format("%s=%s; Path=/; Max-Age=%d; HttpOnly; Secure; SameSite=None", name, value, maxAge);
+        response.addHeader("Set-Cookie", cookieString);
     }
 
 }
