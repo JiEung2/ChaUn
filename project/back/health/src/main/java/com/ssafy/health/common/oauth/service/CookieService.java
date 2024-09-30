@@ -12,6 +12,7 @@ public class CookieService {
         cookie.setSecure(true); //https 환경에서만 쿠키가 사용될 수 있게 하는 설정
         cookie.setPath("/"); //쿠키가 보일 위치는 모든 전역 위치
         cookie.setHttpOnly(true); //js가 쿠키를 가져가지 못하게 설정
+        cookie.setAttribute("SameSite","None");
 
         return cookie;
     }
