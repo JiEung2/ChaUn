@@ -18,13 +18,18 @@ import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
+import com.ssafy.health.domain.quest.entity.QuestStatus;
+import com.ssafy.health.domain.quest.entity.UserQuest;
+import com.ssafy.health.domain.quest.repository.UserQuestRepository;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -36,6 +41,7 @@ public class ExerciseHistoryWriteService {
     private final ExerciseRepository exerciseRepository;
     private final BodyHistoryRepository bodyHistoryRepository;
     private final ExerciseHistoryRepository exerciseHistoryRepository;
+    private final UserQuestRepository userQuestRepository;
 
     private final Float OXYGEN_INTAKE = 3.5F;
 
@@ -43,13 +49,20 @@ public class ExerciseHistoryWriteService {
         return OXYGEN_INTAKE;
     }
 
-    public ExerciseHistorySaveResponseDto saveExerciseHistory(ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) throws InterruptedException{
+    public ExerciseHistorySaveResponseDto saveExerciseHistory(ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) throws InterruptedException {
         User user = findUserById(SecurityUtil.getCurrentUserId());
         Exercise exercise = findExerciseById(exerciseHistorySaveRequestDto.getExerciseId());
         Float burnedCalories = calculateBurnedCalories(user, exercise, exerciseHistorySaveRequestDto.getExerciseTime());
 
         ExerciseHistory exerciseHistory = buildExerciseHistory(exerciseHistorySaveRequestDto, user, exercise, burnedCalories);
         exerciseHistoryRepository.save(exerciseHistory);
+
+        // 퀘스트 완료 처리
+        UserQuest userQuest = userQuestRepository.findUserQuestWithCriteria(user, QuestStatus.CREATED, "운동하기");
+        if (userQuest != null) {
+            userQuest.updateStatus(QuestStatus.COMPLETED);
+        }
+
 
         Float basicScore = calculateBasicScore(burnedCalories);
         updateUserCrewBasicScore(user, exercise, basicScore);
@@ -64,7 +77,7 @@ public class ExerciseHistoryWriteService {
         userCrewRepository.updateBasicScoreByUserAndExercise(user, exercise, basicScore);
     }
 
-    private void updateCrewBasicScore(User user, Exercise exercise, Float basicScore) throws InterruptedException{
+    private void updateCrewBasicScore(User user, Exercise exercise, Float basicScore) throws InterruptedException {
         int maxRetries = 5;
         int retryCount = 0;
 
