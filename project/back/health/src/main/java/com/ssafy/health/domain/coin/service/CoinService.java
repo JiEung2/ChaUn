@@ -1,14 +1,15 @@
 package com.ssafy.health.domain.coin.service;
 
-import static com.ssafy.health.domain.coin.CoinCost.*;
-
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.crew.entity.Crew;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+
+import static com.ssafy.health.domain.coin.CoinCost.*;
 
 @Service
 @Transactional
@@ -22,7 +23,7 @@ public class CoinService {
         user.decreaseCoin(coins);
     }
 
-    public void spendCrewCoins(final Crew crew, final Integer coins) {;
+    public void spendCrewCoins(final Crew crew, final Integer coins) {
         crew.decreaseCoin(coins);
     }
 
@@ -39,7 +40,7 @@ public class CoinService {
                     int ranking = crewMemberRanking.indexOf(user) + 1;
                     Integer coinAmount = rewardMap.get(ranking);
                     if (coinAmount != null) {
-                        grantCoins(user, coinAmount);
+                        grantCoinsToUser(user, coinAmount);
                     }
                 });
     }
@@ -48,7 +49,11 @@ public class CoinService {
         user.increaseCoin(ATTENDANCE_REWARD.getAmount());
     }
 
-    public void grantCoins(User user, int coinAmount) {
+    public void grantCoinsToUser(User user, int coinAmount) {
         user.increaseCoin(coinAmount);
+    }
+
+    public void grantCoinsToCrew(Crew crew, int coinAmount) {
+        crew.increaseCoin(coinAmount);
     }
 }

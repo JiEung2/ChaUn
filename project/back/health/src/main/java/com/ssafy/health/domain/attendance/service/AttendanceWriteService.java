@@ -53,7 +53,7 @@ public class AttendanceWriteService {
 
             // TODO: 퀘스트 완료 알림 전송
             quest.updateStatus(QuestStatus.COMPLETED);
-            coinService.grantCoins(user, quest.getQuest().getCompletionCoins());
+            coinService.grantCoinsToUser(user, quest.getQuest().getCompletionCoins());
         }
 
         return new AttendanceSuccessDto();
