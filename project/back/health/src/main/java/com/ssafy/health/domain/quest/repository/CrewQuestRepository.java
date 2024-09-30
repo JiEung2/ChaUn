@@ -12,4 +12,11 @@ public interface CrewQuestRepository extends JpaRepository<CrewQuest, Long> {
 
     @Query("SELECT q FROM CrewQuest q WHERE q.crew = :crew AND q.status IN :status")
     List<CrewQuest> findAllByCrewAndStatus(Crew crew, List<QuestStatus> status);
+
+    @Query("""
+            SELECT DISTINCT cq FROM CrewQuest cq JOIN FETCH cq.quest q
+            WHERE cq.crew = :crew AND cq.status = :status AND q.title LIKE %:title%
+            ORDER BY cq.createdAt DESC
+            """)
+    CrewQuest findCrewQuestWithCriteria(Crew crew, QuestStatus status, String title);
 }

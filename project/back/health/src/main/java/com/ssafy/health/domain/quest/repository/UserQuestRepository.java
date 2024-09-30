@@ -13,8 +13,10 @@ public interface UserQuestRepository extends JpaRepository<UserQuest, Long> {
     @Query("SELECT q FROM UserQuest q WHERE q.user = :user AND q.status IN :status")
     List<UserQuest> findAllByUserAndStatus(User user, List<QuestStatus> status);
 
-    @Query("SELECT DISTINCT uq FROM UserQuest uq JOIN FETCH uq.quest q " +
-            "WHERE uq.user = :user AND uq.status = :status AND q.title LIKE %:title% " +
-            "ORDER BY uq.createdAt DESC")
+    @Query("""
+            SELECT DISTINCT uq FROM UserQuest uq JOIN FETCH uq.quest q
+            WHERE uq.user = :user AND uq.status = :status AND q.title LIKE %:title%
+            ORDER BY uq.createdAt DESC
+            """)
     UserQuest findUserQuestWithCriteria(User user, QuestStatus status, String title);
 }
