@@ -22,7 +22,7 @@ import numpy as np
 import joblib
 from copy import deepcopy as dp
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import GRU, Dense, Dropout, Input
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
 from sklearn.preprocessing import MinMaxScaler
 
@@ -64,9 +64,9 @@ class UserExtraExerciseRequest(BaseModel):
 def build_model(input_shape, forecast_steps):
     model = Sequential()
     model.add(Input(shape=input_shape))  # input_shape = (timesteps, features)
-    model.add(GRU(units=64, return_sequences=False)) 
-    model.add(Dropout(0.3)) 
-    model.add(Dense(64, activation='relu')) 
+    model.add(LSTM(units=16, dropout=0.3, return_sequences=True)) 
+    model.add(LSTM(units=16, dropout=0.3)) 
+    model.add(Dense(32)) 
     model.add(Dense(units=forecast_steps))  # 예측할 시점 수에 따라 output 설정
     return model
 
