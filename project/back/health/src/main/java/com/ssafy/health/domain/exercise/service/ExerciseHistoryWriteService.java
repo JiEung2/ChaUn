@@ -19,8 +19,10 @@ import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
+import com.ssafy.health.domain.quest.entity.CrewQuest;
 import com.ssafy.health.domain.quest.entity.QuestStatus;
 import com.ssafy.health.domain.quest.entity.UserQuest;
+import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.repository.UserQuestRepository;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -44,6 +48,7 @@ public class ExerciseHistoryWriteService {
     private final ExerciseHistoryRepository exerciseHistoryRepository;
     private final UserQuestRepository userQuestRepository;
     private final CoinService coinService;
+    private final CrewQuestRepository crewQuestRepository;
 
     private final Float OXYGEN_INTAKE = 3.5F;
 
@@ -59,12 +64,28 @@ public class ExerciseHistoryWriteService {
         ExerciseHistory exerciseHistory = buildExerciseHistory(exerciseHistorySaveRequestDto, user, exercise, burnedCalories);
         exerciseHistoryRepository.save(exerciseHistory);
 
-        // 퀘스트 완료 처리
-        UserQuest userQuest = userQuestRepository.findUserQuestWithCriteria(user, QuestStatus.CREATED, "운동하기");
+        UserQuest userQuest = userQuestRepository.findUserQuestWithCriteria(
+                user, QuestStatus.CREATED, "운동하기");
         if (userQuest != null) {
             userQuest.updateStatus(QuestStatus.COMPLETED);
-            coinService.grantCoins(user, userQuest.getQuest().getCompletionCoins());
+            coinService.grantCoinsToUser(user, userQuest.getQuest().getCompletionCoins());
         }
+
+        LocalDate today = LocalDate.now();
+        LocalDateTime startOfDay = today.atStartOfDay();
+        LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
+        List<Crew> crewList = crewRepository.findCrewsByUserAndExercise(user, exercise);
+
+        crewList.forEach(crew -> {
+            if (exerciseHistoryRepository.isCrewExerciseQuestCompleted(crew.getId(), startOfDay, endOfDay)) {
+                CrewQuest crewQuest = crewQuestRepository.findCrewQuestWithCriteria(
+                        crew, QuestStatus.CREATED, "크루 내 2명");
+                if (crewQuest != null) {
+                    crewQuest.updateStatus(QuestStatus.COMPLETED);
+                    coinService.grantCoinsToCrew(crew, crewQuest.getQuest().getCompletionCoins());
+                }
+            }
+        });
 
 
         Float basicScore = calculateBasicScore(burnedCalories);
