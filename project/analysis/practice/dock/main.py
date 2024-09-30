@@ -1,7 +1,7 @@
 # 웹처리
 import requests
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
 # Uvicorn 라이브러리
 import uvicorn
@@ -10,8 +10,7 @@ from pydantic import BaseModel
 from bson import ObjectId
 
 # DB timezone 설정 라이브러리
-from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
+from datetime import datetime
 
 # MongoDB 관련 라이브러리
 import pymongo
@@ -20,6 +19,8 @@ from pymongo import MongoClient
 # 데이터 처리 및 예측, 추천 라이브러리
 import pandas as pd
 import numpy as np
+import joblib
+from copy import deepcopy as dp
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import GRU, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
@@ -27,22 +28,6 @@ from sklearn.preprocessing import MinMaxScaler
 
 # APP 정의
 app = FastAPI()
-
-# 대한민국 시간대 설정
-kst = ZoneInfo("Asia/Seoul")
-
-# DB에서 불러온 UTC 시간을 KST로 변환
-def convert_utc_to_kst(utc_time):
-    return utc_time.replace(tzinfo=ZoneInfo("UTC")).astimezone(kst)
-
-# CORS 설정
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # EC2 주소 + 포트로 바꾸기
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # MongoClient 생성
 try:
@@ -66,24 +51,13 @@ class ExerciseData(BaseModel):
     calories: float
 
 class UserExerciseRequest(BaseModel):
-    user_id: int
     exercise_data: List[ExerciseData]  # 7일간의 운동 정보 리스트
 
-'''
-dummy time series input
-{
-  "user_id": 2,
-  "exercise_data": [
-    { "sex": 1, "age": 32, "bmi": 24.21, "weight": 75.0, "calories": 300.55997 },
-    { "sex": 1, "age": 32, "bmi": 24.29, "weight": 75.23815, "calories": 295.3654 },
-    { "sex": 1, "age": 32, "bmi": 23.92, "weight": 74.86, "calories": 312.97836 },
-    { "sex": 1, "age": 32, "bmi": 24.10, "weight": 74.94, "calories": 312.97836 },
-    { "sex": 1, "age": 32, "bmi": 24.09, "weight": 74.93, "calories": 312.97836 },
-    { "sex": 1, "age": 32, "bmi": 24.14, "weight": 74.95, "calories": 312.97836 },
-    { "sex": 1, "age": 32, "bmi": 24.27, "weight": 75.22, "calories": 312.97836 }
-  ]
-}
-'''
+class UserExtraExerciseRequest(BaseModel):
+    exercise_id: int
+    duration: int
+    exercise_data: List[ExerciseData]
+    extra_exercise_data: List[ExerciseData]
 
 ### AI 회귀 모델 처리 ###
 # 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
@@ -111,16 +85,25 @@ def make_predictions(model, X_test):
     return predictions
 
 # 모델 로드 함수
-@app.on_event("startup")
-def load_model_startup():
-    global model
+@asynccontextmanager
+async def load_model_startup(app: FastAPI):
+    global model, scaler, encoder
+
     timesteps = 7
-    features = 5 # [sex, age, BMI, weight, comsumed_cal] = 5 features
+    features = 6 # [sex_1, sex_2, age, BMI, weight, comsumed_cal] = 5 features
     forecast_steps = 90 # 최대 90일까지의 예측을 진행
     input_shape = (timesteps, features)
 
     model = build_model(input_shape, forecast_steps)
-    model = load_model_weights(model, "./modelv1.weights.h5")
+    model = load_model_weights(model, "./models/modelv2.weights.h5")
+
+    # Load the saved MinMaxScaler and OneHotEncoder
+    scaler = joblib.load('./models/minmax_scaler_v2.pkl')
+    encoder = joblib.load('./models/onehot_encoder_v2.pkl')
+
+    yield
+
+    print("Application shutdown.")
 
 # 모델 수행 이후 처리 함수
 def model_predict(data_test):
@@ -142,44 +125,118 @@ def convert_objectid(data):
         data = [convert_objectid(item) for item in data]
     return data
 
+# 데이터 전처리 함수
+def preprocess_data(exercise_data):
+    global encoder, scaler
+
+    # 입력으로 받은 데이터를 어레이로 저장
+    exercise_data = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data])
+    # 역 연산처리
+    # 성별 피처 - 인코더 적용
+    sex_encoded = encoder.transform(exercise_data[:, [0]])
+    # 수치형 데이터 - 스케일러 적용
+    numerical_data = scaler.transform(exercise_data[:, 1:])  # remaining columns: 나이, BMI, 몸무게, 칼로리
+    # 성별 + 수치형 데이터
+    processed_data = np.hstack([sex_encoded, numerical_data])
+
+    return processed_data
+
 # 루트 라우터
 @app.get("/")
 def root():
     return {"message": "MongoDB와 FastAPI 연결 성공"}
 
+### 운동 예측 기능 ###
 # API :: 종합 체중 예측 => spring에서 스케쥴러를 통한 예측 후 MongoDB 저장
-@app.post("/api/v1/users/{user_id}/body/prediction")
+@app.post("/api/v1/users/{user_id}/body/prediction/fast-api")
 async def predict(user_id: int, request: UserExerciseRequest):
-    # 1. user_id를 URL로부터 받는다.
-    user_id = request.user_id # user_id
-    exercise_data = request.exercise_data # exercise_data
+    try:
+        # 1. request를 통해 exercise_data를 받는다.
+        exercise_data = request.exercise_data # exercise_data
 
-    '''
-    exercise_data는 1 ~ 7의 길이 데이터가 들어올 예정
-    7 - (현재 길이)로 길이를 정해서 더미 길이를 추가해야 함
-        - 운동을 하지 않았으니까, 체중을 키우는 방식으로 
-    '''
+        # 2. exercise_data를 길이를 맞춰 전처리 코드
+        dummy_count = 7 - len(exercise_data)
+        height_sqr = exercise_data[-1].weight / exercise_data[-1].bmi
+        for _ in range(dummy_count):
+            last_data = dp(exercise_data[-1])
+            last_data.calories = np.random.normal(250, 15) # 평균 걸음으로도 250에서 300 칼로리를 소모한다.
+            last_data.weight = last_data.weight + round(np.random.uniform(-0.1, 0.2), 2) # 하지만, 식습관으로 인해서 체중이 찌거나 유지되는 중..
+            last_data.bmi = last_data.weight / height_sqr
+            exercise_data.append(last_data)
 
-    # 입력 데이터를 numpy 배열로 변환
-    X_test = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data]) # (7, 5)
-    X_test = X_test.reshape(1, 7, 5)  # 한 차원 늘려서, 하나의 입력으로, 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
+        # 3. 전처리 데이터 np 배열 변환
+        X_test = preprocess_data(exercise_data) # (7, 5)
+        X_test = X_test.reshape(1, 7, -1)  # 한 차원 늘려서, 하나의 입력으로, 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
 
-    # model.predict을 통해 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
-    pred_30_d, pred_90_d = model_predict(X_test)
+        # 4. model.predict 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
+        pred_30_d, pred_90_d = model_predict(X_test)
 
+        # 5. 예측 DB 변수 정의
+        new_prediction = {
+            "user_id": user_id,
+            "p30": pred_30_d,
+            "p90": pred_90_d,
+            "created_at": datetime.utcnow()
+        }
 
-    # MongoDB에 운동 기록을 저장할 때 UTC 시간으로 저장
-    new_prediction = {
-        "user_id": user_id,
-        "p30": pred_30_d,
-        "p90": pred_90_d,
-        "created_at": convert_utc_to_kst(datetime.utcnow())  # KST 시간으로 저장
-    }
+        # 6. 종합 예측 Predict_basic document에 MongoDB 저장
+        predict_basic.insert_one(new_prediction)
 
-    # 종합 예측 MongoDB에 저장
-    predict_basic.insert_one(new_prediction)
-    new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
+        # 7. 재확인 코드
+        # new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
+        # return new_prediction
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Error : {e}')
 
+# API :: 추가 운동 예측 -> 요청시 
+@app.post("/api/v1/users/{user_id}/body/prediction/extra/fast-api")
+async def extra_predict(user_id: int, request: UserExtraExerciseRequest):
+    try:
+        # 1. exercise_data들 받기
+        exercise_data = request.exercise_data # List Exercise_data
+        extra_exercise_data = request.extra_exercise_data # List Extra_Exercise_data
+        exercise_data = exercise_data + extra_exercise_data
+
+        # 2. exercise_data를 길이를 맞춰 전처리 코드
+        dummy_count = 7 - len(exercise_data)
+        height_sqr = exercise_data[-1].weight / exercise_data[-1].bmi
+        for _ in range(dummy_count):
+            last_data = dp(exercise_data[-1])
+            last_data.calories = np.random.normal(250, 15) # 평균 걸음으로도 250에서 300 칼로리를 소모한다.
+            last_data.weight = last_data.weight + round(np.random.uniform(-0.1, 0.2), 2) # 하지만, 식습관으로 인해서 체중이 찌거나 유지되는 중..
+            last_data.bmi = last_data.weight / height_sqr
+            exercise_data.append(last_data)
+
+        # 3. 전처리 데이터 np 배열 변환
+        X_test = preprocess_data(exercise_data) # (7, 5)
+        X_test = X_test.reshape(1, 7, -1)  # 한 차원 늘려서, 1개의 데이터에 7일간의 운동 정보(5개의 feature)를 timesteps=7, features=5
+
+        # 4. model.predict 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
+        pred_30_d, pred_90_d = model_predict(X_test)
+
+        # 5. 예측 DB 변수 정의
+        new_prediction = {
+            "user_id": user_id,
+            "p30": pred_30_d,
+            "p90": pred_90_d,
+            "exercise" : {
+                "exercise_id": request.exercise_id,
+                "count": len(extra_exercise_data),
+                "duration": request.duration
+            },
+            "created_at": datetime.utcnow()
+        }
+
+        # 6. 종합 예측 MongoDB 저장
+        predict_extra.insert_one(new_prediction)
+
+        # 7. 재확인 코드
+        # new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
+        # return new_prediction
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'Error : {e}')
+
+### 크루 추천 기능 ###
 # 1-1. row_user_list / Spring 데이터 조회
 def get_user_list():
     response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/users")
