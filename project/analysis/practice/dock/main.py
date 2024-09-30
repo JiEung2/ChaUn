@@ -38,9 +38,9 @@ MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
 # MongoClient 생성
 try:
     # 테스트 용
-    # client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
+    client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     # 실제 서버 상태 확인
-    client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
+    # client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     server_status = client.admin.command("ping")
     db = client['Health']
     predict_basic = db['predict_basic']
@@ -58,14 +58,15 @@ class ExerciseData(BaseModel):
     weight: float
     calories: float
 
-class UserExerciseRequest(BaseModel):
-    exercise_data: List[ExerciseData]  # 7일간의 운동 정보 리스트
-
-class UserExtraExerciseRequest(BaseModel):
+class ExerciseDetail(BaseModel):
     exercise_id: int
     duration: int
-    exercise_data: List[ExerciseData]
-    extra_exercise_data: List[ExerciseData]
+    count: int
+
+class UserExerciseRequest(BaseModel):
+    exercise_detail: ExerciseDetail = None # 객체 형태
+    exercise_data: List[ExerciseData]  # 7일간의 운동 정보 리스트
+    extra_exercise_data: List[ExerciseData] = None
 
 ### AI 회귀 모델 처리 ###
 # 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
@@ -193,6 +194,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
         # 5. 예측 DB 변수 정의
         new_prediction = {
             "user_id": user_id,
+            "current": exercise_data[-1].weight,
             "p30": pred_30_d,
             "p90": pred_90_d,
             "created_at": datetime.utcnow()
@@ -209,7 +211,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
 
 # API :: 추가 운동 예측 -> 요청시 
 @app.post("/api/v1/users/{user_id}/body/prediction/extra/fast-api")
-async def extra_predict(user_id: int, request: UserExtraExerciseRequest):
+async def extra_predict(user_id: int, request: UserExerciseRequest):
     try:
         # 1. exercise_data들 받기
         exercise_data = request.exercise_data # List Exercise_data
@@ -236,12 +238,13 @@ async def extra_predict(user_id: int, request: UserExtraExerciseRequest):
         # 5. 예측 DB 변수 정의
         new_prediction = {
             "user_id": user_id,
+            "current": exercise_data[-1].weight,
             "p30": pred_30_d,
             "p90": pred_90_d,
             "exercise" : {
-                "exercise_id": request.exercise_id,
-                "count": len(extra_exercise_data),
-                "duration": request.duration
+                "exercise_id": request.exercise_detail.exercise_id,
+                "count": request.exercise_detail.count,
+                "duration": request.exercise_detail.duration
             },
             "created_at": datetime.utcnow()
         }
