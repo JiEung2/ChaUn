@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/quest")
-public class QuestController {
+public class QuestController implements QuestControllerApi {
 
     private final QuestWriteService questWriteService;
     private final QuestReadService questReadService;
