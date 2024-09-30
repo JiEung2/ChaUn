@@ -67,6 +67,16 @@ public class QuestWriteService {
                         .build())));
     }
 
+    public void updateQuestStatus(QuestType type, Long questId, QuestStatus status) {
+        if (type.equals(QuestType.CREW)) {
+            CrewQuest crewQuest = crewQuestRepository.findById(questId).orElseThrow();
+            crewQuest.updateStatus(status);
+        } else if (type.equals(QuestType.INDIVIDUAL)) {
+            UserQuest userQuest = userQuestRepository.findById(questId).orElseThrow();
+            userQuest.updateStatus(status);
+        }
+    }
+
     private Quest questBuilder(QuestType type, String title, QuestPeriod period, Integer coins) {
         return Quest.builder()
                 .type(type)
