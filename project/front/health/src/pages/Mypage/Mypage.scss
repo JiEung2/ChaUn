@@ -2,69 +2,67 @@
 @use '@/styles/constants/typographies' as typo;
 
 .myProfileContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 
-    .subtitle {
-        margin-right: auto;
-        @include typo.sub;
+  .subtitle {
+    margin-right: auto;
+    @include typo.sub;
+  }
+
+  .profileSection {
+    .info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
+    .character {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: colors.$base;
+      border-radius: 15px;
+      padding: 20px 0;
+      position: relative;
 
-    .profileSection {
-        width: 100%;
+      img {
+        position: relative;
+        z-index: 1;
+      }
 
-        .info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .character {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: colors.$base;
-            border-radius: 15px;
-            padding: 20px 0;
-            position: relative;
-
-            img {
-                position: relative;
-                z-index: 1;
-            }
-
-            .snapshotButton {
-                position: absolute;
-                bottom: 10px;
-                right: 10px; 
-                z-index: 2;
-                @include typo.coin;
-            }
-        }
+      .snapshotButton {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        z-index: 2;
+        @include typo.coin;
+      }
     }
+  }
 }
 
 .customBox {
-    display: flex;
-    flex-direction: column;
-    background-color: colors.$lightGray;
-    padding: 15px;
-    border-radius: 10px;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  background-color: colors.$lightGray;
+  padding: 15px;
+  border-radius: 10px;
+  gap: 10px;
 }
 
 .snapshotBox {
-    display: flex;
-    flex-direction: column;
-    background-color: colors.$lightGray;
-    padding: 15px 7px 15px 15px;
-    border-radius: 10px;
-    gap: 10px
+  display: flex;
+  flex-direction: column;
+  background-color: colors.$lightGray;
+  padding: 15px 7px 15px 15px;
+  border-radius: 10px;
+  gap: 10px;
 }
 
 .logout {
-    margin-top: 20px;
-    @include typo.coin;
+  margin-top: 20px;
+  @include typo.coin;
 }

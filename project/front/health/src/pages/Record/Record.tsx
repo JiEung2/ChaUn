@@ -4,7 +4,10 @@ import BodyWeightRecord from '@/components/Record/BodyWeightRecord';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
+import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
 import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
+import { getWeeklyExerciseRecord } from '@/api/exercise';
+import queryKeys from '@/utils/querykeys';
 
 export default function RecordPage() {
   const navigate = useNavigate();
@@ -14,64 +17,83 @@ export default function RecordPage() {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
-  const [predictionData, setPredictionData] = useState([
-    { time: '현재', weight: 0 },
-    { time: '1달 후', weight: 0 },
-    { time: '3달 후', weight: 0 },
-  ]);
-  const [predictionExtraData, setPredictionExtraData] = useState([
-    { time: '현재', weight: 0 },
-    { time: '1달 후', weight: 0 },
-    { time: '3달 후', weight: 0 },
-  ]);
 
-  const handlePredictBasic = async () => {
-    try {
-      const response = await getPredictBasic();
-      const { current, p30, p90 } = response.data.data;
-      setPredictionData([
-        { time: '현재', weight: current },
-        { time: '1달 후', weight: p30 },
-        { time: '3달 후', weight: p90 },
-      ]);
-    } catch (e) {
-      console.error(`API 호출 중 에러 발생: ${e}`);
-    }
-  };
+  // 날짜 상태 추가
+  const year = new Date().getFullYear();
+  const month = new Date().getMonth() + 1;
+  const [week, setWeek] = useState(1);
 
-  const handlePredictExtra = async () => {
-    try {
-      const response = await getPredictExtra();
-      const { current, p30, p90 } = response.data.data;
-      setPredictionExtraData([
-        { time: '현재', weight: current },
-        { time: '1달 후', weight: p30 },
-        { time: '3달 후', weight: p90 },
-      ]);
-    } catch (e) {
-      console.error(`API 호출 중 에러 발생: ${e}`);
-    }
-  };
-
-  const handlePredictExerciseDetail = async (exerciseId: number, day: string, duration: string) => {
-    try {
-      await postPredictExerciseDetail(exerciseId, Number(day), Number(duration));
-    } catch (e) {
-      console.error(`운동 예측 API 호출 중 에러 발생: ${e}`);
-    }
-  };
-
+  // 주차 계산 (월요일부터 일요일까지)
   useEffect(() => {
-    handlePredictBasic();
-    const fetchExerciseDays = () => {
-      const dummyExerciseData = {
-        exerciseDays: 2,
-      };
-      setExerciseDays(dummyExerciseData.exerciseDays);
+    const getMondayOfWeek = (date: Date) => {
+      const day = date.getDay(); // Sunday == 0, Monday == 1, ..., Saturday == 6
+      const diff = day === 0 ? -6 : 1 - day; // Calculate the difference to Monday (or previous Monday if it's Sunday)
+      const monday = new Date(date);
+      monday.setDate(date.getDate() + diff);
+      return monday;
     };
 
-    fetchExerciseDays();
-  }, []);
+    const calculateWeekOfMonth = (date: Date) => {
+      const firstMonday = getMondayOfWeek(new Date(date.getFullYear(), date.getMonth(), 1)); // 해당 달의 첫 번째 월요일
+      const currentMonday = getMondayOfWeek(date);
+      const diff = Math.ceil((currentMonday.getTime() - firstMonday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+      return diff; // 몇 번째 주인지 반환
+    };
+
+    const currentDate = new Date();
+    const currentWeek = calculateWeekOfMonth(currentDate);
+    setWeek(currentWeek);
+  }, [year, month]); // year와 month가 변경될 때마다 주차를 다시 계산
+
+  // 운동 예측 데이터 POST 요청을 위한 useMutation
+  const mutation = useMutation({
+    mutationFn: ({ exerciseId, day, duration }: { exerciseId: number; day: string; duration: string }) =>
+      postPredictExerciseDetail(exerciseId, Number(day), Number(duration)),
+    onSuccess: () => {
+      console.log('운동 예측 요청 성공');
+    },
+    onError: (error) => {
+      console.error(`운동 예측 요청 중 에러 발생: ${error}`);
+    },
+  });
+
+  // 주간 운동 기록 데이터 요청
+  const { data: weeklyExerciseTime } = useSuspenseQuery({
+    queryKey: [queryKeys.EXERCISE_HISTORY_WEEK, year, month, week],
+    queryFn: () => getWeeklyExerciseRecord(year, month, week),
+  });
+
+  // 예측 데이터
+  const { data: predictionData } = useSuspenseQuery({
+    queryKey: [queryKeys.MY_BODY_PREDICT],
+    queryFn: getPredictBasic,
+    select: (response) => {
+      const { current, p30, p90 } = response.data.data;
+      return [
+        { time: '현재', weight: current },
+        { time: '1달 후', weight: p30 },
+        { time: '3달 후', weight: p90 },
+      ];
+    },
+  });
+
+  const { data: predictionExtraData } = useSuspenseQuery({
+    queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
+    queryFn: getPredictExtra,
+    select: (response) => {
+      const { current, p30, p90 } = response.data.data;
+      return [
+        { time: '현재', weight: current },
+        { time: '1달 후', weight: p30 },
+        { time: '3달 후', weight: p90 },
+      ];
+    },
+  });
+
+  useEffect(() => {
+    const weeklyExerciseCount = weeklyExerciseTime?.data?.data?.exerciseHistoryList?.length || 0;
+    setExerciseDays(weeklyExerciseCount);
+  }, [weeklyExerciseTime]);
 
   useEffect(() => {
     if (exerciseId && day && duration) {
@@ -83,8 +105,7 @@ export default function RecordPage() {
 
   const handleShowBodyWeightRecord = (exerciseId: number, day: string, duration: string) => {
     setShowBodyWeightRecord(true);
-    handlePredictExerciseDetail(exerciseId, day, duration);
-    handlePredictExtra();
+    mutation.mutate({ exerciseId, day, duration });
   };
 
   const handleResetInput = () => {
@@ -105,7 +126,7 @@ export default function RecordPage() {
 
       <div className="currentPrediction">
         <p className="predictionText">
-          <strong>민영님</strong>의 이번주 운동을 유지했을 때, 체형 예측 결과예요
+          <strong>민영님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
         </p>
         <BodyWeightRecord data={predictionData} />
       </div>

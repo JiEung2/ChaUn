@@ -46,5 +46,10 @@ export interface CrewBattleStatusResponse {
 export const fetchCrewBattleStatus = async (crew_id: number): Promise<CrewBattleStatusResponse> => {
   const response = await axios.get(`${baseURL}/crew/${crew_id}/battle`);
   return response.data;
+};
 
+// 가입된 크루 조회
+export const getUserCrewList = async (userId: number) => {
+  const response = await axios.get(`${baseURL}/users/${userId}/crew-list`);
+  return response.data;
 };
