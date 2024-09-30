@@ -3,10 +3,13 @@ package com.ssafy.health.domain.quest.entity;
 import com.ssafy.health.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
+import lombok.*;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Quest extends BaseEntity {
 
     @Id
@@ -18,13 +21,11 @@ public class Quest extends BaseEntity {
     private QuestType type;
 
     @NotNull
-    private String name;
+    private String title;
 
     @NotNull
-    private String description;
-
-    @NotNull
-    private Integer period;
+    @Enumerated(EnumType.STRING)
+    private QuestPeriod period;
 
     @NotNull
     private Integer completionCoins;
