@@ -56,7 +56,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         System.out.println("access = " + accessToken);
         System.out.println("refresh = " + refreshToken);
 
-        response.sendRedirect("http://localhost:8080/login");
+        response.sendRedirect("http://localhost:5173/oauth");
     }
 
 }
