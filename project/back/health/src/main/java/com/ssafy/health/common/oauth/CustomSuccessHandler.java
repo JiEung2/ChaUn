@@ -49,8 +49,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         refreshService.addRefreshToken(username, refreshToken, 86400000L);
 
         //응답 설정
-        response.addCookie(cookieService.createCookie("access", accessToken));
-        response.addCookie(cookieService.createCookie("refresh", refreshToken));
+//        response.addCookie(cookieService.createCookie("access", accessToken));
+//        response.addCookie(cookieService.createCookie("refresh", refreshToken));
+//        response.setStatus(HttpStatus.OK.value());
+
+        cookieService.createCookie(response, "refresh", refreshToken);
         response.setStatus(HttpStatus.OK.value());
 
         System.out.println("access = " + accessToken);
