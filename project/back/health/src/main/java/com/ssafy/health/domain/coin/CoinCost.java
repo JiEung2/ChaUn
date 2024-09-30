@@ -8,7 +8,8 @@ public enum CoinCost {
     START_BATTLE(100),
     FIRST_PLACE_REWARD(50),
     SECOND_PLACE_REWARD(40),
-    THIRD_PLACE_REWARD(30)
+    THIRD_PLACE_REWARD(30),
+    ATTENDANCE_REWARD(5),
     ;
 
     private final int amount;

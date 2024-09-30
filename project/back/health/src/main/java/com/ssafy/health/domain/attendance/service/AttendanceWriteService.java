@@ -7,6 +7,7 @@ import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.attendance.dto.response.AttendanceSuccessDto;
 import com.ssafy.health.domain.attendance.entity.Attendance;
 import com.ssafy.health.domain.attendance.repository.AttendanceRepository;
+import com.ssafy.health.domain.coin.service.CoinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AttendanceWriteService {
 
+    private final CoinService coinService;
     private final UserRepository userRepository;
     private final AttendanceValidator attendanceValidator;
     private final AttendanceRepository attendanceRepository;
@@ -25,6 +27,8 @@ public class AttendanceWriteService {
 
         User user = findUserById(SecurityUtil.getCurrentUserId());
         attendanceRepository.save(Attendance.builder().user(user).build());
+
+        coinService.giveAttendanceReward(user);
 
         return new AttendanceSuccessDto();
     }
