@@ -13,6 +13,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ReissueController {
 
     private final JWTUtil jwtUtil;
@@ -31,20 +33,23 @@ public class ReissueController {
     @GetMapping("/api/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
-
+        log.info("reissue 진입");
         //get refresh token
         String refresh = null;
         Cookie[] cookies = request.getCookies();
+
+        log.info(cookies.toString());
         for (Cookie cookie : cookies) {
 
             if (cookie.getName().equals("refresh")) {
                 refresh = cookie.getValue();
+                log.info("refresh =" + refresh);
             }
         }
 
         if (refresh == null) {
 
-            //response status code
+            log.info("refresh가 null");
             throw new NotFoundRefreshTokenException();
         }
 
@@ -87,6 +92,8 @@ public class ReissueController {
         //response
         response.setHeader("access", newAccess);
         response.addHeader(HttpHeaders.SET_COOKIE, cookieService.createCookie("refresh", newRefresh).toString());
+
+        System.out.println("access: " + newAccess);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
