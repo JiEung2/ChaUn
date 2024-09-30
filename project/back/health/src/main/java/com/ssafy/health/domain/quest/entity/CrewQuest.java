@@ -35,4 +35,8 @@ public class CrewQuest extends BaseEntity {
         this.quest = quest;
         this.status = QuestStatus.CREATED;
     }
+
+    public void updateStatus(QuestStatus status) {
+        this.status = status;
+    }
 }

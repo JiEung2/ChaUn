@@ -35,4 +35,8 @@ public class UserQuest extends BaseEntity {
         this.user = user;
         this.quest = quest;
     }
+
+    public void updateStatus(QuestStatus status) {
+        this.status = status;
+    }
 }
