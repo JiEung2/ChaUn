@@ -16,6 +16,8 @@ import Alarm from './pages/Alarm/Alarm';
 import Mypage from './pages/Mypage/Mypage';
 import Profile from './pages/Profile/Profile';
 import MyCrew from './pages/Crew/MyCrew/MyCrew';
+import CrewBattle from './pages/Crew/CrewBattle/CrewBattle';
+import CrewCreate from './pages/Crew/CrewCreate/CrewCreate';
 
 export default function App() {
   return (
