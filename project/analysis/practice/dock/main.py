@@ -14,6 +14,8 @@ from datetime import datetime
 
 # MongoDB 관련 라이브러리
 import pymongo
+import os
+from dotenv import load_dotenv
 from pymongo import MongoClient
 
 # 데이터 처리 및 예측, 추천 라이브러리
@@ -24,14 +26,18 @@ from copy import deepcopy as dp
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
-# APP 정의
-app = FastAPI()
+# .env 파일의 환경 변수를 로드
+load_dotenv()
+
+# MongoDB 인증 정보 환경 변수에서 가져오기
+MONGO_USERNAME = os.getenv("MONGO_USERNAME")
+MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
 
 # MongoClient 생성
 try:
-    client = MongoClient("mongodb://j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
+    client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     # 서버 상태 확인
     server_status = client.admin.command("ping")
     db = client['Health']
@@ -97,6 +103,7 @@ async def load_model_startup(app: FastAPI):
     model = build_model(input_shape, forecast_steps)
     model = load_model_weights(model, "./models/modelv2.weights.h5")
 
+    print(model)
     # Load the saved MinMaxScaler and OneHotEncoder
     scaler = joblib.load('./models/minmax_scaler_v2.pkl')
     encoder = joblib.load('./models/onehot_encoder_v2.pkl')
@@ -140,6 +147,9 @@ def preprocess_data(exercise_data):
     processed_data = np.hstack([sex_encoded, numerical_data])
 
     return processed_data
+
+# APP 정의
+app = FastAPI(lifespan=load_model_startup)
 
 # 루트 라우터
 @app.get("/")
