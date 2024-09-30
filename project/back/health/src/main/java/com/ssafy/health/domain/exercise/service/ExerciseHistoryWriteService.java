@@ -9,6 +9,7 @@ import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
 import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundException;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
+import com.ssafy.health.domain.coin.service.CoinService;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
@@ -42,6 +43,7 @@ public class ExerciseHistoryWriteService {
     private final BodyHistoryRepository bodyHistoryRepository;
     private final ExerciseHistoryRepository exerciseHistoryRepository;
     private final UserQuestRepository userQuestRepository;
+    private final CoinService coinService;
 
     private final Float OXYGEN_INTAKE = 3.5F;
 
@@ -61,6 +63,7 @@ public class ExerciseHistoryWriteService {
         UserQuest userQuest = userQuestRepository.findUserQuestWithCriteria(user, QuestStatus.CREATED, "운동하기");
         if (userQuest != null) {
             userQuest.updateStatus(QuestStatus.COMPLETED);
+            coinService.grantCoins(user, userQuest.getQuest().getCompletionCoins());
         }
 
 
