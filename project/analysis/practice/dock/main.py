@@ -116,10 +116,17 @@ async def load_model_startup(app: FastAPI):
 
 # 모델 수행 이후 처리 함수
 def model_predict(data_test):
-    predictions = make_predictions(model, data_test) # 7일 입력 X -> 그 다음 1일 부터 ~ 90일 앞까지 값을 Y
-    # 30일, 90일 기록을 return 시키기
-    return round(float(predictions[0][29]), 2), round(float(predictions[0][89]), 2)
+    global scaler
 
+    predictions = make_predictions(model, data_test)  # 7일 입력 X -> 그 다음 1일 부터 ~ 90일 앞까지 값을 Y
+    # 체중 값을 역변환 (age, BMI, calories는 0으로 두고, weight 값만 역변환)
+    inverse_weight_predictions = scaler.inverse_transform(
+        np.hstack([np.zeros((predictions.shape[1], 2)),  # 나이, BMI 0
+                   predictions.reshape(-1, 1),           # weight 예측값 (역변환 대상)
+                   np.zeros((predictions.shape[1], 1))])  # 칼로리 0
+    )[:, 2]  # weight만 역변환
+
+    return round(inverse_weight_predictions[29], 2), round(inverse_weight_predictions[89], 2)
 # object id convergence
 def convert_objectid(data):
     if isinstance(data, dict):
