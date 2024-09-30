@@ -42,12 +42,12 @@ public class QuestWriteService {
         List<Crew> crewList = crewRepository.findAll();
 
         dailyQuestList.forEach(quest -> {
-            if (quest.getType().equals(QuestType.CREW)) {
+            if (quest.getType().equals(QuestType.INDIVIDUAL)) {
                 userList.forEach(user -> userQuestRepository.save(UserQuest.builder()
                         .quest(quest)
                         .user(user)
                         .build()));
-            } else if (quest.getType().equals(QuestType.INDIVIDUAL)) {
+            } else if (quest.getType().equals(QuestType.CREW)) {
                 crewList.forEach(crew -> crewQuestRepository.save(CrewQuest.builder()
                         .quest(quest)
                         .crew(crew)
@@ -57,15 +57,24 @@ public class QuestWriteService {
     }
 
     public void createMonthlyQuest() {
-        List<Quest> questList = questRepository.findAllByPeriod(QuestPeriod.MONTHLY);
+        List<Quest> monthlyQuestList = questRepository.findAllByPeriod(QuestPeriod.MONTHLY);
         List<User> userList = userRepository.findAll();
+        List<Crew> crewList = crewRepository.findAll();
 
-        // 유저 퀘스트 생성
-        questList.forEach(quest ->
+        // 퀘스트 생성
+        monthlyQuestList.forEach(quest -> {
+            if (quest.getType().equals(QuestType.INDIVIDUAL)) {
                 userList.forEach(user -> userQuestRepository.save(UserQuest.builder()
                         .quest(quest)
                         .user(user)
-                        .build())));
+                        .build()));
+            } else if (quest.getType().equals(QuestType.CREW)) {
+                crewList.forEach(crew -> crewQuestRepository.save(CrewQuest.builder()
+                        .quest(quest)
+                        .crew(crew)
+                        .build()));
+            }
+        });
     }
 
     public void updateQuestStatus(QuestType type, Long questId, QuestStatus status) {
