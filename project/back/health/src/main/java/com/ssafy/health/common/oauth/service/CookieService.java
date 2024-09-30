@@ -13,7 +13,7 @@ public class CookieService {
                 .secure(false)          // HTTPS 환경에서만 전송되도록 설정
                 .path("/")             // 쿠키의 적용 경로 설정
                 .maxAge(60 * 60 * 60)        // 쿠키 만료 시간 설정
-                .sameSite("None")      // SameSite 속성 설정
+                .domain("localhost:5173")
                 .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
