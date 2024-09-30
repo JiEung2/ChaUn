@@ -27,8 +27,8 @@ export const userHandlers = [
       status: 0,
       message: 'Success',
       data: {
-        todayExerciseTime: 12312,
-        thisWeekExerciseTime: 1231230,
+        dailyAccumulatedExerciseTime: 12312,
+        weeklyAccumulatedExerciseTime: 1231230,
       },
     });
   }),

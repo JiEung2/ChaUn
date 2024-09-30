@@ -1,0 +1,137 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.alarmModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.alarmModalContent {
+  background-color: white;
+  border-radius: 30px;
+  width: 330px;
+  padding: 10px 0;
+  text-align: center;
+  position: relative;
+  z-index: 1010;
+  .battleResult {
+    @include typo.sub;
+  }
+}
+
+.teamInfo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  @include typo.coin;
+  .ourTeam,
+  .opponentTeam {
+    max-width: 76px;
+    word-break: break-word;
+    word-wrap: break-word;
+    .sport {
+      width: 60px;
+      padding: 8px;
+      border-radius: 20px;
+      background-color: colors.$lightGray;
+      margin: 0 auto;
+      @include typo.tag;
+    }
+  }
+
+  .vsInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: colors.$darkGray;
+
+    span {
+      font-weight: bold;
+      @include typo.title;
+    }
+
+    div {
+      @include typo.description2;
+    }
+  }
+}
+
+.finished {
+  width: 60px;
+  color: colors.$white;
+  background-color: colors.$pink;
+  border-radius: 20px;
+  padding: 5px;
+  @include typo.tag;
+}
+
+.xloseButton {
+  position: absolute;
+  cursor: pointer;
+  right: 15px;
+  top: 15px;
+}
+
+.divider2 {
+  width: 250px;
+  margin: 15px auto;
+}
+
+.battleReward {
+  width: 250px;
+  margin: 15px auto;
+  position: relative;
+  background-color: #f2f2f7;
+  border: 1px solid #f2f2f7;
+  border-radius: 20px;
+  padding: 5px 10px;
+  z-index: 1;
+  @include typo.coin;
+
+  .battleRewardTitle {
+    text-align: left;
+  }
+
+  .costDetail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 5px 0;
+    @include typo.smallButton;
+
+    p {
+      margin-right: 10px;
+    }
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: -9px;
+    right: -9px;
+    bottom: -8px;
+    border-radius: 10px;
+    background: transparent;
+    backdrop-filter: blur(1px);
+    z-index: -1;
+  }
+}
+.rewardDescript {
+  color: colors.$darkGray;
+  @include typo.navbar;
+}
+.checkButton {
+  margin: 20px auto;
+  text-align: center;
+}

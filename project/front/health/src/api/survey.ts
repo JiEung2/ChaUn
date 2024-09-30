@@ -37,11 +37,17 @@ export const surveySubmit2 = async (
   return response;
 };
 
-export const surveySubmit3 = async (nickname: string, birthday: string, gender: string) => {
+export const surveySubmit3 = async (
+  mealCount: number,
+  mealType: string,
+  snackFrequency: string,
+  drinkFrequency: string
+) => {
   const response = await axios.post(`${baseUrl}/users/survey/eating-habits`, {
-    nickname,
-    birthday,
-    gender,
+    mealCount,
+    mealType,
+    snackFrequency,
+    drinkFrequency,
   });
 
   return response;
