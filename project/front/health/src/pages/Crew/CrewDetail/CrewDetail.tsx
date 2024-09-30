@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getCrewDetail, getCrewRanking } from '@/api/crew';
+import { getCrewDetail, getCrewRanking, joinToCrew } from '@/api/crew';
 import Coin from '@/components/Coin/Coin';
 import styles from './CrewDetail.module.scss';
 interface CrewInfo {
@@ -40,6 +40,15 @@ const CrewDetail = () => {
     crewCoins: 0,
   });
   const [members, setMembers] = useState<Member[]>([]);
+
+  const applyCrew = async () => {
+    try {
+      const response = await joinToCrew(Number(crew_id));
+      console.log('크루 가입 신청 결과', response);
+    } catch (error) {
+      console.error('크루 가입 신청 실패', error);
+    }
+  };
   const formatExerciseTime = (timeInMs: number) => {
     const hours = Math.floor(timeInMs / (1000 * 60 * 60));
     const minutes = Math.floor((timeInMs % (1000 * 60 * 60)) / (1000 * 60));
@@ -62,7 +71,6 @@ const CrewDetail = () => {
   //     thisWeekExerciseTime: 18000000, // ms -> 5h 0m
   //   },
   // ];
-  const applyCrew = () => {};
 
   const getCrewDetailData = async () => {
     try {
@@ -86,6 +94,7 @@ const CrewDetail = () => {
       console.error('크루 랭킹 정보 불러오기 실패', error);
     }
   };
+
   // crewId를 number로 변환하는 로직 필요
   useEffect(() => {
     getCrewDetailData();

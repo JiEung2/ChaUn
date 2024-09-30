@@ -29,6 +29,11 @@ export const getCrewRanking = async (crew_id: number) => {
   return response;
 };
 
+// 크루 가입 신청
+export const joinToCrew = async (crew_id: number) => {
+  const response = await axios.post(`${baseURL}/crew/${crew_id}/join`);
+  return response.data;
+};
 // 크루 배틀 현황 조회
 export interface CrewBattleStatusResponse {
   status: number;

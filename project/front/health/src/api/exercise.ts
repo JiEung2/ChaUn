@@ -14,3 +14,6 @@ export const getExerciseRecommendation = async () => {
   // console.log(response);
   return response.data;
 };
+
+// 특정 달의 운동 기록 조회
+export const getExerciseHistory = async (year: number, month: number) => {};
