@@ -4,7 +4,10 @@ import BodyWeightRecord from '@/components/Record/BodyWeightRecord';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
+import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
 import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
+import { getWeeklyExerciseRecord } from '@/api/exercise';
+import queryKeys from '@/utils/querykeys';
 
 export default function RecordPage() {
   const navigate = useNavigate();
@@ -14,64 +17,54 @@ export default function RecordPage() {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
-  const [predictionData, setPredictionData] = useState([
-    { time: '현재', weight: 0 },
-    { time: '1달 후', weight: 0 },
-    { time: '3달 후', weight: 0 },
-  ]);
-  const [predictionExtraData, setPredictionExtraData] = useState([
-    { time: '현재', weight: 0 },
-    { time: '1달 후', weight: 0 },
-    { time: '3달 후', weight: 0 },
-  ]);
 
-  const handlePredictBasic = async () => {
-    try {
-      const response = await getPredictBasic();
+  // 운동 예측 데이터 POST 요청을 위한 useMutation
+  const mutation = useMutation({
+    mutationFn: ({ exerciseId, day, duration }: { exerciseId: number; day: string; duration: string }) =>
+      postPredictExerciseDetail(exerciseId, Number(day), Number(duration)),
+    onSuccess: () => {
+      console.log('운동 예측 요청 성공');
+    },
+    onError: (error) => {
+      console.error(`운동 예측 요청 중 에러 발생: ${error}`);
+    },
+  });
+
+  const { data: weeklyExerciseTime } = useSuspenseQuery({
+    queryKey: [queryKeys.EXERCISE_HISTORY_WEEK],
+    queryFn: () => getWeeklyExerciseRecord(),
+  });
+
+  const { data: predictionData } = useSuspenseQuery({
+    queryKey: [queryKeys.MY_BODY_PREDICT],
+    queryFn: getPredictBasic,
+    select: (response) => {
       const { current, p30, p90 } = response.data.data;
-      setPredictionData([
+      return [
         { time: '현재', weight: current },
         { time: '1달 후', weight: p30 },
         { time: '3달 후', weight: p90 },
-      ]);
-    } catch (e) {
-      console.error(`API 호출 중 에러 발생: ${e}`);
-    }
-  };
+      ];
+    },
+  });
 
-  const handlePredictExtra = async () => {
-    try {
-      const response = await getPredictExtra();
+  const { data: predictionExtraData } = useSuspenseQuery({
+    queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
+    queryFn: getPredictExtra,
+    select: (response) => {
       const { current, p30, p90 } = response.data.data;
-      setPredictionExtraData([
+      return [
         { time: '현재', weight: current },
         { time: '1달 후', weight: p30 },
         { time: '3달 후', weight: p90 },
-      ]);
-    } catch (e) {
-      console.error(`API 호출 중 에러 발생: ${e}`);
-    }
-  };
-
-  const handlePredictExerciseDetail = async (exerciseId: number, day: string, duration: string) => {
-    try {
-      await postPredictExerciseDetail(exerciseId, Number(day), Number(duration));
-    } catch (e) {
-      console.error(`운동 예측 API 호출 중 에러 발생: ${e}`);
-    }
-  };
+      ];
+    },
+  });
 
   useEffect(() => {
-    handlePredictBasic();
-    const fetchExerciseDays = () => {
-      const dummyExerciseData = {
-        exerciseDays: 2,
-      };
-      setExerciseDays(dummyExerciseData.exerciseDays);
-    };
-
-    fetchExerciseDays();
-  }, []);
+    const weeklyExerciseCount = weeklyExerciseTime.data.data.exerciseHistoryList.length;
+    setExerciseDays(weeklyExerciseCount);
+  }, [weeklyExerciseTime]);
 
   useEffect(() => {
     if (exerciseId && day && duration) {
@@ -83,8 +76,7 @@ export default function RecordPage() {
 
   const handleShowBodyWeightRecord = (exerciseId: number, day: string, duration: string) => {
     setShowBodyWeightRecord(true);
-    handlePredictExerciseDetail(exerciseId, day, duration);
-    handlePredictExtra();
+    mutation.mutate({ exerciseId, day, duration });
   };
 
   const handleResetInput = () => {
@@ -105,7 +97,7 @@ export default function RecordPage() {
 
       <div className="currentPrediction">
         <p className="predictionText">
-          <strong>민영님</strong>의 이번주 운동을 유지했을 때, 체형 예측 결과예요
+          <strong>민영님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
         </p>
         <BodyWeightRecord data={predictionData} />
       </div>

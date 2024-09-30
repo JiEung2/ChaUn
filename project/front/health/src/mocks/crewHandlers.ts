@@ -62,7 +62,6 @@ const battleStatus = {
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
   http.get(`${baseUrl}/users/crew-recommendation`, () => {
-    //TODO - 현재 유사도만 주는데, 크루 데이터를 받아올 수 있는지?
     return HttpResponse.json(crewList, { status: 200 });
   }),
 
@@ -97,6 +96,33 @@ export const crewHandlers = [
     console.log('크루 내 랭킹 조회의 크루 id', numberCrewId);
 
     return HttpResponse.json(memberList, { status: 200 });
+  }),
+
+  //가입된 크루 조회
+  http.get(`${baseUrl}/users/:userId/crew-list`, ({ params }) => {
+    const { userId } = params;
+    console.log(userId);
+
+    return HttpResponse.json({
+      status: 200,
+      message: '',
+      data: {
+        crewList: [
+          {
+            crewId: 1,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+          },
+          {
+            crewId: 2,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+          },
+        ],
+      },
+    });
   }),
 
   // 배틀 현황 조회
