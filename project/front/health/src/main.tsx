@@ -2,16 +2,18 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './styles/global.scss';
 import { worker } from './mocks/browser';
-import { QueryClientProvider, QueryClient } from 'react-query';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 // 개발 환경에서만 MSW를 활성화
 async function startApp() {
   if (import.meta.env.VITE_APP_STATE === 'development') {
     console.log('개발 환경에서 MSW를 활성화합니다.');
-    await worker.start({
-      onUnhandledRequest: 'bypass',
-    });
+    async () => {
+      await worker.start({
+        onUnhandledRequest: 'bypass',
+      });
+    };
   }
 
   if (import.meta.env.VITE_APP_STATE === 'production') {

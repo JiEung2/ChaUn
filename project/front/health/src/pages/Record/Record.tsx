@@ -18,6 +18,33 @@ export default function RecordPage() {
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
 
+  // 날짜 상태 추가
+  const year = new Date().getFullYear();
+  const month = new Date().getMonth() + 1;
+  const [week, setWeek] = useState(1);
+
+  // 주차 계산 (월요일부터 일요일까지)
+  useEffect(() => {
+    const getMondayOfWeek = (date: Date) => {
+      const day = date.getDay(); // Sunday == 0, Monday == 1, ..., Saturday == 6
+      const diff = day === 0 ? -6 : 1 - day; // Calculate the difference to Monday (or previous Monday if it's Sunday)
+      const monday = new Date(date);
+      monday.setDate(date.getDate() + diff);
+      return monday;
+    };
+
+    const calculateWeekOfMonth = (date: Date) => {
+      const firstMonday = getMondayOfWeek(new Date(date.getFullYear(), date.getMonth(), 1)); // 해당 달의 첫 번째 월요일
+      const currentMonday = getMondayOfWeek(date);
+      const diff = Math.ceil((currentMonday.getTime() - firstMonday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+      return diff; // 몇 번째 주인지 반환
+    };
+
+    const currentDate = new Date();
+    const currentWeek = calculateWeekOfMonth(currentDate);
+    setWeek(currentWeek);
+  }, [year, month]); // year와 month가 변경될 때마다 주차를 다시 계산
+
   // 운동 예측 데이터 POST 요청을 위한 useMutation
   const mutation = useMutation({
     mutationFn: ({ exerciseId, day, duration }: { exerciseId: number; day: string; duration: string }) =>
@@ -30,11 +57,13 @@ export default function RecordPage() {
     },
   });
 
+  // 주간 운동 기록 데이터 요청
   const { data: weeklyExerciseTime } = useSuspenseQuery({
-    queryKey: [queryKeys.EXERCISE_HISTORY_WEEK],
-    queryFn: () => getWeeklyExerciseRecord(),
+    queryKey: [queryKeys.EXERCISE_HISTORY_WEEK, year, month, week],
+    queryFn: () => getWeeklyExerciseRecord(year, month, week),
   });
 
+  // 예측 데이터
   const { data: predictionData } = useSuspenseQuery({
     queryKey: [queryKeys.MY_BODY_PREDICT],
     queryFn: getPredictBasic,
@@ -62,7 +91,7 @@ export default function RecordPage() {
   });
 
   useEffect(() => {
-    const weeklyExerciseCount = weeklyExerciseTime.data.data.exerciseHistoryList.length;
+    const weeklyExerciseCount = weeklyExerciseTime?.data?.data?.exerciseHistoryList?.length || 0;
     setExerciseDays(weeklyExerciseCount);
   }, [weeklyExerciseTime]);
 
