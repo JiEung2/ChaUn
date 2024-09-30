@@ -325,7 +325,7 @@ def recommend_crews(user_index, user_id, user_df, crew_df, crew_list, top_n=6):
     return top_crews
 
 # API :: 크루 추천 (동기 처리)
-@app.get("/api/v1/users/{user_id}/crew-recommendation/")
+@app.get("/api/v1/users/{user_id}/crew-recommendation/fast-api")
 def crew_recommendation(user_id : int):
     # 1. java에서 데이터 불러오기
     row_user_data = get_user_list()
