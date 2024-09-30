@@ -19,6 +19,7 @@ public class UserQuest extends BaseEntity {
     private Long id;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private QuestStatus status;
 
     @ManyToOne
