@@ -1,21 +1,19 @@
 package com.ssafy.health.common.oauth.service;
 
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.ResponseCookie;
+import jakarta.servlet.http.Cookie;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CookieService {
-    public void createCookie(HttpServletResponse response, String key, String value) {
+    public Cookie createCookie(String key, String value) {
 
-        ResponseCookie cookie = ResponseCookie.from(key, value)
-                .httpOnly(true)        // JavaScript에서 접근하지 못하도록 설정
-                .secure(false)          // HTTPS 환경에서만 전송되도록 설정
-                .path("/")             // 쿠키의 적용 경로 설정
-                .maxAge(60 * 60 * 60)        // 쿠키 만료 시간 설정
-                .domain("localhost")
-                .build();
+        Cookie cookie = new Cookie(key, value); //쿠키 생성
+        cookie.setMaxAge(60 * 60 * 60); //쿠키가 살아있을 시간 설정
+        cookie.setSecure(false); //https 환경에서만 쿠키가 사용될 수 있게 하는 설정
+        cookie.setPath("/"); //쿠키가 보일 위치는 모든 전역 위치
+        cookie.setHttpOnly(true); //js가 쿠키를 가져가지 못하게 설정
+        cookie.setDomain("localhost");
 
-        response.addHeader("Set-Cookie", cookie.toString());
+        return cookie;
     }
 }
