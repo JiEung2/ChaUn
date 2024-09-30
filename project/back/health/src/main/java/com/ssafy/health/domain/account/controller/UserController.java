@@ -68,7 +68,7 @@ public class UserController implements UserControllerApi {
     }
 
     @PostMapping("/survey/favorite-exercises")
-    public ApiResponse<FavoredExerciseSurveySuccessDto> saveFavoredExercises(@RequestBody FavoredExercisesRequestDto requestDto) {
+    public ApiResponse<SurveySuccessDto> saveFavoredExercises(@RequestBody FavoredExercisesRequestDto requestDto) {
         return ApiResponse.success(userWriteService.saveFavoredExercises(requestDto));
     }
 
