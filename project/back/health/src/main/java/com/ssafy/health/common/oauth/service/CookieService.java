@@ -10,9 +10,10 @@ public class CookieService {
 
         ResponseCookie cookie = ResponseCookie.from(key, value)
                 .httpOnly(true)        // JavaScript에서 접근하지 못하도록 설정
-                .secure(false)          // HTTPS 환경에서만 전송되도록 설정
+//                .secure(false)          // HTTPS 환경에서만 전송되도록 설정
                 .path("/")             // 쿠키의 적용 경로 설정
                 .maxAge(60 * 60 * 60)        // 쿠키 만료 시간 설정
+                .sameSite("None")
                 .domain("localhost")
                 .build();
 
