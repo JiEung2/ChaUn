@@ -33,7 +33,7 @@ public class QuestController {
     }
 
     @GetMapping("/get/crew")
-    public ApiResponse<List<QuestResponseDto>> getCrewQuestList(@RequestParam Long crewId) {
+    public ApiResponse<List<QuestResponseDto>> getCrewQuestList(@RequestParam("crew_id") Long crewId) {
         return ApiResponse.success(questReadService.getAchievableQuest(QuestType.CREW, crewId));
     }
 }
