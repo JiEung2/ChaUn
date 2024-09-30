@@ -32,8 +32,13 @@ public class CharacterReadService {
 
     public String getCharacterUrl(Long userId){
         CharacterSet characterSet = characterSetRepository.findByUserId(userId).orElseThrow(CharacterSetNotFoundException::new);
-
-        Long id = characterSet.getCharacter().getId() + characterSet.getParts().getId();
+        Long id = 0L;
+        if(characterSet.getParts().getId() == 1){
+            id = characterSet.getCharacter().getId();
+        }
+        else{
+            id = characterSet.getCharacter().getId() + characterSet.getParts().getId();
+        }
         Character character = characterRepository.findById(id).orElseThrow(CharacterNotFoundException::new);
 
         return character.getCharacterFile();
