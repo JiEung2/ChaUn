@@ -39,4 +39,8 @@ public class CharacterSet {
         this.character = character;
         this.parts = parts;
     }
+
+    public void updateCharacter(Character character) {
+        this.character = character;
+    }
 }
