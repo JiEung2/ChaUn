@@ -48,7 +48,7 @@ public class CoinService {
         user.increaseCoin(ATTENDANCE_REWARD.getAmount());
     }
 
-    private void grantCoins(User user, int coinAmount) {
+    public void grantCoins(User user, int coinAmount) {
         user.increaseCoin(coinAmount);
     }
 }
