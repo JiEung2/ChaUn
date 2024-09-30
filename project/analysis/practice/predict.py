@@ -47,12 +47,12 @@ async def load_model_startup(app: FastAPI):
     global model, scaler, encoder
 
     timesteps = 7
-    features = 5 # [sex, age, BMI, weight, comsumed_cal] = 5 features
+    features = 6 # [sex_1, sex_2, age, BMI, weight, comsumed_cal] = 5 features
     forecast_steps = 90 # 최대 90일까지의 예측을 진행
     input_shape = (timesteps, features)
 
     model = build_model(input_shape, forecast_steps)
-    model = load_model_weights(model, "./modelv1.weights.h5")
+    model = load_model_weights(model, "./models/v2/modelv2.weights.h5")
 
     # Load the saved MinMaxScaler and OneHotEncoder
     scaler = joblib.load('./models/v2/minmax_scaler.pkl')
@@ -65,7 +65,7 @@ async def load_model_startup(app: FastAPI):
 # 예측 수행
 def make_predictions(model, X_test):
     try:
-        predictions = model.predict(model, X_test)
+        predictions = model.predict(X_test)
     except Exception as e:
         raise HTTPException(status_code=500, detail = f'Model Prediciton : {e}')
     
@@ -74,9 +74,17 @@ def make_predictions(model, X_test):
 
 # 모델 수행 이후 처리 함수
 def model_predict(data_test):
-    predictions = make_predictions(model, data_test) # 7일 입력 X -> 그 다음 1일 부터 ~ 90일 앞까지 값을 Y
-    # 30일, 90일 기록을 return 시키기
-    return round(float(predictions[0][29]), 2), round(float(predictions[0][89]), 2)
+    global scaler
+
+    predictions = make_predictions(model, data_test)  # 7일 입력 X -> 그 다음 1일 부터 ~ 90일 앞까지 값을 Y
+    # 체중 값을 역변환 (age, BMI, calories는 0으로 두고, weight 값만 역변환)
+    inverse_weight_predictions = scaler.inverse_transform(
+        np.hstack([np.zeros((predictions.shape[1], 2)),  # 나이, BMI 0
+                   predictions.reshape(-1, 1),           # weight 예측값 (역변환 대상)
+                   np.zeros((predictions.shape[1], 1))])  # 칼로리 0
+    )[:, 2]  # weight만 역변환
+
+    return round(inverse_weight_predictions[29], 2), round(inverse_weight_predictions[89], 2)
 
 # APP 정의
 app = FastAPI(lifespan=load_model_startup)
@@ -147,7 +155,6 @@ def preprocess_data(exercise_data):
 
     # 입력으로 받은 데이터를 어레이로 저장
     exercise_data = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data])
-    
     # 역 연산처리
     # 성별 피처 - 인코더 적용
     sex_encoded = encoder.transform(exercise_data[:, [0]])
