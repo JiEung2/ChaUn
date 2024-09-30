@@ -6,6 +6,7 @@ import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
 import com.ssafy.health.domain.quest.dto.request.QuestCreateRequestDto;
 import com.ssafy.health.domain.quest.entity.*;
+import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
 import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.repository.QuestRepository;
 import com.ssafy.health.domain.quest.repository.UserQuestRepository;
@@ -69,10 +70,10 @@ public class QuestWriteService {
 
     public void updateQuestStatus(QuestType type, Long questId, QuestStatus status) {
         if (type.equals(QuestType.CREW)) {
-            CrewQuest crewQuest = crewQuestRepository.findById(questId).orElseThrow();
+            CrewQuest crewQuest = crewQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
             crewQuest.updateStatus(status);
         } else if (type.equals(QuestType.INDIVIDUAL)) {
-            UserQuest userQuest = userQuestRepository.findById(questId).orElseThrow();
+            UserQuest userQuest = userQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
             userQuest.updateStatus(status);
         }
     }
