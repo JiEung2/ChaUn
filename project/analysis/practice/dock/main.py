@@ -37,8 +37,10 @@ MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
 
 # MongoClient 생성
 try:
-    client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
-    # 서버 상태 확인
+    # 테스트 용
+    client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
+    # 실제 서버 상태 확인
+    # client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     server_status = client.admin.command("ping")
     db = client['Health']
     predict_basic = db['predict_basic']
