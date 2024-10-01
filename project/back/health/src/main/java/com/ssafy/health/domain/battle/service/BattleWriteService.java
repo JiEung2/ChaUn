@@ -3,6 +3,7 @@ package com.ssafy.health.domain.battle.service;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
+import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.battle.dto.response.BattleAndCrewDto;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.Battle;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 import static com.ssafy.health.domain.coin.CoinCost.START_BATTLE;
 
@@ -48,6 +50,7 @@ public class BattleWriteService {
     private final BattleValidator battleValidator;
     private final CoinValidator coinValidator;
     private final NotificationWriteService notificationWriteService;
+    private final UserRepository userRepository;
 
     public BattleMatchResponseDto startBattle(Long crewId) {
         battleValidator.validateBattleAlreadyExists(crewId);
@@ -61,12 +64,29 @@ public class BattleWriteService {
         coinService.spendCrewCoins(myCrew, START_BATTLE.getAmount());
         coinService.spendCrewCoins(opponentCrew, START_BATTLE.getAmount());
 
-        battleRepository.save(Battle.builder()
+        Battle battle = battleRepository.save(Battle.builder()
                 .homeCrew(myCrew)
                 .awayCrew(opponentCrew)
                 .build());
 
-        // TODO: 배틀 시작 알림 전송
+        List<User> notificationTarget = Stream.concat(
+                        userRepository.findUserByCrewId(myCrew.getId()).stream(),
+                        userRepository.findUserByCrewId(opponentCrew.getId()).stream())
+                .toList();
+
+        notificationTarget.forEach(user -> {
+                    try {
+                        notificationWriteService.createBattleNotification(
+                                NotificationRequestDto.builder()
+                                        .notificationType(NotificationType.BATTLE)
+                                        .userId(user.getId())
+                                        .build(),
+                                battle.getId(), 0);
+                    } catch (ExecutionException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
 
         return BattleMatchResponseDto.builder()
                 .exerciseName(myCrew.getExercise().getName())
