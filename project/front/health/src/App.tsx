@@ -17,7 +17,7 @@ import Mypage from './pages/Mypage/Mypage';
 import Profile from './pages/Profile/Profile';
 import MyCrew from './pages/Crew/MyCrew/MyCrew';
 // import CrewDetail from './pages/Crew/CrewDetail/CrewDetail';
-// import OAuth from './pages/OAuth/OAuth';
+import OAuth from './pages/OAuth/OAuth';
 export default function App() {
   return (
     <Router>
@@ -39,6 +39,7 @@ export default function App() {
           <Route path="/alarm" element={<Alarm />} />
           <Route path="/profile/:userId" element={<Profile />} />
           <Route path="/crew/mycrew/" element={<MyCrew />} />
+          <Route path="/oauth" element={<OAuth />} />
         </Route>
       </Routes>
     </Router>

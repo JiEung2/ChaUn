@@ -10,11 +10,10 @@ const queryClient = new QueryClient();
 async function startApp() {
   if (import.meta.env.VITE_APP_STATE === 'development') {
     console.log('개발 환경에서 MSW를 활성화합니다.');
-    async () => {
-      await worker.start({
-        onUnhandledRequest: 'bypass',
-      });
-    };
+
+    await worker.start({
+      onUnhandledRequest: 'bypass',
+    });
   }
 
   if (import.meta.env.VITE_APP_STATE === 'production') {

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import QuestIcon from '../../assets/svg/quest.svg';
@@ -35,7 +35,10 @@ interface ExerciseRecord {
 
 // 데이터 fetch 함수
 function useExerciseTime() {
-  return useSuspenseQuery<ExerciseTimeResponse>({ queryKey: ['exerciseTime'], queryFn: () => exerciseTime() });
+  return useSuspenseQuery<ExerciseTimeResponse>({
+    queryKey: ['exerciseTime'],
+    queryFn: () => exerciseTime(),
+  });
 }
 
 function useExerciseRecord(year: number, month: number, week: number) {
@@ -51,33 +54,35 @@ function formatTime(minutes: number) {
   return `${hours}h ${mins}m`;
 }
 
-function HomePageContent() {
-  const navigate = useNavigate();
-  const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
-  const [clickedIndex, setClickedIndex] = useState<number | null>(null);
+// 운동 시간 표시 컴포넌트
+function ExerciseTimeDisplay() {
+  const { data: exerciseTimeData } = useExerciseTime();
 
-  // 데이터 가져오기
-  const { data: exerciseTimeData, isLoading: isLoadingTime, error: errorTime } = useExerciseTime();
-  const { data: exerciseRecordData, isLoading: isLoadingRecord, error: errorRecord } = useExerciseRecord(2024, 9, 3);
-
-  // 로딩 상태 처리
-  if (isLoadingTime || isLoadingRecord) {
-    return <div>Loading...</div>;
-  }
-
-  // 오류 처리
-  if (errorTime || errorRecord) {
-    return <div>Error loading data</div>;
-  }
-
-  // msw에서 모킹된 API 응답을 사용하여 운동 시간을 표시
   const characterContent = {
     nickname: '민영',
     todayTime: formatTime(exerciseTimeData?.dailyAccumulatedExerciseTime || 0),
     weeklyTime: formatTime(exerciseTimeData?.weeklyAccumulatedExerciseTime || 0),
   };
 
-  // exerciseRecordData에서 chart에 맞는 형식으로 변환
+  return (
+    <div className="myInfo">
+      <img src={Character} alt="character" />
+      <div className="time">
+        <p className="timeTitle">오늘 운동 시간</p>
+        <span>{characterContent.todayTime}</span>
+        <p className="timeTitle">이번 주 운동 시간</p>
+        <span>{characterContent.weeklyTime}</span>
+      </div>
+    </div>
+  );
+}
+
+// 운동 기록 차트 컴포넌트
+function ExerciseRecordChart() {
+  const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 3);
+  const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
+  const [clickedIndex, setClickedIndex] = useState<number | null>(null);
+
   const chartData = Array.isArray(exerciseRecordData)
     ? exerciseRecordData.map((record: any) => ({
         day: new Date(record.createdAt).toLocaleDateString('ko-KR', { weekday: 'short' }),
@@ -86,7 +91,6 @@ function HomePageContent() {
       }))
     : [];
 
-  // 그래프 클릭 시 칼로리 값을 설정하는 함수
   const handleChartClick = (_: any, elements: any) => {
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
@@ -184,11 +188,17 @@ function HomePageContent() {
     ],
   };
 
+  return <Line data={dataConfig} options={options} />;
+}
+
+function HomePageContent() {
+  const navigate = useNavigate();
+
   return (
     <div className="homeContainer">
       <div className="characterContainer">
         <div className="title">
-          <p className="character">{characterContent.nickname}님</p>
+          <p className="character">민영님</p>
           <div className="iconWrapper">
             <div className="navIcon" onClick={() => navigate('/home/quest')}>
               <img src={QuestIcon} alt="Quest Icon" className="icon" />
@@ -199,20 +209,18 @@ function HomePageContent() {
           </div>
         </div>
 
-        <div className="myInfo">
-          <img src={Character} alt="character" />
-          <div className="time">
-            <p className="timeTitle">오늘 운동 시간</p>
-            <span>{characterContent.todayTime}</span>
-            <p className="timeTitle">이번 주 운동 시간</p>
-            <span>{characterContent.weeklyTime}</span>
-          </div>
-        </div>
+        {/* 운동 시간 Suspense로 감쌈 */}
+        <Suspense fallback={<div>Loading exercise time...</div>}>
+          <ExerciseTimeDisplay />
+        </Suspense>
       </div>
 
       <div className="chartSection">
         <p className="chartTitle">이번 주 운동 그래프</p>
-        <Line data={dataConfig} options={options} />
+        {/* 운동 기록 차트 Suspense로 감쌈 */}
+        <Suspense fallback={<div>Loading chart...</div>}>
+          <ExerciseRecordChart />
+        </Suspense>
       </div>
 
       <div className="buttonSection">
@@ -237,7 +245,7 @@ function HomePageContent() {
   );
 }
 
-// Suspense 제거된 HomePage 컴포넌트
+// 전체 페이지에서 Suspense를 분리하여 사용
 export default function HomePage() {
   return <HomePageContent />;
 }

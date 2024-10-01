@@ -89,6 +89,7 @@ export const crewHandlers = [
     const { crew_id } = params;
     console.log('크루 가입 신청의 크루 id', crew_id);
     return HttpResponse.json({ status: 200, message: '크루 가입 신청 성공' });
+  }),
   //가입된 크루 조회
   http.get(`${baseUrl}/users/:userId/crew-list`, ({ params }) => {
     const { userId } = params;

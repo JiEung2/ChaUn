@@ -6,15 +6,19 @@ import axios from 'axios';
 // Access Token을 재발급받기 위한 함수
 const reissueAccessToken = async () => {
   try {
+    const baseURL = import.meta.env.VITE_APP_BASE_URL;
     // console.log('reissueAccessToken 함수 실행');
     // Access Token 재발급 요청
-    const response = await axios.get('https://j11c106.p.ssafy.io/api/reissue', {
+    console.log(`${baseURL}/reissue`);
+    const response = await axios.get(`${baseURL}/reissue`, {
       withCredentials: true, // 쿠키를 포함하여 요청
     });
-    console.log('로그인 response', response);
+    // console.log('로그인 response', response);
 
     if (response.status === 200) {
+      // console.log('로그인 성공');
       // 응답 헤더에서 새로운 Access Token 가져오기
+      console.log('성공 헤더', response.headers);
       const newAccessToken = response.headers['access'];
       console.log(newAccessToken);
       // 새로운 Access Token을 저장 또는 사용

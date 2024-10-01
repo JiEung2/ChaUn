@@ -1,8 +1,7 @@
 import Input from '../Input/Input';
 import SelectButton from '../Button/SelectButton';
 import styles from './2.module.scss';
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface BodyTypeProps {
   onBodyDataChange: (data: {
@@ -11,7 +10,7 @@ interface BodyTypeProps {
     skeletalMuscleMass: number;
     bodyFat: number;
     bodyMuscle: boolean;
-    bodyShape: number;
+    bodyShape: string;
   }) => void;
 }
 
@@ -23,35 +22,10 @@ export default function BodyType({ onBodyDataChange }: BodyTypeProps) {
   const [bodyMuscle, setBodyMuscle] = useState(''); // 근육 여부
   const [bodyShape, setBodyShape] = useState(''); // 체형
 
-  const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHeight(e.target.value);
+  // useEffect를 사용하여 상태 변경 후에 handleDataChange 호출
+  useEffect(() => {
     handleDataChange();
-  };
-
-  const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWeight(e.target.value);
-    handleDataChange();
-  };
-
-  const handleSkeletalMuscleMassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSkeletalMuscleMass(e.target.value);
-    handleDataChange();
-  };
-
-  const handleBodyFatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBodyFat(e.target.value);
-    handleDataChange();
-  };
-
-  const handleBodyMuscleChange = (muscle: string) => {
-    setBodyMuscle(muscle);
-    handleDataChange();
-  };
-
-  const handleBodyShapeChange = (shape: string) => {
-    setBodyShape(shape);
-    handleDataChange();
-  };
+  }, [height, weight, skeletalMuscleMass, bodyFat, bodyMuscle, bodyShape]); // 각 상태가 변경될 때마다 실행
 
   const handleDataChange = () => {
     onBodyDataChange({
@@ -60,8 +34,32 @@ export default function BodyType({ onBodyDataChange }: BodyTypeProps) {
       skeletalMuscleMass: Number(skeletalMuscleMass),
       bodyFat: Number(bodyFat),
       bodyMuscle: bodyMuscle === '근육많음',
-      bodyShape: Number(bodyShape),
+      bodyShape: bodyShape,
     });
+  };
+
+  const handleHeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHeight(e.target.value);
+  };
+
+  const handleWeightChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWeight(e.target.value);
+  };
+
+  const handleSkeletalMuscleMassChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSkeletalMuscleMass(e.target.value);
+  };
+
+  const handleBodyFatChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBodyFat(e.target.value);
+  };
+
+  const handleBodyMuscleChange = (muscle: string) => {
+    setBodyMuscle(muscle);
+  };
+
+  const handleBodyShapeChange = (shape: string) => {
+    setBodyShape(shape);
   };
 
   return (

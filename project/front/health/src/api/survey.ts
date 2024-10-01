@@ -8,10 +8,12 @@ export const nicknameCheck = async (nickname: string) => {
 };
 
 export const surveySubmit1 = async (nickname: string, birthday: string, gender: string) => {
+  // console.log(nickname, birthday, gender);
+  const newGender = gender === '남성' ? 'MAN' : 'WOMAN';
   const response = await axiosInstance.post(`${baseUrl}/users/survey/information`, {
     nickname,
     birthday,
-    gender,
+    newGender,
   });
 
   return response;
@@ -23,15 +25,41 @@ export const surveySubmit2 = async (
   skeletalMuscleMass: number,
   bodyFatRatio: number,
   isMuscle: boolean,
-  bodyType: number
+  bodyTypeString: string
 ) => {
+  // console.log(height, weight, skeletalMuscleMass, bodyFatRatio, isMuscle, bodyType);
+  let bodyTypeNumber: number;
+
+  switch (bodyTypeString) {
+    case '슬림':
+      bodyTypeNumber = 1;
+      break;
+    case '슬림탄탄':
+      bodyTypeNumber = 2;
+      break;
+    case '약간슬림':
+      bodyTypeNumber = 3;
+      break;
+    case '보통':
+      bodyTypeNumber = 4;
+      break;
+    case '통통':
+      bodyTypeNumber = 5;
+      break;
+    case '많이통통':
+      bodyTypeNumber = 6;
+      break;
+    default:
+      throw new Error('Invalid body type');
+  }
+  console.log(height, weight, skeletalMuscleMass, bodyFatRatio, isMuscle, bodyTypeNumber);
   const response = await axiosInstance.post(`${baseUrl}/users/survey/body`, {
     height,
     weight,
     skeletalMuscleMass,
     bodyFatRatio,
     isMuscle,
-    bodyType,
+    bodyType: bodyTypeNumber,
   });
 
   return response;

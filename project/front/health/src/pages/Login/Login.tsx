@@ -6,13 +6,13 @@ export default function LoginPage() {
   // const navigate = useNavigate();
   const moveKakao = () => {
     // TODO : 카카오 로그인 페이지로 이동
-    window.location.href = 'https://j11c106.p.ssafy.io/oauth2/authorization/kakao';
+    window.location.href = 'http://localhost:8080/oauth2/authorization/kakao';
     // 임시로 servey 페이지로 이동
     // navigate('/survey');
   };
   const moveGoogle = () => {
     //TODO : 구글 로그인 페이지로 이동
-    window.location.href = 'https://j11c106.p.ssafy.io/oauth2/authorization/google';
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
     // navigate('/survey');
   };
   return (
