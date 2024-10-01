@@ -18,6 +18,7 @@ import com.ssafy.health.domain.notification.entity.NotificationStatus;
 import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.repository.NotificationRepository;
 import com.ssafy.health.domain.quest.entity.CrewQuest;
+import com.ssafy.health.domain.quest.entity.QuestType;
 import com.ssafy.health.domain.quest.entity.UserQuest;
 import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
 import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
@@ -97,6 +98,7 @@ public class NotificationWriteService {
 
         UserQuest quest = userQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
         UserQuestNotification questDetail = UserQuestNotification.builder()
+                .type(QuestType.INDIVIDUAL)
                 .questId(questId)
                 .title(quest.getQuest().getTitle())
                 .coins(quest.getQuest().getCompletionCoins())
@@ -122,6 +124,7 @@ public class NotificationWriteService {
 
         CrewQuest quest = crewQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
         CrewQuestNotification questDetail = CrewQuestNotification.builder()
+                .type(QuestType.CREW)
                 .questId(questId)
                 .crewId(crew.getId())
                 .crewName(crew.getName())
@@ -142,6 +145,7 @@ public class NotificationWriteService {
     @Data
     @Builder
     static class UserQuestNotification {
+        private QuestType type;
         private Long questId;
         private String title;
         private Integer coins;
@@ -150,6 +154,7 @@ public class NotificationWriteService {
     @Data
     @Builder
     static class CrewQuestNotification {
+        private QuestType type;
         private Long questId;
         private Long crewId;
         private String crewName;
