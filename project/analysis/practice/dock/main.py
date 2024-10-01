@@ -261,8 +261,7 @@ async def extra_predict(user_id: int, request: UserExerciseRequest):
 
 ### 크루 추천 기능 ###
 # 유저, 크루 모델 정의 부분 #
-class UserData(BaseModel):
-    user_id: int
+class ScoreData(BaseModel):
     m_type: float
     type: float
     age: int
@@ -272,12 +271,14 @@ class UserData(BaseModel):
 
 class CrewData(BaseModel):
     crew_id: int
-    m_type: float
-    type: float
-    age: int
-    score_1: float
-    score_2: float
-    score_3: float    
+    score: ScoreData
+    crew_sports: str
+
+class UserData(BaseModel):
+    user_id: int
+    score: ScoreData
+    favorite_sports: List[str]
+    crew_list: List[CrewData]
 
 class TotalUserData(BaseModel):
     users: List[UserData]
@@ -307,15 +308,14 @@ def pearson_similarity(user, crew):
 
 # 2. 메인 추천 함수
 def recommend_crews(user_index, user_id, user_df, crew_df, crew_list, top_n=6):
-    # 4-1.
-    user = get_user_data(user_id)
-    row_crew_data = crew_list
     user_value = user_df.iloc[user_index].values  # 추천을 받을 사용자의 데이터에서 필요한 정보만 가져오기
-
     similarities = []
+
     for i in range(len(crew_df)):
         # 크루에 속해 있지 않을 때 (새로운 크루만 추천 받게)
-        if row_crew_data['crew_list'][i]['crew_id'] not in user['crew_list']:
+        
+        # user_data에 있는 crew_list = List[crew_id]를 조회 해서
+        if crew_list['crew_list'][i]['crew_id'] not in user['crew_list']:
             crew = crew_df.iloc[i].values
             crew_sports = row_crew_data['crew_list'][i]['exerciseName']
 
@@ -347,44 +347,52 @@ def recommend_crews(user_index, user_id, user_df, crew_df, crew_list, top_n=6):
     np.random.shuffle(top_crews)
     return top_crews
 
+'''
+로직 정리 :: 내가 속해있는 크루 정보도 알아야 한다.
+해결책으로 엔드포인트르 두 개로 나눈다? 아니면 속해 있는 크루도 포함해서 왕창 DB에 저장? -> 효율적인가? -> 리소스 많이 쓰는 것 같은데
+
+
+데이터 플로우 정리 ::
+우선,spring에서 요청을 보낼 때, 한번의 요청으로 모든 회원의 정보를 보고 크루 추천 리스트를 MongoDB에 저장해야한다.
+그럼, 모델을 수정하는게 더 빠르지 않을까? spring에서 내가 속한 crew_id를 알고 있는 List를 보내주기만 하면
+찾아서 제외해서 추천 리스트 만드는게 더 편할 것 같다.
+
+'''
+  
+
 # API :: 크루 추천 (동기 처리)
 @app.get("/api/v1/users/crew-recommendation/fast-api")
-def crew_recommendation(user_id : int, request: TotalData):
+def crew_recommendation(request: TotalData):
     scaler = MinMaxScaler() # 정규화 스케일러
 
-    # 1. request body 받아서 JSON에서 List를 DF 변환과 전처리
-    user_data = pd.DataFrame(request.total_crews['total_users'])
-    crew_data = pd.DataFrame(request.total_users['total_crews'])
-    # 데이터 정규화
+    # 1-1. request body 받아서 JSON에서 List를 DF 변환과 전처리
+    user_data = pd.DataFrame(u.dict() for u in request.total_crews['total_users'])
+    crew_data = pd.DataFrame(c.dict() for c in request.total_users['total_crews'])
+    # 1-2. 데이터 정규화
     user_data_scaled = scaler.fit_transform(user_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']]) # 나이, 체형, 기본 점수, 활동 점수, 식습관 점수
     crew_data_scaled = scaler.transform(crew_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']])
-    # DataFrame생성 (Matrix)
+    # 1-3. DataFrame생성 (Matrix)
     user_df = pd.DataFrame(user_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
     crew_df = pd.DataFrame(crew_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
+    user_df['user_id'] = user_data['user_id']
     crew_df['crew_id'] = crew_data['crew_id']
 
-    # 3. 완전 탐색으로 MongoDB 저장
-    for user_idx in range(len(user_df)):
+    # 2. 완전 탐색 MongoDB Depth
+    for user_idx in range(len(user_df)): # 첫 row부터 끝 row까지 확인할 것
+        # 3. user_df의 user_idx번의 row의 user 데이터를 가지고 있는 객체
+        now_user = user_df.iloc[user_idx]
 
-        recommended_crews = recommend_crews(user_index, user_id, user_df, crew_df, row_crew_data)
-        # 4. 저장할 정보 리스트로 만들기
+        # 4. 크루 추천
+        recommended_crews = recommend_crews(user_idx, now_user['user_id'], user_df, crew_df, crew_data)
+
+        # 5. 저장할 정보 리스트로 만들기
         result = {
-            'user_id' : user_id,
+            'user_id' : now_user['user_id'],
             'crew_recommended' : [{'crew_id': crew[0], 'similarity': crew[1]} for crew in recommended_crews]
         }
 
-
-    # 6. MongoDB에 저장 (수정 필요) 
-    try:
-        response = requests.post(f'https://j11c106.p.ssafy.io/api/v1/users/{user_id}/crew-recommendation', json = result)
-        response.raise_for_status()
-        if response.status_code == 200:
-            print("200 OK")
-        else:
-            print('E :', response.status_code)
-
-    except requests.exceptions.RequestException as e:
-        print("Failed :", e)
+        # 7. MongoDB 저장
+        crew_recommend.insert_one(result)
 
 # CLI 실행을 main 함수에서 실행
 if __name__ == "__main__":
