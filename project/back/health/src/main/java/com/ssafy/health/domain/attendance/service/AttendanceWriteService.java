@@ -9,8 +9,7 @@ import com.ssafy.health.domain.attendance.entity.Attendance;
 import com.ssafy.health.domain.attendance.repository.AttendanceRepository;
 import com.ssafy.health.domain.coin.service.CoinService;
 import com.ssafy.health.domain.quest.entity.QuestStatus;
-import com.ssafy.health.domain.quest.entity.UserQuest;
-import com.ssafy.health.domain.quest.repository.UserQuestRepository;
+import com.ssafy.health.domain.quest.service.QuestWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +27,7 @@ public class AttendanceWriteService {
     private final UserRepository userRepository;
     private final AttendanceValidator attendanceValidator;
     private final AttendanceRepository attendanceRepository;
-    private final UserQuestRepository userQuestRepository;
+    private final QuestWriteService questWriteService;
 
     public AttendanceSuccessDto markAttendance() {
 
@@ -48,12 +47,7 @@ public class AttendanceWriteService {
                 .findByUserIdAndCreatedAtBetween(user.getId(), startOfMonth, endOfMonth).size();
 
         if (attendCount >= 14) {
-            UserQuest quest = userQuestRepository.findUserQuestWithCriteria(
-                    user, QuestStatus.CREATED, "2주 이상 출석");
-
-            // TODO: 퀘스트 완료 알림 전송
-            quest.updateStatus(QuestStatus.COMPLETED);
-            coinService.grantCoinsToUser(user, quest.getQuest().getCompletionCoins());
+            questWriteService.updateUserQuestStatus(user, "2주 이상 출석", QuestStatus.CREATED);
         }
 
         return new AttendanceSuccessDto();

@@ -2,11 +2,11 @@ package com.ssafy.health.domain.quest.service;
 
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.repository.UserRepository;
+import com.ssafy.health.domain.coin.service.CoinService;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
 import com.ssafy.health.domain.quest.dto.request.QuestCreateRequestDto;
 import com.ssafy.health.domain.quest.entity.*;
-import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
 import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.repository.QuestRepository;
 import com.ssafy.health.domain.quest.repository.UserQuestRepository;
@@ -24,6 +24,7 @@ public class QuestWriteService {
     private final QuestRepository questRepository;
     private final UserQuestRepository userQuestRepository;
     private final CrewQuestRepository crewQuestRepository;
+    private final CoinService coinService;
 
     // 퀘스트 생성
     public Quest createQuest(QuestCreateRequestDto requestDto) {
@@ -77,14 +78,14 @@ public class QuestWriteService {
         });
     }
 
-    public void updateQuestStatus(QuestType type, Long questId, QuestStatus status) {
-        if (type.equals(QuestType.CREW)) {
-            CrewQuest crewQuest = crewQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
-            crewQuest.updateStatus(status);
-        } else if (type.equals(QuestType.INDIVIDUAL)) {
-            UserQuest userQuest = userQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
-            userQuest.updateStatus(status);
+    public void updateUserQuestStatus(User user, String title, QuestStatus status) {
+        UserQuest quest = userQuestRepository.findUserQuestWithCriteria(user, status, title);
+        if (quest != null) {
+            quest.updateStatus(QuestStatus.COMPLETED);
+            coinService.grantCoinsToUser(user, quest.getQuest().getCompletionCoins());
         }
+
+        // TODO: 알림 생성 및 전송
     }
 
     private Quest questBuilder(QuestType type, String title, QuestPeriod period, Integer coins) {

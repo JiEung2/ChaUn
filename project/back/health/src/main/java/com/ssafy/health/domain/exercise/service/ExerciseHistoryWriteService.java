@@ -21,9 +21,8 @@ import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
 import com.ssafy.health.domain.quest.entity.CrewQuest;
 import com.ssafy.health.domain.quest.entity.QuestStatus;
-import com.ssafy.health.domain.quest.entity.UserQuest;
 import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
-import com.ssafy.health.domain.quest.repository.UserQuestRepository;
+import com.ssafy.health.domain.quest.service.QuestWriteService;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,9 +45,9 @@ public class ExerciseHistoryWriteService {
     private final ExerciseRepository exerciseRepository;
     private final BodyHistoryRepository bodyHistoryRepository;
     private final ExerciseHistoryRepository exerciseHistoryRepository;
-    private final UserQuestRepository userQuestRepository;
-    private final CoinService coinService;
+    private CoinService coinService;
     private final CrewQuestRepository crewQuestRepository;
+    private final QuestWriteService questWriteService;
 
     private final Float OXYGEN_INTAKE = 3.5F;
 
@@ -64,13 +63,9 @@ public class ExerciseHistoryWriteService {
         ExerciseHistory exerciseHistory = buildExerciseHistory(exerciseHistorySaveRequestDto, user, exercise, burnedCalories);
         exerciseHistoryRepository.save(exerciseHistory);
 
-        UserQuest userQuest = userQuestRepository.findUserQuestWithCriteria(
-                user, QuestStatus.CREATED, "운동하기");
-        if (userQuest != null) {
-            userQuest.updateStatus(QuestStatus.COMPLETED);
-            coinService.grantCoinsToUser(user, userQuest.getQuest().getCompletionCoins());
-        }
+        questWriteService.updateUserQuestStatus(user, "운동하기", QuestStatus.CREATED);
 
+        // 크루 퀘스트
         LocalDate today = LocalDate.now();
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.plusDays(1).atStartOfDay();
