@@ -7,10 +7,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CharacterSnapshot {
 
     @Id
@@ -23,4 +27,9 @@ public class CharacterSnapshot {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Builder
+    public CharacterSnapshot(User user, String characterSnapshot) {
+        this.user = user;
+        this.characterSnapshot = characterSnapshot;
+    }
 }
