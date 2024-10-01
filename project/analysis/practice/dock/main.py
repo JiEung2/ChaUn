@@ -1,5 +1,4 @@
 # 웹처리
-import requests
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 
@@ -359,7 +358,7 @@ def recommend_crews(now_user, user_df, crew_df, top_n=6):
 '''
 
 # API :: 크루 추천 (동기 처리)
-@app.get("/api/v1/users/crew-recommendation/fast-api")
+@app.post("/api/v1/users/crew-recommendation/fast-api")
 def crew_recommendation(request: TotalData):
     scaler = MinMaxScaler() # 정규화 스케일러
 
