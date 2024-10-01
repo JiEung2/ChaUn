@@ -69,17 +69,18 @@ public class NotificationWriteService {
         sendFcmMessage(dto.getUserId(), "체형 입력 알림", SURVEY.getMessage());
     }
 
-    public void createBattleNotification(NotificationRequestDto dto, Long battleId)
+    public void createBattleNotification(NotificationRequestDto dto, Long battleId, Integer coinAmount)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
-        Map<String, Object> coinDetail = new HashMap<>();
         BattleMatchResponseDto battleData = battleReadService.getBattleStatus(battleId);
         additionalData.put("battleDetail", battleData);
 
-        // TODO: 배틀 종료 시 코인 부여 기능 구현되면 코인 정보 추가
         additionalData.put("coinDetail", battleData.getBattleStatus().equals(BattleStatus.STARTED) ?
-                null : coinDetail);
+                null : CoinDetail.builder()
+                        .crewCoin(200)
+                        .myCoin(coinAmount)
+                        .build());
 
         BattleStatus status = battleRepository.findById(battleId).orElseThrow().getStatus();
         String message = (status.equals(BattleStatus.STARTED) ? BATTLE_START.getMessage() : BATTLE_END.getMessage());
@@ -89,6 +90,13 @@ public class NotificationWriteService {
         notificationRepository.save(battleNotification);
 
         sendFcmMessage(dto.getUserId(), "배틀 알림", message);
+    }
+
+    @Data
+    @Builder
+    static class CoinDetail {
+        private int crewCoin;
+        private int myCoin;
     }
 
     public void createUserQuestNotification(NotificationRequestDto dto, Long questId)

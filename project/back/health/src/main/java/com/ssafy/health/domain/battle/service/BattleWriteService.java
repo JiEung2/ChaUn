@@ -58,6 +58,8 @@ public class BattleWriteService {
                 .awayCrew(opponentCrew)
                 .build());
 
+        // TODO: 배틀 시작 알림 전송
+
         return BattleMatchResponseDto.builder()
                 .exerciseName(myCrew.getExercise().getName())
                 .myCrewName(myCrew.getName())
@@ -80,8 +82,8 @@ public class BattleWriteService {
             Crew winningCrew = crews[0];
             List<UserCrew> winningUserCrewList = findUserCrewOrderByScore(winningCrew);
             List<User> winningCrewMemberList = winningUserCrewList.stream().map(UserCrew::getUser).toList();
-            coinService.distributeBattleRewards(winningCrewMemberList);
-            //Todo: 알림 보내는 기능 추가
+            coinService.distributeBattleRewards(winningCrewMemberList, battle.getId());
+            coinService.grantCoinsToCrew(winningCrew, 200);
 
             saveRankHistory(winningUserCrewList, winningCrew);
             resetScore(winningCrew, winningUserCrewList);
