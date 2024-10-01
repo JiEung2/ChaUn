@@ -8,6 +8,12 @@ import com.ssafy.health.domain.attendance.exception.AttendanceAlreadyExistsExcep
 import com.ssafy.health.domain.battle.exception.BattleAlreadyExistsException;
 import com.ssafy.health.domain.battle.exception.BattleNotFoundException;
 import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundException;
+import com.ssafy.health.domain.body.BodyType.exception.BodyTypeNotFoundException;
+import com.ssafy.health.domain.character.exception.CharacterNotFoundException;
+import com.ssafy.health.domain.character.exception.CharacterSetNotFoundException;
+import com.ssafy.health.domain.character.exception.PartsNotFoundException;
+import com.ssafy.health.domain.crew.exception.AlreadyJoinedCrewException;
+import com.ssafy.health.domain.crew.exception.CrewMemberLimitExceededException;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -80,6 +86,30 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(BodyTypeNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBodyTypeNotFoundException(BodyTypeNotFoundException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(CharacterNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCharacterNotFoundException(CharacterNotFoundException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(CharacterSetNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCharacterSetNotFoundException(CharacterSetNotFoundException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(PartsNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePartsNotFoundException(PartsNotFoundException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
     // 400 - Bad Request
 
     @ExceptionHandler(ExpiredRefreshToken.class)
@@ -127,4 +157,17 @@ public class GlobalExceptionHandler {
         ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
+
+    @ExceptionHandler(AlreadyJoinedCrewException.class)
+    public ResponseEntity<ApiResponse<Void>> handleAlreadyJoinedCrewException(final AlreadyJoinedCrewException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    @ExceptionHandler(CrewMemberLimitExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCrewMemberLimitExceededException(final CrewMemberLimitExceededException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
 }
