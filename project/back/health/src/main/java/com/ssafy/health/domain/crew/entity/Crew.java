@@ -29,19 +29,20 @@ public class Crew extends BaseEntity {
     private Integer version;
 
     private String profileImage;
-    private Float averageAge;
+    private Integer averageAge;
     private String description;
     private Integer crewCoin;
     private Float basicScore;
     private Float activityScore;
     private Boolean battleStatus;
+    private Integer crewMemberCount;
 
     @ManyToOne
     @JoinColumn(name = "exercise_id")
     private Exercise exercise;
 
     @Builder
-    public Crew(CreateCrewRequestDto createCrewRequestDto, Exercise exercise, String profileImage, Float averageAge) {
+    public Crew(CreateCrewRequestDto createCrewRequestDto, Exercise exercise, String profileImage, Integer averageAge) {
         this.name = createCrewRequestDto.getName();
         this.description = createCrewRequestDto.getDescription();
         this.exercise = exercise;
@@ -80,5 +81,13 @@ public class Crew extends BaseEntity {
     public void resetScores() {
         this.basicScore = 0F;
         this.activityScore = 0F;
+    }
+
+    public void updateAverageAge(Integer age) {
+        this.averageAge = (this.averageAge * crewMemberCount + age) / (crewMemberCount + 1);
+    }
+
+    public void increaseMemberCount() {
+        this.crewMemberCount++;
     }
 }
