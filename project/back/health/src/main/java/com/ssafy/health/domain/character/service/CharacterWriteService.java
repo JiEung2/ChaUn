@@ -3,6 +3,8 @@ package com.ssafy.health.domain.character.service;
 import com.ssafy.health.common.s3.service.S3Service;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.entity.User;
+import com.ssafy.health.domain.account.exception.UserNotFoundException;
+import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.body.BodyType.entity.BodyType;
 import com.ssafy.health.domain.body.BodyType.exception.BodyTypeNotFoundException;
 import com.ssafy.health.domain.body.BodyType.repository.BodyTypeRepository;
@@ -10,15 +12,18 @@ import com.ssafy.health.domain.character.dto.request.CharacterSaveRequestDto;
 import com.ssafy.health.domain.character.dto.request.PartsSaveRequestDto;
 import com.ssafy.health.domain.character.dto.response.CharacterResponseDto;
 import com.ssafy.health.domain.character.dto.response.CharacterSaveSuccessDto;
+import com.ssafy.health.domain.character.dto.response.CharacterSnapshotSuccessDto;
 import com.ssafy.health.domain.character.dto.response.PartsSaveSuccessDto;
 import com.ssafy.health.domain.character.entity.Character;
 import com.ssafy.health.domain.character.entity.CharacterSet;
+import com.ssafy.health.domain.character.entity.CharacterSnapshot;
 import com.ssafy.health.domain.character.entity.Parts;
 import com.ssafy.health.domain.character.exception.CharacterNotFoundException;
 import com.ssafy.health.domain.character.exception.CharacterSetNotFoundException;
 import com.ssafy.health.domain.character.exception.PartsNotFoundException;
 import com.ssafy.health.domain.character.respository.CharacterRepository;
 import com.ssafy.health.domain.character.respository.CharacterSetRepository;
+import com.ssafy.health.domain.character.respository.CharacterSnapshotRepository;
 import com.ssafy.health.domain.character.respository.PartsRepository;
 import java.io.IOException;
 import java.util.Optional;
@@ -33,11 +38,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class CharacterWriteService {
 
     private final S3Service s3Service;
+    private final UserRepository userRepository;
     private final PartsRepository partsRepository;
     private final BodyTypeRepository bodyTypeRepository;
     private final CharacterRepository characterRepository;
     private final CharacterReadService characterReadService;
     private final CharacterSetRepository characterSetRepository;
+    private final CharacterSnapshotRepository characterSnapshotRepository;
 
     public CharacterSaveSuccessDto saveCharacter(CharacterSaveRequestDto requestDto, MultipartFile characterImage, MultipartFile characterFile)
             throws IOException {
@@ -114,4 +121,10 @@ public class CharacterWriteService {
         return partsRepository.findById(1L).orElseThrow(PartsNotFoundException::new);
     }
 
+    public CharacterSnapshotSuccessDto saveSnapshot(MultipartFile snapshot) throws IOException {
+        String snapshotUrl = s3Service.uploadFile(snapshot);
+        User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
+        characterSnapshotRepository.save(CharacterSnapshot.builder().user(user).characterSnapshot(snapshotUrl).build());
+        return new CharacterSnapshotSuccessDto();
+    }
 }
