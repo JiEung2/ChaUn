@@ -100,7 +100,7 @@ public class QuestWriteService {
     }
 
     public void updateCrewQuestStatus(Crew crew, String title, QuestStatus status) {
-    CrewQuest quest = crewQuestRepository.findCrewQuestWithCriteria(crew, status, title);
+        CrewQuest quest = crewQuestRepository.findCrewQuestWithCriteria(crew, status, title);
         if (quest != null) {
             quest.updateStatus(QuestStatus.COMPLETED);
             coinService.grantCoinsToCrew(crew, quest.getQuest().getCompletionCoins());
