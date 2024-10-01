@@ -13,6 +13,7 @@ import com.ssafy.health.domain.character.service.CharacterWriteService;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,7 +68,7 @@ public class CharacterController implements CharacterControllerApi {
         return ApiResponse.success(characterReadService.getParts());
     }
 
-    @PostMapping("/character/snapshot")
+    @PostMapping(value = "/character/snapshot", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<CharacterSnapshotSuccessDto> saveSnapshot(@RequestParam("snapshot") MultipartFile snapshot)
             throws IOException {
         return ApiResponse.success(characterWriteService.saveSnapshot(snapshot));
