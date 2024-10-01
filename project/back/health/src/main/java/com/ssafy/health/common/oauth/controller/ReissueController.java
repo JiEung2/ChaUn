@@ -91,8 +91,7 @@ public class ReissueController {
 
         //response
         response.setHeader("access", newAccess);
-//        response.addHeader(HttpHeaders.SET_COOKIE, cookieService.createCookie("refresh", newRefresh).toString());
-        cookieService.createCookie(response, "refresh", newRefresh);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookieService.createCookie("refresh", newRefresh).toString());
 
         System.out.println("access: " + newAccess);
 
