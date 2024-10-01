@@ -272,13 +272,13 @@ class ScoreData(BaseModel):
 class CrewData(BaseModel):
     crew_id: int
     score: ScoreData
-    crew_sports: str
+    crew_sports: int
 
 class UserData(BaseModel):
     user_id: int
     score: ScoreData
-    favorite_sports: List[str]
-    crew_list: List[CrewData]
+    favorite_sports: List[int]
+    crew_list: List[int] = None
 
 class TotalUserData(BaseModel):
     users: List[UserData]
@@ -291,7 +291,7 @@ class TotalData(BaseModel):
     total_users: TotalUserData
     total_crews: TotalCrewData
 
-# 4. 피어슨 유사도 계산 함수 - 협업 필터링
+# 4-2. 피어슨 유사도 계산 함수 - 협업 필터링
 def pearson_similarity(user, crew):
     # 사용자-크루간 4개 지표 상관관계수 유사도 (나이, 기본 점수, 활동 점수, 식습관 점수)
     similarity = np.nan_to_num(np.corrcoef(user[2:], crew[2:-1])[0, 1]) # age, score_1~3
@@ -306,30 +306,29 @@ def pearson_similarity(user, crew):
     combined_similarity = (0.7 * similarity) + (0.3 * body_similarity)
     return combined_similarity
 
-# 2. 메인 추천 함수
-def recommend_crews(user_index, user_id, user_df, crew_df, crew_list, top_n=6):
-    user_value = user_df.iloc[user_index].values  # 추천을 받을 사용자의 데이터에서 필요한 정보만 가져오기
+# 4. 메인 추천 함수
+def recommend_crews(now_user, user_df, crew_df, top_n=6):
+    user_value = now_user.values  # 추천을 받을 사용자의 데이터에서 필요한 정보만 가져오기
     similarities = []
 
     for i in range(len(crew_df)):
         # 크루에 속해 있지 않을 때 (새로운 크루만 추천 받게)
-        
-        # user_data에 있는 crew_list = List[crew_id]를 조회 해서
-        if crew_list['crew_list'][i]['crew_id'] not in user['crew_list']:
-            crew = crew_df.iloc[i].values
-            crew_sports = row_crew_data['crew_list'][i]['exerciseName']
+        # user_data에 있는 crew_list = List[crew_id]에 현재 인덱스의 crew_id 있는지 확인
+        now_crew = crew_df.iloc[i].values
+        if now_crew['crew_id'] not in user_value['crew_list']:
+            crew_sports = now_crew['crew_sports']
 
-            # 콘텐츠 기반 필터링 (너무 편향되지 않게)
-            content_similarity = 0.8 if crew_sports in user['favorite_sports'] else 0.5
+            # 4-1. 콘텐츠 기반 필터링 (너무 편향되지 않게)
+            content_similarity = 0.8 if crew_sports in user_value['favorite_sports'] else 0.5 # 유저가 선호하는 운동에 포함될 때
             content_similarity *= 0.3
 
             # 4-2. 유저와 크루간 협업 필터링 (return combined_sim)
-            pearson_sim = pearson_similarity(user_value, crew)
+            pearson_sim = pearson_similarity(user_value, now_crew)
 
             # 협업 필터링과 콘텐츠 필터링의 가중치를 합산 (7:3) # 컨텐츠 필터링 = 0.24, 0.15
             combined_similarity = (0.7 * pearson_sim) + content_similarity
 
-            similarities.append((row_crew_data['crew_list'][i]['crew_id'], combined_similarity, pearson_sim, content_similarity))  # (crew_id, total_sim) 저장
+            similarities.append((now_crew['crew_id'], combined_similarity, pearson_sim, content_similarity))  # (crew_id, total_sim) 저장
     
     # 유사도 내림차순으로 정렬 후 상위 top_n 크루 선택
     similarities.sort(key=lambda x: x[1], reverse=True)
@@ -358,7 +357,6 @@ def recommend_crews(user_index, user_id, user_df, crew_df, crew_list, top_n=6):
 찾아서 제외해서 추천 리스트 만드는게 더 편할 것 같다.
 
 '''
-  
 
 # API :: 크루 추천 (동기 처리)
 @app.get("/api/v1/users/crew-recommendation/fast-api")
@@ -374,16 +372,22 @@ def crew_recommendation(request: TotalData):
     # 1-3. DataFrame생성 (Matrix)
     user_df = pd.DataFrame(user_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
     crew_df = pd.DataFrame(crew_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
+    # 1-4. 유저 df, 크루 df -> 필요 정보 불러오기
     user_df['user_id'] = user_data['user_id']
+    user_df['favorite_sports'] = user_data['favorite_sports']
+    user_df['crew_list'] = user_data['crew_list']
+
     crew_df['crew_id'] = crew_data['crew_id']
+    crew_df['crew_sports'] = crew_df['crew_sports']
+    # _data = row DF, _scaled = 정규화된 DF, _df = 스케일 + 전체 col
 
     # 2. 완전 탐색 MongoDB Depth
     for user_idx in range(len(user_df)): # 첫 row부터 끝 row까지 확인할 것
         # 3. user_df의 user_idx번의 row의 user 데이터를 가지고 있는 객체
         now_user = user_df.iloc[user_idx]
 
-        # 4. 크루 추천
-        recommended_crews = recommend_crews(user_idx, now_user['user_id'], user_df, crew_df, crew_data)
+        # 4. 크루 추천 (params = 현재 유저 정보, 전체 유저 df, 전체 크루 df)
+        recommended_crews = recommend_crews(now_user['user_id'], user_df, crew_df)
 
         # 5. 저장할 정보 리스트로 만들기
         result = {
@@ -393,6 +397,8 @@ def crew_recommendation(request: TotalData):
 
         # 7. MongoDB 저장
         crew_recommend.insert_one(result)
+
+    return {"message" : "Crew_Recommendation Completed!"}
 
 # CLI 실행을 main 함수에서 실행
 if __name__ == "__main__":
