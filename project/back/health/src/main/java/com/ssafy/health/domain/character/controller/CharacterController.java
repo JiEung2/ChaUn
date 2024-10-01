@@ -60,4 +60,8 @@ public class CharacterController implements CharacterControllerApi{
         return ApiResponse.success(characterWriteService.applyParts(partsId));
     }
 
+    @GetMapping("/parts")
+    public ApiResponse<PartsListDto> getParts() {
+        return ApiResponse.success(characterReadService.getParts());
+    }
 }
