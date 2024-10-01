@@ -1,4 +1,5 @@
-/* LoginPage.scss */
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
 
 /* 중앙 정렬을 위한 컨테이너 */
 .login-container {
@@ -7,13 +8,12 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+  gap: 20px;
 }
 
 /* 제목 스타일 */
 .login-title {
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  font-weight: bold;
+  @include typo.title;
 }
 
 /* 버튼 컨테이너 */
@@ -26,8 +26,23 @@
 .mainChar {
   display: flex;
   flex-direction: row;
-  img {
-    width: 150px;
-    height: 200px;
+  justify-content: center;
+  margin-left: 50px;
+  filter: brightness(1.4);
+
+  .maingirl,
+  .mainboy {
+    position: relative;
+    width: 200px;
+    height: 300px;
+  }
+
+  .maingirl {
+    z-index: 2;
+    left: -30px;
+  }
+
+  .mainboy {
+    z-index: 1;
   }
 }
