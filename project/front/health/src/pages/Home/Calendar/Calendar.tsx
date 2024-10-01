@@ -3,6 +3,7 @@ import GeneralButton from '../../../components/Button/GeneralButton';
 import ExerciseItem from '@/components/Exercise/ExerciseItem';
 import DailyRecord from '../../../components/Home/Calendar/DailyRecord';
 import CustomCalendar from '../../../components/Home/Calendar/CustomCalendar';
+import { getExerciseHistory } from '@/api/exercise';
 import './Calendar.scss';
 //TODO - 특정 달의 운동 기록을 모두 가져와 캘린더로 필터링하여 보여주는 방식?
 export default function CalendarPage() {
@@ -28,17 +29,51 @@ export default function CalendarPage() {
     },
   });
 
-  const [exerciseDates] = useState<Date[]>([new Date('2024-09-10'), new Date('2024-09-09'), new Date('2024-09-07')]);
+  interface exerciseRecord {
+    id: number;
+    exerciseDuration: number;
+    burnedCalories: number;
+    exerciseName: string;
+    createdAt: string;
+  }
+  const [exerciseDates] = useState<Date[]>([]);
 
   const [attendanceDates, setAttendanceDates] = useState<Date[]>([]);
   const [isAttendance, setIsAttendance] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('전체');
-
+  // 문제 있을 경우 아래 코드를 수정
+  const getExerciseHistoryData = async (sendYear: number, sendMonth: number) => {
+    try {
+      const response = await getExerciseHistory(sendYear, sendMonth);
+      console.log(response);
+      response.forEach((record: exerciseRecord) => {
+        const date = new Date(record.createdAt);
+        const dateString = date.toISOString().split('T')[0];
+        if (records[dateString]) {
+          records[dateString]!.types[record.exerciseName] = {
+            time: new Date(record.exerciseDuration * 1000).toISOString().substr(11, 8),
+            calories: record.burnedCalories,
+          };
+        } else {
+          records[dateString] = {
+            types: {
+              [record.exerciseName]: {
+                time: new Date(record.exerciseDuration * 1000).toISOString().substr(11, 8),
+                calories: record.burnedCalories,
+              },
+            },
+          };
+        }
+      }, []);
+    } catch (error) {
+      console.error('운동 기록 불러오기 실패', error);
+    }
+  };
   useEffect(() => {
     const storedAttendance = JSON.parse(localStorage.getItem('attendanceDates') || '[]');
     const storedLastAttendance = localStorage.getItem('lastAttendanceDate');
     setAttendanceDates(storedAttendance.map((date: string) => new Date(date)));
-
+    getExerciseHistoryData(today.getFullYear(), today.getMonth() + 1); // 이번 달의 운동 기록을 가져옴
     const todayDate = new Date();
     todayDate.setHours(12, 0, 0, 0); // 시간을 정오로 설정하여 정확히 오늘 날짜가 되도록
     const todayDateString = todayDate.toISOString().split('T')[0];

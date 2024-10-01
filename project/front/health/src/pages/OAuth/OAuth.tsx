@@ -6,6 +6,7 @@ import axios from 'axios';
 // Access Token을 재발급받기 위한 함수
 const reissueAccessToken = async () => {
   try {
+    // console.log('reissueAccessToken 함수 실행');
     // Access Token 재발급 요청
     const response = await axios.get('https://j11c106.p.ssafy.io/api/reissue', {
       withCredentials: true, // 쿠키를 포함하여 요청
@@ -29,7 +30,7 @@ const reissueAccessToken = async () => {
       // console.error('Failed to reissue access token:', response.statusText);
     }
   } catch (error) {
-    // console.error('Error during reissue access token:', error);
+    console.error('토큰을 가져오던 중 에러 발생', error);
   }
 };
 

@@ -1,4 +1,4 @@
-import { useState, Suspense } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import { useQuery } from 'react-query';
@@ -20,27 +20,26 @@ interface ExerciseTimeResponse {
   dailyAccumulatedExerciseTime: number;
   weeklyAccumulatedExerciseTime: number;
 }
+
 interface ChartData {
   day: string;
   time: number;
   calories: number;
 }
+
 interface ExerciseRecord {
   createdAt: string;
   exerciseDuration: number; // 초 단위의 운동 시간
   burnedCalories: number; // 소모된 칼로리
 }
+
 // 데이터 fetch 함수
 function useExerciseTime() {
-  return useQuery<ExerciseTimeResponse>(['exerciseTime'], () => exerciseTime(), {
-    suspense: true, // Suspense 활성화
-  });
+  return useQuery<ExerciseTimeResponse>('exerciseTime', exerciseTime);
 }
 
 function useExerciseRecord(year: number, month: number, week: number) {
-  return useQuery<ExerciseRecord>(['exerciseRecord', year, month, week], () => exerciseRecord(year, month, week), {
-    suspense: true, // Suspense 활성화
-  });
+  return useQuery<ExerciseRecord>(['exerciseRecord', year, month, week], () => exerciseRecord(year, month, week));
 }
 
 function formatTime(minutes: number) {
@@ -55,8 +54,18 @@ function HomePageContent() {
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
   // 데이터 가져오기
-  const { data: exerciseTimeData } = useExerciseTime();
-  const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 3); // 임의로 2024년 9월 3주차 데이터 사용
+  const { data: exerciseTimeData, isLoading: isLoadingTime, error: errorTime } = useExerciseTime();
+  const { data: exerciseRecordData, isLoading: isLoadingRecord, error: errorRecord } = useExerciseRecord(2024, 9, 3);
+
+  // 로딩 상태 처리
+  if (isLoadingTime || isLoadingRecord) {
+    return <div>Loading...</div>;
+  }
+
+  // 오류 처리
+  if (errorTime || errorRecord) {
+    return <div>Error loading data</div>;
+  }
 
   // msw에서 모킹된 API 응답을 사용하여 운동 시간을 표시
   const characterContent = {
@@ -225,11 +234,7 @@ function HomePageContent() {
   );
 }
 
-// Suspense를 통해 비동기 데이터 처리
+// Suspense 제거된 HomePage 컴포넌트
 export default function HomePage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <HomePageContent />
-    </Suspense>
-  );
+  return <HomePageContent />;
 }
