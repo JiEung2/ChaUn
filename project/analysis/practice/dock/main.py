@@ -99,7 +99,7 @@ async def load_model_startup(app: FastAPI):
     global model, scaler, encoder
 
     timesteps = 7
-    features = 6 # [sex_1, sex_2, age, BMI, weight, comsumed_cal] = 5 features
+    features = 6 # [sex_1, sex_2, age, BMI, weight, comsumed_cal] = 6 features
     forecast_steps = 90 # 최대 90일까지의 예측을 진행
     input_shape = (timesteps, features)
 
@@ -128,6 +128,7 @@ def model_predict(data_test):
     )[:, 2]  # weight만 역변환
 
     return round(inverse_weight_predictions[29], 2), round(inverse_weight_predictions[89], 2)
+    
 # object id convergence
 def convert_objectid(data):
     if isinstance(data, dict):
@@ -204,8 +205,8 @@ async def predict(user_id: int, request: UserExerciseRequest):
         predict_basic.insert_one(new_prediction)
 
         # 7. 재확인 코드
-        # new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
-        # return new_prediction
+        new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
+        return new_prediction
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Error : {e}')
 
@@ -253,43 +254,43 @@ async def extra_predict(user_id: int, request: UserExerciseRequest):
         predict_extra.insert_one(new_prediction)
 
         # 7. 재확인 코드
-        # new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
-        # return new_prediction
+        new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
+        return new_prediction
     except Exception as e:
         raise HTTPException(status_code=500, detail=f'Error : {e}')
 
 ### 크루 추천 기능 ###
-# 1-1. row_user_list / Spring 데이터 조회
-def get_user_list():
-    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/users")
-    # response = requests.get(f"https://health_backend/api/v1/users")
-    user_data = response.json()  # 유저 전체 목록
-    print(user_data)
-    return user_data
+# 유저, 크루 모델 정의 부분 #
+class UserData(BaseModel):
+    user_id: int
+    m_type: float
+    type: float
+    age: int
+    score_1: float
+    score_2: float
+    score_3: float
 
-# 1-2. row_crew_list / Spring 데이터 조회
-def get_crew_list():
-    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/crews")
-    crew_data = response.json()  # 크루 전체 목록
-    print(crew_data)
-    return crew_data
+class CrewData(BaseModel):
+    crew_id: int
+    m_type: float
+    type: float
+    age: int
+    score_1: float
+    score_2: float
+    score_3: float    
 
-### 크루 추천에 필요한 함수들
-# 3. user_id를 입력 받아서 추천 시스템 실행
-def get_user_index_by_id(user_id, user_data):
-    # user_id가 있는 컬럼이 있다고 가정하고 해당 인덱스를 반환
-    user_index = user_data[user_data['user_id'] == user_id].index[0]
-    print(f'user_index : {user_index} || user_id : {user_id}')
-    return user_index
+class TotalUserData(BaseModel):
+    users: List[UserData]
 
-# 4.1 user / Spring 데이터 조회
-def get_user_data(user_id):
-    response = requests.get(f"https://j11c106.p.ssafy.io/api/v1/users/{user_id}")
-    my_data = response.json()  # 내 유저 정보
-    print(my_data)
-    return my_data
+class TotalCrewData(BaseModel):
+    crews: List[CrewData]
 
-# 4-2. 피어슨 유사도 계산 함수 - 협업 필터링
+# 총 데이터 모델 정의
+class TotalData(BaseModel):
+    total_users: TotalUserData
+    total_crews: TotalCrewData
+
+# 4. 피어슨 유사도 계산 함수 - 협업 필터링
 def pearson_similarity(user, crew):
     # 사용자-크루간 4개 지표 상관관계수 유사도 (나이, 기본 점수, 활동 점수, 식습관 점수)
     similarity = np.nan_to_num(np.corrcoef(user[2:], crew[2:-1])[0, 1]) # age, score_1~3
@@ -304,7 +305,7 @@ def pearson_similarity(user, crew):
     combined_similarity = (0.7 * similarity) + (0.3 * body_similarity)
     return combined_similarity
 
-# 4. 메인 추천 함수
+# 2. 메인 추천 함수
 def recommend_crews(user_index, user_id, user_df, crew_df, crew_list, top_n=6):
     # 4-1.
     user = get_user_data(user_id)
@@ -347,37 +348,33 @@ def recommend_crews(user_index, user_id, user_df, crew_df, crew_list, top_n=6):
     return top_crews
 
 # API :: 크루 추천 (동기 처리)
-@app.get("/api/v1/users/{user_id}/crew-recommendation/fast-api")
-def crew_recommendation(user_id : int):
-    # 1. java에서 데이터 불러오기
-    row_user_data = get_user_list()
-    row_crew_data = get_crew_list()
-
-    # 2. 전처리 : JSON -> DF (각 요청별로 변환)
-    user_data = pd.DataFrame(row_user_data)
-    crew_data = pd.DataFrame(row_crew_data)
-
-    # 데이터 정규화
+@app.get("/api/v1/users/crew-recommendation/fast-api")
+def crew_recommendation(user_id : int, request: TotalData):
     scaler = MinMaxScaler() # 정규화 스케일러
+
+    # 1. request body 받아서 JSON에서 List를 DF 변환과 전처리
+    user_data = pd.DataFrame(request.total_crews['total_users'])
+    crew_data = pd.DataFrame(request.total_users['total_crews'])
+    # 데이터 정규화
     user_data_scaled = scaler.fit_transform(user_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']]) # 나이, 체형, 기본 점수, 활동 점수, 식습관 점수
     crew_data_scaled = scaler.transform(crew_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']])
-
     # DataFrame생성 (Matrix)
     user_df = pd.DataFrame(user_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
     crew_df = pd.DataFrame(crew_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
     crew_df['crew_id'] = crew_data['crew_id']
-    # print(crew_df)
 
-    # 3. user_index 찾아서 추천 알고리즘 돌리기
-    user_index = get_user_index_by_id(user_id, user_data)  # user_id에 해당하는 인덱스 찾기
-    recommended_crews = recommend_crews(user_index, user_id, user_df, crew_df, row_crew_data)
-    # 4. 저장할 정보 리스트로 만들기
-    result = {
-        'user_id' : user_id,
-        'crew_recommended' : [{'crew_id': crew[0], 'similarity': crew[1]} for crew in recommended_crews]
-    }
+    # 3. 완전 탐색으로 MongoDB 저장
+    for user_idx in range(len(user_df)):
 
-    # 5. response.data 내보내기
+        recommended_crews = recommend_crews(user_index, user_id, user_df, crew_df, row_crew_data)
+        # 4. 저장할 정보 리스트로 만들기
+        result = {
+            'user_id' : user_id,
+            'crew_recommended' : [{'crew_id': crew[0], 'similarity': crew[1]} for crew in recommended_crews]
+        }
+
+
+    # 6. MongoDB에 저장 (수정 필요) 
     try:
         response = requests.post(f'https://j11c106.p.ssafy.io/api/v1/users/{user_id}/crew-recommendation', json = result)
         response.raise_for_status()
