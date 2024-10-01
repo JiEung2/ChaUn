@@ -12,6 +12,8 @@ import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository
 import com.ssafy.health.domain.body.BodyType.entity.BodyType;
 import com.ssafy.health.domain.body.BodyType.repository.BodyTypeRepository;
 import com.ssafy.health.domain.character.service.CharacterWriteService;
+import com.ssafy.health.domain.quest.entity.QuestStatus;
+import com.ssafy.health.domain.quest.service.QuestWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class BodyHistoryWriteService {
     private final BodyTypeRepository bodyTypeRepository;
     private final BodyHistoryRepository bodyHistoryRepository;
     private final CharacterWriteService characterWriteService;
+    private final QuestWriteService questWriteService;
 
     private static final float MUSCLE_MIN_PER = 0.35F;
     private static final long BODY_TYPE_MIDDLE_NUMBER = 3;
@@ -39,6 +42,8 @@ public class BodyHistoryWriteService {
         saveBodyHistoryRecord(bodySurveyRequestDto, user, isMuscle, bodyType);
 
         characterWriteService.createPersonalCharacter(user, bodyTypeId);
+        
+        questWriteService.updateUserQuestStatus(user, "몸무게 입력", QuestStatus.CREATED);
 
         return new BodySurveySuccessDto();
     }
