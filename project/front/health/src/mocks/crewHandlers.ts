@@ -45,6 +45,39 @@ const memberList = [
     exerciseTime: 123121,
   },
 ];
+
+const crewBattleStatus = [
+  {
+    battleId: 1,
+    myTeamName: '달리자크루',
+    myTeamScore: 1200,
+    opponentTeamName: '크크크루',
+    opponentTeamScore: 1000,
+    exerciseName: '러닝',
+    dDay: 2,
+    battleStatus: 'STARTED',
+  },
+  {
+    battleId: 2,
+    myTeamName: '강아지는야옹',
+    myTeamScore: 3000,
+    opponentTeamName: '아이고머리야',
+    opponentTeamScore: 1000,
+    exerciseName: '러닝',
+    dDay: 2,
+    battleStatus: 'STARTED',
+  },
+  {
+    battleId: 0,
+    myTeamName: 'No Battle',
+    myTeamScore: 0,
+    opponentTeamName: 'No Opponent',
+    opponentTeamScore: 0,
+    exerciseName: 'N/A',
+    dDay: 2,
+    battleStatus: 'NONE',
+  },
+];
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
   http.get(`${baseUrl}/users/crew-recommendation`, () => {
@@ -109,5 +142,12 @@ export const crewHandlers = [
         ],
       },
     });
+  }),
+
+  // 크루 배틀 현황 조회
+  http.get(`${baseUrl}/crew/:crew_id/battle`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('배틀중인 크루id', crew_id);
+    return HttpResponse.json(crewBattleStatus, { status: 200 });
   }),
 ];
