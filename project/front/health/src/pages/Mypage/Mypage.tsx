@@ -1,5 +1,5 @@
 import { Suspense, useRef, useState } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query'; // SuspenseQuery 사용
+import { useSuspenseQuery } from '@tanstack/react-query';
 import Coin from '@/components/Coin/Coin';
 import GeneralButton from '@/components/Button/GeneralButton';
 import MyModel from '@/assets/image/model.png';
