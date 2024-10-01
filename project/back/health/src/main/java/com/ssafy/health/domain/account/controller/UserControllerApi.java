@@ -192,7 +192,7 @@ public interface UserControllerApi {
                             ))
             ),
     })
-    ApiResponse<FavoredExerciseSurveySuccessDto> saveFavoredExercises(@RequestBody FavoredExercisesRequestDto requestDto);
+    ApiResponse<SurveySuccessDto> saveFavoredExercises(@RequestBody FavoredExercisesRequestDto requestDto);
 
     @Operation(
             summary = "알림 수신 기기 등록",

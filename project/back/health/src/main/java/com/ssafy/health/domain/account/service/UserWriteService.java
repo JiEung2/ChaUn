@@ -5,7 +5,7 @@ import com.ssafy.health.domain.account.dto.response.DeviceRegisterResponseDto;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.dto.request.*;
 import com.ssafy.health.domain.account.dto.response.CaloriesSurveySuccessDto;
-import com.ssafy.health.domain.account.dto.response.FavoredExerciseSurveySuccessDto;
+import com.ssafy.health.domain.account.dto.response.SurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.InfoSurveySuccessDto;
 import com.ssafy.health.domain.account.dto.response.UserRegisterResponseDto;
 import com.ssafy.health.domain.account.entity.CaloriesType;
@@ -21,6 +21,7 @@ import com.ssafy.health.domain.account.repository.FavoredRepository;
 import com.ssafy.health.domain.account.repository.MealCaloriesRepository;
 import com.ssafy.health.domain.account.repository.SnackCaloriesRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
+import com.ssafy.health.domain.character.service.CharacterReadService;
 import com.ssafy.health.domain.exercise.entity.Exercise;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
 import java.util.List;
@@ -37,6 +38,7 @@ public class UserWriteService {
     private final UserRepository userRepository;
     private final FavoredRepository favoredRepository;
     private final ExerciseRepository exerciseRepository;
+    private final CharacterReadService characterReadService;
     private final MealCaloriesRepository mealCaloriesRepository;
     private final SnackCaloriesRepository snackCaloriesRepository;
 
@@ -87,7 +89,7 @@ public class UserWriteService {
         return new CaloriesSurveySuccessDto();
     }
 
-    public FavoredExerciseSurveySuccessDto saveFavoredExercises(FavoredExercisesRequestDto requestDto) {
+    public SurveySuccessDto saveFavoredExercises(FavoredExercisesRequestDto requestDto) {
         User user = findUserById(SecurityUtil.getCurrentUserId());
         List<Exercise> exerciseList = exerciseRepository.findByIdIn(requestDto.getFavoredExerciseIdList());
 
@@ -98,7 +100,12 @@ public class UserWriteService {
                         .build()));
 
         user.updateSurveyCompleted();
-        return new FavoredExerciseSurveySuccessDto();
+
+        String url = characterReadService.getCharacterUrl(user.getId());
+
+        return SurveySuccessDto.builder()
+                .characterUrl(url)
+                .build();
     }
 
     public DeviceRegisterResponseDto regiesterDevice(DeviceRegisterRequestDto deviceRegisterRequestDto) {
