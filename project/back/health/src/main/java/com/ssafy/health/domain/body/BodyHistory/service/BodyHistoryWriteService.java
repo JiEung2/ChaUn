@@ -11,6 +11,10 @@ import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.body.BodyType.entity.BodyType;
 import com.ssafy.health.domain.body.BodyType.repository.BodyTypeRepository;
+import com.ssafy.health.domain.coin.service.CoinService;
+import com.ssafy.health.domain.quest.entity.QuestStatus;
+import com.ssafy.health.domain.quest.entity.UserQuest;
+import com.ssafy.health.domain.quest.repository.UserQuestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +27,8 @@ public class BodyHistoryWriteService {
     private final BodyHistoryRepository bodyHistoryRepository;
     private final UserRepository userRepository;
     private final BodyTypeRepository bodyTypeRepository;
+    private final UserQuestRepository userQuestRepository;
+    private final CoinService coinService;
 
     private static final float MUSCLE_MIN_PER = 0.35F;
     private static final long BODY_TYPE_MIDDLE_NUMBER = 3;
@@ -35,6 +41,11 @@ public class BodyHistoryWriteService {
 
         BodyType bodyType = bodyTypeRepository.findById(bodyTypeId).orElseThrow();
         saveBodyHistoryRecord(bodySurveyRequestDto, user, isMuscle, bodyType);
+
+        UserQuest quest = userQuestRepository.findUserQuestWithCriteria(
+                user, QuestStatus.CREATED, "몸무게 입력");
+        quest.updateStatus(QuestStatus.COMPLETED);
+        coinService.grantCoinsToUser(user, quest.getQuest().getCompletionCoins());
 
         return new BodySurveySuccessDto();
     }
