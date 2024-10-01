@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum CrewExceptionMessage {
     CREW_NOT_FOUND("해당 크루가 존재하지 않습니다.", HttpStatus.NOT_FOUND.value()),
+    CREW_MEMBER_LIMIT_EXCEEDED("크루 인원이 모두 찼습니다. 더 이상 가입할 수 없습니다.", HttpStatus.CONFLICT.value()),
     ;
 
     private final String message;
