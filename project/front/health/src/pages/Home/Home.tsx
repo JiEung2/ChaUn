@@ -1,7 +1,6 @@
 import { useState, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
-import { useQuery } from 'react-query';
 import QuestIcon from '../../assets/svg/quest.svg';
 import CalendarIcon from '../../assets/svg/calendar.svg';
 import StyledButton from '../../components/Button/StyledButton';
@@ -13,6 +12,7 @@ import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
 import { exerciseTime, exerciseRecord } from '@/api/home';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 Chart.register(annotationPlugin);
 
@@ -32,14 +32,13 @@ interface ExerciseRecord {
 }
 // 데이터 fetch 함수
 function useExerciseTime() {
-  return useQuery<ExerciseTimeResponse>(['exerciseTime'], () => exerciseTime(), {
-    suspense: true, // Suspense 활성화
-  });
+  return useSuspenseQuery<ExerciseTimeResponse>({ queryKey: ['exerciseTime'], queryFn: () => exerciseTime() });
 }
 
 function useExerciseRecord(year: number, month: number, week: number) {
-  return useQuery<ExerciseRecord>(['exerciseRecord', year, month, week], () => exerciseRecord(year, month, week), {
-    suspense: true, // Suspense 활성화
+  return useSuspenseQuery<ExerciseRecord>({
+    queryKey: ['exerciseRecord', year, month, week],
+    queryFn: () => exerciseRecord(year, month, week),
   });
 }
 

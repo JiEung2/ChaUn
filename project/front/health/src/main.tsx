@@ -2,9 +2,10 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './styles/global.scss';
 import { worker } from './mocks/browser';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
+
 // 개발 환경에서만 MSW를 활성화
 async function startApp() {
   if (import.meta.env.VITE_APP_STATE === 'development') {
