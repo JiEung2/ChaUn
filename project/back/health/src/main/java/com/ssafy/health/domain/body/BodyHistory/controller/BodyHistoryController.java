@@ -11,17 +11,20 @@ import com.ssafy.health.domain.body.BodyHistory.service.BodyHistoryWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
-public class BodyHistoryController implements BodyHistoryControllerApi{
+public class BodyHistoryController implements BodyHistoryControllerApi {
     //Todo: getBodyHistory 인자 통일
 
     private final BodyHistoryReadService bodyHistoryReadService;
     private final BodyHistoryWriteService bodyHistoryWriteService;
 
     @PostMapping("/survey/body")
-    public ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto) {
+    public ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto)
+            throws ExecutionException, InterruptedException {
         return ApiResponse.success(bodyHistoryWriteService.saveBodyHistory(bodySurveyRequestDto));
     }
 

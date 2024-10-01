@@ -21,6 +21,8 @@ import com.ssafy.health.domain.exercise.service.ExerciseHistoryWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.ExecutionException;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -78,7 +80,8 @@ public class UserController implements UserControllerApi {
     }
 
     @PostMapping("/exercise-history")
-    public ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) throws InterruptedException {
+    public ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto)
+            throws InterruptedException, ExecutionException {
         return ApiResponse.success(exerciseHistoryWriteService.saveExerciseHistory(exerciseHistorySaveRequestDto));
     }
 

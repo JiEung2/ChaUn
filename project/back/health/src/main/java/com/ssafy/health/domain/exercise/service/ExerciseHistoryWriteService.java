@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
@@ -50,7 +51,8 @@ public class ExerciseHistoryWriteService {
         return OXYGEN_INTAKE;
     }
 
-    public ExerciseHistorySaveResponseDto saveExerciseHistory(ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) throws InterruptedException {
+    public ExerciseHistorySaveResponseDto saveExerciseHistory(ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto)
+            throws InterruptedException, ExecutionException {
         User user = findUserById(SecurityUtil.getCurrentUserId());
         Exercise exercise = findExerciseById(exerciseHistorySaveRequestDto.getExerciseId());
         Float burnedCalories = calculateBurnedCalories(user, exercise, exerciseHistorySaveRequestDto.getExerciseTime());

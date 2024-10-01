@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.concurrent.ExecutionException;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -31,7 +33,8 @@ public class BodyHistoryWriteService {
     private static final long BODY_TYPE_MIDDLE_NUMBER = 3;
     private static final long MUSCLE_BODY_TYPE_OFFSET = 6;
 
-    public BodySurveySuccessDto saveBodyHistory(BodySurveyRequestDto bodySurveyRequestDto) {
+    public BodySurveySuccessDto saveBodyHistory(BodySurveyRequestDto bodySurveyRequestDto)
+            throws ExecutionException, InterruptedException {
         User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
         Boolean isMuscle = calculateIsMuscle(bodySurveyRequestDto);
         Long bodyTypeId = adjustBodyTypeId(isMuscle, bodySurveyRequestDto.getBodyType(), user.getGender());

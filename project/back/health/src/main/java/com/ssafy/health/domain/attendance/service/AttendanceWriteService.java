@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @Transactional
@@ -29,7 +30,7 @@ public class AttendanceWriteService {
     private final AttendanceRepository attendanceRepository;
     private final QuestWriteService questWriteService;
 
-    public AttendanceSuccessDto markAttendance() {
+    public AttendanceSuccessDto markAttendance() throws ExecutionException, InterruptedException {
 
         YearMonth yearMonth = YearMonth.from(LocalDateTime.now());
         LocalDateTime startOfMonth = yearMonth.atDay(1).atStartOfDay();

@@ -16,6 +16,13 @@ import com.ssafy.health.domain.notification.entity.Notification;
 import com.ssafy.health.domain.notification.entity.NotificationStatus;
 import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.repository.NotificationRepository;
+import com.ssafy.health.domain.quest.entity.CrewQuest;
+import com.ssafy.health.domain.quest.entity.QuestType;
+import com.ssafy.health.domain.quest.entity.UserQuest;
+import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
+import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
+import com.ssafy.health.domain.quest.repository.UserQuestRepository;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +43,8 @@ public class NotificationWriteService {
     private final UserRepository userRepository;
     private final FcmService fcmService;
     private final BattleReadService battleReadService;
+    private final UserQuestRepository userQuestRepository;
+    private final CrewQuestRepository crewQuestRepository;
 
     public void createBodySurveyNotification(NotificationRequestDto dto)
             throws ExecutionException, InterruptedException {
@@ -55,7 +64,6 @@ public class NotificationWriteService {
                 dto.getNotificationType(), dto.getUserId(), SURVEY.getMessage(), additionalData);
         notificationRepository.save(notification);
 
-        // 사용자에 등록된 기기가 있을 경우에만 FCM 푸시
         sendFcmMessage(dto.getUserId(), "체형 입력 알림", SURVEY.getMessage());
     }
 
@@ -78,8 +86,56 @@ public class NotificationWriteService {
                 dto.getNotificationType(), dto.getUserId(), message, additionalData);
         notificationRepository.save(battleNotification);
 
-        // 사용자에 등록된 기기가 있을 경우에만 FCM 푸시
         sendFcmMessage(dto.getUserId(), "배틀 알림", message);
+    }
+
+    public void createQuestNotification(NotificationRequestDto dto, QuestType type, Long questId)
+            throws ExecutionException, InterruptedException {
+
+        Map<String, Object> additionalData = new HashMap<>();
+        QuestNotification questDetail = QuestNotification.builder().build();
+        StringBuilder messageBuilder = new StringBuilder();
+
+        if (type.equals(QuestType.INDIVIDUAL)) {
+            UserQuest quest = userQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
+            questDetail = QuestNotification.builder()
+                    .questId(questId)
+                    .crewId(null)
+                    .title(quest.getQuest().getTitle())
+                    .coins(quest.getQuest().getCompletionCoins())
+                    .build();
+
+            messageBuilder.append("'")
+                    .append(quest.getQuest().getTitle())
+                    .append("' ")
+                    .append(QUEST.getMessage());
+
+        } else if (type.equals(QuestType.CREW)) {
+            CrewQuest quest = crewQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
+            questDetail = QuestNotification.builder()
+                    .questId(questId)
+                    .crewId(quest.getCrew().getId())
+                    .title(quest.getQuest().getTitle())
+                    .coins(quest.getQuest().getCompletionCoins())
+                    .build();
+
+            messageBuilder.append("크루 ").append(QUEST.getMessage());
+        }
+
+        additionalData.put("questDetail", questDetail);
+        Notification questNotification = notificationBuilder(
+                dto.getNotificationType(), dto.getUserId(), messageBuilder.toString(), additionalData);
+        notificationRepository.save(questNotification);
+
+        sendFcmMessage(dto.getUserId(), "퀘스트 알림", messageBuilder.toString());
+    }
+
+    @Builder
+    static class QuestNotification {
+        private Long questId;
+        private Long crewId;
+        private String title;
+        private Integer coins;
     }
 
     public StatusUpdateResponseDto updateNotificationStatus(NotificationStatus status, Long notificationId) {

@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.concurrent.ExecutionException;
+
 @Tag(name = "체형 기록 컨트롤러", description = "회원의 체형 기록을 관리하는 클래스")
 public interface BodyHistoryControllerApi {
 
@@ -33,7 +35,8 @@ public interface BodyHistoryControllerApi {
                             ))
             ),
     })
-    ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto);
+    ApiResponse<BodySurveySuccessDto> saveBodySurvey(@RequestBody BodySurveyRequestDto bodySurveyRequestDto)
+            throws ExecutionException, InterruptedException;
 
     @Operation(
             summary = "회원의 6개월 간 몸무게 조회",
