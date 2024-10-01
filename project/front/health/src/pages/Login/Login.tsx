@@ -2,6 +2,9 @@ import './Login.scss'; // SCSS 파일 임포트
 import { useNavigate } from 'react-router-dom';
 import KakaoButton from '@/components/Button/LoginButton/KakaoButtom';
 import GoogleButton from '@/components/Button/LoginButton/Google';
+import MainGirl from '@/assets/image/maingirl.png';
+import MainBoy from '@/assets/image/mainboy.png';
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const moveKakao = () => {
@@ -18,6 +21,10 @@ export default function LoginPage() {
   return (
     <div className="login-container">
       <h1 className="login-title">캐운</h1>
+      <div className="mainChar">
+        <img src={MainBoy} alt="mainboy" />
+        <img src={MainGirl} alt="maingirl" />
+      </div>
       <div className="login-buttons">
         <KakaoButton onClick={moveKakao} />
         <GoogleButton onClick={moveGoogle} />
