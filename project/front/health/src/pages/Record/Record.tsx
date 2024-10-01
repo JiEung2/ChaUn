@@ -42,6 +42,7 @@ export default function RecordPage() {
 
     const currentDate = new Date();
     const currentWeek = calculateWeekOfMonth(currentDate);
+    console.log(year, month, week);
     setWeek(currentWeek); // 이번 주차로 week 설정
   }, [year, month]);
 

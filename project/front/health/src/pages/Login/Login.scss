@@ -22,3 +22,12 @@
   flex-direction: column;
   gap: 1rem;
 }
+
+.mainChar {
+  display: flex;
+  flex-direction: row;
+  img {
+    width: 150px;
+    height: 200px;
+  }
+}
