@@ -1,18 +1,21 @@
 package com.ssafy.health.domain.character.service;
 
 import com.ssafy.health.common.s3.service.S3Service;
+import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.body.BodyType.entity.BodyType;
 import com.ssafy.health.domain.body.BodyType.exception.BodyTypeNotFoundException;
 import com.ssafy.health.domain.body.BodyType.repository.BodyTypeRepository;
 import com.ssafy.health.domain.character.dto.request.CharacterSaveRequestDto;
 import com.ssafy.health.domain.character.dto.request.PartsSaveRequestDto;
+import com.ssafy.health.domain.character.dto.response.CharacterResponseDto;
 import com.ssafy.health.domain.character.dto.response.CharacterSaveSuccessDto;
 import com.ssafy.health.domain.character.dto.response.PartsSaveSuccessDto;
 import com.ssafy.health.domain.character.entity.Character;
 import com.ssafy.health.domain.character.entity.CharacterSet;
 import com.ssafy.health.domain.character.entity.Parts;
 import com.ssafy.health.domain.character.exception.CharacterNotFoundException;
+import com.ssafy.health.domain.character.exception.CharacterSetNotFoundException;
 import com.ssafy.health.domain.character.exception.PartsNotFoundException;
 import com.ssafy.health.domain.character.respository.CharacterRepository;
 import com.ssafy.health.domain.character.respository.CharacterSetRepository;
@@ -33,6 +36,7 @@ public class CharacterWriteService {
     private final PartsRepository partsRepository;
     private final BodyTypeRepository bodyTypeRepository;
     private final CharacterRepository characterRepository;
+    private final CharacterReadService characterReadService;
     private final CharacterSetRepository characterSetRepository;
 
     public CharacterSaveSuccessDto saveCharacter(CharacterSaveRequestDto requestDto, MultipartFile characterImage, MultipartFile characterFile)
@@ -86,6 +90,28 @@ public class CharacterWriteService {
         }
 
         return characterSetRepository.save(characterSet);
+    }
+
+    public CharacterResponseDto applyParts(Long partsId) {
+        CharacterSet characterSet = characterSetRepository.findByUserId(SecurityUtil.getCurrentUserId()).orElseThrow(
+                CharacterSetNotFoundException::new);
+
+        if (characterSet.getParts().getId().equals(partsId)) {
+            characterSet.updateParts(getBasicParts());
+        }
+        else{
+            Parts parts = partsRepository.findById(partsId).orElseThrow(PartsNotFoundException::new);
+            characterSet.updateParts(parts);
+        }
+        characterSetRepository.save(characterSet);
+
+        return CharacterResponseDto.builder()
+                .characterUrl(characterReadService.getCharacterUrl(SecurityUtil.getCurrentUserId()))
+                .build();
+    }
+
+    public Parts getBasicParts() {
+        return partsRepository.findById(1L).orElseThrow(PartsNotFoundException::new);
     }
 
 }
