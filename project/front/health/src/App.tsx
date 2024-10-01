@@ -18,6 +18,8 @@ import Profile from './pages/Profile/Profile';
 import MyCrew from './pages/Crew/MyCrew/MyCrew';
 // import CrewDetail from './pages/Crew/CrewDetail/CrewDetail';
 import OAuth from './pages/OAuth/OAuth';
+// import CrewBattle from './pages/Crew/CrewBattle/CrewBattle';
+// import CrewCreate from './pages/Crew/CrewCreate/CrewCreate';
 export default function App() {
   return (
     <Router>

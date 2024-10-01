@@ -15,30 +15,30 @@ async function startApp() {
       onUnhandledRequest: 'bypass',
     });
   }
-
-  if (import.meta.env.VITE_APP_STATE === 'production') {
-    // 서비스 워커 등록 코드 추가
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker
-          .register('/service-worker.js')
-          .then((registration) => {
-            console.log('서비스 워커가 다음과 같은 scope에서 등록되었습니다: ', registration.scope);
-          })
-          .catch((error) => {
-            console.log('서비스워커 등록에 실패했습니다: ', error);
-          });
-      });
-    }
-  }
-
-  // MSW 시작 후에 React 애플리케이션을 렌더링
-  createRoot(document.getElementById('root')!).render(
-    <QueryClientProvider client={queryClient}>
-      <App />
-    </QueryClientProvider>
-  );
 }
+
+if (import.meta.env.VITE_APP_STATE === 'production') {
+  // 서비스 워커 등록 코드 추가
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/service-worker.js')
+        .then((registration) => {
+          console.log('서비스 워커가 다음과 같은 scope에서 등록되었습니다: ', registration.scope);
+        })
+        .catch((error) => {
+          console.log('서비스워커 등록에 실패했습니다: ', error);
+        });
+    });
+  }
+}
+
+// MSW 시작 후에 React 애플리케이션을 렌더링
+createRoot(document.getElementById('root')!).render(
+  <QueryClientProvider client={queryClient}>
+    <App />
+  </QueryClientProvider>
+);
 
 // 애플리케이션 시작
 startApp();
