@@ -62,7 +62,12 @@ public class CrewWriteService {
         Crew crew = findCrewById(crewId);
         User user = findUserById(SecurityUtil.getCurrentUserId());
 
+        crewValidator.validateJoinCrew(crew, user);
+
         buildUserCrew(user, crew, CrewRole.MEMBER);
+
+        crew.updateAverageAge(calculateAge(user.getBirthday()));
+        crew.increaseMemberCount();
 
         return new JoinCrewSuccessDto();
     }
@@ -120,7 +125,7 @@ public class CrewWriteService {
                 .build());
     }
 
-    private Crew buildCrew(CreateCrewRequestDto requestDto, Exercise exercise, String profileImage, Float averageAge) {
+    private Crew buildCrew(CreateCrewRequestDto requestDto, Exercise exercise, String profileImage, Integer averageAge) {
         return crewRepository.save(Crew.builder()
                 .createCrewRequestDto(requestDto)
                 .profileImage(profileImage)
@@ -129,9 +134,9 @@ public class CrewWriteService {
                 .build());
     }
 
-    private Float calculateAge(LocalDate birthday) {
+    private int calculateAge(LocalDate birthday) {
         LocalDate today = LocalDate.now();
-        return (float) Period.between(birthday, today).getYears();
+        return Period.between(birthday, today).getYears();
     }
 
     private Crew findCrewById(Long crewId) {
