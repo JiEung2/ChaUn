@@ -21,6 +21,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.concurrent.ExecutionException;
+
 @Tag(name = "회원 컨트롤러", description = "회원 생성, 조회, 삭제 등 회원을 관리하는 클래스")
 public interface UserControllerApi {
     @Operation(
@@ -260,7 +262,8 @@ public interface UserControllerApi {
                     )
             )
     })
-    ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto) throws InterruptedException;
+    ApiResponse<ExerciseHistorySaveResponseDto> saveExerciseHistory(@RequestBody ExerciseHistorySaveRequestDto exerciseHistorySaveRequestDto)
+            throws InterruptedException, ExecutionException;
 
     @Operation(
             summary = "자신의 특정 주의 운동 기록 조회",

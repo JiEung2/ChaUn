@@ -3,6 +3,7 @@ package com.ssafy.health.domain.battle.service;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
+import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.battle.dto.response.BattleAndCrewDto;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.Battle;
@@ -15,6 +16,9 @@ import com.ssafy.health.domain.coin.service.CoinValidator;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
+import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
+import com.ssafy.health.domain.notification.entity.NotificationType;
+import com.ssafy.health.domain.notification.service.NotificationWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,9 +28,14 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
-import static com.ssafy.health.domain.coin.CoinCost.*;
+import static com.ssafy.health.domain.coin.CoinCost.START_BATTLE;
 
 @Service
 @Transactional
@@ -40,6 +49,8 @@ public class BattleWriteService {
     private final RankHistoryRepository rankHistoryRepository;
     private final BattleValidator battleValidator;
     private final CoinValidator coinValidator;
+    private final NotificationWriteService notificationWriteService;
+    private final UserRepository userRepository;
 
     public BattleMatchResponseDto startBattle(Long crewId) {
         battleValidator.validateBattleAlreadyExists(crewId);
@@ -53,10 +64,29 @@ public class BattleWriteService {
         coinService.spendCrewCoins(myCrew, START_BATTLE.getAmount());
         coinService.spendCrewCoins(opponentCrew, START_BATTLE.getAmount());
 
-        battleRepository.save(Battle.builder()
+        Battle battle = battleRepository.save(Battle.builder()
                 .homeCrew(myCrew)
                 .awayCrew(opponentCrew)
                 .build());
+
+        List<User> notificationTarget = Stream.concat(
+                        userRepository.findUserByCrewId(myCrew.getId()).stream(),
+                        userRepository.findUserByCrewId(opponentCrew.getId()).stream())
+                .toList();
+
+        notificationTarget.forEach(user -> {
+                    try {
+                        notificationWriteService.createBattleNotification(
+                                NotificationRequestDto.builder()
+                                        .notificationType(NotificationType.BATTLE)
+                                        .userId(user.getId())
+                                        .build(),
+                                battle.getId(), 0);
+                    } catch (ExecutionException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+        );
 
         return BattleMatchResponseDto.builder()
                 .exerciseName(myCrew.getExercise().getName())
@@ -80,8 +110,8 @@ public class BattleWriteService {
             Crew winningCrew = crews[0];
             List<UserCrew> winningUserCrewList = findUserCrewOrderByScore(winningCrew);
             List<User> winningCrewMemberList = winningUserCrewList.stream().map(UserCrew::getUser).toList();
-            coinService.distributeBattleRewards(winningCrewMemberList);
-            //Todo: 알림 보내는 기능 추가
+            coinService.distributeBattleRewards(winningCrewMemberList, battle.getId());
+            coinService.grantCoinsToCrew(winningCrew, 200);
 
             saveRankHistory(winningUserCrewList, winningCrew);
             resetScore(winningCrew, winningUserCrewList);
@@ -89,7 +119,19 @@ public class BattleWriteService {
             Crew losingCrew = crews[1];
             List<UserCrew> losingUserCrewList = findUserCrewOrderByScore(losingCrew);
             List<User> losingCrewMemberList = losingUserCrewList.stream().map(UserCrew::getUser).toList();
-            //Todo: 알림 보내는 기능 추가
+
+            losingCrewMemberList.forEach(user -> {
+                try {
+                    notificationWriteService.createBattleNotification(
+                            NotificationRequestDto.builder()
+                                    .notificationType(NotificationType.BATTLE)
+                                    .userId(user.getId())
+                                    .build(),
+                            battle.getId(), 0);
+                } catch (ExecutionException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 
             saveRankHistory(losingUserCrewList, losingCrew);
             resetScore(losingCrew, losingUserCrewList);
@@ -101,7 +143,7 @@ public class BattleWriteService {
         if (battle.getHomeCrewScore() > battle.getAwayCrewScore()) {
             return new Crew[]{battle.getHomeCrew(), battle.getAwayCrew()};
         }
-        return new Crew[] {battle.getAwayCrew(), battle.getHomeCrew()};
+        return new Crew[]{battle.getAwayCrew(), battle.getHomeCrew()};
     }
 
     private List<UserCrew> findUserCrewOrderByScore(Crew crew) {
@@ -109,12 +151,12 @@ public class BattleWriteService {
     }
 
     private void saveRankHistory(List<UserCrew> userCrewList, Crew crew) {
-        for(int i = 0; i < userCrewList.size(); i++){
+        for (int i = 0; i < userCrewList.size(); i++) {
             UserCrew userCrew = userCrewList.get(i);
             rankHistoryRepository.save(RankHistory.builder()
                     .user(userCrew.getUser())
                     .crew(crew)
-                    .ranking(i+1)
+                    .ranking(i + 1)
                     .basicScore(userCrew.getBasicScore())
                     .activityScore(userCrew.getActivityScore())
                     .endDate(LocalDate.now().minusDays(1))
@@ -180,7 +222,7 @@ public class BattleWriteService {
 
     private Float findRecentBattleScore(Long crewId) {
         Optional<Battle> battle = battleRepository.findFirstByHomeCrewIdOrAwayCrewIdOrderByCreatedAtDesc(crewId, crewId);
-        return battle.map(b -> b.getHomeCrew().getId().longValue() == crewId ? b.getHomeCrewScore(): b.getAwayCrewScore())
+        return battle.map(b -> b.getHomeCrew().getId().longValue() == crewId ? b.getHomeCrewScore() : b.getAwayCrewScore())
                 .orElse(0F);
     }
 
@@ -191,10 +233,10 @@ public class BattleWriteService {
         for (Crew crew : availableCrews) {
             Optional<Battle> findBattle = battleRepository.findFirstByHomeCrewOrAwayCrewOrderByCreatedAtDesc(crew, crew);
 
-            findBattle.ifPresentOrElse(battle ->{
+            findBattle.ifPresentOrElse(battle -> {
                 Crew currentCrew = battle.getAwayCrew().equals(crew) ? battle.getAwayCrew() : battle.getHomeCrew();
                 battleAndCrewDtoList.add(new BattleAndCrewDto(currentCrew, battle));
-            }, () ->{
+            }, () -> {
 
                 battleAndCrewDtoList.add(new BattleAndCrewDto(crew, null));
             });

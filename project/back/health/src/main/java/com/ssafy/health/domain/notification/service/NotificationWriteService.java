@@ -10,12 +10,21 @@ import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
 import com.ssafy.health.domain.battle.service.BattleReadService;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
+import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.dto.response.StatusUpdateResponseDto;
 import com.ssafy.health.domain.notification.entity.Notification;
 import com.ssafy.health.domain.notification.entity.NotificationStatus;
 import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.repository.NotificationRepository;
+import com.ssafy.health.domain.quest.entity.CrewQuest;
+import com.ssafy.health.domain.quest.entity.QuestType;
+import com.ssafy.health.domain.quest.entity.UserQuest;
+import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
+import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
+import com.ssafy.health.domain.quest.repository.UserQuestRepository;
+import lombok.Builder;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +45,8 @@ public class NotificationWriteService {
     private final UserRepository userRepository;
     private final FcmService fcmService;
     private final BattleReadService battleReadService;
+    private final UserQuestRepository userQuestRepository;
+    private final CrewQuestRepository crewQuestRepository;
 
     public void createBodySurveyNotification(NotificationRequestDto dto)
             throws ExecutionException, InterruptedException {
@@ -55,21 +66,21 @@ public class NotificationWriteService {
                 dto.getNotificationType(), dto.getUserId(), SURVEY.getMessage(), additionalData);
         notificationRepository.save(notification);
 
-        // 사용자에 등록된 기기가 있을 경우에만 FCM 푸시
         sendFcmMessage(dto.getUserId(), "체형 입력 알림", SURVEY.getMessage());
     }
 
-    public void createBattleNotification(NotificationRequestDto dto, Long battleId)
+    public void createBattleNotification(NotificationRequestDto dto, Long battleId, Integer coinAmount)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
-        Map<String, Object> coinDetail = new HashMap<>();
         BattleMatchResponseDto battleData = battleReadService.getBattleStatus(battleId);
         additionalData.put("battleDetail", battleData);
 
-        // TODO: 배틀 종료 시 코인 부여 기능 구현되면 코인 정보 추가
         additionalData.put("coinDetail", battleData.getBattleStatus().equals(BattleStatus.STARTED) ?
-                null : coinDetail);
+                null : CoinDetail.builder()
+                        .crewCoin(200)
+                        .myCoin(coinAmount)
+                        .build());
 
         BattleStatus status = battleRepository.findById(battleId).orElseThrow().getStatus();
         String message = (status.equals(BattleStatus.STARTED) ? BATTLE_START.getMessage() : BATTLE_END.getMessage());
@@ -78,8 +89,85 @@ public class NotificationWriteService {
                 dto.getNotificationType(), dto.getUserId(), message, additionalData);
         notificationRepository.save(battleNotification);
 
-        // 사용자에 등록된 기기가 있을 경우에만 FCM 푸시
         sendFcmMessage(dto.getUserId(), "배틀 알림", message);
+    }
+
+    @Data
+    @Builder
+    static class CoinDetail {
+        private int crewCoin;
+        private int myCoin;
+    }
+
+    public void createUserQuestNotification(NotificationRequestDto dto, Long questId)
+            throws ExecutionException, InterruptedException {
+
+        Map<String, Object> additionalData = new HashMap<>();
+
+        UserQuest quest = userQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
+        UserQuestNotification questDetail = UserQuestNotification.builder()
+                .type(QuestType.INDIVIDUAL)
+                .questId(questId)
+                .title(quest.getQuest().getTitle())
+                .coins(quest.getQuest().getCompletionCoins())
+                .build();
+
+        StringBuilder messageBuilder = new StringBuilder().append("'")
+                .append(quest.getQuest().getTitle())
+                .append("' ")
+                .append(QUEST.getMessage());
+
+        additionalData.put("questDetail", questDetail);
+        Notification questNotification = notificationBuilder(
+                dto.getNotificationType(), dto.getUserId(), messageBuilder.toString(), additionalData);
+        notificationRepository.save(questNotification);
+
+        sendFcmMessage(dto.getUserId(), "퀘스트 알림", messageBuilder.toString());
+    }
+
+    public void createCrewQuestNotification(NotificationRequestDto dto, Crew crew, Long questId)
+            throws ExecutionException, InterruptedException {
+
+        Map<String, Object> additionalData = new HashMap<>();
+
+        CrewQuest quest = crewQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
+        CrewQuestNotification questDetail = CrewQuestNotification.builder()
+                .type(QuestType.CREW)
+                .questId(questId)
+                .crewId(crew.getId())
+                .crewName(crew.getName())
+                .title(quest.getQuest().getTitle())
+                .coins(quest.getQuest().getCompletionCoins())
+                .build();
+
+        StringBuilder messageBuilder = new StringBuilder().append("크루 ").append(QUEST.getMessage());
+
+        additionalData.put("questDetail", questDetail);
+        Notification questNotification = notificationBuilder(
+                dto.getNotificationType(), dto.getUserId(), messageBuilder.toString(), additionalData);
+        notificationRepository.save(questNotification);
+
+        sendFcmMessage(dto.getUserId(), "퀘스트 알림", messageBuilder.toString());
+    }
+
+    @Data
+    @Builder
+    static class UserQuestNotification {
+        private QuestType type;
+        private Long questId;
+        private String title;
+        private Integer coins;
+    }
+
+    @Data
+    @Builder
+    static class CrewQuestNotification {
+        private QuestType type;
+        private Long questId;
+        private Long crewId;
+        private String crewName;
+        private String title;
+        private Integer coins;
     }
 
     public StatusUpdateResponseDto updateNotificationStatus(NotificationStatus status, Long notificationId) {
