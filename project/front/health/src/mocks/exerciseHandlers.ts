@@ -80,4 +80,41 @@ export const exerciseHandlers = [
 
     return HttpResponse.json(exerciseHistoryList);
   }),
+
+  // 이번주 운동 기록 조회
+  http.get(`${baseUrl}/users/exercise-history/week`, ({ request }) => {
+    const url = new URL(request.url);
+    try {
+      const year = url.searchParams.get('year');
+      const month = url.searchParams.get('month');
+      const week = url.searchParams.get('week');
+      console.log(year, month, week);
+
+      return HttpResponse.json({
+        status: 200,
+        message: '',
+        data: {
+          exerciseHistoryList: [
+            {
+              id: 1,
+              exerciseDuration: 3600,
+              burnedCalories: 560,
+              exerciseName: '러닝',
+              createdAt: '2024-09-30T15:00:00',
+            },
+            {
+              id: 2,
+              exerciseDuration: 1800,
+              burnedCalories: 300,
+              exerciseName: '수영',
+              createdAt: '2024-10-01T10:00:00',
+            },
+          ],
+        },
+      });
+    } catch (error) {
+      console.error('MSW handler에서 에러 발생', error);
+      return HttpResponse.error();
+    }
+  }),
 ];

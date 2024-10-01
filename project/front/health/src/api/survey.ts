@@ -1,4 +1,4 @@
-// import axios from 'axios';
+import axios from 'axios';
 import axiosInstance from './axiosInstance';
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
@@ -37,11 +37,17 @@ export const surveySubmit2 = async (
   return response;
 };
 
-export const surveySubmit3 = async (nickname: string, birthday: string, gender: string) => {
-  const response = await axiosInstance.post(`${baseUrl}/users/survey/eating-habits`, {
-    nickname,
-    birthday,
-    gender,
+export const surveySubmit3 = async (
+  mealCount: number,
+  mealType: string,
+  snackFrequency: string,
+  drinkFrequency: string
+) => {
+  const response = await axios.post(`${baseUrl}/users/survey/eating-habits`, {
+    mealCount,
+    mealType,
+    snackFrequency,
+    drinkFrequency,
   });
 
   return response;

@@ -63,18 +63,18 @@ export const recordHandlers = [
         message: 'Success',
         data: {
           bodyHistoryDataList: [
-            {
-              date: '2024-09-16T15:00:00',
-              weight: 75.5,
-              skeletalMuscleMass: 30,
-              bodyFatRatio: 20,
-            },
-            {
-              date: '2024-09-23T15:00:00',
-              weight: 74,
-              skeletalMuscleMass: 29.5,
-              bodyFatRatio: 21,
-            },
+            // {
+            //   date: '2024-08-16T15:00:00',
+            //   weight: 75.5,
+            //   skeletalMuscleMass: 30,
+            //   bodyFatRatio: 20,
+            // },
+            // {
+            //   date: '2024-08-23T15:00:00',
+            //   weight: 74,
+            //   skeletalMuscleMass: 29.5,
+            //   bodyFatRatio: 21,
+            // },
           ],
         },
       });

@@ -1,67 +1,34 @@
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import Crew from '@/components/Crew/Crew';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import './Profile.scss';
 import { getUserExerciseTime, getUserWeight6 } from '@/api/user';
-import CrewImg from '@/assets/image/customItem.jpg';
+import { getUserCrewList } from '@/api/crew';
+import { useSuspenseQuery } from '@tanstack/react-query';
+import queryKeys from '@/utils/querykeys';
 
 export default function ProfilePage() {
   const { userId } = useParams<{ userId: string }>();
-  const [todayExerciseTime, setTodayExerciseTime] = useState<number>(0);
-  const [thisWeekExerciseTime, setThisWeekExerciseTime] = useState<number>(0);
-  const [userWeight, setUserWeight] = useState<{ date: string; weight: number }[]>([]);
 
-  const handleUserProfile = async (userId: string) => {
-    try {
-      const response1 = await getUserExerciseTime(Number(userId));
-      const response2 = await getUserWeight6(Number(userId));
+  // 운동 시간 가져오기
+  const { data: exerciseTimeData } = useSuspenseQuery({
+    queryKey: [queryKeys.USER_EXERCISE_TIME, userId],
+    queryFn: () => getUserExerciseTime(Number(userId)),
+  });
 
-      const exerciseTimeData = response1.data.data;
-      setTodayExerciseTime(exerciseTimeData.todayExerciseTime);
-      setThisWeekExerciseTime(exerciseTimeData.thisWeekExerciseTime);
+  // 체중 기록 가져오기
+  const { data: weight6Data } = useSuspenseQuery({
+    queryKey: [queryKeys.USER_WEIGHT, userId],
+    queryFn: () => getUserWeight6(Number(userId)),
+  });
 
-      const weightDataList = response2.data.data.weightDataList || [];
-      setUserWeight(weightDataList);
-    } catch (error) {
-      console.error('Error fetching user detail:', error);
-    }
-  };
-
-  const myCrews = [
-    {
-      id: 1,
-      imageUrl: CrewImg,
-      name: '달리는 번개라오라오',
-      tag: '런닝',
-    },
-    {
-      id: 1,
-      imageUrl: CrewImg,
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    {
-      id: 1,
-      imageUrl: CrewImg,
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    {
-      id: 1,
-      imageUrl: 'data:image/png;base64,...',
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    {
-      id: 1,
-      imageUrl: 'data:image/png;base64,...',
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    // 나머지 크루 데이터 생략...
-  ];
+  // 크루 리스트 가져오기
+  const { data: userCrewList } = useSuspenseQuery({
+    queryKey: [queryKeys.USER_CREW_LIST, userId],
+    queryFn: () => getUserCrewList(Number(userId)),
+    select: (response) => response.data.crewList || [],
+  });
 
   // 6개월 전까지의 날짜 배열을 생성하는 함수
   const generateLast6Months = () => {
@@ -84,6 +51,7 @@ export default function ProfilePage() {
     return `${String(date.getFullYear()).slice(2)}.${String(date.getMonth() + 1).padStart(2, '0')}`;
   };
 
+  // 체중 데이터 매핑 함수
   const fillWeightData = (weightDataList: { date: string; weight: number }[], chartLabels: string[]) => {
     return chartLabels.map((label) => {
       const foundData = weightDataList.find((data) => formatDateToYearMonth(data.date) === label);
@@ -91,19 +59,20 @@ export default function ProfilePage() {
     });
   };
 
+  // 운동 시간 포맷팅 함수
   const formatExerciseTime = (timeInMs: number) => {
     const hours = Math.floor(timeInMs / (1000 * 60 * 60));
     const minutes = Math.floor((timeInMs % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours}h ${minutes}m`;
   };
 
+  // 차트 데이터 설정
   const chartData = {
     labels: chartLabels,
     datasets: [
       {
         label: '체중 기록 (kg)',
-        data: fillWeightData(userWeight, chartLabels),
-        borderColor: '#A8C3FF',
+        data: fillWeightData(weight6Data?.data.data.weightDataList || [], chartLabels),
         backgroundColor: '#CDE0FF',
         fill: false,
         tension: 0.1,
@@ -111,6 +80,7 @@ export default function ProfilePage() {
     ],
   };
 
+  // 차트 옵션 설정
   const options = {
     plugins: {
       legend: {
@@ -150,15 +120,8 @@ export default function ProfilePage() {
     },
   };
 
-  useEffect(() => {
-    if (userId) {
-      handleUserProfile(userId);
-    }
-  }, [userId]);
-
   const handleCrewClick = (crewId: number) => {
-    // TODO - 해당 크루 상세보기
-    console.log(crewId);
+    console.log(crewId); // TODO - 해당 크루 상세보기
   };
 
   return (
@@ -167,13 +130,13 @@ export default function ProfilePage() {
       <div className="profileHeaderSection">
         <div className="time">
           <p className="timeTitle">오늘의 운동 시간</p>
-          <span>{formatExerciseTime(todayExerciseTime)}</span>
+          <span>{formatExerciseTime(exerciseTimeData?.data.data.dailyAccumulatedExerciseTime || 0)}</span>
           <p className="timeTitle">이번 주 운동 시간</p>
-          <span>{formatExerciseTime(thisWeekExerciseTime)}</span>
+          <span>{formatExerciseTime(exerciseTimeData?.data.data.weeklyAccumulatedExerciseTime || 0)}</span>
         </div>
       </div>
 
-      <div className="chartContainer">
+      <div className="userChartContainer">
         <Line data={chartData} options={options} />
       </div>
 
@@ -181,15 +144,19 @@ export default function ProfilePage() {
         <p className="titles">닉네임님의 크루</p>
 
         <div className="crewList">
-          {myCrews.map((crew, index) => (
-            <Crew
-              key={index}
-              imageUrl={crew.imageUrl}
-              name={crew.name}
-              tag={crew.tag}
-              onClick={() => handleCrewClick(crew.id)}
-            />
-          ))}
+          {userCrewList && userCrewList.length > 0 ? (
+            userCrewList.map((crew: any) => (
+              <Crew
+                key={crew.crewId}
+                imageUrl={crew.crewProfileImage}
+                name={crew.crewName}
+                tag={crew.exerciseName}
+                onClick={() => handleCrewClick(crew.crewId)}
+              />
+            ))
+          ) : (
+            <p>해당 크루가 없습니다.</p>
+          )}
         </div>
       </div>
     </div>

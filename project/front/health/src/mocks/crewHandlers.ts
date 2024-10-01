@@ -89,5 +89,30 @@ export const crewHandlers = [
     const { crew_id } = params;
     console.log('크루 가입 신청의 크루 id', crew_id);
     return HttpResponse.json({ status: 200, message: '크루 가입 신청 성공' });
+  //가입된 크루 조회
+  http.get(`${baseUrl}/users/:userId/crew-list`, ({ params }) => {
+    const { userId } = params;
+    console.log(userId);
+
+    return HttpResponse.json({
+      status: 200,
+      message: '',
+      data: {
+        crewList: [
+          {
+            crewId: 1,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+          },
+          {
+            crewId: 2,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+          },
+        ],
+      },
+    });
   }),
 ];
