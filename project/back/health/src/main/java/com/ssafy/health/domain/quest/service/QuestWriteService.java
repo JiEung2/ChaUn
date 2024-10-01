@@ -88,6 +88,16 @@ public class QuestWriteService {
         // TODO: 알림 생성 및 전송
     }
 
+    public void updateCrewQuestStatus(Crew crew, String title, QuestStatus status) {
+        CrewQuest quest = crewQuestRepository.findCrewQuestWithCriteria(crew, status, title);
+        if (quest != null) {
+            quest.updateStatus(QuestStatus.COMPLETED);
+            coinService.grantCoinsToCrew(crew, quest.getQuest().getCompletionCoins());
+        }
+
+        // TODO: 알림 생성 및 전송
+    }
+
     private Quest questBuilder(QuestType type, String title, QuestPeriod period, Integer coins) {
         return Quest.builder()
                 .type(type)

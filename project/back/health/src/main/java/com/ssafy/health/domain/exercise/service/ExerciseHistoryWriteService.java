@@ -9,7 +9,6 @@ import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
 import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundException;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
-import com.ssafy.health.domain.coin.service.CoinService;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
@@ -19,9 +18,7 @@ import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
-import com.ssafy.health.domain.quest.entity.CrewQuest;
 import com.ssafy.health.domain.quest.entity.QuestStatus;
-import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.service.QuestWriteService;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +42,6 @@ public class ExerciseHistoryWriteService {
     private final ExerciseRepository exerciseRepository;
     private final BodyHistoryRepository bodyHistoryRepository;
     private final ExerciseHistoryRepository exerciseHistoryRepository;
-    private CoinService coinService;
-    private final CrewQuestRepository crewQuestRepository;
     private final QuestWriteService questWriteService;
 
     private final Float OXYGEN_INTAKE = 3.5F;
@@ -73,12 +68,7 @@ public class ExerciseHistoryWriteService {
 
         crewList.forEach(crew -> {
             if (exerciseHistoryRepository.isCrewExerciseQuestCompleted(crew.getId(), startOfDay, endOfDay)) {
-                CrewQuest crewQuest = crewQuestRepository.findCrewQuestWithCriteria(
-                        crew, QuestStatus.CREATED, "크루 내 2명");
-                if (crewQuest != null) {
-                    crewQuest.updateStatus(QuestStatus.COMPLETED);
-                    coinService.grantCoinsToCrew(crew, crewQuest.getQuest().getCompletionCoins());
-                }
+                questWriteService.updateCrewQuestStatus(crew, "크루 내 2명", QuestStatus.CREATED);
             }
         });
 
