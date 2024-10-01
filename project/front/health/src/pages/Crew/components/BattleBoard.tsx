@@ -7,7 +7,7 @@ interface BattleBoardProps {
   opponentTeamScore: number;
   exerciseName: string;
   dDay: number;
-  battleStatus: 'STARTED' | 'FINISHED' | 'WAITING' | 'NONE';
+  battleStatus: string;
 }
 
 export default function BattleBoard({
