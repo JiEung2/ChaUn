@@ -95,7 +95,7 @@ public class QuestWriteService {
                     .userId(user.getId())
                     .build();
 
-            notificationWriteService.createQuestNotification(dto, QuestType.INDIVIDUAL, quest.getId());
+            notificationWriteService.createUserQuestNotification(dto, quest.getId());
         }
     }
 
@@ -113,10 +113,8 @@ public class QuestWriteService {
                         .build();
 
                 try {
-                    notificationWriteService.createQuestNotification(dto, QuestType.CREW, quest.getId());
-                } catch (ExecutionException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
+                    notificationWriteService.createCrewQuestNotification(dto, crew, quest.getId());
+                } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             });

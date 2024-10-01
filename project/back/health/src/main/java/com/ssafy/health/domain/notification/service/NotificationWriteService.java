@@ -10,6 +10,7 @@ import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
 import com.ssafy.health.domain.battle.service.BattleReadService;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
+import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.dto.response.StatusUpdateResponseDto;
 import com.ssafy.health.domain.notification.entity.Notification;
@@ -17,12 +18,12 @@ import com.ssafy.health.domain.notification.entity.NotificationStatus;
 import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.repository.NotificationRepository;
 import com.ssafy.health.domain.quest.entity.CrewQuest;
-import com.ssafy.health.domain.quest.entity.QuestType;
 import com.ssafy.health.domain.quest.entity.UserQuest;
 import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
 import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.repository.UserQuestRepository;
 import lombok.Builder;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -89,38 +90,22 @@ public class NotificationWriteService {
         sendFcmMessage(dto.getUserId(), "배틀 알림", message);
     }
 
-    public void createQuestNotification(NotificationRequestDto dto, QuestType type, Long questId)
+    public void createUserQuestNotification(NotificationRequestDto dto, Long questId)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
-        QuestNotification questDetail = QuestNotification.builder().build();
-        StringBuilder messageBuilder = new StringBuilder();
 
-        if (type.equals(QuestType.INDIVIDUAL)) {
-            UserQuest quest = userQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
-            questDetail = QuestNotification.builder()
-                    .questId(questId)
-                    .crewId(null)
-                    .title(quest.getQuest().getTitle())
-                    .coins(quest.getQuest().getCompletionCoins())
-                    .build();
+        UserQuest quest = userQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
+        UserQuestNotification questDetail = UserQuestNotification.builder()
+                .questId(questId)
+                .title(quest.getQuest().getTitle())
+                .coins(quest.getQuest().getCompletionCoins())
+                .build();
 
-            messageBuilder.append("'")
-                    .append(quest.getQuest().getTitle())
-                    .append("' ")
-                    .append(QUEST.getMessage());
-
-        } else if (type.equals(QuestType.CREW)) {
-            CrewQuest quest = crewQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
-            questDetail = QuestNotification.builder()
-                    .questId(questId)
-                    .crewId(quest.getCrew().getId())
-                    .title(quest.getQuest().getTitle())
-                    .coins(quest.getQuest().getCompletionCoins())
-                    .build();
-
-            messageBuilder.append("크루 ").append(QUEST.getMessage());
-        }
+        StringBuilder messageBuilder = new StringBuilder().append("'")
+                .append(quest.getQuest().getTitle())
+                .append("' ")
+                .append(QUEST.getMessage());
 
         additionalData.put("questDetail", questDetail);
         Notification questNotification = notificationBuilder(
@@ -130,10 +115,44 @@ public class NotificationWriteService {
         sendFcmMessage(dto.getUserId(), "퀘스트 알림", messageBuilder.toString());
     }
 
+    public void createCrewQuestNotification(NotificationRequestDto dto, Crew crew, Long questId)
+            throws ExecutionException, InterruptedException {
+
+        Map<String, Object> additionalData = new HashMap<>();
+
+        CrewQuest quest = crewQuestRepository.findById(questId).orElseThrow(QuestNotFoundException::new);
+        CrewQuestNotification questDetail = CrewQuestNotification.builder()
+                .questId(questId)
+                .crewId(crew.getId())
+                .crewName(crew.getName())
+                .title(quest.getQuest().getTitle())
+                .coins(quest.getQuest().getCompletionCoins())
+                .build();
+
+        StringBuilder messageBuilder = new StringBuilder().append("크루 ").append(QUEST.getMessage());
+
+        additionalData.put("questDetail", questDetail);
+        Notification questNotification = notificationBuilder(
+                dto.getNotificationType(), dto.getUserId(), messageBuilder.toString(), additionalData);
+        notificationRepository.save(questNotification);
+
+        sendFcmMessage(dto.getUserId(), "퀘스트 알림", messageBuilder.toString());
+    }
+
+    @Data
     @Builder
-    static class QuestNotification {
+    static class UserQuestNotification {
+        private Long questId;
+        private String title;
+        private Integer coins;
+    }
+
+    @Data
+    @Builder
+    static class CrewQuestNotification {
         private Long questId;
         private Long crewId;
+        private String crewName;
         private String title;
         private Integer coins;
     }
