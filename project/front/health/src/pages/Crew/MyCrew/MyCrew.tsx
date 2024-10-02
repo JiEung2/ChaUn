@@ -114,7 +114,7 @@ export default function MyCrew() {
   const todayQuests = [{ title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기', completed: true }];
 
   const [selectedCoins, setSelectedCoins] = useState(100); // 선택된 코인 수
-  const [crewCoins, setCrewCoins] = useState(300); // 크루 코인 수
+  const [_, setCrewCoins] = useState(300); // 크루 코인 수
 
   const incrementCoins = () => {
     setSelectedCoins((prev) => prev + 50);
