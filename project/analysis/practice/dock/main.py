@@ -67,6 +67,12 @@ class UserExerciseRequest(BaseModel):
     exercise_data: List[ExerciseData]  # 7일간의 운동 정보 리스트
     extra_exercise_data: List[ExerciseData] = None
 
+    def average_calories(self) -> float:
+        if not self.exercise_data:
+            return 0.0
+        total_calories = sum(data.calories for data in self.exercise_data)
+        return total_calories / len(self.exercise_data)
+
 ### AI 회귀 모델 처리 ###
 # 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
 def build_model(input_shape, forecast_steps):
@@ -177,6 +183,9 @@ async def predict(user_id: int, request: UserExerciseRequest):
         # 2. exercise_data를 길이를 맞춰 전처리 코드
         dummy_count = 7 - len(exercise_data)
         height_sqr = exercise_data[-1].weight / exercise_data[-1].bmi
+
+        for exercise_obj in exercise_data:
+            exercise_obj.calories += np.random.normal(250,15)
         for _ in range(dummy_count):
             last_data = dp(exercise_data[-1])
             last_data.calories = np.random.normal(250, 15) # 평균 걸음으로도 250에서 300 칼로리를 소모한다.
@@ -191,10 +200,29 @@ async def predict(user_id: int, request: UserExerciseRequest):
         # 4. model.predict 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
         pred_30_d, pred_90_d = model_predict(X_test)
 
+        # 4-1. weight와 p30, p90과 차이가 많이 날 때, 예측 값 보정
+        last_weight = exercise_data[-1].weight
+        p30_diff = abs(last_weight - pred_30_d)
+        p90_diff = abs(last_weight - pred_90_d)
+        if p30_diff >= 4 or p90_diff >= 6:
+            cal_average = UserExerciseRequest(exercise_data=exercise_data).average_calories()
+            if cal_average >= 500:
+                if pred_30_d - last_weight > 0: # 예측이 더 클 경우
+                    cal_weight = last_weight + np.random.normal(-2, -1)
+                else:
+                    cal_weight = last_weight + np.random.normal(0, 1)
+            else: # 운동량이 많지 않으면, 몸무게가 찌는게 더 당연하다.
+                if pred_30_d - last_weight > 0: # 예측이 더 클 경우
+                    cal_weight = last_weight + np.random.normal(2, 3)
+                else:
+                    cal_weight = last_weight + np.random.normal(0, 1)
+            pred_30_d = round((last_weight + cal_weight + pred_30_d) / 3, 2)
+            pred_90_d = round((cal_weight + pred_30_d + pred_90_d) / 3 + np.random.normal(-1, 1), 2)
+
         # 5. 예측 DB 변수 정의
         new_prediction = {
             "user_id": user_id,
-            "current": exercise_data[-1].weight,
+            "current": round(exercise_data[-1].weight, 2),
             "p30": pred_30_d,
             "p90": pred_90_d,
             "created_at": datetime.utcnow()
@@ -235,10 +263,29 @@ async def extra_predict(user_id: int, request: UserExerciseRequest):
         # 4. model.predict 예측한 결과를 만들어서 DB에 저장하고, user_id랑 예측 값 보내주기
         pred_30_d, pred_90_d = model_predict(X_test)
 
+        # 4-1. weight와 p30, p90과 차이가 많이 날 때, 예측 값 보정
+        last_weight = exercise_data[-1].weight
+        p30_diff = abs(last_weight - pred_30_d)
+        p90_diff = abs(last_weight - pred_90_d)
+        if p30_diff >= 4 or p90_diff >= 6:
+            cal_average = UserExerciseRequest(exercise_data=exercise_data).average_calories()
+            if cal_average >= 500:
+                if pred_30_d - last_weight > 0: # 예측이 더 클 경우
+                    cal_weight = last_weight + np.random.normal(-2, -1)
+                else:
+                    cal_weight = last_weight + np.random.normal(0, 1)
+            else: # 운동량이 많지 않으면, 몸무게가 찌는게 더 당연하다.
+                if pred_30_d - last_weight > 0: # 예측이 더 클 경우
+                    cal_weight = last_weight + np.random.normal(1, 2)
+                else:
+                    cal_weight = last_weight + np.random.normal(-1.5, 0)
+            pred_30_d = round((last_weight + cal_weight + pred_30_d) / 3, 2)
+            pred_90_d = round((cal_weight + pred_30_d + pred_90_d) / 3 + np.random.normal(-2, -1), 2)
+
         # 5. 예측 DB 변수 정의
         new_prediction = {
             "user_id": user_id,
-            "current": exercise_data[-1].weight,
+            "current": round(exercise_data[-1].weight, 2),
             "p30": pred_30_d,
             "p90": pred_90_d,
             "exercise" : {
