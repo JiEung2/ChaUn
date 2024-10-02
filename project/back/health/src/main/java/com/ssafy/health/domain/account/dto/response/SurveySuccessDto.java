@@ -8,4 +8,5 @@ import lombok.Getter;
 public class SurveySuccessDto {
     private final String message = "모든 설문조사를 완료했습니다.";
     private final String characterUrl;
+    private final Long bodyTypeId;
 }
