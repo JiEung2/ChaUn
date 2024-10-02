@@ -8,6 +8,6 @@ export const getNotificationList = async () => {
 };
 
 export const patchNotification = async (notificationId: number) => {
-  const response = await axios.patch(`${baseUrl}/notification/read/${notificationId}`, notificationId);
+  const response = await axios.patch(`${baseUrl}/notification/read/${notificationId}`, { notificationId });
   return response;
 };

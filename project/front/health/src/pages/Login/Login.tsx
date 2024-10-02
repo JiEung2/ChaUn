@@ -9,7 +9,9 @@ export default function LoginPage() {
   // const navigate = useNavigate();
   const moveKakao = () => {
     // TODO : 카카오 로그인 페이지로 이동
+
     window.location.href = `${import.meta.env.VITE_APP_BASE_URL_NO_ENDPOINT}`;
+
     // 임시로 servey 페이지로 이동
     // navigate('/survey');
   };

@@ -16,7 +16,7 @@ interface Notification {
   notificationId: number;
   notificationType: string;
   additionalData?: {
-    battleDetail: {
+    battleDetail?: {
       myTeamName: string;
       myTeamScore: number;
       opponentTeamName: string;
@@ -25,9 +25,17 @@ interface Notification {
       battleStatus: string;
       battleId: number;
     };
-    coinDetail: {
+    coinDetail?: {
       crewCoin: number;
       myCoin: number;
+    };
+    questDetail?: {
+      type: string;
+      questId: number;
+      crewId?: number;
+      crewName?: string;
+      title: string;
+      coins: number;
     };
   };
   content: string;
@@ -51,37 +59,45 @@ export default function AlarmPage() {
     onSuccess(data) {
       console.log('mutate', data);
     },
+    onError(error) {
+      console.log('에러남 : ', error.message);
+    },
   });
 
   // 알림 타입에 따라 다른 페이지로 이동 설정
   const handleNavigation = (alarm: Notification) => {
-    if (alarm.notificationType === 'BATTLE' && alarm.additionalData) {
-      const { battleStatus, battleId } = alarm.additionalData.battleDetail;
-      switch (battleStatus) {
-        case 'STARTED':
-          navigate(`/crew/${battleId}/crewbattle`);
-          mutate(alarm.notificationId);
-          break;
-        case 'FINISHED':
-          setSelectedAlarm(alarm);
-          setIsModalOpen(true);
-          break;
-        default:
-          break;
+    const { notificationId, notificationType, additionalData } = alarm;
+
+    if (notificationType === 'BATTLE' && additionalData?.battleDetail) {
+      const { battleDetail } = additionalData;
+
+      if (battleDetail?.battleStatus === 'STARTED') {
+        mutate(notificationId);
+        navigate(`/crew/${battleDetail.battleId}/crewbattle`);
+      } else if (battleDetail?.battleStatus === 'FINISHED') {
+        setSelectedAlarm(alarm);
+        setIsModalOpen(true);
       }
-    } else if (alarm.notificationType === 'SURVEY') {
+    } else if (notificationType === 'SURVEY') {
+      mutate(notificationId);
       navigate('/record/bodyDetail');
-      mutate(alarm.notificationId);
-    } else if (alarm.notificationType === 'QUEST') {
-      navigate('/home/quest');
-      mutate(alarm.notificationId);
+    } else if (notificationType === 'QUEST' && additionalData?.questDetail) {
+      const { type, crewId } = additionalData.questDetail;
+
+      if (type === 'CREW') {
+        mutate(notificationId);
+        navigate(`/crew/${crewId}/detail`);
+      } else if (type === 'INDIVIDUAL') {
+        mutate(notificationId);
+        navigate('/home/quest');
+      }
     }
   };
 
   // 아이콘 선택 함수
   const getIcon = (alarm: Notification) => {
-    if (alarm.notificationType === 'BATTLE' && alarm.additionalData) {
-      const { battleStatus } = alarm.additionalData.battleDetail;
+    if (alarm.notificationType === 'BATTLE' && alarm.additionalData?.battleDetail) {
+      const { battleStatus } = alarm.additionalData?.battleDetail;
       if (battleStatus === 'STARTED') {
         return battleStartIcon;
       } else if (battleStatus === 'FINISHED') {
@@ -101,20 +117,60 @@ export default function AlarmPage() {
     return format(date, 'yy.MM.dd HH:mm');
   };
 
+  // 알림 메시지 렌더링 함수
+  const renderMessage = (alarm: Notification) => {
+    const { questDetail } = alarm.additionalData || {};
+    const { battleDetail } = alarm.additionalData || {};
+
+    if (questDetail?.type === 'INDIVIDUAL') {
+      return (
+        <p className="message">
+          {alarm.content} <span className="alarmSpan">+ {questDetail.coins}</span>
+        </p>
+      );
+    }
+
+    if (questDetail?.type === 'CREW') {
+      return (
+        <p className="message">
+          <span>{questDetail.crewName}</span>의 '{questDetail.title}' {alarm.content}
+        </p>
+      );
+    }
+
+    if (battleDetail) {
+      return (
+        <p className="message">
+          <span>{battleDetail.myTeamName}</span>의 {alarm.content}
+        </p>
+      );
+    }
+
+    if (questDetail?.type === 'CREW') {
+      return (
+        <p className="message">
+          <span>{questDetail.crewName}</span>의 {alarm.content}
+        </p>
+      );
+    }
+
+    return <p className="message">{alarm.content}</p>;
+  };
+
   return (
     <div className="alarmContainer">
-      {alarmList.data.data.map((alarm: any) => (
+      {alarmList.data.data.map((alarm: Notification) => (
         <div className="alarmItemContainer" key={alarm.notificationId}>
           <img src={getIcon(alarm)} alt="Icon" className="alarmIcon" />
           <div className="messageContainer">
-            <p className="message">{alarm.content}</p>
+            {renderMessage(alarm)}
             <p className="date">{formatDate(alarm.createdAt)}</p>
           </div>
           <img src={RightArrow} alt="moveArrow" className="arrow" onClick={() => handleNavigation(alarm)} />
         </div>
       ))}
 
-      {isModalOpen && selectedAlarm && selectedAlarm.additionalData && (
+      {isModalOpen && selectedAlarm && selectedAlarm.additionalData?.battleDetail && (
         <AlarmModal
           data={{
             notificationId: selectedAlarm.notificationId,
@@ -125,8 +181,8 @@ export default function AlarmPage() {
             opponentTeamName: selectedAlarm.additionalData.battleDetail.opponentTeamName,
             opponentTeamSport: selectedAlarm.additionalData.battleDetail.exerciseName,
             opponentTeamScore: selectedAlarm.additionalData.battleDetail.opponentTeamScore,
-            crewCoins: selectedAlarm.additionalData.coinDetail.crewCoin,
-            myCoin: selectedAlarm.additionalData.coinDetail.myCoin,
+            crewCoins: selectedAlarm.additionalData.coinDetail?.crewCoin ?? 0,
+            myCoin: selectedAlarm.additionalData.coinDetail?.myCoin ?? 0,
           }}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
