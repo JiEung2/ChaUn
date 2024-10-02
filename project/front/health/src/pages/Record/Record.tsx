@@ -19,15 +19,15 @@ export default function RecordPage() {
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
 
   // 날짜 상태 추가
-  const year = new Date().getFullYear();
-  const month = new Date().getMonth() + 1;
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [week, setWeek] = useState(1);
 
   // 주차 계산 (월요일부터 일요일까지)
   useEffect(() => {
     const getMondayOfWeek = (date: Date) => {
       const day = date.getDay();
-      const diff = day === 0 ? -6 : 1 - day;
+      const diff = day === 0 ? -6 : 1 - day; // 일요일은 이전 월요일로
       const monday = new Date(date);
       monday.setDate(date.getDate() + diff);
       return monday;
@@ -37,14 +37,42 @@ export default function RecordPage() {
       const firstMonday = getMondayOfWeek(new Date(date.getFullYear(), date.getMonth(), 1));
       const currentMonday = getMondayOfWeek(date);
       const diff = Math.ceil((currentMonday.getTime() - firstMonday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
-      return diff;
+      return diff > 5 ? 5 : diff;
     };
 
-    const currentDate = new Date();
-    const currentWeek = calculateWeekOfMonth(currentDate);
-    console.log(year, month, week);
-    setWeek(currentWeek); // 이번 주차로 week 설정
-  }, [year, month]);
+    const getPreviousWeek = () => {
+      let lastWeekDate = new Date();
+      lastWeekDate.setDate(lastWeekDate.getDate() - 7);
+      return lastWeekDate;
+    };
+
+    let lastWeekDate = getPreviousWeek();
+
+    // 저번 주의 주차 계산
+    let lastWeek = calculateWeekOfMonth(lastWeekDate);
+
+    // 년과 월 변경 로직
+    let updatedYear = lastWeekDate.getFullYear();
+    let updatedMonth = lastWeekDate.getMonth() + 1;
+
+    // 1주차인 경우 전 달의 마지막 주차로 넘어감
+    if (lastWeek === 1) {
+      updatedMonth -= 1;
+      if (updatedMonth === 0) {
+        updatedMonth = 12;
+        updatedYear -= 1;
+      }
+      const lastDayOfPreviousMonth = new Date(updatedYear, updatedMonth, 0); // 전 달의 마지막 날
+      lastWeek = calculateWeekOfMonth(lastDayOfPreviousMonth); // 전 달의 마지막 주차 계산
+    } else {
+      lastWeek -= 1; // 그 외에는 단순히 1 주차 감소
+    }
+
+    console.log(`저번 주 주차: ${lastWeek}, 년: ${updatedYear}, 월: ${updatedMonth}`);
+    setWeek(lastWeek); // 저번 주의 주차로 설정
+    setYear(updatedYear);
+    setMonth(updatedMonth);
+  }, []);
 
   // 운동 예측 데이터 POST 요청을 위한 useMutation
   const mutation = useMutation({
@@ -116,7 +144,6 @@ export default function RecordPage() {
     setDuration('');
     setDay('');
   };
-
   return (
     <div className="recordsContainer">
       <GeneralButton
@@ -169,11 +196,11 @@ export default function RecordPage() {
           <div className="exerciseAdvice">
             <p className="adviceText">
               <strong>민영님</strong>, <br />
-              이번 주 운동을 <strong>{exerciseDays}회</strong> 진행하셨군요!
+              저번 주 운동을 <strong>{exerciseDays}일</strong> 진행하셨군요!
               <p>
                 꾸준한 건강 관리 및 부상 방지를 위해 <br />
-                주 2~3회 운동을 권장하고 있습니다. <br />
-                다음 주도 힘내서 달려볼까요~?
+                주 2~3일 운동을 권장하고 있습니다. <br />
+                이번 주도 힘내서 달려볼까요~?
               </p>
             </p>
           </div>

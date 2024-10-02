@@ -14,7 +14,6 @@ export const alarmHandlers = [
           notificationType: 'BATTLE',
           additionalData: {
             battleDetail: {
-              battleId: 1,
               myTeamName: '달리자크루',
               myTeamScore: 400,
               opponentTeamName: '크크크루',

@@ -20,10 +20,10 @@ export default function LoginPage() {
   };
   return (
     <div className="login-container">
-      <h1 className="login-title">캐운</h1>
+      <p className="login-title">캐운</p>
       <div className="mainChar">
-        <img src={MainBoy} alt="mainboy" />
-        <img src={MainGirl} alt="maingirl" />
+        <img src={MainBoy} alt="mainboy" className="mainboy" />
+        <img src={MainGirl} alt="maingirl" className="maingirl" />
       </div>
       <div className="login-buttons">
         <KakaoButton onClick={moveKakao} />
