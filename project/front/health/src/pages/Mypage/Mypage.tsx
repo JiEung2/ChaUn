@@ -4,6 +4,7 @@ import Coin from '@/components/Coin/Coin';
 import GeneralButton from '@/components/Button/GeneralButton';
 import CustomCategories from '@/components/Profile/Custom/CustomCategories';
 import SnapshotList from '@/components/Profile/Snapshot/SnapshotList';
+import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import html2canvas from 'html2canvas';
 import queryKeys from '@/utils/querykeys';
 import { getUserDetail } from '@/api/user';
@@ -45,6 +46,10 @@ export default function MypagePage() {
     },
   });
 
+  // gender와 glbUrl 값을 가져와서 사용
+  const characterGlbUrl = myCharacter?.data?.data.characterUrl || '';
+  const characterGender = myCharacter?.data?.data.gender === 'MAN' ? 'MAN' : 'FEMALE';
+
   // partsList 데이터 매핑
   const mappedItems =
     partsList?.data?.data?.partsList?.map((part: any) => {
@@ -76,9 +81,6 @@ export default function MypagePage() {
       };
     }) || [];
 
-  // mappedItems가 제대로 생성되었는지 확인
-  console.log('Mapped Items:', mappedItems);
-
   // 스냅샷을 캡처하고 서버로 전송하는 함수
   const handleSnapshot = () => {
     if (characterRef.current) {
@@ -101,8 +103,7 @@ export default function MypagePage() {
         </div>
 
         <div className="character">
-          <img src="https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5dancing.glb" alt="" />
-          <img src={myCharacter?.data?.data.characterUrl} alt="myModel" ref={characterRef} />
+          <CharacterCanvas glbUrl={characterGlbUrl} gender={characterGender} />
           <GeneralButton
             buttonStyle={{ style: 'primary', size: 'select' }}
             className="snapshotButton"
@@ -129,7 +130,7 @@ export default function MypagePage() {
       <div className="snapshotSection">
         <p className="subtitle">스냅샷</p>
         <div className="snapshotBox">
-          <SnapshotList snapshots={[]} /> {/* 스냅샷 리스트 추가 필요 */}
+          <SnapshotList snapshots={[]} />
         </div>
       </div>
 

@@ -14,13 +14,13 @@ export const characterHandlers = [
             id: 1,
             partsType: 'hair',
             cost: 100,
-            partsImage: 'https://example.com/images/helmet.png',
+            partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
           {
             id: 2,
             partsType: 'hair',
             cost: 200,
-            partsImage: 'https://example.com/images/armor.png',
+            partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
         ],
       },
@@ -35,7 +35,7 @@ export const characterHandlers = [
       status: 200,
       message: '',
       data: {
-        characterUrl: 'character-url.jpg',
+        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/a31ba8f3-7042-460b-b331-3bf0df446860.png',
         gender: 'MAN',
         bodyTypeId: 7,
       },
@@ -48,7 +48,7 @@ export const characterHandlers = [
       status: 200,
       message: '',
       data: {
-        characterUrl: 'character-url.jpg',
+        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/c76c9ef5-3e85-4ad6-98f0-80e2f18542d9.glb',
         gender: 'MAN',
         bodyTypeId: 7,
       },
@@ -62,7 +62,7 @@ export const characterHandlers = [
       status: 200,
       message: '',
       data: {
-        characterUrl: 'character-url.jpg',
+        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/c76c9ef5-3e85-4ad6-98f0-80e2f18542d9.glb',
       },
     });
   }),
