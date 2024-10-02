@@ -1,10 +1,7 @@
 package com.ssafy.health.domain.character.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,8 +16,9 @@ public class Parts extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    @Enumerated(EnumType.STRING)
     private PartsType partsType;
+    private String name;
     private Integer cost;
     private String partsImage;
 
