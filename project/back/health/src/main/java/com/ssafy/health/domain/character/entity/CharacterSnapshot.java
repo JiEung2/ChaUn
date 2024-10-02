@@ -22,15 +22,15 @@ public class CharacterSnapshot extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String characterSnapshot;
+    private String characterSnapshotUrl;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @Builder
-    public CharacterSnapshot(User user, String characterSnapshot) {
+    public CharacterSnapshot(User user, String characterSnapshotUrl) {
         this.user = user;
-        this.characterSnapshot = characterSnapshot;
+        this.characterSnapshotUrl = characterSnapshotUrl;
     }
 }
