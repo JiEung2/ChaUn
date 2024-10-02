@@ -2,6 +2,7 @@
 import axiosInstance from './axiosInstance';
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
+// 나의 특정 달의 체형 기록 조회
 export const getBodyRecord = async (year: number, month: number) => {
   const response = await axiosInstance.get(`${baseUrl}/users/body`, {
     params: {
@@ -9,11 +10,14 @@ export const getBodyRecord = async (year: number, month: number) => {
       month,
     },
   });
+  // console.log('체형 기록 조회', response);
   return response;
 };
 
+// 기본 체형 예측 조회
 export const getPredictBasic = async () => {
   const response = await axiosInstance.get(`${baseUrl}/users/predict/basic`);
+  console.log('기본체형 예측', response);
   return response;
 };
 

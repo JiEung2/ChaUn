@@ -9,7 +9,6 @@ import Finish from '../../assets/svg/finish.svg';
 import './Exercise.scss';
 import { postExerciseRecord } from '../../api/exercise';
 import { useMutation } from '@tanstack/react-query';
-import { set } from 'date-fns';
 
 Modal.setAppElement('#root');
 function formatTime(timer: number) {
