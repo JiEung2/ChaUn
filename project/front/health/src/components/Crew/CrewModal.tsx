@@ -44,7 +44,7 @@ export default function CrewModal({ onClose, crewId }: CrewModalProps) {
   const getCrewData = async () => {
     try {
       const response = await getCrewRecommendModal(crewId);
-      console.log('가져온 크루 데이터', response);
+      // console.log('가져온 크루 데이터', response);
       setCrewData(response.data);
 
       const radarData: RadarData = {

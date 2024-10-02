@@ -17,7 +17,7 @@ interface BodyData {
   skeletalMuscleMass: number;
   bodyFat: number;
   bodyMuscle: boolean;
-  bodyShape: number;
+  bodyShape: string;
 }
 
 export default function BodyAddModal({ onClose }: BodyAddModalProps) {
@@ -28,7 +28,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
     skeletalMuscleMass: 0,
     bodyFat: 0,
     bodyMuscle: false,
-    bodyShape: 0,
+    bodyShape: '',
   });
 
   // 식습관 데이터를 watch로 감시
@@ -56,7 +56,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
     skeletalMuscleMass: number;
     bodyFat: number;
     bodyMuscle: boolean;
-    bodyShape: number;
+    bodyShape: string;
   }) => {
     setBodyData(data);
   };

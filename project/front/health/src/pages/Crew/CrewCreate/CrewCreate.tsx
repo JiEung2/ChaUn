@@ -72,7 +72,7 @@ export default function CrewCreate() {
           <div className="crewCreate__form-group">
             <label>운동 종목</label>
             <button className="exerciseSelectButton" onClick={() => setShowExerciseModal(true)}>
-              {exerciseName ? exerciseName : '선택'}
+              {/* {exerciseName ? exerciseName.name : '선택'} */}
             </button>
           </div>
 

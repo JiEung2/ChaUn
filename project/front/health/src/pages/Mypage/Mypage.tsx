@@ -1,5 +1,5 @@
-import { Suspense, useRef, useState } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { Suspense, useRef, useState, startTransition } from 'react';
+import { useSuspenseQuery } from '@tanstack/react-query'; // SuspenseQuery 사용
 import Coin from '@/components/Coin/Coin';
 import GeneralButton from '@/components/Button/GeneralButton';
 import MyModel from '@/assets/image/model.png';
@@ -35,23 +35,29 @@ export default function MypagePage() {
 
   // 아이템 구매 성공 시 호출되는 함수
   const handlePurchaseSuccess = (updatedItem: any) => {
-    setItems((prevItems) =>
-      prevItems.map((item) => (item.id === updatedItem.id ? { ...item, isLocked: false } : item))
-    );
-    setUserCoin((prevCoin) => prevCoin - updatedItem.price); // 코인 감소 처리
+    // startTransition을 사용해 UI 업데이트를 비동기적으로 처리
+    startTransition(() => {
+      setItems((prevItems) =>
+        prevItems.map((item) => (item.id === updatedItem.id ? { ...item, isLocked: false } : item))
+      );
+      setUserCoin((prevCoin) => prevCoin - updatedItem.price); // 코인 감소 처리
+    });
   };
 
   // 아이템 클릭 시 캐릭터에 적용 또는 해제하는 함수
   const handleApplyItem = (item: any) => {
-    if (item.isApplied) {
-      setItems((prevItems) => prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: false } : i)));
-      setAppliedItem(null);
-    } else {
-      setItems((prevItems) =>
-        prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: true } : { ...i, isApplied: false }))
-      );
-      setAppliedItem(item.image);
-    }
+    // startTransition을 사용해 UI 업데이트를 비동기적으로 처리
+    startTransition(() => {
+      if (item.isApplied) {
+        setItems((prevItems) => prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: false } : i)));
+        setAppliedItem(null);
+      } else {
+        setItems((prevItems) =>
+          prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: true } : { ...i, isApplied: false }))
+        );
+        setAppliedItem(item.image);
+      }
+    });
   };
 
   // 스냅샷을 캡처하고 리스트에 추가하는 함수

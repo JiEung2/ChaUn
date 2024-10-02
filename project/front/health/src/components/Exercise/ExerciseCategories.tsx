@@ -15,7 +15,8 @@ export default function ExerciseCategories({ onSelect, multiple = false }: Exerc
   const handlerExerciseData = async () => {
     try {
       const response = await getExercise();
-      setExerciseData(response.data.data);
+      console.log('운동 종목', response);
+      setExerciseData(response);
     } catch (e) {
       console.error(`API 호출 중 에러 발생: ${e}`);
     }
