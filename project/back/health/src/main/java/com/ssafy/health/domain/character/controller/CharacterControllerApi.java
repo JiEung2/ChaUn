@@ -29,7 +29,8 @@ public interface CharacterControllerApi {
                                       "status": 200,
                                       "message": "",
                                       "data": {
-                                        "characterUrl": "character-url.jpg"
+                                        "characterUrl": "character-url.glb",
+                                        "bodyTypeId": 4
                                       }
                                     }"""
                             ))
@@ -49,7 +50,8 @@ public interface CharacterControllerApi {
                                       "status": 200,
                                       "message": "",
                                       "data": {
-                                        "characterUrl": "character-url.jpg"
+                                        "characterUrl": "character-url.glb",
+                                        "bodyTypeId": 4
                                       }
                                     }"""
                             ))
@@ -69,7 +71,8 @@ public interface CharacterControllerApi {
                                       "status": 200,
                                       "message": "",
                                       "data": {
-                                        "characterUrl": "character-url.jpg"
+                                        "characterUrl": "character-url.glb",
+                                        "bodyTypeId": 4
                                       }
                                     }"""
                             ))
@@ -94,13 +97,15 @@ public interface CharacterControllerApi {
                                             "id": 1,
                                             "name": "Helmet",
                                             "cost": 100,
-                                            "partsImage": "https://example.com/images/helmet.png"
+                                            "partsImage": "https://example.com/images/helmet.png",
+                                            "partType": "HAIR"
                                           },
                                           {
                                             "id": 2,
                                             "name": "Armor",
                                             "cost": 200,
-                                            "partsImage": "https://example.com/images/armor.png"
+                                            "partsImage": "https://example.com/images/armor.png",
+                                            "partType": "ARM"
                                           }
                                         ]
                                       }
