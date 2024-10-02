@@ -21,6 +21,7 @@ import com.ssafy.health.domain.account.repository.FavoredRepository;
 import com.ssafy.health.domain.account.repository.MealCaloriesRepository;
 import com.ssafy.health.domain.account.repository.SnackCaloriesRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
+import com.ssafy.health.domain.character.dto.response.CharacterResponseDto;
 import com.ssafy.health.domain.character.service.CharacterReadService;
 import com.ssafy.health.domain.exercise.entity.Exercise;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
@@ -101,10 +102,11 @@ public class UserWriteService {
 
         user.updateSurveyCompleted();
 
-        String url = characterReadService.getCharacterUrl(user.getId());
+        CharacterResponseDto characterResponseDto =  characterReadService.getCharacterInfo(user.getId());
 
         return SurveySuccessDto.builder()
-                .characterUrl(url)
+                .characterUrl(characterResponseDto.getCharacterUrl())
+                .bodyTypeId(characterResponseDto.getBodyTypeId())
                 .build();
     }
 
