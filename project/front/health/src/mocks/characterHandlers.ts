@@ -12,13 +12,13 @@ export const characterHandlers = [
         partsList: [
           {
             id: 1,
-            name: 'Helmet',
+            partsType: 'hair',
             cost: 100,
             partsImage: 'https://example.com/images/helmet.png',
           },
           {
             id: 2,
-            name: 'Armor',
+            partsType: 'hair',
             cost: 200,
             partsImage: 'https://example.com/images/armor.png',
           },
@@ -36,6 +36,8 @@ export const characterHandlers = [
       message: '',
       data: {
         characterUrl: 'character-url.jpg',
+        gender: 'MAN',
+        bodyTypeId: 7,
       },
     });
   }),
@@ -47,6 +49,8 @@ export const characterHandlers = [
       message: '',
       data: {
         characterUrl: 'character-url.jpg',
+        gender: 'MAN',
+        bodyTypeId: 7,
       },
     });
   }),

@@ -1,9 +1,7 @@
 import { Suspense, useRef, useState } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import Coin from '@/components/Coin/Coin';
 import GeneralButton from '@/components/Button/GeneralButton';
-import MyModel from '@/assets/image/model.png';
-import CustomItem from '@/assets/image/customItem.jpg';
 import CustomCategories from '@/components/Profile/Custom/CustomCategories';
 import SnapshotList from '@/components/Profile/Snapshot/SnapshotList';
 import html2canvas from 'html2canvas';
@@ -11,21 +9,24 @@ import queryKeys from '@/utils/querykeys';
 import { getUserDetail } from '@/api/user';
 import './Mypage.scss';
 import { useParams } from 'react-router-dom';
+import { getPartsList, getMyCharacter, postSnapshot } from '@/api/character';
 
 export default function MypagePage() {
   const { userId } = useParams<{ userId: string }>();
   const characterRef = useRef<HTMLImageElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
-  const [userCoin, setUserCoin] = useState(0);
-  const [items, setItems] = useState([
-    { id: 1, category: '헤어', price: 100, isLocked: true, image: CustomItem, isApplied: false },
-    { id: 2, category: '헤어', price: 120, isLocked: true, image: CustomItem, isApplied: false },
-    { id: 3, category: '하의', price: 1200, isLocked: true, image: CustomItem, isApplied: false },
-  ]);
-  const [appliedItem, setAppliedItem] = useState<string | null>(null);
-  const [snapshots, setSnapshots] = useState<{ date: string; image: string }[]>([]);
 
-  // React Query의 useSuspenseQuery 사용
+  // 캐릭터 및 파츠 리스트 조회
+  const { data: myCharacter } = useSuspenseQuery({
+    queryKey: [queryKeys.CHARACTER],
+    queryFn: () => getMyCharacter(),
+  });
+
+  const { data: partsList } = useSuspenseQuery({
+    queryKey: [queryKeys.PARTSLIST],
+    queryFn: () => getPartsList(),
+  });
+
   const numericUserId = userId ? Number(userId) : 0;
 
   const { data: userDetail } = useSuspenseQuery({
@@ -33,38 +34,60 @@ export default function MypagePage() {
     queryFn: () => getUserDetail(numericUserId),
   });
 
-  // 아이템 구매 성공 시 호출되는 함수
-  const handlePurchaseSuccess = (updatedItem: any) => {
-    setItems((prevItems) =>
-      prevItems.map((item) => (item.id === updatedItem.id ? { ...item, isLocked: false } : item))
-    );
-    setUserCoin((prevCoin) => prevCoin - updatedItem.price); // 코인 감소 처리
-  };
+  const mutation = useMutation({
+    mutationFn: (snapshot: string) => postSnapshot(snapshot),
+    onSuccess: (response) => {
+      const { snapshotUrl } = response.data;
+      console.log('스냅샷 전송 성공. URL:', snapshotUrl);
+    },
+    onError: (error) => {
+      console.error('스냅샷 전송 실패:', error);
+    },
+  });
 
-  // 아이템 클릭 시 캐릭터에 적용 또는 해제하는 함수
-  const handleApplyItem = (item: any) => {
-    if (item.isApplied) {
-      setItems((prevItems) => prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: false } : i)));
-      setAppliedItem(null);
-    } else {
-      setItems((prevItems) =>
-        prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: true } : { ...i, isApplied: false }))
-      );
-      setAppliedItem(item.image);
-    }
-  };
+  // partsList 데이터 매핑
+  const mappedItems =
+    partsList?.data?.data?.partsList?.map((part: any) => {
+      let category = '';
+      switch (part.partsType) {
+        case 'hair':
+          category = '헤어';
+          break;
+        case 'clothes':
+          category = '상의';
+          break;
+        case 'pants':
+          category = '하의';
+          break;
+        case 'item':
+          category = '아이템';
+          break;
+        default:
+          category = '아이템';
+      }
 
-  // 스냅샷을 캡처하고 리스트에 추가하는 함수
+      return {
+        id: part.id,
+        category,
+        price: part.cost,
+        image: part.partsImage,
+        isLocked: true,
+        isApplied: false,
+      };
+    }) || [];
+
+  // mappedItems가 제대로 생성되었는지 확인
+  console.log('Mapped Items:', mappedItems);
+
+  // 스냅샷을 캡처하고 서버로 전송하는 함수
   const handleSnapshot = () => {
     if (characterRef.current) {
       html2canvas(characterRef.current, {
         scale: 2,
         backgroundColor: '#98e4ff',
       }).then((canvas) => {
-        const image = canvas.toDataURL('image/png');
-        const now = new Date();
-        const formattedDate = `${String(now.getFullYear()).slice(2)}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
-        setSnapshots((prev) => [{ date: formattedDate, image }, ...prev]);
+        const snapshot = canvas.toDataURL('image/png');
+        mutation.mutate(snapshot);
       });
     }
   };
@@ -74,11 +97,12 @@ export default function MypagePage() {
       <div className="profileSection">
         <div className="info">
           <p className="subtitle">{userDetail?.data.data.nickname} 님</p>
-          <Coin amount={userDetail?.data.data.coin || userCoin} style="styled" />
+          <Coin amount={userDetail?.data.data.coin} style="styled" />
         </div>
 
         <div className="character">
-          <img src={appliedItem || MyModel} alt="myModel" ref={characterRef} />
+          <img src="https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5dancing.glb" alt="" />
+          <img src={myCharacter?.data?.data.characterUrl} alt="myModel" ref={characterRef} />
           <GeneralButton
             buttonStyle={{ style: 'primary', size: 'select' }}
             className="snapshotButton"
@@ -94,10 +118,10 @@ export default function MypagePage() {
           <CustomCategories
             selectedTab={selectedTab}
             setSelectedTab={setSelectedTab}
-            userCoin={userDetail?.data.coin || userCoin}
-            onPurchase={handlePurchaseSuccess}
-            onApply={handleApplyItem}
-            items={items.filter((item) => item.category === selectedTab)}
+            userCoin={userDetail?.data.data.coin}
+            onPurchase={() => {}}
+            onApply={() => {}}
+            items={mappedItems.filter((item: any) => item.category === selectedTab)}
           />
         </div>
       </div>
@@ -105,7 +129,7 @@ export default function MypagePage() {
       <div className="snapshotSection">
         <p className="subtitle">스냅샷</p>
         <div className="snapshotBox">
-          <SnapshotList snapshots={snapshots} />
+          <SnapshotList snapshots={[]} /> {/* 스냅샷 리스트 추가 필요 */}
         </div>
       </div>
 
