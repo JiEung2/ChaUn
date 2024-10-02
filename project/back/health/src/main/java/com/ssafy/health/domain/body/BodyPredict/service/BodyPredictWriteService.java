@@ -138,7 +138,7 @@ public class BodyPredictWriteService {
         return (met * exerciseWriteService.getOxygenIntake() * weight * duration / 1000 * 5);
     }
 
-    private Integer calculateAge(LocalDate birthday) {
+    public Integer calculateAge(LocalDate birthday) {
 
         LocalDate today = LocalDate.now();
         return Period.between(birthday, today).getYears();
