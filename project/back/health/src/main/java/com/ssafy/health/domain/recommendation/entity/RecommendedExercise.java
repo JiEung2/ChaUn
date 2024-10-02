@@ -3,6 +3,7 @@ package com.ssafy.health.domain.recommendation.entity;
 import com.ssafy.health.common.entity.BaseEntity;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.exercise.entity.Exercise;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +17,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FavoriteExercise extends BaseEntity {
+public class RecommendedExercise extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +27,11 @@ public class FavoriteExercise extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "exercise_id")
-    private Exercise exercise;
+    private String exerciseName;
+
+    private String reason;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
 }
