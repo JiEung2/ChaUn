@@ -20,9 +20,12 @@ import MyCrew from './pages/Crew/MyCrew/MyCrew';
 import OAuth from './pages/OAuth/OAuth';
 // import CrewBattle from './pages/Crew/CrewBattle/CrewBattle';
 // import CrewCreate from './pages/Crew/CrewCreate/CrewCreate';
+import { Toaster } from 'react-hot-toast';
 export default function App() {
   return (
-    <Router>
+      <>
+    <Toaster />
+    <Router>  
       <Routes>
         <Route element={<CommonLayout />}>
           <Route path="/" element={<Login />} />
@@ -45,5 +48,6 @@ export default function App() {
         </Route>
       </Routes>
     </Router>
+      </>
   );
 }
