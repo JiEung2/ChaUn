@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import QuestItem from '../../../components/Home/Quest/QuestItem';
-import './Quest.scss';
-import { getQuest } from '@/api/quest';
+import { useState, useEffect, startTransition } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import querykeys from '@/utils/querykeys';
+import QuestItem from '../../../components/Home/Quest/QuestItem';
+import { getQuest } from '@/api/quest.ts';
+import './Quest.scss';
 
 interface PersonalQuest {
   questId: number;
@@ -18,27 +18,27 @@ export default function QuestPage() {
     queryFn: () => getQuest(),
   });
 
-  // 오늘의 퀘스트와 월간 퀘스트 상태 관리
   const [todayQuests, setTodayQuests] = useState<PersonalQuest[]>([]);
   const [monthlyQuests, setMonthlyQuests] = useState<PersonalQuest[]>([]);
 
-  // Quests 데이터를 받아와서 DAILY는 todayQuests에, MONTHLY는 monthlyQuests에 추가
   useEffect(() => {
     if (data) {
-      const daily: PersonalQuest[] = [];
-      const monthly: PersonalQuest[] = [];
-      const quests: PersonalQuest[] = data?.data?.todayQuests || [];
+      startTransition(() => {
+        const daily: PersonalQuest[] = [];
+        const monthly: PersonalQuest[] = [];
+        const quests: PersonalQuest[] = data?.data?.todayQuests || [];
 
-      quests.forEach((quest) => {
-        if (quest.questPeriod === 'DAILY') {
-          daily.push(quest);
-        } else if (quest.questPeriod === 'MONTHLY') {
-          monthly.push(quest);
-        }
+        quests.forEach((quest) => {
+          if (quest.questPeriod === 'DAILY') {
+            daily.push(quest);
+          } else if (quest.questPeriod === 'MONTHLY') {
+            monthly.push(quest);
+          }
+        });
+
+        setTodayQuests(daily);
+        setMonthlyQuests(monthly);
       });
-
-      setTodayQuests(daily);
-      setMonthlyQuests(monthly);
     }
   }, [data]);
 

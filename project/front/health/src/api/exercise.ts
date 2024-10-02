@@ -51,12 +51,13 @@ export const postExerciseRecord = async (
   exerciseStartTime: string,
   exerciseEndTime: string
 ) => {
+  // console.log(exerciseId, exerciseTime, exerciseStartTime, exerciseEndTime);
   const response = await axiosInstance.post(`${baseUrl}/users/exercise-history`, {
     exerciseId,
     exerciseTime,
     exerciseStartTime,
     exerciseEndTime,
   });
-  // console.log(response);
+  console.log(response);
   return response.data;
 };
