@@ -6,7 +6,7 @@ export default function CrewCreate() {
   const [crewName, setCrewName] = useState<string>('');
   const [profileImage, setprofileImage] = useState<File | null>(null);
   const [description, setDescription] = useState<string>('');
-  const [exerciseId, setExerciseId] = useState<number | null>(null);
+  const [_, setExerciseId] = useState<number | null>(null);
   const [exerciseName, setExerciseName] = useState<string | null>(null);
   const [showExerciseModal, setShowExerciseModal] = useState(false);
 
@@ -72,7 +72,7 @@ export default function CrewCreate() {
           <div className="crewCreate__form-group">
             <label>운동 종목</label>
             <button className="exerciseSelectButton" onClick={() => setShowExerciseModal(true)}>
-              {exerciseName ? exerciseName.name : '선택'}
+              {exerciseName ? exerciseName : '선택'}
             </button>
           </div>
 
