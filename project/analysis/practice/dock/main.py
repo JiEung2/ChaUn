@@ -348,11 +348,11 @@ def pearson_similarity(user, crew):
     user = np.array([user.m_type, user.type, user.age, user.score_1, user.score_2, user.score_3])
     crew = np.array([crew.m_type, crew.type, crew.age, crew.score_1, crew.score_2, crew.score_3])
     similarity = np.nan_to_num(np.corrcoef(user[2:], crew[2:])[0, 1]) # age, score_1~3
-    similarity = (similarity + 1) / 2
+    similarity = similarity ** 2
 
     if user[0]:
         # m_type
-        body_similarity =  1 - abs(abs(user[0] - crew[0]) * 0.5 + abs(user[0] - crew[1]) * 0.5) # 근육질 아닌 곳에 대한 가중치 늘리기(멀리) 
+        body_similarity =  1 - abs(abs(user[0] - crew[0]) * 0.4 + abs(user[0] - crew[1]) * 0.6) # 근육질 아닌 곳에 대한 가중치 늘리기(멀리) 
     else:
         body_similarity = 1 - abs(abs(user[1] - crew[0]) * 0.35 + abs(user[1] - crew[1]) * 0.65) # 근육질인 곳을 줄여 가까워지기
 
@@ -374,12 +374,14 @@ def recommend_crews(now_user, crew_df, top_n=6):
         if now_crew['crew_id'] not in now_user['crew_list']:
             crew_sports = now_crew['crew_sports']
 
-            # 4-1. 콘텐츠 기반 필터링 (너무 편향되지 않게)
+            # 4-1. 콘텐츠 기반 필터링 [수정 필요]
             content_similarity = 0.8 if crew_sports in now_user['favorite_sports'] else 0.5 # 유저가 선호하는 운동에 포함될 때
             content_similarity *= 0.3
 
+
+
+
             # 4-2. 유저와 크루간 협업 필터링 (return combined_sim)
-            print(i)
             pearson_sim = pearson_similarity(now_user, now_crew)
 
             # 협업 필터링과 콘텐츠 필터링의 가중치를 합산 (7:3) # 컨텐츠 필터링 = 0.24, 0.15
@@ -471,13 +473,12 @@ def crew_recommendation(request: TotalData):
         now_user = user_df.loc[user_idx]
 
         # 4. 크루 추천 (params = 현재 유저 정보, 전체 유저 df, 전체 크루 df)
-        print(user_idx)
         recommended_crews = recommend_crews(now_user, crew_df)
 
         # 5. 저장할 정보 리스트로 만들기
         result = {
             'user_id' : int(now_user['user_id']),
-            'crew_recommended' : [{'crew_id': int(crew[0]), 'similarity': float(crew[1])} for crew in recommended_crews]
+            'crew_recommended' : [{'crew_id': int(crew[0]), 'similarity': round(crew[1], 3)} for crew in recommended_crews]
         }
         
         # 6. MongoDB 저장
