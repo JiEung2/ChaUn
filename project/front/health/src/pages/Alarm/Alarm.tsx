@@ -25,6 +25,10 @@ interface Notification {
       battleStatus: string;
       battleId: number;
     };
+    coinDetail: {
+      crewCoin: number;
+      myCoin: number;
+    };
   };
   content: string;
   createdAt: string;
@@ -42,13 +46,10 @@ export default function AlarmPage() {
   });
 
   // 알림 상태 변경을 위한 mutation 생성
-  const patchNotificationMutation = useMutation({
+  const { mutate } = useMutation({
     mutationFn: (notificationId: number) => patchNotification(notificationId),
-    onSuccess: () => {
-      console.log('알림이 성공적으로 업데이트되었습니다.');
-    },
-    onError: (error) => {
-      console.error('알림 업데이트 중 오류 발생:', error);
+    onSuccess(data) {
+      console.log('mutate', data);
     },
   });
 
@@ -59,22 +60,21 @@ export default function AlarmPage() {
       switch (battleStatus) {
         case 'STARTED':
           navigate(`/crew/${battleId}/crewbattle`);
-          patchNotificationMutation.mutate(alarm.notificationId);
+          mutate(alarm.notificationId);
           break;
         case 'FINISHED':
           setSelectedAlarm(alarm);
           setIsModalOpen(true);
-          patchNotificationMutation.mutate(alarm.notificationId);
           break;
         default:
           break;
       }
     } else if (alarm.notificationType === 'SURVEY') {
       navigate('/record/bodyDetail');
-      patchNotificationMutation.mutate(alarm.notificationId);
+      mutate(alarm.notificationId);
     } else if (alarm.notificationType === 'QUEST') {
       navigate('/home/quest');
-      patchNotificationMutation.mutate(alarm.notificationId);
+      mutate(alarm.notificationId);
     }
   };
 
@@ -117,6 +117,7 @@ export default function AlarmPage() {
       {isModalOpen && selectedAlarm && selectedAlarm.additionalData && (
         <AlarmModal
           data={{
+            notificationId: selectedAlarm.notificationId,
             battleId: selectedAlarm.additionalData.battleDetail.battleId,
             ourTeamName: selectedAlarm.additionalData.battleDetail.myTeamName,
             ourTeamSport: selectedAlarm.additionalData.battleDetail.exerciseName,
@@ -124,8 +125,8 @@ export default function AlarmPage() {
             opponentTeamName: selectedAlarm.additionalData.battleDetail.opponentTeamName,
             opponentTeamSport: selectedAlarm.additionalData.battleDetail.exerciseName,
             opponentTeamScore: selectedAlarm.additionalData.battleDetail.opponentTeamScore,
-            crewCoins: 100,
-            myCoin: 50, // 실제 데이터를 받아와야 함
+            crewCoins: selectedAlarm.additionalData.coinDetail.crewCoin,
+            myCoin: selectedAlarm.additionalData.coinDetail.myCoin,
           }}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

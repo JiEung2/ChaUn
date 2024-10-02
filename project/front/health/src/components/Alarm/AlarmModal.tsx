@@ -2,8 +2,12 @@ import './AlarmModal.scss';
 import CloseButton from '@/assets/svg/xCircle.svg';
 import Coin from '@/components/Coin/Coin';
 import GeneralButton from '../Button/GeneralButton';
+import { useMutation } from '@tanstack/react-query';
+import { patchNotification } from '@/api/alarm';
+
 interface ModalProps {
   data: {
+    notificationId: number;
     battleId: number;
     ourTeamName: string;
     ourTeamSport: string;
@@ -19,12 +23,27 @@ interface ModalProps {
 }
 
 export default function AlarmModal({ data, isOpen, onClose }: ModalProps) {
+  const { mutate } = useMutation({
+    mutationFn: (notificationId: number) => patchNotification(notificationId),
+    onSuccess: () => {
+      console.log('알림이 성공적으로 업데이트되었습니다.');
+    },
+    onError: (error) => {
+      console.error('알림 업데이트 중 오류 발생:', error);
+    },
+  });
+
   if (!isOpen) return null;
 
+  const handleModalClose = () => {
+    mutate(data.notificationId);
+    onClose();
+  };
+
   return (
-    <div className="alarmModalOverlay" onClick={onClose}>
-      <div className="alarmModalContent">
-        <img src={CloseButton} alt="CloseButton" className="xloseButton" onClick={onClose} />
+    <div className="alarmModalOverlay" onClick={handleModalClose}>
+      <div className="alarmModalContent" onClick={(e) => e.stopPropagation()}>
+        <img src={CloseButton} alt="CloseButton" className="closeButton" onClick={handleModalClose} />
         <p className="battleResult">배틀 결과</p>
         <hr className="divider2" />
 
@@ -57,7 +76,10 @@ export default function AlarmModal({ data, isOpen, onClose }: ModalProps) {
           </div>
           <p className="rewardDescript">개인 추가 보상은 기여도 랭킹 3위까지 제공됩니다.</p>
         </div>
-        <GeneralButton buttonStyle={{ style: 'semiPrimary', size: 'tiny' }} onClick={onClose} className="checkButton">
+        <GeneralButton
+          buttonStyle={{ style: 'semiPrimary', size: 'tiny' }}
+          onClick={handleModalClose}
+          className="checkButton">
           확인
         </GeneralButton>
       </div>
