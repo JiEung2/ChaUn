@@ -122,7 +122,7 @@ public class CharacterWriteService {
     public CharacterSnapshotSuccessDto saveSnapshot(MultipartFile snapshot) throws IOException {
         String snapshotUrl = s3Service.uploadFile(snapshot);
         User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
-        characterSnapshotRepository.save(CharacterSnapshot.builder().user(user).characterSnapshot(snapshotUrl).build());
+        characterSnapshotRepository.save(CharacterSnapshot.builder().user(user).characterSnapshotUrl(snapshotUrl).build());
         return new CharacterSnapshotSuccessDto();
     }
 }
