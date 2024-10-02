@@ -7,4 +7,5 @@ import lombok.Getter;
 @Getter
 public class CharacterResponseDto {
     private final String characterUrl;
+    private final Long bodyTypeId;
 }

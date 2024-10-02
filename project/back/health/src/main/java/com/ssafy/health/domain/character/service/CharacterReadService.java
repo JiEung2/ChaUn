@@ -27,16 +27,14 @@ public class CharacterReadService {
     private final CharacterSetRepository characterSetRepository;
 
     public CharacterResponseDto getMyCharacter() {
-        return CharacterResponseDto.builder()
-                .characterUrl(getCharacterUrl(SecurityUtil.getCurrentUserId())).build();
+        return getCharacterInfo(SecurityUtil.getCurrentUserId());
     }
 
     public CharacterResponseDto getCharacter(Long userId) {
-        return CharacterResponseDto.builder()
-                .characterUrl(getCharacterUrl(userId)).build();
+        return getCharacterInfo(userId);
     }
 
-    public String getCharacterUrl(Long userId){
+    public CharacterResponseDto getCharacterInfo(Long userId){
         CharacterSet characterSet = characterSetRepository.findByUserId(userId).orElseThrow(CharacterSetNotFoundException::new);
         Long id = 0L;
         if(characterSet.getParts().getId() == 1){
@@ -47,7 +45,8 @@ public class CharacterReadService {
         }
         Character character = characterRepository.findById(id).orElseThrow(CharacterNotFoundException::new);
 
-        return character.getCharacterFile();
+        return CharacterResponseDto.builder().characterUrl(character.getCharacterFile())
+                .bodyTypeId(character.getBodyType().getId()).build();
     }
 
     public PartsListDto getParts(){
