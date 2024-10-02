@@ -56,7 +56,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         System.out.println("access = " + accessToken);
         System.out.println("refresh = " + refreshToken);
 
-        response.sendRedirect("https://j11c106.p.ssafy.io/auth");
+        response.sendRedirect("https://j11c106.p.ssafy.io/oauth");
     }
 
 }
