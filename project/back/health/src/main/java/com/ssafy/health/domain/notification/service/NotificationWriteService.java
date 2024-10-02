@@ -140,7 +140,7 @@ public class NotificationWriteService {
                 .coins(quest.getQuest().getCompletionCoins())
                 .build();
 
-        StringBuilder messageBuilder = new StringBuilder().append("크루 ").append(QUEST.getMessage());
+        StringBuilder messageBuilder = new StringBuilder().append(QUEST.getMessage());
 
         additionalData.put("questDetail", questDetail);
         Notification questNotification = notificationBuilder(
