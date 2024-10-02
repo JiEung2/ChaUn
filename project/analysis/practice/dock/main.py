@@ -25,7 +25,6 @@ from copy import deepcopy as dp
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout, Input
 from tensorflow.keras.optimizers import Adam
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 # .env 파일의 환경 변수를 로드
 load_dotenv()
@@ -337,21 +336,31 @@ class TotalData(BaseModel):
     total_users: TotalUserData
     total_crews: TotalCrewData
 
+# 1-1. col별 스케일러 적용하기
+def min_max_scaler(data):
+    min_val = data.min()
+    max_val = data.max()
+    return (data - min_val) / (max_val - min_val)
+
 # 4-2. 피어슨 유사도 계산 함수 - 협업 필터링
 def pearson_similarity(user, crew):
     # 사용자-크루간 4개 지표 상관관계수 유사도 (나이, 기본 점수, 활동 점수, 식습관 점수)
     user = np.array([user.m_type, user.type, user.age, user.score_1, user.score_2, user.score_3])
     crew = np.array([crew.m_type, crew.type, crew.age, crew.score_1, crew.score_2, crew.score_3])
-    similarity = np.nan_to_num(np.corrcoef(user[2:6], crew[2:6])[0, 1]) # age, score_1~3
+    similarity = np.nan_to_num(np.corrcoef(user[2:], crew[2:])[0, 1]) # age, score_1~3
+    similarity = (similarity + 1) / 2
 
     if user[0]:
         # m_type
-        body_similarity =  1 - (abs(user[0] - crew[0]) * 0.5 + abs(user[0] - crew[1] * 0.65)) # 근육질 아닌 곳에 대한 가중치 늘리기(멀리) 
+        body_similarity =  1 - abs(abs(user[0] - crew[0]) * 0.5 + abs(user[0] - crew[1]) * 0.5) # 근육질 아닌 곳에 대한 가중치 늘리기(멀리) 
     else:
-        body_similarity = 1 - (abs(user[1] - crew[0]) * 0.35 + abs(user[1] - crew[1]) * 0.5) # 근육질인 곳을 줄여 가까워지기
+        body_similarity = 1 - abs(abs(user[1] - crew[0]) * 0.35 + abs(user[1] - crew[1]) * 0.65) # 근육질인 곳을 줄여 가까워지기
 
     # 체형 유사도: 전체 유사도 3:7
     combined_similarity = (0.7 * similarity) + (0.3 * body_similarity)
+    # print('sim :', similarity)
+    # print('body_sim', body_similarity)
+    # print('combine_sim :', combined_similarity)
     return combined_similarity
 
 # 4. 메인 추천 함수
@@ -370,6 +379,7 @@ def recommend_crews(now_user, crew_df, top_n=6):
             content_similarity *= 0.3
 
             # 4-2. 유저와 크루간 협업 필터링 (return combined_sim)
+            print(i)
             pearson_sim = pearson_similarity(now_user, now_crew)
 
             # 협업 필터링과 콘텐츠 필터링의 가중치를 합산 (7:3) # 컨텐츠 필터링 = 0.24, 0.15
@@ -408,10 +418,10 @@ def recommend_crews(now_user, crew_df, top_n=6):
 
 '''
 
+
 # API :: 크루 추천 (동기 처리)
 @app.post("/api/v1/users/crew-recommendation/fast-api")
 def crew_recommendation(request: TotalData):
-    scaler = MinMaxScaler() # 정규화 스케일러
 
     # 1-1. request body 받아서 JSON에서 List를 DF 변환과 전처리
     user_data = pd.DataFrame([
@@ -441,8 +451,8 @@ def crew_recommendation(request: TotalData):
     ])
 
     # 1-2. 데이터 정규화
-    user_data_scaled = scaler.fit_transform(user_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']]) # 나이, 체형, 기본 점수, 활동 점수, 식습관 점수
-    crew_data_scaled = scaler.transform(crew_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']])
+    user_data_scaled = (user_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']]).apply(min_max_scaler) # 나이, 체형, 기본 점수, 활동 점수, 식습관 점수
+    crew_data_scaled = (crew_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']]).apply(min_max_scaler)
     # 1-3. DataFrame생성 (Matrix)
     user_df = pd.DataFrame(user_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
     crew_df = pd.DataFrame(crew_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
@@ -461,6 +471,7 @@ def crew_recommendation(request: TotalData):
         now_user = user_df.loc[user_idx]
 
         # 4. 크루 추천 (params = 현재 유저 정보, 전체 유저 df, 전체 크루 df)
+        print(user_idx)
         recommended_crews = recommend_crews(now_user, crew_df)
 
         # 5. 저장할 정보 리스트로 만들기
