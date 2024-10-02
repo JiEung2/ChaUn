@@ -1,0 +1,39 @@
+.container {
+  margin: 0 auto;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.inputGender {
+  display: flex;
+  gap: 20px;
+}
+
+.nextBtn {
+  margin: 50px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.errorText {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.successText {
+  color: green;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}/*# sourceMappingURL=1.module.css.map */

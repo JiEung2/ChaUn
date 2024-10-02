@@ -1,0 +1,36 @@
+.container {
+  display: flex;
+  flex-direction: column;
+}
+.container .inputWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.container .selectButtonWrapper {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.container .selectButtonWrapper .selectButton {
+  width: calc(50% - 10px);
+}
+.container .bodyShapeWrapper {
+  margin-bottom: 20px;
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.container .bodyShapeWrapper .selectButton {
+  width: calc(50% - 10px);
+}
+.container .nextPrevBtnWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}/*# sourceMappingURL=2.module.css.map */

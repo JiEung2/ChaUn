@@ -1,0 +1,11 @@
+.customCategoriesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.customCategoriesContainer .customTab {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}/*# sourceMappingURL=CustomCategories.css.map */

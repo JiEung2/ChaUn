@@ -1,0 +1,9 @@
+.customListContainer {
+  display: flex;
+  justify-content: center;
+}
+.customListContainer .customList {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}/*# sourceMappingURL=CustomList.css.map */

@@ -1,0 +1,18 @@
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.buttonGroup {
+  margin-top: 50px;
+  gap: 10px;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+}
+
+.radioGroup label {
+  display: flex;
+  margin-bottom: 13px;
+  gap: 5px;
+}/*# sourceMappingURL=3.module.css.map */
