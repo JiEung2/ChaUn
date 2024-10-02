@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './Recommend.scss';
 import GeneralButton from '../../../components/Button/GeneralButton';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getExerciseRecommendation } from '@/api/exercise';
 import queryKeys from '@/utils/querykeys'; // 제공된 쿼리 키를 가져옴
 
@@ -16,13 +16,13 @@ export default function ExerciseRecommendPage() {
 
   // useQuery를 사용하여 API 호출 및 캐싱 관리
   const {
-    data: recommendations = [],
+    data: recommendations,
     isLoading,
     isError,
-  } = useQuery<ExerciseRecommendation[]>(
-    queryKeys.EXERCISE_RECOMMEND, // 쿼리 키
-    getExerciseRecommendation // API 함수
-  );
+  } = useQuery<ExerciseRecommendation[]>({
+    queryKey: [queryKeys.EXERCISE_RECOMMEND],
+    queryFn: () => getExerciseRecommendation(),
+  });
 
   // 데이터가 로딩 중일 때
   if (isLoading) {
@@ -41,7 +41,7 @@ export default function ExerciseRecommendPage() {
 
   // 선택된 운동의 설명을 찾는 함수
   const getSelectedExercise = () => {
-    return recommendations.find((rec) => rec.name === selectedTab);
+    return recommendations?.find((rec) => rec.name === selectedTab);
   };
 
   return (
@@ -53,16 +53,17 @@ export default function ExerciseRecommendPage() {
 
       {/* 운동 카테고리 선택 버튼 */}
       <div className="tabs">
-        {recommendations.map((rec) => (
-          <GeneralButton
-            buttonStyle={{ style: 'outlined', size: 'semiTiny' }}
-            key={rec.id}
-            onClick={() => handleTabClick(rec.name)}
-            className={selectedTab === rec.name ? 'active' : ''} // active 클래스 추가
-          >
-            {rec.name}
-          </GeneralButton>
-        ))}
+        {recommendations &&
+          recommendations?.map((rec) => (
+            <GeneralButton
+              buttonStyle={{ style: 'outlined', size: 'semiTiny' }}
+              key={rec.id}
+              onClick={() => handleTabClick(rec.name)}
+              className={selectedTab === rec.name ? 'active' : ''} // active 클래스 추가
+            >
+              {rec.name}
+            </GeneralButton>
+          ))}
       </div>
 
       {/* 선택된 운동에 대한 설명 표시 */}

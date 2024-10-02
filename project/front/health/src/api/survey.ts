@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios';
 import axiosInstance from './axiosInstance';
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
@@ -71,7 +71,7 @@ export const surveySubmit3 = async (
   snackFrequency: string,
   drinkFrequency: string
 ) => {
-  const response = await axios.post(`${baseUrl}/users/survey/eating-habits`, {
+  const response = await axiosInstance.post(`${baseUrl}/users/survey/eating-habits`, {
     mealCount,
     mealType,
     snackFrequency,
