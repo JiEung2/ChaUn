@@ -9,6 +9,19 @@ import Finish from '../../assets/svg/finish.svg';
 import './Exercise.scss';
 
 Modal.setAppElement('#root');
+function formatTime(timer: number) {
+  const hours = Math.floor(timer / 3600000)
+    .toString()
+    .padStart(2, '0');
+  const minutes = Math.floor((timer % 3600000) / 60000)
+    .toString()
+    .padStart(2, '0');
+  const seconds = Math.floor((timer % 60000) / 1000)
+    .toString()
+    .padStart(2, '0');
+  const milliseconds = Math.floor((timer % 1000) / 100); // 밀리초를 0.1초 단위로 표시
+  return `${hours}:${minutes}:${seconds}:${milliseconds}`;
+}
 
 export default function Exercise() {
   const [showModal, setShowModal] = useState(false);
@@ -23,8 +36,8 @@ export default function Exercise() {
   const startTimer = () => {
     setIsRunning(true);
     const id = setInterval(() => {
-      setTimer((prev) => prev + 1);
-    }, 1000);
+      setTimer((prev) => prev + 10); // 10ms 단위로 증가
+    }, 10); // 10ms마다 업데이트
     setIntervalId(id);
   };
 
@@ -95,7 +108,7 @@ export default function Exercise() {
 
       {!isFinished ? (
         <>
-          <div className="timer">{new Date(timer * 1000).toISOString().substr(11, 8)}</div>
+          <div className="timer">{formatTime(timer)}</div>
           <div className="timerButton">
             {!isRunning ? (
               <button onClick={startTimer} disabled={!selectedExercise}>
