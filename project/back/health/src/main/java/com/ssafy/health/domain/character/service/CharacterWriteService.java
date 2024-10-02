@@ -112,9 +112,7 @@ public class CharacterWriteService {
         }
         characterSetRepository.save(characterSet);
 
-        return CharacterResponseDto.builder()
-                .characterUrl(characterReadService.getCharacterUrl(SecurityUtil.getCurrentUserId()))
-                .build();
+        return characterReadService.getCharacterInfo(SecurityUtil.getCurrentUserId());
     }
 
     public Parts getBasicParts() {
