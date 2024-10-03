@@ -7,32 +7,28 @@ import SnapshotList from '@/components/Profile/Snapshot/SnapshotList';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import html2canvas from 'html2canvas';
 import queryKeys from '@/utils/querykeys';
-import { getUserDetail } from '@/api/user';
 import './Mypage.scss';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 import { getPartsList, getMyCharacter, postSnapshot } from '@/api/character';
 
 export default function MypagePage() {
-  const { userId } = useParams<{ userId: string }>();
+  // const { userId } = useParams<{ userId: string }>();
   const characterRef = useRef<HTMLImageElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
 
   // 캐릭터 및 파츠 리스트 조회
-  const { data: myCharacter } = useSuspenseQuery({
+  const { data: myCharacter, error: characterError } = useSuspenseQuery({
     queryKey: [queryKeys.CHARACTER],
     queryFn: () => getMyCharacter(),
   });
 
+  if (characterError) {
+    return <p>캐릭터 정보를 불러오는 중 문제가 발생했습니다.</p>;
+  }
+
   const { data: partsList } = useSuspenseQuery({
     queryKey: [queryKeys.PARTSLIST],
     queryFn: () => getPartsList(),
-  });
-
-  const numericUserId = userId ? Number(userId) : 0;
-
-  const { data: userDetail } = useSuspenseQuery({
-    queryKey: [queryKeys.USER_DETAIL, numericUserId],
-    queryFn: () => getUserDetail(numericUserId),
   });
 
   const mutation = useMutation({
@@ -47,6 +43,7 @@ export default function MypagePage() {
   });
 
   // gender와 glbUrl 값을 가져와서 사용
+  console.log(myCharacter?.data?.data.characterUrl);
   const characterGlbUrl = myCharacter?.data?.data.characterUrl || '';
   const characterGender = myCharacter?.data?.data.gender === 'MAN' ? 'MAN' : 'FEMALE';
 
@@ -55,16 +52,16 @@ export default function MypagePage() {
     partsList?.data?.data?.partsList?.map((part: any) => {
       let category = '';
       switch (part.partsType) {
-        case 'hair':
+        case 'HAIR':
           category = '헤어';
           break;
-        case 'clothes':
+        case 'BODY':
           category = '상의';
           break;
-        case 'pants':
+        case 'PANTS':
           category = '하의';
           break;
-        case 'item':
+        case 'ARM' || 'LEG' || 'NONE':
           category = '아이템';
           break;
         default:
@@ -98,12 +95,16 @@ export default function MypagePage() {
     <div className="myProfileContainer">
       <div className="profileSection">
         <div className="info">
-          <p className="subtitle">{userDetail?.data.data.nickname} 님</p>
-          <Coin amount={userDetail?.data.data.coin} style="styled" />
+          <p className="subtitle">{} 님</p>
+          <Coin amount={100} style="styled" />
         </div>
 
         <div className="character">
-          <CharacterCanvas glbUrl={characterGlbUrl} gender={characterGender} />
+          {characterGlbUrl ? (
+            <CharacterCanvas glbUrl={characterGlbUrl} gender={characterGender} />
+          ) : (
+            <p>캐릭터 정보를 불러오는 중입니다...</p>
+          )}
           <GeneralButton
             buttonStyle={{ style: 'primary', size: 'select' }}
             className="snapshotButton"
@@ -119,7 +120,7 @@ export default function MypagePage() {
           <CustomCategories
             selectedTab={selectedTab}
             setSelectedTab={setSelectedTab}
-            userCoin={userDetail?.data.data.coin}
+            userCoin={100}
             onPurchase={() => {}}
             onApply={() => {}}
             items={mappedItems.filter((item: any) => item.category === selectedTab)}
