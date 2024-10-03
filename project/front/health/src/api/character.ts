@@ -23,6 +23,17 @@ export const patchPartsOnOff = async (parts_id: number) => {
 };
 
 export const postSnapshot = async (snapshot: string) => {
-  const response = await axios.post(`${baseUrl}/character/snapshot`, { snapshot });
+  // FormData 객체 생성
+  const formData = new FormData();
+  formData.append('snapshot', snapshot);
+
+  // POST 요청 보내기
+  const response = await axios.post(`${baseUrl}/character/snapshot`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  console.log(response);
   return response;
 };

@@ -13,7 +13,7 @@ export const characterHandlers = [
           {
             id: 1,
             partsType: 'HAIR',
-            cost: 100,
+            cost: 300,
             partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
           {
