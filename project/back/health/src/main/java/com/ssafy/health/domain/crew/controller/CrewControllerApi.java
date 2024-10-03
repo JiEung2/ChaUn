@@ -436,4 +436,26 @@ public interface CrewControllerApi {
             )
     })
     ApiResponse<CrewMemberDailyExerciseTimeListDto> getCrewMemberDailyExerciseTimeList(@PathVariable("crew_id") Long crewId);
+
+    @Operation(
+            summary = "크루 세팅 상태 조회",
+            description = "내가 리더인 크루의 세팅 상태를 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "크루 세팅 상태 조회 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                    {
+                      "status": 200,
+                      "message": "",
+                      "data": {
+                        "battleStatus": true
+                      }
+                    }
+                    """
+                            )
+                    )
+            )
+    })
+    ApiResponse<CrewSettingResponseDto> getCrewSetting(@PathVariable("crew_id") Long crewId);
 }
