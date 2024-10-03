@@ -8,6 +8,10 @@ import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.account.repository.mongodb.RecommendedCrewRepository;
+import com.ssafy.health.domain.character.entity.Character;
+import com.ssafy.health.domain.character.entity.CharacterSet;
+import com.ssafy.health.domain.character.exception.CharacterSetNotFoundException;
+import com.ssafy.health.domain.character.respository.CharacterSetRepository;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
@@ -25,16 +29,23 @@ import java.util.List;
 public class UserReadService {
 
     private final UserRepository userRepository;
-    private final RecommendedCrewRepository recommendedCrewRepository;
     private final CrewReadService crewReadService;
     private final CrewRepository crewRepository;
+    private final CharacterSetRepository characterSetRepository;
+    private final RecommendedCrewRepository recommendedCrewRepository;
 
     public UserDetailDto getUserDetail(Long userId) {
         User user = findUserById(userId);
 
+        CharacterSet characterSet = characterSetRepository.findByUserId(userId).orElseThrow(
+                CharacterSetNotFoundException::new);
+
+        Character myCharacter = characterSet.getCharacter();
+
         return UserDetailDto.builder()
                 .nickname(user.getNickname())
-                .coin(user.getCoin())
+                .characterImageUrl(myCharacter.getCharacterImage())
+                .characterFileUrl(myCharacter.getCharacterFile())
                 .build();
     }
 
