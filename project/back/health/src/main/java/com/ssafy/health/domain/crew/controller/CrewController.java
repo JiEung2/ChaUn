@@ -103,7 +103,7 @@ public class CrewController implements CrewControllerApi {
         return ApiResponse.success(crewReadService.getCrewMemberDailyExerciseTimeList(crewId));
     }
 
-    @GetMapping("/crew/{crew_id}/battle-status")
+    @GetMapping("/crew/{crew_id}/setting")
     public ApiResponse<CrewSettingResponseDto> getCrewSetting(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(crewReadService.getCrewSetting(crewId));
     }
