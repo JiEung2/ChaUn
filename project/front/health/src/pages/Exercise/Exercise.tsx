@@ -24,12 +24,12 @@ function formatTime(timer: number) {
   const milliseconds = Math.floor((timer % 1000) / 100); // 밀리초를 0.1초 단위로 표시
   return `${hours}:${minutes}:${seconds}:${milliseconds}`;
 }
-interface ExerciseProps {
-  exerciseId: number;
-  exerciseTime: number;
-  exerciseStartTime: string;
-  exerciseEndTime: string;
-}
+// interface ExerciseProps {
+//   exerciseId: number;
+//   exerciseTime: number;
+//   exerciseStartTime: string;
+//   exerciseEndTime: string;
+// }
 
 export default function Exercise() {
   const [showModal, setShowModal] = useState(false);
