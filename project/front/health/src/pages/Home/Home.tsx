@@ -1,4 +1,4 @@
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import QuestIcon from '../../assets/svg/quest.svg';
@@ -13,7 +13,8 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
 import { exerciseTime, exerciseRecord } from '@/api/home';
 import { useSuspenseQuery } from '@tanstack/react-query';
-
+import { getUserDetail } from '@/api/user';
+import useUserStore from '@/store/userInfo';
 Chart.register(annotationPlugin);
 
 interface ExerciseTimeResponse {
@@ -33,6 +34,16 @@ interface ExerciseRecord {
   burnedCalories: number; // 소모된 칼로리
 }
 
+async function getUserData() {
+  const { userId, setNickname, setHasCoin } = useUserStore();
+  try {
+    const response = await getUserDetail(userId);
+    setNickname(response.nickname);
+    setHasCoin(response.coin);
+  } catch (e) {
+    console.log('유저정보를 가져오던 중 에러', e);
+  }
+}
 // 데이터 fetch 함수
 function useExerciseTime() {
   return useSuspenseQuery<ExerciseTimeResponse>({
@@ -247,5 +258,9 @@ function HomePageContent() {
 
 // 전체 페이지에서 Suspense를 분리하여 사용
 export default function HomePage() {
+  // 초기 1회 유저 데이터 저장
+  useEffect(() => {
+    getUserData();
+  }, []);
   return <HomePageContent />;
 }
