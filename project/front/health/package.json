@@ -34,7 +34,8 @@
     "react-swipeable": "^7.0.1",
     "recharts": "^2.13.0-alpha.5",
     "sass": "^1.78.0",
-    "three": "^0.169.0"
+    "three": "^0.169.0",
+    "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.10.0",
