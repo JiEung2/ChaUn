@@ -94,6 +94,7 @@ export default function CrewPage() {
               exerciseName={battleData?.[0]?.exerciseName || 'N/A'}
               dDay={battleData?.[0]?.dDay || 0}
               battleStatus={battleData?.[0]?.battleStatus}
+              showButton={true}
             />
           ))
         ) : (
