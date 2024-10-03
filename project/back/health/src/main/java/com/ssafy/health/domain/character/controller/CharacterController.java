@@ -5,6 +5,7 @@ import com.ssafy.health.domain.character.dto.request.CharacterSaveRequestDto;
 import com.ssafy.health.domain.character.dto.request.PartsSaveRequestDto;
 import com.ssafy.health.domain.character.dto.response.CharacterResponseDto;
 import com.ssafy.health.domain.character.dto.response.CharacterSaveSuccessDto;
+import com.ssafy.health.domain.character.dto.response.CharacterSnapshotResponseDto;
 import com.ssafy.health.domain.character.dto.response.CharacterSnapshotSuccessDto;
 import com.ssafy.health.domain.character.dto.response.PartsListDto;
 import com.ssafy.health.domain.character.dto.response.PartsSaveSuccessDto;
@@ -72,5 +73,10 @@ public class CharacterController implements CharacterControllerApi {
     public ApiResponse<CharacterSnapshotSuccessDto> saveSnapshot(@RequestParam("snapshot") MultipartFile snapshot)
             throws IOException {
         return ApiResponse.success(characterWriteService.saveSnapshot(snapshot));
+    }
+
+    @GetMapping("/users/character/snapshot")
+    public ApiResponse<CharacterSnapshotResponseDto> getCharacterSnapshot() {
+        return ApiResponse.success(characterReadService.getCharacterSnapshot());
     }
 }
