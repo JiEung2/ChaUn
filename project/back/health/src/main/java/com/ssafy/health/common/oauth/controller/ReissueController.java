@@ -7,6 +7,7 @@ import com.ssafy.health.common.oauth.jwt.JWTUtil;
 import com.ssafy.health.common.oauth.repository.RefreshRepository;
 import com.ssafy.health.common.oauth.service.CookieService;
 import com.ssafy.health.common.oauth.service.RefreshService;
+import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.entity.UserRole;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
@@ -91,6 +92,7 @@ public class ReissueController {
 
         //response
         response.setHeader("access", newAccess);
+        response.addHeader("userId", String.valueOf(SecurityUtil.getCurrentUserId()));
         response.addHeader(HttpHeaders.SET_COOKIE, cookieService.createCookie("refresh", newRefresh).toString());
 
         System.out.println("access: " + newAccess);
