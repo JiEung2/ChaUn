@@ -20,8 +20,8 @@ export default function CrewRecommend() {
   const getCrewRecommendListData = async () => {
     try {
       const response = await getCrewRecommendList();
-      console.log(response);
-      setCrews(response.data); // API 호출 후 데이터를 상태에 저장
+      // console.log('크루 추천 페이지에서 response', response);
+      setCrews(response); // API 호출 후 데이터를 상태에 저장
     } catch (error) {
       console.error('크루추천 리스트 불러오기 실패', error);
     }

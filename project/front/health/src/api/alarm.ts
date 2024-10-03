@@ -1,9 +1,10 @@
-import axios from 'axios';
+// import axios from 'axios';
+import axiosInstance from './axiosInstance';
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
 export const getNotificationList = async () => {
-  const response = await axios.get(`${baseUrl}/notification/get`);
+  const response = await axiosInstance.get(`${baseUrl}/notification/get`);
   return response;
 };
 
