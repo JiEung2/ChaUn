@@ -66,17 +66,19 @@ export default function AlarmPage() {
 
   // 알림 타입에 따라 다른 페이지로 이동 설정
   const handleNavigation = (alarm: Notification) => {
-    const { notificationId, notificationType, additionalData } = alarm;
-
-    if (notificationType === 'BATTLE' && additionalData?.battleDetail) {
-      const { battleDetail } = additionalData;
-
-      if (battleDetail?.battleStatus === 'STARTED') {
-        mutate(notificationId);
-        navigate(`/crew/${battleDetail.battleId}/crewbattle`);
-      } else if (battleDetail?.battleStatus === 'FINISHED') {
-        setSelectedAlarm(alarm);
-        setIsModalOpen(true);
+    if (alarm.notificationType === 'BATTLE' && alarm.additionalData) {
+      const { battleStatus, battleId } = alarm.additionalData.battleDetail;
+      switch (battleStatus) {
+        case 'STARTED':
+          navigate(`/crew/crewbattle/${battleId}`);
+          mutate(alarm.notificationId);
+          break;
+        case 'FINISHED':
+          setSelectedAlarm(alarm);
+          setIsModalOpen(true);
+          break;
+        default:
+          break;
       }
     } else if (notificationType === 'SURVEY') {
       mutate(notificationId);
