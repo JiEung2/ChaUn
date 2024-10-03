@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function MyCrew() {
   interface CrewInfo {
+    crewId: number;
     crewName: string;
     crewProfileImage: string;
     exerciseName: string;
@@ -38,6 +39,7 @@ export default function MyCrew() {
   };
 
   const crewInfo: CrewInfo = {
+    crewId: 1,
     crewName: '달리는 번개',
     crewProfileImage: 'crew-profile-image.png',
     exerciseName: '런닝',
@@ -255,7 +257,7 @@ export default function MyCrew() {
             )}
 
             {isCrewLeader ? (
-              <button className="battleButton" onClick={() => navigate('/crew/battle')}>
+              <button className="battleButton" onClick={() => navigate('/crew/battle/${crew}')}>
                 참여하기
               </button>
             ) : (
