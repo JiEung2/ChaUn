@@ -76,5 +76,5 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error); // 모든 다른 오류는 그대로 반환
   }
 );
-
-export default STATE === 'production' ? axiosInstance : axios;
+const exportAxios = STATE === 'production' ? axiosInstance : axios;
+export default exportAxios;
