@@ -55,13 +55,7 @@ public class PromptWriteService {
     private String getPrompt() {
         String previousRecommendations = getPreviousRecommendations();
         String favoredExercises = getFavoredExercise();
-        String prompt = "I need 5 exercise recommendations, considering that I enjoy the following exercises. " +
-                "Please provide 3 strength exercises and 2 non-strength exercises. " +
-                "Only list them in the following format, without any additional comments or explanations:" +
-                "\nExercise: [exercise name]" +
-                "\nReason: [reason for recommendation]" +
-                "\nDescription: [brief exercise description or method]" +
-                "\n\nRepeat this format for each exercise. Answer in Korean.";
+        String prompt = "I need 5 exercise recommendations, considering that I enjoy the following exercises. ";
 
         if (favoredExercises != null && !favoredExercises.isEmpty()) {
             prompt += "\nI enjoy the following exercises: " + favoredExercises + ". Please recommend exercises that complement these.";
@@ -71,7 +65,16 @@ public class PromptWriteService {
 
         if (previousRecommendations != null && !previousRecommendations.isEmpty()) {
             prompt += "\nPreviously recommended exercises: " + previousRecommendations;
+            prompt += "Please try to exclude the exercises I have previously received as recommendations.";
         }
+
+        prompt += "Please provide 2 strength exercises and 3 non-strength exercises. " +
+                "Only list them in the following format, without any additional comments or explanations:" +
+                "\nExercise: [exercise name]" +
+                "\nReason: [I would like you to provide a reason for each recommendation, explaining how it helps with the exercises I frequently enjoy.]" +
+                "\nDescription: [brief exercise description or method]" +
+                "\n\nRepeat this format for each exercise. Answer in Korean.";
+        System.out.println(prompt);
         return prompt;
     }
 
