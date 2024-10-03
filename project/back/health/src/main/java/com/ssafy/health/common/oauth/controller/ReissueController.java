@@ -30,7 +30,7 @@ public class ReissueController {
     private final RefreshService refreshService;
     private final CookieService cookieService;
 
-    @GetMapping("/api/reissue")
+    @GetMapping("/api/v1/reissue")
     public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 
         log.info("reissue 진입");
