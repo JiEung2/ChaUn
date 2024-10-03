@@ -20,13 +20,13 @@ export const getCrewRecommendModal = async (crew_id: number) => {
 export const getCrewDetail = async (crew_id: number) => {
   const response = await exportAxios.get(`${baseURL}/crew/${crew_id}/detail`);
   console.log('크루 상세', response);
-  return response;
+  return response.data;
 };
 
 // 크루 내 랭킹 조회
 export const getCrewRanking = async (crew_id: number) => {
   const response = await exportAxios.get(`${baseURL}/crew/${crew_id}/ranking`);
-  return response;
+  return response.data;
 };
 
 // 크루 가입 신청
@@ -56,5 +56,29 @@ export const getUserCrewList = async (userId: number) => {
   // console.log('userId', userId);
   const response = await exportAxios.get(`${baseURL}/users/${userId}/crew-list`);
   // console.log('가입된 크루 조회', response);
+  return response.data;
+};
+
+// 크루 랜덤 매칭 동의여부
+export const agreeRandomMatching = async (crew_id: number) => {
+  const response = await exportAxios.post(`${baseURL}/crew/${crew_id}/battle/ready`);
+  return response.data;
+};
+
+export interface sendCoin {
+  crew_id: number;
+  coin_count: number;
+}
+export interface ResponseData {
+  message: string;
+}
+// 크루 코인 모금하기
+export const collectCrewCoin = async ({ crew_id, coin_count }: sendCoin): Promise<ResponseData> => {
+  const response = await exportAxios.post(`${baseURL}/crew/${crew_id}/coin/${coin_count}`);
+  return response.data;
+};
+//크루 베틀 현황
+export const crewBattleStatus = async (crew_id: number) => {
+  const response = await exportAxios.get(`${baseURL}/crew/${crew_id}/battle`);
   return response.data;
 };

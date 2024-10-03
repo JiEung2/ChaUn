@@ -79,8 +79,8 @@ export default function MypagePage() {
     <div className="myProfileContainer">
       <div className="profileSection">
         <div className="info">
-          <p className="subtitle">{userDetail?.data.data.nickname} 님</p>
-          <Coin amount={userDetail?.data.data.coin || userCoin} style="styled" />
+          <p className="subtitle">{userDetail?.nickname} 님</p>
+          <Coin amount={userDetail?.coin || userCoin} style="styled" />
         </div>
 
         <div className="character">
@@ -100,7 +100,7 @@ export default function MypagePage() {
           <CustomCategories
             selectedTab={selectedTab}
             setSelectedTab={setSelectedTab}
-            userCoin={userDetail?.data.coin || userCoin}
+            userCoin={userDetail?.coin || userCoin}
             onPurchase={handlePurchaseSuccess}
             onApply={handleApplyItem}
             items={items.filter((item) => item.category === selectedTab)}
