@@ -2,6 +2,7 @@ import './BattleBoard.scss';
 import { useNavigate } from 'react-router-dom';
 
 interface BattleBoardProps {
+  crewId: number;
   battleId: number;
   myTeamName: string;
   myTeamScore: number;
@@ -13,6 +14,7 @@ interface BattleBoardProps {
 }
 
 export default function BattleBoard({
+  crewId,
   battleId,
   myTeamName,
   myTeamScore,
@@ -23,6 +25,7 @@ export default function BattleBoard({
   battleStatus,
 }: BattleBoardProps) {
   console.log({
+    crewId,
     battleId,
     myTeamName,
     myTeamScore,
@@ -35,7 +38,7 @@ export default function BattleBoard({
   const navigate = useNavigate();
 
   const navigateBattlePage = () => {
-    navigate(`/crew/battle/${battleId}`);
+    navigate(`/crew/battle/${crewId}`);
   };
 
   const renderContent = () => {
