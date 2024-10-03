@@ -1,5 +1,5 @@
 import { useState, useEffect, startTransition } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import querykeys from '@/utils/querykeys';
 import QuestItem from '../../../components/Home/Quest/QuestItem';
 import { getQuest } from '@/api/quest.ts';
@@ -13,7 +13,7 @@ interface PersonalQuest {
 }
 
 export default function QuestPage() {
-  const { data } = useSuspenseQuery({
+  const { data } = useQuery({
     queryKey: [querykeys.USER_QUEST],
     queryFn: () => getQuest(),
   });
