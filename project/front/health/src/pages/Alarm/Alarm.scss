@@ -1,45 +1,47 @@
 @use '@/styles/constants/colors.scss' as colors;
 @use '@/styles/constants/typographies' as typo;
 
-
 .alarmContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .alarmItemContainer {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid colors.$lightGray;
+  }
+
+  .alarmIcon {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+    border: 2px solid colors.$lightGray;
+    border-radius: 50%;
+  }
+
+  .messageContainer {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    
-    .alarmItemContainer {
-        display: flex;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid colors.$lightGray;
-    }
-    
-    .alarmIcon {
-        width: 60px;
-        height: 60px;
-        margin-right: 10px;
-        border: 2px solid colors.$lightGray;
-        border-radius: 50%;    
-    }
-    
-    .messageContainer {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .message {
-        margin: 0;
-        @include typo.sub;
-    }
-    
-    .date {
-        color: colors.$darkGray;
-    }
-    
-    .arrow {
-        margin-left: auto;
-        cursor: pointer;
-    }
+  }
 
+  .message {
+    margin: 0;
+    @include typo.sub;
+  }
+
+  .date {
+    color: colors.$darkGray;
+  }
+
+  .arrow {
+    margin-left: auto;
+    cursor: pointer;
+  }
+
+  .alarmSpan {
+    color: colors.$blue;
+  }
 }

@@ -16,7 +16,7 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
     skeletalMuscleMass: 0, // 필수 입력에서 제외
     bodyFat: 0, // 필수 입력에서 제외
     bodyMuscle: false,
-    bodyShape: 0,
+    bodyShape: '',
   });
 
   const [isFormValid, setIsFormValid] = useState(false);
@@ -28,14 +28,13 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
     skeletalMuscleMass: number;
     bodyFat: number;
     bodyMuscle: boolean;
-    bodyShape: number;
+    bodyShape: string;
   }) => {
     setBodyData(data);
   };
 
   // useEffect를 사용하여 bodyData가 업데이트될 때마다 유효성 검사를 수행
   useEffect(() => {
-    // TODO - bodyShape을 number화 해서 유효성 검사에 추가하도록
     const { height, weight } = bodyData;
     // height, weight, bodyShape 값만 유효성 검사를 통해 버튼 활성화 여부 결정
     setIsFormValid(height > 0 && weight > 0);
@@ -50,7 +49,7 @@ export default function Two({ handleNext, handlePrev }: TwoProps) {
         bodyData.skeletalMuscleMass,
         bodyData.bodyFat,
         bodyData.bodyMuscle,
-        Number(bodyData.bodyShape)
+        bodyData.bodyShape
       );
       console.log(response);
       handleNext();

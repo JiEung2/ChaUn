@@ -16,13 +16,22 @@ import Alarm from './pages/Alarm/Alarm';
 import Mypage from './pages/Mypage/Mypage';
 import Profile from './pages/Profile/Profile';
 import MyCrew from './pages/Crew/MyCrew/MyCrew';
+
 import CrewBattle from './pages/Crew/CrewBattle/CrewBattle';
 import CrewCreate from './pages/Crew/CrewCreate/CrewCreate';
 import CrewRanking from './pages/Crew/CrewRanking/CrewRanking';
 
+
+// import CrewDetail from './pages/Crew/CrewDetail/CrewDetail';
+import OAuth from './pages/OAuth/OAuth';
+
+import { Toaster } from 'react-hot-toast';
+
 export default function App() {
   return (
-    <Router>
+      <>
+    <Toaster />
+    <Router>  
       <Routes>
         <Route element={<CommonLayout />}>
           <Route path="/" element={<Login />} />
@@ -44,8 +53,10 @@ export default function App() {
           <Route path="/crew/create" element={<CrewCreate />} />
           <Route path="/crew/battle/:battleId" element={<CrewBattle />} />
           <Route path="/crew/ranking" element={<CrewRanking />} />
+          <Route path="/oauth" element={<OAuth />} />
         </Route>
       </Routes>
     </Router>
+      </>
   );
 }
