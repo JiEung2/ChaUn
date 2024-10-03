@@ -32,7 +32,7 @@ public class CharacterController implements CharacterControllerApi {
     private final CharacterReadService characterReadService;
     private final CharacterWriteService characterWriteService;
 
-    @PostMapping("/character")
+    @PostMapping(value = "/character", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<CharacterSaveSuccessDto> saveBodySurvey(
             @Valid @RequestPart("characterSaveRequestDto") CharacterSaveRequestDto characterSaveRequestDto,
             @RequestPart("characterImage") MultipartFile characterImage,
@@ -41,7 +41,7 @@ public class CharacterController implements CharacterControllerApi {
                 characterWriteService.saveCharacter(characterSaveRequestDto, characterImage, characterFile));
     }
 
-    @PostMapping("/parts")
+    @PostMapping(value = "/parts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<PartsSaveSuccessDto> saveParts(
             @Valid @RequestPart("partsSaveRequestDto") PartsSaveRequestDto partsSaveRequestDto,
             @RequestPart("partImage") MultipartFile partImage) throws IOException {
