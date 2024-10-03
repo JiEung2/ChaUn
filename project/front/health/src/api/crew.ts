@@ -29,6 +29,12 @@ export const getCrewRanking = async (crew_id: number) => {
   return response;
 };
 
+// 운동별 크루 랭킹 조회
+export const getExerciseCrewRanking = async (exercise_id: number) => {
+  const response = await axiosInstance.get(`${baseURL}/crew/ranking/${exercise_id}`);
+  return response;
+};
+
 // 크루 가입 신청
 export const joinToCrew = async (crew_id: number) => {
   const response = await axiosInstance.post(`${baseURL}/crew/${crew_id}/join`);

@@ -59,7 +59,7 @@ export default function AlarmPage() {
       const { battleStatus, battleId } = alarm.additionalData.battleDetail;
       switch (battleStatus) {
         case 'STARTED':
-          navigate(`/crew/${battleId}/crewbattle`);
+          navigate(`/crew/crewbattle/${battleId}`);
           mutate(alarm.notificationId);
           break;
         case 'FINISHED':

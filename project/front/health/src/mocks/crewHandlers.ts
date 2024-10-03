@@ -85,6 +85,95 @@ export const crewHandlers = [
     return HttpResponse.json(memberList, { status: 200 });
   }),
 
+  // 운동별 크루 랭킹 조회
+  http.get(`${baseUrl}/crew/ranking/:exercise_id`, ({ params }) => {
+    const { exercise_id } = params;
+    const rankingId = Array.isArray(exercise_id) ? exercise_id[0] : exercise_id;
+
+    console.log('운동별 크루 랭킹 id', rankingId);
+
+    return HttpResponse.json({
+      status: 200,
+      message: '',
+      data: {
+        crewList: [
+          {
+            crewId: 2,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 100,
+            activityScore: 200,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+        ],
+      },
+    });
+  }),
+
   http.post(`${baseUrl}/crew/:crew_id/join`, ({ params }) => {
     const { crew_id } = params;
     console.log('크루 가입 신청의 크루 id', crew_id);
