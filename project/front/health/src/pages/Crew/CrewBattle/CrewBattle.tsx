@@ -14,6 +14,9 @@ export default function CrewBattle() {
     enabled: !!crewId, // crewId가 있을 때만 쿼리를 실행
   });
 
+  if (!battleList || battleList.length === 0) {
+    return <div></div>;
+  }
   const battleData = battleList[0];
   // console.log(battleList);
 
@@ -31,6 +34,7 @@ export default function CrewBattle() {
             myTeamScore={battleData.myTeamScore}
             opponentTeamName={battleData.opponentTeamName}
             opponentTeamScore={battleData.opponentTeamScore}
+            showButton={false}
           />
           <div className="ranking__none"></div>
         </div>
@@ -47,6 +51,7 @@ export default function CrewBattle() {
             myTeamScore={battleData.myTeamScore}
             opponentTeamName={battleData.opponentTeamName}
             opponentTeamScore={battleData.opponentTeamScore}
+            showButton={false}
           />
           <div className="ranking__started"></div>
         </div>
