@@ -17,7 +17,7 @@ export default function PurchaseModal({ item, userCoin, onClose, onPurchaseSucce
   const handlePurchase = () => {
     if (isPurchasable) {
       onPurchaseSuccess();
-    } 
+    }
   };
 
   return (
@@ -26,8 +26,8 @@ export default function PurchaseModal({ item, userCoin, onClose, onPurchaseSucce
         <img src={XCircle} alt="xCircle" className="xCircle" onClick={onClose} />
         <p className="purchaseMent">아이템을 구매하시겠습니까?</p>
         <hr className="purchaseHr" />
-        
-        <div className="modalContent">
+
+        <div className="customModalContent">
           <div className="customItemContainer">
             <img src={item.image} alt="CustomItem" className="customItemImage blurred" />
             <img src={lockIcon} alt="LockIcon" className="lockIcon" />
@@ -50,15 +50,10 @@ export default function PurchaseModal({ item, userCoin, onClose, onPurchaseSucce
             buttonStyle={{ style: 'primary', size: 'select' }}
             onClick={handlePurchase}
             disabled={!isPurchasable}
-            className="purchase"
-          >
+            className="purchase">
             구매
           </GeneralButton>
-          <GeneralButton
-            buttonStyle={{ style: 'primary', size: 'select' }}
-            onClick={onClose}
-            className="cancel"
-          >
+          <GeneralButton buttonStyle={{ style: 'primary', size: 'select' }} onClick={onClose} className="cancel">
             취소
           </GeneralButton>
         </div>
