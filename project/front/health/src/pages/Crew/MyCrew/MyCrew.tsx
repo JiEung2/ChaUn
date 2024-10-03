@@ -304,7 +304,9 @@ export default function MyCrew() {
             <div className="crewSettings">
               <div>
                 <p className="settingTitle">크루 배틀 랜덤 매칭 동의</p>
-                <p className="settingDescription">상대가 배틀을 신청했을 때 자동으로 수락됩니다.</p>
+                <p className="settingDescription">
+                  상대가 배틀을 신청했을 때 자동으로 <br /> 수락됩니다. 참가비는 100코인입니다.
+                </p>
               </div>
               <label className="toggleSwitch">
                 <input type="checkbox" checked={isRandomAllowed} onChange={handleToggle} />

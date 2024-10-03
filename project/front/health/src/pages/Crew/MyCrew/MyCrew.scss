@@ -318,7 +318,7 @@
 .crewSettings {
   display: flex;
   align-items: center;
-  margin-top: 20px;
+  margin: 20px;
   .settingTitle {
     font-weight: bold;
     font-size: 16px;
@@ -326,6 +326,7 @@
   .settingDescription {
     font-size: 12px;
     color: colors.$darkGray;
+    margin: 0 20px;
   }
 }
 
