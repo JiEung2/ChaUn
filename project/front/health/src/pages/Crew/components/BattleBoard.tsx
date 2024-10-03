@@ -1,16 +1,19 @@
 import './BattleBoard.scss';
+import { useNavigate } from 'react-router-dom';
 
 interface BattleBoardProps {
+  battleId: number;
   myTeamName: string;
   myTeamScore: number;
   opponentTeamName: string;
   opponentTeamScore: number;
   exerciseName: string;
   dDay: number;
-  battleStatus: 'STARTED' | 'FINISHED' | 'WAITING' | 'NONE';
+  battleStatus: string;
 }
 
 export default function BattleBoard({
+  battleId,
   myTeamName,
   myTeamScore,
   opponentTeamName,
@@ -19,13 +22,31 @@ export default function BattleBoard({
   dDay,
   battleStatus,
 }: BattleBoardProps) {
+  console.log({
+    battleId,
+    myTeamName,
+    myTeamScore,
+    opponentTeamName,
+    opponentTeamScore,
+    exerciseName,
+    dDay,
+    battleStatus,
+  });
+  const navigate = useNavigate();
+
+  const navigateBattlePage = () => {
+    navigate(`/crew/battle/${battleId}`);
+  };
+
   const renderContent = () => {
     switch (battleStatus) {
       case 'NONE':
         return (
           <div className="battle-board">
             <p>아직 참여중인 배틀이 없어요!</p>
-            <button className="button join-crew">크루 배틀 입장</button>
+            <button className="button join-crew" onClick={navigateBattlePage}>
+              크루 배틀 입장
+            </button>
           </div>
         );
       case 'STARTED':
@@ -48,7 +69,9 @@ export default function BattleBoard({
               </div>
             </div>
             <div className="score-bar" />
-            <button className="button join-crew">크루 배틀 입장</button>
+            <button className="button join-crew" onClick={navigateBattlePage}>
+              크루 배틀 입장
+            </button>
           </div>
         );
       default:

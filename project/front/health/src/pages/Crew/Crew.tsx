@@ -6,53 +6,40 @@ import createIcon from '../../assets/svg/crewCreate.svg';
 import recommendIcon from '../../assets/svg/crewRecommend.svg';
 import rankingIcon from '../../assets/svg/crewRanking.svg';
 import '../Crew/Crew.scss';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
 import Crew from '@/components/Crew/Crew';
-import CrewImg from '@/assets/image/customItem.jpg';
+import { useQueryClient } from '@tanstack/react-query';
+import queryKeys from '@/utils/querykeys';
+import { getUserCrewList } from '@/api/crew';
 
 export default function CrewPage() {
   const navigate = useNavigate();
 
-  const crew_id = 123;
-
-  // 가입된 크루 조회 /api/v1/users/{user_id}/crew-list
-  const myCrews = [
-    {
-      id: 1,
-      imageUrl: CrewImg,
-      name: '달리는 번개라오라오',
-      tag: '런닝',
-    },
-    {
-      id: 2,
-      imageUrl: CrewImg,
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    {
-      id: 3,
-      imageUrl: CrewImg,
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    {
-      id: 4,
-      imageUrl: 'data:image/png;base64,...',
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-    {
-      id: 5,
-      imageUrl: 'data:image/png;base64,...',
-      name: '달리는 번개',
-      tag: '런닝',
-    },
-  ];
-  const { data, error, isLoading } = useQuery<CrewBattleStatusResponse>({
-    queryKey: ['crewBattleStatus', crew_id],
-    queryFn: ({ queryKey }) => fetchCrewBattleStatus(Number(queryKey[1])), // queryKey에서 crew_id를 추출하여 전달
+  // 임시 dummy Id
+  const userId = 1;
+  // 가입된 크루 리스트
+  const { data: userCrewList } = useSuspenseQuery({
+    queryKey: [queryKeys.USER_CREW_LIST, userId],
+    queryFn: () => getUserCrewList(Number(userId)),
+    select: (response) => response.data.crewList || [],
   });
+  console.log('userCrewList', userCrewList);
+
+  // 크루의 배틀 현황 리스트
+  const crewIds = userCrewList.map((crew: any) => crew.crewId);
+  const {
+    data: BattleList,
+    error,
+    isLoading,
+  } = useQuery<CrewBattleStatusResponse[]>({
+    queryKey: [queryKeys.BATTLE_STATUS, crewIds],
+    queryFn: ({ queryKey }) => {
+      const [, crewIds] = queryKey as [string, number[]]; // crewIds가 배열 형태로 지정됨
+      return Promise.all(crewIds.map((id) => fetchCrewBattleStatus(id))); // 각 크루 ID에 대해 배틀 상태 가져오기
+    },
+  });
+  console.log('살려줘', BattleList);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -61,9 +48,6 @@ export default function CrewPage() {
   if (error) {
     return <div>Error fetching battle status: {error.message}</div>;
   }
-
-  const battleData = data?.data;
-  // console.log(battleData);
 
   // 내 크루 이동
   const handleCrewClick = (crewId: number) => {
@@ -76,26 +60,41 @@ export default function CrewPage() {
         <p>닉네임님의 크루</p>
 
         <div className="crewList">
-          {myCrews.map((crew, index) => (
-            <Crew
-              key={index}
-              imageUrl={crew.imageUrl}
-              name={crew.name}
-              tag={crew.tag}
-              onClick={() => handleCrewClick(crew.id)}
-            />
-          ))}
+          {userCrewList && userCrewList.length > 0 ? (
+            userCrewList.map((crew: any) => (
+              <Crew
+                key={crew.crewId}
+                imageUrl={crew.crewProfileImage}
+                name={crew.crewName}
+                tag={crew.exerciseName}
+                onClick={() => handleCrewClick(crew.crewId)}
+              />
+            ))
+          ) : (
+            <p>해당 크루가 없습니다.</p>
+          )}
         </div>
       </div>
-      <BattleBoard
-        myTeamName={battleData?.myTeamName || 'No Battle'}
-        myTeamScore={battleData?.myTeamScore || 0}
-        opponentTeamName={battleData?.opponentTeamName || 'No Opponent'}
-        opponentTeamScore={battleData?.opponentTeamScore || 0}
-        exerciseName={battleData?.exerciseName || 'N/A'}
-        dDay={battleData?.dDay || 0}
-        battleStatus={battleData?.battleStatus === 'NONE' ? 'STARTED' : 'FINISHED'}
-      />
+
+      <div className="battleBoardList">
+        {BattleList && BattleList.length > 0 ? (
+          BattleList.map((battleData, index) => (
+            <BattleBoard
+              battleId={battleData?.[0]?.battleId || 0}
+              myTeamName={battleData?.[0]?.myTeamName || 'No Battle'}
+              myTeamScore={battleData?.[0]?.myTeamScore || 0}
+              opponentTeamName={battleData?.[0]?.opponentTeamName || 'No Opponent'}
+              opponentTeamScore={battleData?.[0]?.opponentTeamScore || 0}
+              exerciseName={battleData?.[0]?.exerciseName || 'N/A'}
+              dDay={battleData?.[0]?.dDay || 0}
+              battleStatus={battleData?.[0]?.battleStatus}
+            />
+          ))
+        ) : (
+          <p>현재 진행 중인 배틀이 없습니다.</p>
+        )}
+      </div>
+
       <div className="buttonSection">
         <div className="crewButtonSection">
           <StyledButton
