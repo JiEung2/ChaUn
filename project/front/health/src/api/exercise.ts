@@ -26,7 +26,7 @@ export const getExerciseHistory = async (year: number, month: number) => {
   // console.log(response);
   return response.data;
 };
-
+//주간 운동 기록 조회
 export const getWeeklyExerciseRecord = async (year: number, month: number, week: number) => {
   try {
     const response = await axiosInstance.get(`${baseUrl}/users/exercise-history/week`, {
@@ -42,4 +42,22 @@ export const getWeeklyExerciseRecord = async (year: number, month: number, week:
     console.error('API 요청 중 에러 발생:', error);
     throw error; // 에러를 상위로 던짐
   }
+};
+
+// 운동 기록 추가
+export const postExerciseRecord = async (
+  exerciseId: number,
+  exerciseTime: number,
+  exerciseStartTime: string,
+  exerciseEndTime: string
+) => {
+  // console.log(exerciseId, exerciseTime, exerciseStartTime, exerciseEndTime);
+  const response = await axiosInstance.post(`${baseUrl}/users/exercise-history`, {
+    exerciseId,
+    exerciseTime,
+    exerciseStartTime,
+    exerciseEndTime,
+  });
+  console.log(response);
+  return response.data;
 };
