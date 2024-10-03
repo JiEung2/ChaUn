@@ -1,23 +1,23 @@
 // import axios from 'axios';
-import axiosInstance from './axiosInstance';
+import exportAxios from './axiosInstance';
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
 export const getExercise = async () => {
-  const response = await axiosInstance.get(`${baseUrl}/exercise`);
+  const response = await exportAxios.get(`${baseUrl}/exercise`);
   // console.log(response);
   return response.data;
 };
 
 // 나의 운동 추천 목록 조회
 export const getExerciseRecommendation = async () => {
-  const response = await axiosInstance.get(`${baseUrl}/users/excercise/recommendation`);
+  const response = await exportAxios.get(`${baseUrl}/users/excercise/recommendation`);
   // console.log(response);
   return response.data;
 };
 
 // 특정 달의 운동 기록 조회
 export const getExerciseHistory = async (year: number, month: number) => {
-  const response = await axiosInstance.get(`${baseUrl}/users/exercise-history/month`, {
+  const response = await exportAxios.get(`${baseUrl}/users/exercise-history/month`, {
     params: {
       year,
       month,
@@ -29,7 +29,7 @@ export const getExerciseHistory = async (year: number, month: number) => {
 //주간 운동 기록 조회
 export const getWeeklyExerciseRecord = async (year: number, month: number, week: number) => {
   try {
-    const response = await axiosInstance.get(`${baseUrl}/users/exercise-history/week`, {
+    const response = await exportAxios.get(`${baseUrl}/users/exercise-history/week`, {
       params: {
         year,
         month,
@@ -52,7 +52,7 @@ export const postExerciseRecord = async (
   exerciseEndTime: string
 ) => {
   // console.log(exerciseId, exerciseTime, exerciseStartTime, exerciseEndTime);
-  const response = await axiosInstance.post(`${baseUrl}/users/exercise-history`, {
+  const response = await exportAxios.post(`${baseUrl}/users/exercise-history`, {
     exerciseId,
     exerciseTime,
     exerciseStartTime,

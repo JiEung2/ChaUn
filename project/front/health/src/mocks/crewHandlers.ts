@@ -18,11 +18,11 @@ const crewList = [
 
 const crewDetail = {
   crewId: 1,
-  crewName: '달리는 번개',
+  crewName: '달리는 번개2',
   exerciseName: '러닝',
   profileImage: 'crew-profile-image.jpg',
   description: '번개맨보다 빠른 러너들의 모임',
-  crewCoins: 300,
+  crewCoins: 350,
   crewRanking: 3,
   totalBattleCount: 10,
   winCount: 7,
@@ -46,38 +46,39 @@ const memberList = [
   },
 ];
 
-const crewBattleStatus = [
+const crewBattleStatus = {
+  battleId: 1,
+  myTeamName: '달리자크루',
+  myTeamScore: 1200,
+  opponentTeamName: '크크크루',
+  opponentTeamScore: 1000,
+  exerciseName: '러닝',
+  dDay: 2,
+  battleStatus: 'STARTED',
+};
+
+const sendCoin = {
+  message: '코인을 전송하였습니다.',
+  crewCoin: 1000,
+  myCoin: 900,
+};
+const CrewQuest = [
   {
-    battleId: 1,
-    myTeamName: '달리자크루',
-    myTeamScore: 1200,
-    opponentTeamName: '크크크루',
-    opponentTeamScore: 1000,
-    exerciseName: '러닝',
-    dDay: 2,
-    battleStatus: 'STARTED',
+    questId: 3,
+    title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기',
+    questPeriod: 'DAILY',
+    isCompleted: true,
   },
-  // {
-  //   battleId: 2,
-  //   myTeamName: '강아지는야옹',
-  //   myTeamScore: 3000,
-  //   opponentTeamName: '아이고머리야',
-  //   opponentTeamScore: 1000,
-  //   exerciseName: '러닝',
-  //   dDay: 2,
-  //   battleStatus: 'STARTED',
-  // },
-  // {
-  //   battleId: 0,
-  //   myTeamName: 'No Battle',
-  //   myTeamScore: 0,
-  //   opponentTeamName: 'No Opponent',
-  //   opponentTeamScore: 0,
-  //   exerciseName: 'N/A',
-  //   dDay: 2,
-  //   battleStatus: 'NONE',
-  // },
 ];
+const battleStatus = {
+  myTeamName: '달리자크루',
+  myTeamScore: 400,
+  opponentTeamName: '크크크루',
+  opponentTeamScore: 500,
+  exerciseName: '러닝',
+  battleStatus: 'STARTED',
+  dDay: 2,
+};
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
   http.get(`${baseUrl}/users/recommend-crew`, () => {
@@ -244,5 +245,32 @@ export const crewHandlers = [
     const { crew_id } = params;
     console.log('배틀중인 크루id', crew_id);
     return HttpResponse.json(crewBattleStatus, { status: 200 });
+  }),
+
+  http.get(`${baseUrl}/quest/get/crew`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('quest get crew', crew_id);
+    return HttpResponse.json(CrewQuest, { status: 200 });
+  }),
+
+  // 크루 랜덤 매칭 동의 여부
+  http.post(`${baseUrl}/crew/:crew_id/battle/ready`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('크루 랜덤 매칭 동의여부 크루 id', crew_id);
+  }),
+
+  // 코인 전송
+  http.post(`${baseUrl}/crew/:crew_id/coin/:coin_count`, ({ params }) => {
+    const { crew_id, coin_count } = params;
+    console.log('코인 전송', crew_id, coin_count);
+    return HttpResponse.json(sendCoin, { status: 200 });
+  }),
+
+  //배틀 현황
+  http.get(`${baseUrl}/crew/:crew_id/battle`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('배틀 현황', crew_id);
+
+    return HttpResponse.json(battleStatus, { status: 200 });
   }),
 ];

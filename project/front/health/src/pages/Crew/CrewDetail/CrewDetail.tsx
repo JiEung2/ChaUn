@@ -78,7 +78,7 @@ const CrewDetail = () => {
       const numberCrewId = Number(crew_id);
       const response = await getCrewDetail(numberCrewId);
       console.log('크루 디테일 데이터', response);
-      setCrewInfo(response.data);
+      setCrewInfo(response);
     } catch (error) {
       console.error('크루 상세 정보 불러오기 실패', error);
     }
@@ -89,7 +89,7 @@ const CrewDetail = () => {
     try {
       const response = await getCrewRanking(Number(sendCrewId));
       console.log('크루 랭킹 데이터', response);
-      setMembers(response.data);
+      setMembers(response);
     } catch (error) {
       console.error('크루 랭킹 정보 불러오기 실패', error);
     }
