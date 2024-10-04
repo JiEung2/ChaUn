@@ -9,7 +9,7 @@ import RightArrow from '@/assets/svg/rightArrow.svg';
 import { format } from 'date-fns';
 import { getNotificationList, patchNotification } from '@/api/alarm';
 import AlarmModal from '@/components/Alarm/AlarmModal';
-import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
+import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import querykeys from '@/utils/querykeys';
 
 interface Notification {
@@ -44,6 +44,7 @@ interface Notification {
 
 export default function AlarmPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAlarm, setSelectedAlarm] = useState<Notification | null>(null);
 
@@ -57,10 +58,11 @@ export default function AlarmPage() {
   const { mutate } = useMutation({
     mutationFn: (notificationId: number) => patchNotification(notificationId),
     onSuccess(data) {
-      console.log('mutate', data);
+      queryClient.invalidateQueries({ queryKey: [querykeys.NOTIFICATION] });
+      console.log(data);
     },
     onError(error) {
-      console.log('에러남 : ', error.message);
+      console.error('에러 발생: ', error.message);
     },
   });
 
@@ -71,8 +73,8 @@ export default function AlarmPage() {
       const battleId = alarm.additionalData.battleDetail?.battleId;
       switch (battleStatus) {
         case 'STARTED':
-          navigate(`/crew/crewbattle/${battleId}`);
           mutate(alarm.notificationId);
+          navigate(`/crew/crewbattle/${battleId}`);
           break;
         case 'FINISHED':
           setSelectedAlarm(alarm);
@@ -86,7 +88,6 @@ export default function AlarmPage() {
       navigate('/record/bodyDetail');
     } else if (alarm.notificationType === 'QUEST' && alarm.additionalData?.questDetail) {
       const { type, crewId } = alarm.additionalData.questDetail;
-
       if (type === 'CREW') {
         mutate(alarm.notificationId);
         navigate(`/crew/${crewId}/detail`);
@@ -149,20 +150,12 @@ export default function AlarmPage() {
       );
     }
 
-    if (questDetail?.type === 'CREW') {
-      return (
-        <p className="message">
-          <span>{questDetail.crewName}</span>의 {alarm.content}
-        </p>
-      );
-    }
-
     return <p className="message">{alarm.content}</p>;
   };
 
   return (
     <div className="alarmContainer">
-      {alarmList.data.data.map((alarm: Notification) => (
+      {alarmList?.data?.data.map((alarm: Notification) => (
         <div className="alarmItemContainer" key={alarm.notificationId}>
           <img src={getIcon(alarm)} alt="Icon" className="alarmIcon" />
           <div className="messageContainer">

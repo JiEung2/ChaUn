@@ -26,5 +26,6 @@ export default {
   USER_QUEST: 'userQuest',
   CREW_QUEST: 'crewQuest',
   NOTIFICATION: 'notification',
-  PARTSLIST: 'partslist',
+  PARTS_LIST: 'partslist',
+  SNAPSHOT_LIST: 'snapshotList',
 };

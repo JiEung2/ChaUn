@@ -33,8 +33,8 @@ export default function CustomItem({ item, coinAmount, onPurchase, onApply }: Cu
         <img src={item.image} alt="CustomItem" className={`itemImage ${item.isLocked ? 'blurred' : ''}`} />
         {item.isLocked && <img src={lockIcon} alt="LockIcon" className="lockIcon" />}
       </div>
-      <div>
-        <Coin amount={item.price} style="basic" />
+      <div className="customItemCoin">
+        <Coin amount={item.price} style="basic" width="65px" height="30px" />
       </div>
       {showModal && (
         <PurchaseModal

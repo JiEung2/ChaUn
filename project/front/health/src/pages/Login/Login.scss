@@ -22,27 +22,3 @@
   flex-direction: column;
   gap: 1rem;
 }
-
-.mainChar {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  margin-left: 50px;
-  filter: brightness(1.4);
-
-  .maingirl,
-  .mainboy {
-    position: relative;
-    width: 200px;
-    height: 300px;
-  }
-
-  .maingirl {
-    z-index: 2;
-    left: -30px;
-  }
-
-  .mainboy {
-    z-index: 1;
-  }
-}
