@@ -13,7 +13,7 @@ export const characterHandlers = [
           {
             id: 1,
             partsType: 'HAIR',
-            cost: 300,
+            cost: 100,
             partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
           {
@@ -23,31 +23,31 @@ export const characterHandlers = [
             partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
           {
-            id: 1,
+            id: 3,
             partsType: 'HAIR',
             cost: 300,
             partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
           {
-            id: 2,
-            partsType: 'PANTS',
+            id: 4,
+            partsType: 'LEG',
             cost: 200,
             partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
           {
-            id: 1,
-            partsType: 'HAIR',
+            id: 5,
+            partsType: 'ARM',
             cost: 300,
             partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
           {
-            id: 2,
+            id: 6,
             partsType: 'PANTS',
             cost: 200,
             partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
           {
-            id: 1,
+            id: 7,
             partsType: 'HAIR',
             cost: 300,
             partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
@@ -110,7 +110,7 @@ export const characterHandlers = [
       status: 200,
       message: '',
       data: {
-        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/c76c9ef5-3e85-4ad6-98f0-80e2f18542d9.glb',
+        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/81190a19-5560-4931-9169-c65e7767cf13.glb',
       },
     });
   }),

@@ -19,7 +19,7 @@ export const getMyCharacter = async () => {
 };
 
 export const patchPartsOnOff = async (parts_id: number) => {
-  const response = await exportAxios.get(`${baseUrl}/users/character/parts/:parts_id`, { params: { parts_id } });
+  const response = await exportAxios.patch(`${baseUrl}/users/character/parts/${parts_id}`, { parts_id });
   return response;
 };
 
