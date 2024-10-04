@@ -136,6 +136,9 @@ export default function MypagePage() {
         case 'PANTS':
           category = '하의';
           break;
+        // case 'ARM' || 'LEG' || 'NONE':
+        //   category = '아이템';
+        //   break;
         default:
           category = '아이템';
       }

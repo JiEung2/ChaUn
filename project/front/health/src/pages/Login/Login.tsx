@@ -6,6 +6,7 @@ export default function LoginPage() {
   // const navigate = useNavigate();
   const moveKakao = () => {
     // TODO : 카카오 로그인 페이지로 이동
+    console.log('카카오 url' + import.meta.env.VITE_APP_BASE_URL_NO_ENDPOINT);
     window.location.href = `${import.meta.env.VITE_APP_BASE_URL_NO_ENDPOINT}/oauth2/authorization/kakao`;
     // 임시로 servey 페이지로 이동
     // navigate('/survey');

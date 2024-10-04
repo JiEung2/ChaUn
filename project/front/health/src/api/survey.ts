@@ -7,13 +7,13 @@ export const nicknameCheck = async (nickname: string) => {
   return response;
 };
 
-export const surveySubmit1 = async (nickname: string, birthday: string, gender: string) => {
+export const surveySubmit1 = async (nickname: string, birthday: string, send_gender: string) => {
   // console.log(nickname, birthday, gender);
-  const newGender = gender === '남성' ? 'MAN' : 'WOMAN';
+  const gender = send_gender === '남성' ? 'MAN' : 'WOMAN';
   const response = await exportAxios.post(`${baseUrl}/users/survey/information`, {
     nickname,
     birthday,
-    newGender,
+    gender,
   });
 
   return response;

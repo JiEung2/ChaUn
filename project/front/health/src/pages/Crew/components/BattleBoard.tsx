@@ -27,10 +27,12 @@ export default function BattleBoard({
   showButton,
 }: BattleBoardProps) {
   const navigate = useNavigate();
-
+  console.log(crewId);
   const navigateBattlePage = () => {
+    console.log('battleId', battleId);
     navigate(`/crew/battle/${crewId}`);
   };
+  console.log(battleId);
 
   const renderContent = () => {
     switch (battleStatus) {
