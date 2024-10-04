@@ -1,12 +1,12 @@
 // import axios from 'axios';
 import exportAxios from './axiosInstance';
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
-interface userInformation {
-  nickname: string;
-  coin: number;
-}
+// interface userInformation {
+//   nickname: string;
+//   coin: number;
+// }
 // 회원 디테일
-export const getUserDetail = async (user_id: number): Promise<userInformation> => {
+export const getUserDetail = async (user_id: number) => {
   const response = await exportAxios.get(`${baseUrl}/users/${user_id}`, { params: { user_id } });
   return response.data;
 };
