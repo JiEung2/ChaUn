@@ -67,7 +67,8 @@ export default function AlarmPage() {
   // 알림 타입에 따라 다른 페이지로 이동 설정
   const handleNavigation = (alarm: Notification) => {
     if (alarm.notificationType === 'BATTLE' && alarm.additionalData) {
-      const { battleStatus, battleId } = alarm.additionalData.battleDetail;
+      const battleStatus = alarm.additionalData.battleDetail?.battleStatus;
+      const battleId = alarm.additionalData.battleDetail?.battleId;
       switch (battleStatus) {
         case 'STARTED':
           navigate(`/crew/crewbattle/${battleId}`);
@@ -80,17 +81,17 @@ export default function AlarmPage() {
         default:
           break;
       }
-    } else if (notificationType === 'SURVEY') {
-      mutate(notificationId);
+    } else if (alarm.notificationType === 'SURVEY') {
+      mutate(alarm.notificationId);
       navigate('/record/bodyDetail');
-    } else if (notificationType === 'QUEST' && additionalData?.questDetail) {
-      const { type, crewId } = additionalData.questDetail;
+    } else if (alarm.notificationType === 'QUEST' && alarm.additionalData?.questDetail) {
+      const { type, crewId } = alarm.additionalData.questDetail;
 
       if (type === 'CREW') {
-        mutate(notificationId);
+        mutate(alarm.notificationId);
         navigate(`/crew/${crewId}/detail`);
       } else if (type === 'INDIVIDUAL') {
-        mutate(notificationId);
+        mutate(alarm.notificationId);
         navigate('/home/quest');
       }
     }

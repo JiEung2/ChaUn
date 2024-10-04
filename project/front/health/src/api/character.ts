@@ -1,24 +1,25 @@
-import axios from 'axios';
+// import axios from 'axios';
+import exportAxios from './axiosInstance';
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
 export const getPartsList = async () => {
-  const response = await axios.get(`${baseUrl}/parts`);
+  const response = await exportAxios.get(`${baseUrl}/parts`);
   return response;
 };
 
 export const getUserCharacter = async (userId: number) => {
-  const response = await axios.get(`${baseUrl}/users/:user_id/character`, { params: { userId } });
+  const response = await exportAxios.get(`${baseUrl}/users/:user_id/character`, { params: { userId } });
   return response;
 };
 
 export const getMyCharacter = async () => {
-  const response = await axios.get(`${baseUrl}/users/my/character`);
+  const response = await exportAxios.get(`${baseUrl}/users/my/character`);
   return response;
 };
 
 export const patchPartsOnOff = async (parts_id: number) => {
-  const response = await axios.get(`${baseUrl}/users/character/parts/:parts_id`, { params: { parts_id } });
+  const response = await exportAxios.get(`${baseUrl}/users/character/parts/:parts_id`, { params: { parts_id } });
   return response;
 };
 
@@ -28,7 +29,7 @@ export const postSnapshot = async (snapshot: string) => {
   formData.append('snapshot', snapshot);
 
   // POST 요청 보내기
-  const response = await axios.post(`${baseUrl}/character/snapshot`, formData, {
+  const response = await exportAxios.post(`${baseUrl}/character/snapshot`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
