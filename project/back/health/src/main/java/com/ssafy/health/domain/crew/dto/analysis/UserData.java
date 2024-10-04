@@ -10,10 +10,10 @@ import java.util.List;
 @Builder
 public class UserData {
     @JsonProperty("user_id")
-    private int userId;
+    private Long userId;
     private ScoreData score;
     @JsonProperty("favorite_sports")
-    private List<Integer> favoriteSports;
+    private List<Long> favoriteSports;
     @JsonProperty("crew_list")
-    private List<Integer> crewList;
+    private List<Long> crewList;
 }

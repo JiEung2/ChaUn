@@ -8,8 +8,8 @@ import lombok.Data;
 @Builder
 public class CrewData {
     @JsonProperty("crew_id")
-    private int crewId;
+    private Long crewId;
     private ScoreData score;
     @JsonProperty("crew_sports")
-    private int crewSports;
+    private Long crewSports;
 }
