@@ -51,11 +51,7 @@ public class CoinService {
 
                     try {
                         notificationWriteService.createBattleNotification(
-                                NotificationRequestDto.builder()
-                                        .notificationType(NotificationType.BATTLE)
-                                        .userId(user.getId())
-                                        .build(),
-                                battle, crew, coinAmount);
+                                NotificationType.BATTLE, user, battle, crew, coinAmount);
                     } catch (ExecutionException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }

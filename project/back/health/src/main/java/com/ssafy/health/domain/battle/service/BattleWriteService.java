@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Stream;
 
 import static com.ssafy.health.domain.coin.CoinCost.START_BATTLE;
 
@@ -120,11 +119,7 @@ public class BattleWriteService {
         winningCrewMemberList.forEach(user -> {
             try {
                 notificationWriteService.createBattleNotification(
-                        NotificationRequestDto.builder()
-                                .notificationType(NotificationType.BATTLE)
-                                .userId(user.getId())
-                                .build(),
-                        battle, winningCrew,0);
+                        NotificationType.BATTLE, user, battle, winningCrew,0);
             } catch (ExecutionException | InterruptedException e) {
                 throw new RuntimeException(e);
             }

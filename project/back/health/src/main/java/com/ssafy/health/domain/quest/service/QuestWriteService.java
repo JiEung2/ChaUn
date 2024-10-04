@@ -90,12 +90,7 @@ public class QuestWriteService {
             quest.updateStatus(QuestStatus.COMPLETED);
             coinService.grantCoinsToUser(user, quest.getQuest().getCompletionCoins());
 
-            NotificationRequestDto dto = NotificationRequestDto.builder()
-                    .notificationType(NotificationType.QUEST)
-                    .userId(user.getId())
-                    .build();
-
-            notificationWriteService.createUserQuestNotification(dto, quest.getId());
+            notificationWriteService.createUserQuestNotification(NotificationType.QUEST, user, quest.getId());
         }
     }
 
@@ -107,13 +102,8 @@ public class QuestWriteService {
 
             List<User> userList = userRepository.findUserByCrewId(crew.getId());
             userList.forEach(user -> {
-                NotificationRequestDto dto = NotificationRequestDto.builder()
-                        .notificationType(NotificationType.QUEST)
-                        .userId(user.getId())
-                        .build();
-
                 try {
-                    notificationWriteService.createCrewQuestNotification(dto, crew, quest.getId());
+                    notificationWriteService.createCrewQuestNotification(NotificationType.QUEST, user, crew, quest.getId());
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
