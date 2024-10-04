@@ -7,7 +7,9 @@ import SnapshotList from '@/components/Profile/Snapshot/SnapshotList';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import queryKeys from '@/utils/querykeys';
 import './Mypage.scss';
-import { getPartsList, getMyCharacter, postSnapshot, patchPartsOnOff, getSnapshotList } from '@/api/character';
+import { getPartsList, getMyCharacter, patchPartsOnOff, getSnapshotList } from '@/api/character';
+
+const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
 
 export default function MypagePage() {
   const characterRef = useRef<HTMLDivElement | null>(null);
@@ -15,7 +17,9 @@ export default function MypagePage() {
   const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
-  const queryClient = useQueryClient(); // React Query의 캐시 사용
+  const [activeAnimation, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
+  const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
+  const queryClient = useQueryClient();
 
   // 로컬 스토리지에서 구매한 파츠 정보 불러오기
   useEffect(() => {
@@ -33,7 +37,7 @@ export default function MypagePage() {
 
   useEffect(() => {
     if (myCharacter) {
-      setCharacterGlbUrl(myCharacter?.data?.data.characterUrl || '');
+      setGender(myCharacter?.data?.data.gender === 'MAN' ? 'MAN' : 'FEMALE');
     }
   }, [myCharacter]);
 
@@ -50,18 +54,14 @@ export default function MypagePage() {
     queryFn: () => getSnapshotList(),
     enabled: !cachedSnapshotList, // 캐시된 데이터가 없을 때만 API 호출
   });
-
-  const mutation = useMutation({
-    mutationFn: (snapshot: string) => postSnapshot(snapshot),
-    onSuccess: (response) => {
-      const { snapshotUrl } = response.data;
-      console.log('스냅샷 전송 성공. URL:', snapshotUrl);
-      queryClient.invalidateQueries({ queryKey: [queryKeys.SNAPSHOT_LIST] }); // 스냅샷 목록 무효화
-    },
-    onError: (error) => {
-      console.error('스냅샷 전송 실패:', error);
-    },
-  });
+  const formattedSnapshots = snapshotList?.data?.data.snapshots.map((snapshot: any) => ({
+    date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+    }),
+    image: snapshot.snapshotUrl,
+  }));
 
   // 파츠 적용/해제를 위한 mutation
   const partsOnoffMutation = useMutation({
@@ -91,19 +91,37 @@ export default function MypagePage() {
     });
   };
 
-  const handleCapture = (snapshot: string) => {
-    mutation.mutate(snapshot); // 서버로 스냅샷 전송
+  // 애니메이션 URL 생성 로직 (남성/여성 및 파츠 적용 여부에 따라 다름)
+  const generateAnimationUrl = (type: 'standing' | 'dancing' | 'waving') => {
+    const hasPartsApplied = Object.values(appliedParts).some((applied) => applied);
+
+    if (gender === 'MAN') {
+      switch (type) {
+        case 'standing':
+          return hasPartsApplied ? `${baseUrl}B5standingPants.glb` : `${baseUrl}B5standing.glb`;
+        case 'dancing':
+          return hasPartsApplied ? `${baseUrl}B5dancingPants.glb` : `${baseUrl}B5dancing.glb`;
+        case 'waving':
+          return hasPartsApplied ? `${baseUrl}B5wavingPants.glb` : `${baseUrl}B5waving.glb`;
+      }
+    } else {
+      switch (type) {
+        case 'standing':
+          return `${baseUrl}GBstanding.glb`;
+        case 'dancing':
+          return `${baseUrl}GBdancing.glb`;
+        case 'waving':
+          return `${baseUrl}GBwaving.glb`;
+      }
+    }
   };
 
-  // 스냅샷 데이터를 날짜 포맷팅하여 넘기기
-  const formattedSnapshots = snapshotList?.data?.data.snapshots.map((snapshot: any) => ({
-    date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {
-      year: '2-digit',
-      month: '2-digit',
-      day: '2-digit',
-    }),
-    image: snapshot.snapshotUrl,
-  }));
+  // 버튼 클릭 핸들러 - 선택된 애니메이션만 비활성화
+  const handleButtonClick = (type: 'standing' | 'dancing' | 'waving') => {
+    const url = generateAnimationUrl(type);
+    setCharacterGlbUrl(url); // 선택한 모델 URL로 업데이트
+    setActiveAnimation(type); // 현재 선택된 애니메이션 저장
+  };
 
   const mappedItems =
     partsList?.data?.data?.partsList?.map((part: any) => {
@@ -142,14 +160,31 @@ export default function MypagePage() {
 
         <div className="character" ref={characterRef}>
           {characterGlbUrl ? (
-            <CharacterCanvas
-              glbUrl={characterGlbUrl}
-              gender={myCharacter?.data?.data.gender === 'MAN' ? 'MAN' : 'FEMALE'}
-              onCapture={handleCapture}
-            />
+            <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} />
           ) : (
             <p>캐릭터 정보를 불러오는 중입니다...</p>
           )}
+
+          <div className="character-actions">
+            <button
+              className={activeAnimation === 'standing' ? 'disabled' : 'primary'}
+              onClick={() => handleButtonClick('standing')}
+              disabled={activeAnimation === 'standing'}>
+              기본
+            </button>
+            <button
+              className={activeAnimation === 'dancing' ? 'disabled' : 'primary'}
+              onClick={() => handleButtonClick('dancing')}
+              disabled={activeAnimation === 'dancing'}>
+              춤추기
+            </button>
+            <button
+              className={activeAnimation === 'waving' ? 'disabled' : 'primary'}
+              onClick={() => handleButtonClick('waving')}
+              disabled={activeAnimation === 'waving'}>
+              인사
+            </button>
+          </div>
         </div>
       </div>
 
@@ -160,8 +195,8 @@ export default function MypagePage() {
             selectedTab={selectedTab}
             setSelectedTab={setSelectedTab}
             userCoin={100}
-            onPurchase={handlePurchase} // 구매 핸들러 추가
-            onApply={handleApply} // 적용/해제 함수 연결
+            onPurchase={handlePurchase}
+            onApply={handleApply}
             items={mappedItems.filter((item: any) => item.category === selectedTab)}
           />
         </div>
