@@ -1,7 +1,6 @@
 package com.ssafy.health.domain.crew.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.common.util.RequestUtil;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
@@ -34,14 +33,9 @@ public class CrewAnalysisRequestService {
     @Value("${health.analysis.api.url}")
     private String fastApiUrl;
 
-    private String apiBaseUrlBuilder() {
-        Long userId = SecurityUtil.getCurrentUserId();
-        return fastApiUrl + "/users/" + userId.toString() + "/body/prediction";
-    }
-
     public void requestAnalysis() throws JsonProcessingException {
 
-        final String apiUrl = apiBaseUrlBuilder();
+        final String apiUrl = fastApiUrl + "/users/crew-recommendation/fast-api";
 
         CrewAnalysisRequestDto requestDto = CrewAnalysisRequestDto.builder()
                 .totalUsers(buildUserData())
