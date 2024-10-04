@@ -11,6 +11,7 @@ const OAuthCallback = () => {
   const reissueAccessToken = async () => {
     try {
       const baseURL = import.meta.env.VITE_APP_BASE_URL;
+      console.log('baseURL:', baseURL);
       const response = await axios.get(`${baseURL}/reissue`, {
         withCredentials: true, // 쿠키를 포함하여 요청
       });
