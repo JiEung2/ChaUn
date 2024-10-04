@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.common.util.RequestUtil;
 import com.ssafy.health.domain.account.entity.User;
+import com.ssafy.health.domain.account.entity.UserCrew;
 import com.ssafy.health.domain.account.repository.FavoredRepository;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
@@ -45,16 +46,26 @@ public class CrewAnalysisRequestService {
     public void requestAnalysis() throws JsonProcessingException {
 
         final String apiUrl = apiBaseUrlBuilder();
-        List<User> userList = userRepository.findALLBySurveyCompletedTrue();
 
-        TotalUserDataDto totalUser = TotalUserDataDto.builder()
+        CrewAnalysisRequestDto requestDto = CrewAnalysisRequestDto.builder()
+                .totalUsers(buildUserData())
+                .totalCrews(buildCrewData())
+                .build();
+
+        requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
+    }
+
+    private TotalUserDataDto buildUserData() {
+
+        List<User> userList = userRepository.findALLBySurveyCompletedTrue();
+        return TotalUserDataDto.builder()
                 .users(userList.stream()
                         .map(user -> UserData.builder()
                                 .userId(user.getId())
                                 .score(userReadService.calculateUserScore(user.getId()))
                                 .crewList(userCrewRepository.findByUserIdWithCrew(user.getId())
                                         .stream()
-                                        .map(crew -> crew.getId())
+                                        .map(UserCrew::getId)
                                         .toList())
                                 .favoriteSports(favoredRepository.findAllByUserId(user.getId())
                                         .stream()
@@ -63,14 +74,10 @@ public class CrewAnalysisRequestService {
                                 .build())
                         .toList())
                 .build();
+    }
 
-        TotalCrewDataDto totalCrew = null;
+    private TotalCrewDataDto buildCrewData() {
 
-        CrewAnalysisRequestDto requestDto = CrewAnalysisRequestDto.builder()
-                .totalUsers(totalUser)
-                .totalCrews(totalCrew)
-                .build();
-
-        requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
+        return TotalCrewDataDto.builder().build();
     }
 }
