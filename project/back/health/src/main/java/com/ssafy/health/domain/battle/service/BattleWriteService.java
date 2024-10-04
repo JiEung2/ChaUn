@@ -69,24 +69,11 @@ public class BattleWriteService {
                 .awayCrew(opponentCrew)
                 .build());
 
-        List<User> notificationTarget = Stream.concat(
-                        userRepository.findUserByCrewId(myCrew.getId()).stream(),
-                        userRepository.findUserByCrewId(opponentCrew.getId()).stream())
-                .toList();
+        List<User> homeCrewMembers = userRepository.findUserByCrewId(myCrew.getId());
+        List<User> awayCrewMembers = userRepository.findUserByCrewId(opponentCrew.getId());
 
-        notificationTarget.forEach(user -> {
-                    try {
-                        notificationWriteService.createBattleNotification(
-                                NotificationRequestDto.builder()
-                                        .notificationType(NotificationType.BATTLE)
-                                        .userId(user.getId())
-                                        .build(),
-                                battle.getId(), 0);
-                    } catch (ExecutionException | InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-        );
+        sendNotification(battle, homeCrewMembers, myCrew);
+        sendNotification(battle, awayCrewMembers, opponentCrew);
 
         return BattleMatchResponseDto.builder()
                 .exerciseName(myCrew.getExercise().getName())
@@ -98,7 +85,7 @@ public class BattleWriteService {
                 .build();
     }
 
-    @Scheduled(cron = "0 30 4 ? * MON")
+    @Scheduled(cron = "0 01 11 ? * FRI")
     public void finishBattles() {
         List<Battle> ongoingBattles = battleRepository.findByStatus(BattleStatus.STARTED);
 
@@ -110,7 +97,7 @@ public class BattleWriteService {
             Crew winningCrew = crews[0];
             List<UserCrew> winningUserCrewList = findUserCrewOrderByScore(winningCrew);
             List<User> winningCrewMemberList = winningUserCrewList.stream().map(UserCrew::getUser).toList();
-            coinService.distributeBattleRewards(winningCrewMemberList, battle.getId());
+            coinService.distributeBattleRewards(winningCrewMemberList, battle, winningCrew);
             coinService.grantCoinsToCrew(winningCrew, 200);
 
             saveRankHistory(winningUserCrewList, winningCrew);
@@ -120,22 +107,27 @@ public class BattleWriteService {
             List<UserCrew> losingUserCrewList = findUserCrewOrderByScore(losingCrew);
             List<User> losingCrewMemberList = losingUserCrewList.stream().map(UserCrew::getUser).toList();
 
-            losingCrewMemberList.forEach(user -> {
-                try {
-                    notificationWriteService.createBattleNotification(
-                            NotificationRequestDto.builder()
-                                    .notificationType(NotificationType.BATTLE)
-                                    .userId(user.getId())
-                                    .build(),
-                            battle.getId(), 0);
-                } catch (ExecutionException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            sendNotification(battle, winningCrewMemberList, winningCrew);
+            sendNotification(battle, losingCrewMemberList, losingCrew);
 
             saveRankHistory(losingUserCrewList, losingCrew);
             resetScore(losingCrew, losingUserCrewList);
 
+        });
+    }
+
+    private void sendNotification(Battle battle, List<User> winningCrewMemberList, Crew winningCrew) {
+        winningCrewMemberList.forEach(user -> {
+            try {
+                notificationWriteService.createBattleNotification(
+                        NotificationRequestDto.builder()
+                                .notificationType(NotificationType.BATTLE)
+                                .userId(user.getId())
+                                .build(),
+                        battle, winningCrew,0);
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 

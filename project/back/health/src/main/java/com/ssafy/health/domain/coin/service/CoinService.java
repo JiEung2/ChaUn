@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.coin.service;
 
 import com.ssafy.health.domain.account.entity.User;
+import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.entity.NotificationType;
@@ -32,7 +33,7 @@ public class CoinService {
         crew.decreaseCoin(coins);
     }
 
-    public void distributeBattleRewards(List<User> crewMemberRanking, Long battleId) {
+    public void distributeBattleRewards(List<User> crewMemberRanking, Battle battle, Crew crew) {
         Map<Integer, Integer> rewardMap = Map.of(
                 1, FIRST_PLACE_REWARD.getAmount(),
                 2, SECOND_PLACE_REWARD.getAmount(),
@@ -54,7 +55,7 @@ public class CoinService {
                                         .notificationType(NotificationType.BATTLE)
                                         .userId(user.getId())
                                         .build(),
-                                battleId, coinAmount);
+                                battle, crew, coinAmount);
                     } catch (ExecutionException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
