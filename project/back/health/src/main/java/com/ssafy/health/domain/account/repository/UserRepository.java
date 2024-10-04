@@ -12,4 +12,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT uc.user FROM UserCrew uc WHERE uc.crew.id = :crewId")
     List<User> findUserByCrewId(Long crewId);
+
+    List<User> findALLBySurveyCompletedTrue();
 }
