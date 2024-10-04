@@ -1,0 +1,20 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.exerciseItem {
+  display: flex;
+  justify-content: center;
+  margin: 5px;
+  border: 1px solid colors.$lightGray;
+  border-radius: 20px;
+  background-color: colors.$white;
+  cursor: pointer;
+  transition: background-color 0.1s, border-color 0.1s;
+
+  @include typo.smallButton;
+
+  &.selected {
+    border-color: colors.$blue;
+    color: colors.$blue;
+  }
+}

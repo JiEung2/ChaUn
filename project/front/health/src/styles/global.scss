@@ -1,0 +1,51 @@
+@use 'base';
+@use 'constants';
+
+* {
+  font-family: 'Pretendard', sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
+  height: 100vh; /* 전체 뷰 높이를 보장 */
+  overflow: hidden; /* body에서 스크롤을 막음 */
+}
+
+/* 390px 이상일 때 고정 너비 */
+#root {
+  width: 390px;
+  margin: 0 auto;
+  height: 100vh; /* 전체 높이를 고정 */
+  background-color: white;
+  display: flex;
+  flex-direction: column; /* 세로 방향 정렬 */
+}
+
+/* 390px 미만일 때 풀스크린 적용 */
+@media screen and (max-width: 390px) {
+  #root {
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+  }
+}
+
+.outletContainer {
+  flex: 1; /* 남은 공간을 모두 차지 */
+  overflow-y: auto; /* 스크롤을 위해 overflow 설정 */
+
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox용 */
+  -ms-overflow-style: none; /* IE 및 Edge용 */
+
+  /* Chrome, Safari, Edge용 스크롤바 숨기기 */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.outletPadding {
+  padding: 30px;
+}

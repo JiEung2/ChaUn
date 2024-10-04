@@ -1,0 +1,61 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.bodyWeightRecord {
+  .predictionCards {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+
+    .predictionCard {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+}
+.predictionGraph {
+  width: 110%;
+  margin-left: -25px;
+  margin-top: 10px;
+}
+
+.predictionImage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 200px;
+
+  &__1 {
+    border-radius: 18px;
+    padding: 5px;
+    background-color: colors.$card1;
+  }
+
+  &__2 {
+    border-radius: 18px;
+    padding: 5px;
+    background-color: colors.$card2;
+  }
+
+  &__3 {
+    border-radius: 18px;
+    padding: 5px;
+    background-color: colors.$blue;
+  }
+}
+.timePoint {
+  background-color: colors.$lightGray;
+  border-radius: 10px;
+  padding: 10px 32px;
+  text-align: center;
+  width: fit-content;
+  margin: 7px 0px;
+  white-space: nowrap;
+
+  @include typo.coin;
+}

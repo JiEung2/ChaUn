@@ -1,0 +1,62 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.exerciseInput {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    position: relative;
+    padding: 70px 20px;
+    border: 1px solid colors.$lightGray;
+    border-radius: 20px;
+    background-color: colors.$white;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.1s, border-color 0.1s;
+    text-align: center;
+  
+    .inputBox {
+      display: flex;
+      gap: 10px;
+      color: colors.$darkGray;
+  
+      @include typo.input;
+      position: relative;
+    }
+  
+    .dayInput {
+      padding-bottom: 6px;
+    }
+  
+    .dropDown {
+      margin-left: 7px;
+      transform: translateX(7px);
+      position: relative;
+      top: 4px;
+      transition: transform 0.1s;
+    }
+  }
+  
+  .dayDropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 110px; 
+    width: 70px;
+    background-color: colors.$white; 
+    border-radius: 5px;
+    border: 1px solid  colors.$lightGray;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10; 
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .adviceText {
+    @include typo.login;
+  }
+
+  .predictButton {
+    @include typo.mediumButton;
+  }

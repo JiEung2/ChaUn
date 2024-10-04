@@ -1,0 +1,104 @@
+@mixin input {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 40px;
+}
+
+@mixin basic {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 16px;
+}
+
+@mixin description {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+@mixin button {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 10px;
+}
+
+@mixin nickname {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 40px;
+}
+
+@mixin sub {
+  font-size: 18px;
+  font-weight: 700;
+  // line-height: auto;
+}
+
+@mixin time {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 40px;
+}
+
+@mixin description2 {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 11px;
+}
+
+@mixin subtitle {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+@mixin title {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 27px;
+}
+
+@mixin login {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+@mixin coin {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+@mixin smallButton {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+@mixin mediumButton {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+@mixin tag {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 12px;
+}
+
+@mixin navbar {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+@mixin timer {
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 40px;
+}
+
+@mixin graph {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 10px;
+}
+

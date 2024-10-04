@@ -1,0 +1,63 @@
+@use '@/styles/constants/colors' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.mySnapshotListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 300px;
+  max-height: 300px; // 고정된 높이 설정
+  padding-right: 7px;
+  overflow-y: auto; // 세로 스크롤 활성화
+
+  /* 스크롤바 스타일 */
+  &::-webkit-scrollbar {
+    width: 4px; /* 스크롤바 너비 */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgb(170, 210, 248); /* 스크롤바의 색상 */
+    border-radius: 10px; /* 스크롤바 둥근 모양 */
+    
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: colors.$white; /* 스크롤 트랙 색상 */
+    border-radius: 10px;
+    margin-left: 5px;
+  }
+
+  .snapshotGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .snapshotItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: colors.$skyBlue;
+    
+    border-radius: 6px;
+
+    .snapshotDate {
+        padding-top: 5px;
+        margin: 0 0 0 34px;
+        font-size: 11px;
+        font-weight: 800;
+    }
+    
+
+    img {
+      width: 70px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+  }
+
+  .noSnapshotMessage {
+    @include typo.basic;
+  }
+}

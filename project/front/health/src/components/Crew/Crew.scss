@@ -1,0 +1,34 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies.scss' as typo;
+
+.crewProfileCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 70px;
+
+  .crewProfileImage {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .crewProfileName {
+    display: flex;
+    font-size: 13px;
+    max-width: 60px;
+    word-break: break-word;
+    word-wrap: break-word;
+    height: 30px;
+    align-items: center;
+  }
+
+  .crewProfileTag {
+    font-size: 12px;
+    background-color: #d9d9d9;
+    padding: 4px 8px;
+    border-radius: 15px;
+  }
+}

@@ -1,0 +1,16 @@
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+}
+.buttonGroup {
+  margin-top: 50px;
+  gap: 10px;
+  justify-content: center;
+  display: flex;
+  flex-direction: row;
+}
+.radioGroup label {
+  display: flex;
+  margin-bottom: 13px; // 각 라디오 버튼 레이블 하단에 여유 공간 추가
+  gap: 5px;
+}

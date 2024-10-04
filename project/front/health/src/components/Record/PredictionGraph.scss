@@ -1,0 +1,23 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.predictionGraphContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.graphTick {
+  @include typo.graph; 
+  fill: colors.$black;
+}
+
+.recharts-cartesian-grid line {
+  stroke: colors.$darkGray; 
+  stroke-dasharray: 3 3;
+}
+
+.recharts-label-list text {
+  fill: colors.$black;
+  @include typo.graph;
+}

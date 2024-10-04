@@ -1,0 +1,25 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.exerciseList {
+  gap: 10px;
+  padding: 0 10px;
+  margin: 20px 0;
+}
+
+.itemContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+.listTitle {
+  margin-left: 10px;
+  display: flex;
+  align-items: flex-start;
+  color: colors.$black;
+
+  @include typo.sub;
+}

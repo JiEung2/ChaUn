@@ -1,0 +1,105 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.customCalendarContainer {
+  .react-calendar {
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+
+    .react-calendar__navigation {
+      button {
+        @include typo.button;
+        color: colors.$black;
+      }
+    }
+
+    .react-calendar__month-view__weekdays {
+      font-size: inherit;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      border-bottom: none;
+      text-align: center;
+      @include typo.subtitle;
+
+      .react-calendar__month-view__weekdays__weekday {
+        abbr {
+          text-decoration: none;
+          padding: 5px;
+        }
+      }
+    }
+
+    .react-calendar__month-view__days__day {
+      @include typo.subtitle;
+      color: colors.$black;
+      position: relative;
+      aspect-ratio: 1 / 1;
+
+      abbr {
+        display: block;
+        width: 2.2rem;
+        height: 2.2rem;
+        margin: 0 auto;
+        line-height: 2.2rem;
+        text-align: center;
+        border-radius: 50%;
+        transition: background-color 0.1s, color 0.1s;
+      }
+
+      // 기본 오늘 날짜의 노란색 배경 제거
+      &.react-calendar__tile--now {
+        background-color: transparent !important;
+      }
+
+      // 오늘 날짜의 스타일 설정
+      &.today abbr {
+        background-color: colors.$blue;
+        color: colors.$white;
+      }
+
+      // 선택된 날짜의 스타일 설정
+      &.selected abbr {
+        color: colors.$black;
+        background-color: colors.$littleDarkGray;
+      }
+
+      // 출석 날짜 스타일 설정
+      &.attendance abbr {
+        background-color: colors.$pink;
+        color: colors.$white;
+      }
+    }
+
+    .react-calendar__month-view__days__day--weekend {
+      aspect-ratio: 1 / 1;
+    }
+
+    .highlight-dot {
+      width: 6px;
+      height: 6px;
+      background-color: colors.$lightGreen;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 0px;
+      left: 50%;
+      transform: translateX(-50%);
+      // z-index: 2; // highlight-dot을 더 잘 보이도록 보장
+    }
+
+    .react-calendar__tile {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      &:enabled:hover {
+        background: none;
+      }
+    }
+
+    .react-calendar__tile--active {
+      background: none;
+    }
+  }
+}

@@ -1,0 +1,53 @@
+@use '@/styles/constants/colors.scss' as colors;
+
+.greeting {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.recommendTitle {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.highlight {
+  color: colors.$lightGreen; // 하이라이트 색상, 필요시 조정
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.recommendSection,
+.methodSection {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.sectionContent {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.characterSection {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.characterImage {
+  width: 100px; // 이미지 크기 조정 필요시 변경
+  height: auto;
+}

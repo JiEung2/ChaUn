@@ -1,0 +1,18 @@
+@use '@/styles/constants/typographies' as typo;
+
+.recordsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+
+  .bodyDetailButton,
+  .resetButton {
+    @include typo.mediumButton;
+  }
+
+  .exerciseAdvice {
+    width: 330px;
+  }
+}

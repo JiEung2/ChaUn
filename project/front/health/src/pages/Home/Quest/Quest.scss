@@ -1,0 +1,12 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.questList {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+
+  .questH3 {
+    @include typo.sub;
+  }
+}

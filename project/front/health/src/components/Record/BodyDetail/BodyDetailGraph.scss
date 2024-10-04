@@ -1,0 +1,26 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies.scss' as typo;
+
+.chartContainer {
+  position: relative;
+}
+
+.chartMain {
+  width: 120%;
+  height: 220px;
+
+  &.blurred {
+    filter: blur(4px);
+    pointer-events: none;
+  }
+}
+
+.noDataMessage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  text-align: center;
+}

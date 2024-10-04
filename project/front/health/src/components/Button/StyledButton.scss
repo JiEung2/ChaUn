@@ -1,0 +1,79 @@
+@use '@/styles/constants/colors' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.styledButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  width: 154px;
+  height: 90px;
+  text-align: left;
+  transition: transform 0.1s, box-shadow 0.1s;
+  overflow: hidden;
+  position: relative;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &.styledButton1 {
+    background-color: colors.$styledButton1;
+  }
+
+  &.styledButton2 {
+    background-color: colors.$styledButton2;
+  }
+
+  &.styledButton3 {
+    background-color: colors.$styledButton3;
+  }
+}
+
+.styledButtonText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+
+  @include typo.sub;
+}
+
+.styledButtonTitle {
+  margin: 0;
+  max-width: 70px; // 너비 제한 설정
+  word-break: break-word; // 너비 초과 시 줄바꿈
+  overflow-wrap: break-word; // 단어가 길어질 경우 강제로 줄바꿈
+  color: colors.$black;
+
+  @include typo.sub;
+}
+
+.styledButtonDescription {
+  margin: 0;
+  max-width: 128px; 
+  word-break: break-word;
+  overflow-wrap: break-word;
+  color: colors.$darkGray;
+
+  @include typo.description2;
+}
+
+.styledButtonIcon {
+  display: flex;
+  left: 85px;
+  top: 20px;
+  position: absolute;
+  z-index: 2;
+}

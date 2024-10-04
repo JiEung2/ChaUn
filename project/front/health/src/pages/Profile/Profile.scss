@@ -1,0 +1,76 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.profileContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.profileHeaderSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: #f0f4f8;
+  border-radius: 15px;
+  padding: 20px 0;
+  margin: 0 10px;
+  position: relative;
+}
+
+.titles {
+  margin-right: auto;
+  @include typo.button;
+}
+
+.time {
+  @include typo.sub;
+
+  .timeTitle {
+    margin-bottom: 5px;
+    color: colors.$black;
+  }
+
+  span {
+    color: colors.$pink;
+    @include typo.time;
+  }
+}
+
+.userChartContainer {
+  padding: 15px;
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+.crewContainer {
+  width: 100%;
+  padding: 0px 20px;
+}
+
+.crewList {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 0;
+  scroll-behavior: smooth;
+
+  /* 스크롤바 스타일 */
+  &::-webkit-scrollbar {
+    height: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: colors.$lightGray;
+    border-radius: 10px;
+  }
+}
+
+.crewList > div {
+  flex-shrink: 0;
+  text-align: center;
+}

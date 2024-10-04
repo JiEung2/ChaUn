@@ -1,0 +1,48 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+/* 중앙 정렬을 위한 컨테이너 */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  gap: 20px;
+}
+
+/* 제목 스타일 */
+.login-title {
+  @include typo.title;
+}
+
+/* 버튼 컨테이너 */
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mainChar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-left: 50px;
+  filter: brightness(1.4);
+
+  .maingirl,
+  .mainboy {
+    position: relative;
+    width: 200px;
+    height: 300px;
+  }
+
+  .maingirl {
+    z-index: 2;
+    left: -30px;
+  }
+
+  .mainboy {
+    z-index: 1;
+  }
+}

@@ -1,0 +1,17 @@
+.customListContainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+
+  .customList {
+    display: grid;
+    grid-template-columns: repeat(
+      4,
+      minmax(0, 1fr)
+    ); // 아이템을 한 줄에 4개씩 배치하고 너비가 부모 너비를 넘지 않도록 조절
+    grid-gap: 5px;
+    width: 100%;
+    box-sizing: border-box; // padding을 포함하여 너비 계산
+  }
+}

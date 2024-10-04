@@ -1,0 +1,48 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.questItem {
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  margin: 20px 0;
+  background-color: colors.$lightGray;
+  border-radius: 10px;
+  box-shadow: 4px 4px rgba(39, 39, 39, 0.25);
+
+  .checkBox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    border: 1px solid white;
+    margin-left: 10px;
+    background-color: colors.$white;
+
+    .checkIcon {
+      display: none;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .questTitle {
+    max-width: 190px;
+    @include typo.login;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    margin-left: 50px;
+    margin-right: 20px;
+  }
+
+  &.completed {
+    .checkBox {
+      .checkIcon {
+        display: block;
+        color: colors.$blue;
+      }
+    }
+  }
+}

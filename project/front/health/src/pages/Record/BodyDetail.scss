@@ -1,0 +1,91 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies' as typo;
+
+.bodyRecordContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    .bodyAdd {
+        display: flex;
+        margin-left: auto;
+    }
+
+    .monthNavigation {
+        display: flex;
+        align-items: center;
+        gap: 30px;
+
+        @include typo.subtitle;
+
+        button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            @include typo.subtitle;
+        }
+    }
+
+    .graphContainer {
+        height: 230px;
+    }
+
+    .noDataMessage {
+      @include typo.basic;
+    }
+
+    .timeline {
+      margin-right: auto;
+      width: 100%;
+
+        .timelineItem {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+            position: relative;
+            gap: 10px;
+            margin-bottom: 20px;
+
+            &::before {
+                content: '';
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                bottom: -15px; 
+                width: 2px;
+                background-color: colors.$littleDarkGray;
+                z-index: 1;
+            }
+
+            .timelineDate {
+                display: flex;
+                position: relative;
+                z-index: 2;
+                @include typo.subtitle;
+                
+                .dateIcon {
+                    width: 20px;
+                    height: 20px;
+                    background-color: colors.$blue;
+                    border-radius: 50%;
+                    margin-right: 10px;
+                    position: relative;
+                    z-index: 3;
+                }
+            }
+
+            .timelineContent {
+                padding: 5px 20px;
+                margin-left: 40px;
+                border: 1px solid colors.$lightGray;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                background-color: colors.$white;
+
+                @include typo.basic;
+            }
+        }
+    }
+}

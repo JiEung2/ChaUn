@@ -1,0 +1,28 @@
+@use '@/styles/constants/colors.scss' as colors;
+@use '@/styles/constants/typographies.scss' as typo;
+
+.bodyDetailModalContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+
+  .bodyDetailModalContent {
+    background: colors.$white;
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .xCircle {
+    cursor: pointer;
+    margin-left: auto;
+  }
+}
