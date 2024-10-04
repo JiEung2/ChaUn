@@ -36,7 +36,12 @@ export default function CrewPage() {
     queryKey: [queryKeys.BATTLE_STATUS, crewIds],
     queryFn: ({ queryKey }) => {
       const [, crewIds] = queryKey as [string, number[]]; // crewIds가 배열 형태로 지정됨
-      return Promise.all(crewIds.map((id) => fetchCrewBattleStatus(id))); // 각 크루 ID에 대해 배틀 상태 가져오기
+      return Promise.all(
+        crewIds.map(async (id) => {
+          const crewBattleStatus = await fetchCrewBattleStatus(id);
+          return { ...crewBattleStatus, id }; // 각 객체에 id 추가
+        })
+      );
     },
   });
   console.log('살려줘', BattleList);

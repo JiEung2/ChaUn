@@ -2,6 +2,7 @@ import './BattleBoard.scss';
 import { useNavigate } from 'react-router-dom';
 
 interface BattleBoardProps {
+  crewId: number;
   battleId: number;
   myTeamName: string;
   myTeamScore: number;
@@ -10,9 +11,11 @@ interface BattleBoardProps {
   exerciseName: string;
   dDay: number;
   battleStatus: string;
+  showButton?: boolean;
 }
 
 export default function BattleBoard({
+  crewId,
   battleId,
   myTeamName,
   myTeamScore,
@@ -21,21 +24,12 @@ export default function BattleBoard({
   exerciseName,
   dDay,
   battleStatus,
+  showButton,
 }: BattleBoardProps) {
-  console.log({
-    battleId,
-    myTeamName,
-    myTeamScore,
-    opponentTeamName,
-    opponentTeamScore,
-    exerciseName,
-    dDay,
-    battleStatus,
-  });
   const navigate = useNavigate();
 
   const navigateBattlePage = () => {
-    navigate(`/crew/battle/${battleId}`);
+    navigate(`/crew/battle/${crewId}`);
   };
 
   const renderContent = () => {
@@ -44,9 +38,11 @@ export default function BattleBoard({
         return (
           <div className="battle-board">
             <p>아직 참여중인 배틀이 없어요!</p>
-            <button className="button join-crew" onClick={navigateBattlePage}>
-              크루 배틀 입장
-            </button>
+            {showButton && (
+              <button className="button join-crew" onClick={navigateBattlePage}>
+                크루 배틀 입장
+              </button>
+            )}
           </div>
         );
       case 'STARTED':
@@ -69,9 +65,11 @@ export default function BattleBoard({
               </div>
             </div>
             <div className="score-bar" />
-            <button className="button join-crew" onClick={navigateBattlePage}>
-              크루 배틀 입장
-            </button>
+            {showButton && (
+              <button className="button join-crew" onClick={navigateBattlePage}>
+                크루 배틀 입장
+              </button>
+            )}
           </div>
         );
       default:
