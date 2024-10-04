@@ -24,7 +24,6 @@ export default function CrewPage() {
     queryFn: () => getUserCrewList(Number(userId)),
     select: (response) => response.data.crewList || [],
   });
-  console.log('userCrewList', userCrewList);
 
   // 크루의 배틀 현황 리스트
   const crewIds = userCrewList.map((crew: any) => crew.crewId);
@@ -44,7 +43,6 @@ export default function CrewPage() {
       );
     },
   });
-  console.log('살려줘', BattleList);
 
   if (isLoading) {
     return <div>Loading...</div>;

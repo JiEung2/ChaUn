@@ -27,7 +27,7 @@ export default function BattleBoard({
   showButton,
 }: BattleBoardProps) {
   const navigate = useNavigate();
-
+  console.log(crewId);
   const navigateBattlePage = () => {
     navigate(`/crew/battle/${crewId}`);
   };
