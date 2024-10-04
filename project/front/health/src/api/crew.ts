@@ -42,6 +42,7 @@ export const joinToCrew = async (crew_id: number) => {
 };
 // 크루 배틀 현황 조회
 export interface CrewBattleStatusResponse {
+  crewId: number;
   battleId: number;
   myTeamName: string;
   myTeamScore: number;

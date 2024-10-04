@@ -31,6 +31,7 @@ export default function BattleBoard({
   const navigateBattlePage = () => {
     navigate(`/crew/battle/${crewId}`);
   };
+  console.log(battleId);
 
   const renderContent = () => {
     switch (battleStatus) {

@@ -36,9 +36,9 @@ export default function CrewPage() {
     queryFn: ({ queryKey }) => {
       const [, crewIds] = queryKey as [string, number[]]; // crewIds가 배열 형태로 지정됨
       return Promise.all(
-        crewIds.map(async (id) => {
-          const crewBattleStatus = await fetchCrewBattleStatus(id);
-          return { ...crewBattleStatus, id }; // 각 객체에 id 추가
+        crewIds.map(async (crewId) => {
+          const crewBattleStatus = await fetchCrewBattleStatus(crewId);
+          return { ...crewBattleStatus, crewId }; // 각 객체에 id 추가
         })
       );
     },
@@ -84,6 +84,7 @@ export default function CrewPage() {
           BattleList.map((battleData, index) => (
             <BattleBoard
               key={index}
+              crewId={battleData?.crewId}
               battleId={battleData?.battleId || 0}
               myTeamName={battleData?.myTeamName || 'No Battle'}
               myTeamScore={battleData?.myTeamScore || 0}

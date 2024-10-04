@@ -7,18 +7,15 @@ import './CrewBattle.scss';
 
 export default function CrewBattle() {
   const { crewId } = useParams<{ crewId: string }>();
-  // battleStatus 받아와서 상태에 따라 컴포넌트 렌더링
-  const { data: battleList } = useQuery<CrewBattleStatusResponse>({
+
+  const { data: battleData } = useQuery<CrewBattleStatusResponse>({
     queryKey: [queryKeys.BATTLE_STATUS, Number(crewId)],
     queryFn: () => fetchCrewBattleStatus(Number(crewId)),
     enabled: !!crewId, // crewId가 있을 때만 쿼리를 실행
   });
-
-  if (!battleList || battleList.length === 0) {
-    return <div></div>;
+  if (!battleData) {
+    return null;
   }
-  const battleData = battleList[0];
-  // console.log(battleList);
 
   return (
     <div>
