@@ -84,6 +84,7 @@ public class CharacterWriteService {
         CharacterSet characterSet = null;
 
         if (optionalCharacterSet.isPresent()) {
+            characterSet = optionalCharacterSet.get();
             characterSet.updateCharacter(character);
         }
         else{
