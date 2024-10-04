@@ -79,8 +79,7 @@ public class CharacterWriteService {
 
     public CharacterSet createPersonalCharacter(User user, Long bodyTypeId) {
         Optional<CharacterSet> optionalCharacterSet = characterSetRepository.findByUserId(user.getId());
-        Character character = characterRepository.findByBodyTypeIdAndGender(bodyTypeId,
-                user.getGender()).orElseThrow(CharacterNotFoundException::new);
+        Character character = characterRepository.findById(bodyTypeId).orElseThrow(CharacterNotFoundException::new);
 
         CharacterSet characterSet = null;
 
