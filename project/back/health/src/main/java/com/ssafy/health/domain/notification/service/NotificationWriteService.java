@@ -29,7 +29,11 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -109,6 +113,7 @@ public class NotificationWriteService {
                 .opponentCrewScore(opponentCrewScore)
                 .exerciseName(battle.getHomeCrew().getExercise().getName())
                 .battleStatus(battle.getStatus())
+                .dDay(calculateDDay())
                 .build();
     }
 
@@ -253,5 +258,12 @@ public class NotificationWriteService {
                 .userId(userId)
                 .additionalData(additionalData)
                 .build();
+    }
+
+    private Integer calculateDDay() {
+        LocalDate now = LocalDate.now();
+        LocalDate lastDay = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+
+        return (int) ChronoUnit.DAYS.between(now, lastDay);
     }
 }
