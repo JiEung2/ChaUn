@@ -1,14 +1,15 @@
 package com.ssafy.health.domain.notification.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ssafy.health.common.fcm.dto.request.FcmRequestDto;
 import com.ssafy.health.common.fcm.service.FcmService;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
+import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
-import com.ssafy.health.domain.battle.service.BattleReadService;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
@@ -44,7 +45,6 @@ public class NotificationWriteService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
     private final FcmService fcmService;
-    private final BattleReadService battleReadService;
     private final UserQuestRepository userQuestRepository;
     private final CrewQuestRepository crewQuestRepository;
 
@@ -69,31 +69,70 @@ public class NotificationWriteService {
         sendFcmMessage(dto.getUserId(), "체형 입력 알림", SURVEY.getMessage());
     }
 
-    public void createBattleNotification(NotificationRequestDto dto, Long battleId, Integer coinAmount)
+    public void createBattleNotification(NotificationRequestDto dto, Battle battle, Crew crew, Integer coinAmount)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
-        BattleMatchResponseDto battleData = battleReadService.getBattleStatus(battleId);
+
+        BattleMatchResponseDto battleData = createBattleMatchResponseDto(battle, crew);
         additionalData.put("battleDetail", battleData);
 
         additionalData.put("coinDetail", battleData.getBattleStatus().equals(BattleStatus.STARTED) ?
-                null : CoinDetail.builder()
-                        .crewCoin(200)
-                        .myCoin(coinAmount)
-                        .build());
+                null : createCoinDetail(coinAmount));
 
-        BattleStatus status = battleRepository.findById(battleId).orElseThrow().getStatus();
-        String message = (status.equals(BattleStatus.STARTED) ? BATTLE_START.getMessage() : BATTLE_END.getMessage());
+        String message = getBattleNotificationMessage(battle.getStatus());
 
-        Notification battleNotification = notificationBuilder(
-                dto.getNotificationType(), dto.getUserId(), message, additionalData);
-        notificationRepository.save(battleNotification);
-
+        saveNotification(dto, message, additionalData);
         sendFcmMessage(dto.getUserId(), "배틀 알림", message);
     }
 
+    private BattleMatchResponseDto createBattleMatchResponseDto(Battle battle, Crew crew) {
+        String myCrewName, opponentCrewName;
+        Float myCrewScore, opponentCrewScore;
+
+        if (battle.getHomeCrew().equals(crew)) {
+            myCrewName = battle.getHomeCrew().getName();
+            myCrewScore = battle.getHomeCrewScore();
+            opponentCrewName = battle.getAwayCrew().getName();
+            opponentCrewScore = battle.getAwayCrewScore();
+        } else {
+            myCrewName = battle.getAwayCrew().getName();
+            myCrewScore = battle.getAwayCrewScore();
+            opponentCrewName = battle.getHomeCrew().getName();
+            opponentCrewScore = battle.getHomeCrewScore();
+        }
+
+        return BattleMatchResponseDto.builder()
+                .myCrewName(myCrewName)
+                .myCrewScore(myCrewScore)
+                .opponentCrewName(opponentCrewName)
+                .opponentCrewScore(opponentCrewScore)
+                .exerciseName(battle.getHomeCrew().getExercise().getName())
+                .battleStatus(battle.getStatus())
+                .build();
+    }
+
+    private CoinDetail createCoinDetail(Integer coinAmount) {
+        return CoinDetail.builder()
+                .crewCoin(200)
+                .myCoin(coinAmount)
+                .build();
+    }
+
+    private String getBattleNotificationMessage(BattleStatus status) {
+        return status.equals(BattleStatus.STARTED) ? BATTLE_START.getMessage() : BATTLE_END.getMessage();
+    }
+
+    private void saveNotification(NotificationRequestDto dto, String message, Map<String, Object> additionalData) {
+        Notification battleNotification = notificationBuilder(
+                dto.getNotificationType(), dto.getUserId(), message, additionalData);
+        notificationRepository.save(battleNotification);
+    }
+
+
     @Data
     @Builder
+    @JsonIgnoreProperties(ignoreUnknown = true)
     static class CoinDetail {
         private int crewCoin;
         private int myCoin;
