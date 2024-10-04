@@ -76,25 +76,25 @@ class UserExerciseRequest(BaseModel):
 ### AI 회귀 모델 처리 ###
 # 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
 # v7
-# def build_model(input_shape, forecast_steps):
-#     model = Sequential()
-#     model.add(Input(shape=input_shape))
-#     model.add(LSTM(units=32, dropout=0.5, return_sequences=True))
-#     model.add(LSTM(units=32, dropout=0.5))
-#     model.add(Dense(32, activation='tanh'))
-#     model.add(BatchNormalization())
-#     model.add(Dense(units=forecast_steps, activation='sigmoid'))  # 90일 예측
-#     return model
-
-# # model v2
 def build_model(input_shape, forecast_steps):
     model = Sequential()
-    model.add(Input(shape=input_shape))  # input_shape = (timesteps, features)
-    model.add(LSTM(units=16, dropout=0.3, return_sequences=True)) 
-    model.add(LSTM(units=16, dropout=0.3)) 
-    model.add(Dense(32)) 
-    model.add(Dense(units=forecast_steps))  # 예측할 시점 수에 따라 output 설정
+    model.add(Input(shape=input_shape))
+    model.add(LSTM(units=32, dropout=0.5, return_sequences=True))
+    model.add(LSTM(units=32, dropout=0.5))
+    model.add(Dense(32, activation='tanh'))
+    model.add(BatchNormalization())
+    model.add(Dense(units=forecast_steps, activation='sigmoid'))  # 90일 예측
     return model
+
+# model v2
+# def build_model(input_shape, forecast_steps):
+#     model = Sequential()
+#     model.add(Input(shape=input_shape))  # input_shape = (timesteps, features)
+#     model.add(LSTM(units=16, dropout=0.3, return_sequences=True)) 
+#     model.add(LSTM(units=16, dropout=0.3)) 
+#     model.add(Dense(32)) 
+#     model.add(Dense(units=forecast_steps))  # 예측할 시점 수에 따라 output 설정
+#     return model
 
 # 모델에 따른 가중치 불러오기
 def load_model_weights(model, weights_path):
@@ -121,7 +121,7 @@ async def load_model_startup(app: FastAPI):
     input_shape = (timesteps, features)
 
     model = build_model(input_shape, forecast_steps)
-    model = load_model_weights(model, "./models/modelv2.weights.h5")
+    model = load_model_weights(model, "./models/modelv6.weights.h5")
     model.summary()
 
     # Load the saved MinMaxScaler and OneHotEncoder
@@ -164,7 +164,20 @@ def convert_objectid(data):
 def preprocess_data(exercise_data):
     global encoder, scaler
 
-    # ### 현재 수정중...
+    ### Ver 2
+    exercise_data = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data])
+    # 역 연산처리
+    # 성별 피처 - 인코더 적용
+    sex_encoded = encoder.transform(pd.DataFrame(exercise_data[:, [0]], columns=['sex']))
+    # 수치형 데이터 - 스케일러 적용
+    numerical_data = scaler.transform(pd.DataFrame(exercise_data[:, 1:], columns=['age', 'BMI', 'weight', 'calories']))  # remaining columns: 나이, BMI, 몸무게, 칼로리
+    # 성별 + 수치형 데이터
+    processed_data = np.hstack([sex_encoded, numerical_data])
+
+    return processed_data
+
+
+    ### Ver 7 이후 (Encoder 적용)
     # df = [exercise.dict() for exercise in exercise_data]
     # df = pd.DataFrame(df)
     # df['sex'] = df['sex'].astype(int)
@@ -177,18 +190,48 @@ def preprocess_data(exercise_data):
     # # 수치형 피처 스케일링
     # df[['age', 'BMI', 'weight', 'calories']] = scaler.transform(df[['age', 'BMI', 'weight', 'calories']])
 
-    # 입력으로 받은 데이터를 어레이로 저장
-    exercise_data = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data])
-    # 역 연산처리
-    # 성별 피처 - 인코더 적용
-    sex_encoded = encoder.transform(exercise_data[:, [0]])
-    # 수치형 데이터 - 스케일러 적용
-    numerical_data = scaler.transform(exercise_data[:, 1:])  # remaining columns: 나이, BMI, 몸무게, 칼로리
-    # 성별 + 수치형 데이터
-    processed_data = np.hstack([sex_encoded, numerical_data])
+# 보정 함수
+def make_confirmed_weight(days_30, days_90, data, p30, p90):
+    last_weight = data[-1].weight
+    cal_average = UserExerciseRequest(exercise_data=data).average_calories()
 
-    return processed_data
+    # 기본적인 보정 가중치 정의
+    if days_30 > 10 or days_90 > 15:  # 오차율이 크다면 큰 보정
+        print('오차 큼')
+        weight_adjustment_factor_30 = 0.1
+        weight_adjustment_factor_90 = 0.15
+    elif days_30 > 5 or days_90 > 10:  # 중간 정도의 오차율 보정
+        print('오차 보통')
+        weight_adjustment_factor_30 = 0.35
+        weight_adjustment_factor_90 = 0.4
+    else:  # 오차가 작을 경우 보정률을 낮춤
+        print('오차 작음')
+        weight_adjustment_factor_30 = 0.7
+        weight_adjustment_factor_90 = 0.75
 
+    # 칼로리 소모량에 따라 추가 가중치 적용
+    if cal_average >= 500:
+        print("운동량이 많음 - 체중 감소 가중치 적용")
+        pred_30_adjustment = np.random.uniform(-2, -1)  # 체중 감소 가중치
+        pred_90_adjustment = np.random.uniform(-3, -2)
+    elif cal_average >= 350:
+        print("운동량이 보통")
+        pred_30_adjustment = np.random.uniform(-1, 0)  # 체중 증가 가중치
+        pred_90_adjustment = np.random.uniform(-2, -1)
+    else:
+        print("운동량이 적음 - 체중 증가 가중치 적용")
+        pred_30_adjustment = np.random.uniform(0, 1)  # 체중 증가 가중치
+        pred_90_adjustment = np.random.uniform(1, 2.5)
+
+    # 예측 값 보정
+    pred_30_corrected = last_weight * (1-weight_adjustment_factor_30) + (p30 * weight_adjustment_factor_30) + pred_30_adjustment
+    pred_90_corrected = pred_30_corrected * (1-weight_adjustment_factor_90) + (p90 * weight_adjustment_factor_90) + pred_90_adjustment
+
+    # 현재 체중을 고려하여 최종 보정된 예측 값을 계산
+    pred_30_final = round((last_weight + pred_30_corrected) / 2, 2)
+    pred_90_final = round((pred_30_final + pred_90_corrected) / 2, 2)
+
+    return pred_30_final, pred_90_final
 
 # APP 정의
 app = FastAPI(lifespan=load_model_startup)
@@ -228,22 +271,26 @@ async def predict(user_id: int, request: UserExerciseRequest):
 
         # 4-1. weight와 p30, p90과 차이가 많이 날 때, 예측 값 보정
         last_weight = exercise_data[-1].weight
+        # p30_diff = abs(last_weight - pred_30_d)
+        # p90_diff = abs(last_weight - pred_90_d)
+        # if p30_diff >= 4 or p90_diff >= 6:
+        #     cal_average = UserExerciseRequest(exercise_data=exercise_data).average_calories()
+        #     if cal_average >= 500:
+        #         if pred_30_d - last_weight > 0: # 예측이 더 클 경우
+        #             cal_weight = last_weight + np.random.normal(-2, -1)
+        #         else:
+        #             cal_weight = last_weight + np.random.normal(0, 1)
+        #     else: # 운동량이 많지 않으면, 몸무게가 찌는게 더 당연하다.
+        #         if pred_30_d - last_weight > 0: # 예측이 더 클 경우
+        #             cal_weight = last_weight + np.random.normal(2, 3)
+        #         else:
+        #             cal_weight = last_weight + np.random.normal(0, 1)
+        #     pred_30_d = round((last_weight + cal_weight + pred_30_d) / 3, 2)
+        #     pred_90_d = round((cal_weight + pred_30_d + pred_90_d) / 3 + np.random.normal(-1, 1), 2)
         p30_diff = abs(last_weight - pred_30_d)
         p90_diff = abs(last_weight - pred_90_d)
-        if p30_diff >= 4 or p90_diff >= 6:
-            cal_average = UserExerciseRequest(exercise_data=exercise_data).average_calories()
-            if cal_average >= 500:
-                if pred_30_d - last_weight > 0: # 예측이 더 클 경우
-                    cal_weight = last_weight + np.random.normal(-2, -1)
-                else:
-                    cal_weight = last_weight + np.random.normal(0, 1)
-            else: # 운동량이 많지 않으면, 몸무게가 찌는게 더 당연하다.
-                if pred_30_d - last_weight > 0: # 예측이 더 클 경우
-                    cal_weight = last_weight + np.random.normal(2, 3)
-                else:
-                    cal_weight = last_weight + np.random.normal(0, 1)
-            pred_30_d = round((last_weight + cal_weight + pred_30_d) / 3, 2)
-            pred_90_d = round((cal_weight + pred_30_d + pred_90_d) / 3 + np.random.normal(-1, 1), 2)
+        pred_30_d, pred_90_d = make_confirmed_weight(p30_diff, p90_diff, exercise_data, pred_30_d, pred_90_d)
+
 
         # 5. 예측 DB 변수 정의
         new_prediction = {
@@ -291,22 +338,29 @@ async def extra_predict(user_id: int, request: UserExerciseRequest):
 
         # 4-1. weight와 p30, p90과 차이가 많이 날 때, 예측 값 보정
         last_weight = exercise_data[-1].weight
+        ### 정량적 오차
+        # p30_diff = abs(last_weight - pred_30_d)
+        # p90_diff = abs(last_weight - pred_90_d)
+        # if p30_diff >= 4 or p90_diff >= 6:
+        #     print(1)
+        #     print(p30_diff, p90_diff)
+        #     cal_average = UserExerciseRequest(exercise_data=exercise_data).average_calories()
+        #     if cal_average >= 500:
+        #         if pred_30_d - last_weight > 0: # 예측이 더 클 경우
+        #             cal_weight = last_weight + np.random.uniform(-2, -1)
+        #         else:
+        #             cal_weight = last_weight + np.random.uniform(0, 1)
+        #     else: # 운동량이 많지 않으면, 몸무게가 찌는게 더 당연하다.
+        #         if pred_30_d - last_weight > 0: # 예측이 더 클 경우
+        #             cal_weight = last_weight + np.random.uniform(1, 2)
+        #         else:
+        #             cal_weight = last_weight + np.random.uniform(-1.5, 0)
+        #     pred_30_d = round((last_weight + cal_weight + pred_30_d) / 3, 2)
+        #     pred_90_d = round((((cal_weight + pred_30_d + pred_90_d) / 3) + np.random.uniform(-2, -1)), 2)
         p30_diff = abs(last_weight - pred_30_d)
         p90_diff = abs(last_weight - pred_90_d)
-        if p30_diff >= 4 or p90_diff >= 6:
-            cal_average = UserExerciseRequest(exercise_data=exercise_data).average_calories()
-            if cal_average >= 500:
-                if pred_30_d - last_weight > 0: # 예측이 더 클 경우
-                    cal_weight = last_weight + np.random.normal(-2, -1)
-                else:
-                    cal_weight = last_weight + np.random.normal(0, 1)
-            else: # 운동량이 많지 않으면, 몸무게가 찌는게 더 당연하다.
-                if pred_30_d - last_weight > 0: # 예측이 더 클 경우
-                    cal_weight = last_weight + np.random.normal(1, 2)
-                else:
-                    cal_weight = last_weight + np.random.normal(-1.5, 0)
-            pred_30_d = round((last_weight + cal_weight + pred_30_d) / 3, 2)
-            pred_90_d = round((cal_weight + pred_30_d + pred_90_d) / 3 + np.random.normal(-2, -1), 2)
+        pred_30_d, pred_90_d = make_confirmed_weight(p30_diff, p90_diff, exercise_data, pred_30_d, pred_90_d)
+
 
         # 5. 예측 DB 변수 정의
         new_prediction = {
@@ -329,7 +383,8 @@ async def extra_predict(user_id: int, request: UserExerciseRequest):
         new_prediction = convert_objectid(new_prediction)  # ObjectId 변환
         return new_prediction
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f'Error : {e}')
+        raise HTTPException(status_code=500, detail=f'Error : {e}, "extra_data" : "is_not_found"')
+
 
 ### 크루 추천 기능 ###
 # 유저, 크루 모델 정의 부분 #

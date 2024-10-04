@@ -127,7 +127,7 @@ def calculate_bmr(row):
     return bmr
 
 # output.csv를 받아와서 BMI를 반영한 데이터 덮어쓰기를 진행
-file_path = './korean_health_stats/output.csv'
+file_path = './korean_health_stats/test.csv'
 data = pd.read_csv(file_path)
 
 # 통계 파일 불러오기
@@ -149,5 +149,5 @@ data['age'] = data['age'].apply(age_generation)
 data['BMR'] = data.apply(calculate_bmr, axis=1)
 
 # 결과를 CSV 파일로 저장
-data.to_csv('./korean_health_stats/updated_output.csv', index=False)
+data.to_csv('./korean_health_stats/updated_test.csv', index=False)
 print(f'{len(data)}개의 개인 체형 정보 DB가 수정됐습니다!')

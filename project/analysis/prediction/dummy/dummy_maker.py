@@ -6,7 +6,7 @@ import os
 # 1인 980일에 대한 데이터 만들기 (22년 1월 1일부터 24년 9월 6일까지의 기록)
 # Daily Dummy를 받는다고 가정...
 # np.random.normal -> loc, scale, size => centre, standard deviation, size = (int, tuple, etc...)
-people_data = pd.read_csv('../statistics/updated_output.csv')
+people_data = pd.read_csv('../statistics/korean_health_stats/updated_test.csv')
 
 # 테스트 코드
 # for sample_id in range(50):
@@ -236,7 +236,7 @@ for sample_id in range(len(people_data)):
 
     ### person_time_series_raw_data save
     def make_time_series_data():
-        csv_file = os.path.join('./outputs/csv', f'sample_{sample_id}.csv')
+        csv_file = os.path.join('./outputs/test/csv', f'sample_{sample_id}.csv')
         # csv로 저장하기
         df.to_csv(csv_file, index=False)
 
@@ -277,7 +277,7 @@ for sample_id in range(len(people_data)):
         plt.grid(True)
 
         # plt, png 저장
-        png_file = os.path.join('./outputs/chart', f'sample_{sample_id}.png')
+        png_file = os.path.join('./outputs/test/chart', f'sample_{sample_id}.png')
         plt.savefig(png_file)
         
         # plt.show()

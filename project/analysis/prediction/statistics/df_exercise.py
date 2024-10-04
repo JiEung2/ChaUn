@@ -82,7 +82,7 @@ data = pd.read_csv(file_path)
 # n = 200000
 
 # 테스트 데이터
-n = 1000
+n = 200
 
 # 데이터 출력 이후, 나이와 성별로 정렬
 result = generate_data(data, n)
@@ -90,4 +90,4 @@ result = result.sort_values(by=['age', 'sex'])
 
 print(f'{total_count}개의 개인 DB가 만들어졌습니다!')
 
-result.to_csv('./korean_health_stats/output.csv', index=False)
+result.to_csv('./korean_health_stats/test.csv', index=False)
