@@ -13,6 +13,7 @@ import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,7 @@ public class CrewAnalysisRequestService {
     @Value("${health.analysis.api.url}")
     private String fastApiUrl;
 
+    @Scheduled(cron = "0 30 3 * * *")
     public void requestAnalysis() throws JsonProcessingException {
 
         final String apiUrl = fastApiUrl + "/users/crew-recommendation/fast-api";
