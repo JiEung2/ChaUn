@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class CrewReadService {
 
+    private final CrewValidator crewValidator;
     private final UserRepository userRepository;
     private final CrewRepository crewRepository;
     private final BattleRepository battleRepository;
@@ -151,6 +152,12 @@ public class CrewReadService {
         return CrewMemberDailyExerciseTimeListDto.builder()
                 .exerciseTimeList(exerciseTimeList)
                 .build();
+    }
+
+    public CrewSettingResponseDto getCrewSetting(Long crewId){
+        crewValidator.validateCrewLeader(crewId);
+        Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
+        return CrewSettingResponseDto.builder().battleStatus(crew.getBattleStatus()).build();
     }
 
     private static List<CrewMemberInfo> getCrewMemberInfoList(List<UserExerciseTimeDto> userExerciseTimeList, Map<Long, User> userMap, List<UserCrew> userCrewList) {

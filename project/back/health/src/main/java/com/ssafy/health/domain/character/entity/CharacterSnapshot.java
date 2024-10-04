@@ -1,5 +1,6 @@
 package com.ssafy.health.domain.character.entity;
 
+import com.ssafy.health.common.entity.BaseEntity;
 import com.ssafy.health.domain.account.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,21 +16,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CharacterSnapshot {
+public class CharacterSnapshot extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String characterSnapshot;
+    private String characterSnapshotUrl;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @Builder
-    public CharacterSnapshot(User user, String characterSnapshot) {
+    public CharacterSnapshot(User user, String characterSnapshotUrl) {
         this.user = user;
-        this.characterSnapshot = characterSnapshot;
+        this.characterSnapshotUrl = characterSnapshotUrl;
     }
 }

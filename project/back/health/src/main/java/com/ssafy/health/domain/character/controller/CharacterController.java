@@ -5,6 +5,7 @@ import com.ssafy.health.domain.character.dto.request.CharacterSaveRequestDto;
 import com.ssafy.health.domain.character.dto.request.PartsSaveRequestDto;
 import com.ssafy.health.domain.character.dto.response.CharacterResponseDto;
 import com.ssafy.health.domain.character.dto.response.CharacterSaveSuccessDto;
+import com.ssafy.health.domain.character.dto.response.CharacterSnapshotResponseDto;
 import com.ssafy.health.domain.character.dto.response.CharacterSnapshotSuccessDto;
 import com.ssafy.health.domain.character.dto.response.PartsListDto;
 import com.ssafy.health.domain.character.dto.response.PartsSaveSuccessDto;
@@ -32,7 +33,7 @@ public class CharacterController implements CharacterControllerApi {
     private final CharacterReadService characterReadService;
     private final CharacterWriteService characterWriteService;
 
-    @PostMapping("/character")
+    @PostMapping(value = "/character", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<CharacterSaveSuccessDto> saveBodySurvey(
             @Valid @RequestPart("characterSaveRequestDto") CharacterSaveRequestDto characterSaveRequestDto,
             @RequestPart("characterImage") MultipartFile characterImage,
@@ -41,7 +42,7 @@ public class CharacterController implements CharacterControllerApi {
                 characterWriteService.saveCharacter(characterSaveRequestDto, characterImage, characterFile));
     }
 
-    @PostMapping("/parts")
+    @PostMapping(value = "/parts", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<PartsSaveSuccessDto> saveParts(
             @Valid @RequestPart("partsSaveRequestDto") PartsSaveRequestDto partsSaveRequestDto,
             @RequestPart("partImage") MultipartFile partImage) throws IOException {
@@ -72,5 +73,10 @@ public class CharacterController implements CharacterControllerApi {
     public ApiResponse<CharacterSnapshotSuccessDto> saveSnapshot(@RequestParam("snapshot") MultipartFile snapshot)
             throws IOException {
         return ApiResponse.success(characterWriteService.saveSnapshot(snapshot));
+    }
+
+    @GetMapping("/users/character/snapshot")
+    public ApiResponse<CharacterSnapshotResponseDto> getCharacterSnapshot() {
+        return ApiResponse.success(characterReadService.getCharacterSnapshot());
     }
 }

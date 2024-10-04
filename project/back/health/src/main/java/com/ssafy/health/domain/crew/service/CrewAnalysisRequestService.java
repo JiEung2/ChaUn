@@ -85,7 +85,7 @@ public class CrewAnalysisRequestService {
                                 .stream()
                                 .map(UserCrew::getId)
                                 .toList())
-                        .favoriteSports(favoredRepository.findAllByUserId(user.getId())
+                        .favoriteSports(favoredRepository.findByUserId(user.getId())
                                 .stream()
                                 .map(favoredExercise -> favoredExercise.getExercise().getId())
                                 .toList())

@@ -13,6 +13,10 @@ import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.body.BodyPredict.service.BodyPredictWriteService;
 import com.ssafy.health.domain.body.BodyType.service.BodyTypeReadService;
+import com.ssafy.health.domain.character.entity.Character;
+import com.ssafy.health.domain.character.entity.CharacterSet;
+import com.ssafy.health.domain.character.exception.CharacterSetNotFoundException;
+import com.ssafy.health.domain.character.respository.CharacterSetRepository;
 import com.ssafy.health.domain.crew.dto.analysis.MaxScoresDto;
 import com.ssafy.health.domain.crew.dto.analysis.ScoreData;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
@@ -39,13 +43,20 @@ public class UserReadService {
     private final BodyPredictWriteService bodyPredictWriteService;
     private final BodyTypeReadService bodyTypeReadService;
     private final UserCrewRepository userCrewRepository;
+    private final CharacterSetRepository characterSetRepository;
 
     public UserDetailDto getUserDetail(Long userId) {
         User user = findUserById(userId);
 
+        CharacterSet characterSet = characterSetRepository.findByUserId(userId).orElseThrow(
+                CharacterSetNotFoundException::new);
+
+        Character myCharacter = characterSet.getCharacter();
+
         return UserDetailDto.builder()
                 .nickname(user.getNickname())
-                .coin(user.getCoin())
+                .characterImageUrl(myCharacter.getCharacterImage())
+                .characterFileUrl(myCharacter.getCharacterFile())
                 .build();
     }
 

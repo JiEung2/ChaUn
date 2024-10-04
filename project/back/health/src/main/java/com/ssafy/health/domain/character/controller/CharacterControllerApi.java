@@ -2,6 +2,7 @@ package com.ssafy.health.domain.character.controller;
 
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.character.dto.response.CharacterResponseDto;
+import com.ssafy.health.domain.character.dto.response.CharacterSnapshotResponseDto;
 import com.ssafy.health.domain.character.dto.response.CharacterSnapshotSuccessDto;
 import com.ssafy.health.domain.character.dto.response.PartsListDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +30,8 @@ public interface CharacterControllerApi {
                                       "status": 200,
                                       "message": "",
                                       "data": {
-                                        "characterUrl": "character-url.jpg"
+                                        "characterUrl": "character-url.glb",
+                                        "bodyTypeId": 4
                                       }
                                     }"""
                             ))
@@ -49,7 +51,8 @@ public interface CharacterControllerApi {
                                       "status": 200,
                                       "message": "",
                                       "data": {
-                                        "characterUrl": "character-url.jpg"
+                                        "characterUrl": "character-url.glb",
+                                        "bodyTypeId": 4
                                       }
                                     }"""
                             ))
@@ -69,7 +72,8 @@ public interface CharacterControllerApi {
                                       "status": 200,
                                       "message": "",
                                       "data": {
-                                        "characterUrl": "character-url.jpg"
+                                        "characterUrl": "character-url.glb",
+                                        "bodyTypeId": 4
                                       }
                                     }"""
                             ))
@@ -94,13 +98,15 @@ public interface CharacterControllerApi {
                                             "id": 1,
                                             "name": "Helmet",
                                             "cost": 100,
-                                            "partsImage": "https://example.com/images/helmet.png"
+                                            "partsImage": "https://example.com/images/helmet.png",
+                                            "partType": "HAIR"
                                           },
                                           {
                                             "id": 2,
                                             "name": "Armor",
                                             "cost": 200,
-                                            "partsImage": "https://example.com/images/armor.png"
+                                            "partsImage": "https://example.com/images/armor.png",
+                                            "partType": "ARM"
                                           }
                                         ]
                                       }
@@ -130,4 +136,34 @@ public interface CharacterControllerApi {
     })
     ApiResponse<CharacterSnapshotSuccessDto> saveSnapshot(@RequestParam("snapshot") MultipartFile snapshot)
             throws IOException;
+
+    @Operation(
+            summary = "캐릭터 스냅샷 조회",
+            description = "본인의 캐릭터 스냅샷을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "스냅샷 저장 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "",
+                                      "data": {
+                                        "snapshots": [
+                                            {
+                                                "snapshotUrl": "https://example.com/snapshot.png",
+                                                "createdAt": "2024-08-16T15:00:00"
+                                            },
+                                            {
+                                                "snapshotUrl": "https://example.com/snapshot.png",
+                                                "createdAt": "2024-08-16T15:00:00"
+                                            }
+                                        ]
+                                      }
+                                    }"""
+                            ))
+            ),
+    })
+    ApiResponse<CharacterSnapshotResponseDto> getCharacterSnapshot();
+
 }

@@ -8,5 +8,6 @@ import lombok.Getter;
 public class UserDetailDto {
 
     private String nickname;
-    private Integer coin;
+    private String characterImageUrl;
+    private String characterFileUrl;
 }

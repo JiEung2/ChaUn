@@ -79,8 +79,7 @@ public class CharacterWriteService {
 
     public CharacterSet createPersonalCharacter(User user, Long bodyTypeId) {
         Optional<CharacterSet> optionalCharacterSet = characterSetRepository.findByUserId(user.getId());
-        Character character = characterRepository.findByBodyTypeIdAndGender(bodyTypeId,
-                user.getGender()).orElseThrow(CharacterNotFoundException::new);
+        Character character = characterRepository.findById(bodyTypeId).orElseThrow(CharacterNotFoundException::new);
 
         CharacterSet characterSet = null;
 
@@ -112,9 +111,7 @@ public class CharacterWriteService {
         }
         characterSetRepository.save(characterSet);
 
-        return CharacterResponseDto.builder()
-                .characterUrl(characterReadService.getCharacterUrl(SecurityUtil.getCurrentUserId()))
-                .build();
+        return characterReadService.getCharacterInfo(SecurityUtil.getCurrentUserId());
     }
 
     public Parts getBasicParts() {
@@ -124,7 +121,7 @@ public class CharacterWriteService {
     public CharacterSnapshotSuccessDto saveSnapshot(MultipartFile snapshot) throws IOException {
         String snapshotUrl = s3Service.uploadFile(snapshot);
         User user = userRepository.findById(SecurityUtil.getCurrentUserId()).orElseThrow(UserNotFoundException::new);
-        characterSnapshotRepository.save(CharacterSnapshot.builder().user(user).characterSnapshot(snapshotUrl).build());
+        characterSnapshotRepository.save(CharacterSnapshot.builder().user(user).characterSnapshotUrl(snapshotUrl).build());
         return new CharacterSnapshotSuccessDto();
     }
 }

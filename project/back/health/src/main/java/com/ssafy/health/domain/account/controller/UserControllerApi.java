@@ -133,7 +133,8 @@ public interface UserControllerApi {
                                     "  \"message\": \"\",\n" +
                                     "  \"data\": {\n" +
                                     "    \"nickname\": \"JiEung2\",\n" +
-                                    "    \"coin\": 999999\n" +
+                                    "    \"characterImageUrl\": \"image.png\",\n" +
+                                    "    \"characterFileUrl\": \"image.glb\"\n" +
                                     "  }\n" +
                                     "}"
                             )

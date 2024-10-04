@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface FavoredRepository extends JpaRepository<FavoredExercise, Long> {
 
-    List<FavoredExercise> findAllByUserId(Long userId);
+    List<FavoredExercise> findByUserId(Long userId);
 }
