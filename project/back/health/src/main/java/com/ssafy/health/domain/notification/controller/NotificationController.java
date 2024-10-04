@@ -48,49 +48,4 @@ public class NotificationController implements NotificationControllerApi {
     public ApiResponse<StatusUpdateResponseDto> deleteNotification(@PathVariable("notification_id") Long id) {
         return ApiResponse.success(notificationWriteService.updateNotificationStatus(NotificationStatus.DELETED, id));
     }
-
-    @PostMapping("/test/{type}")
-    public ApiResponse<?> testNotification(@PathVariable("type") String type) throws ExecutionException, InterruptedException {
-        Long userId = SecurityUtil.getCurrentUserId();
-        if (type.equals("survey")) {
-            NotificationRequestDto dto = NotificationRequestDto.builder()
-                    .notificationType(NotificationType.SURVEY)
-                    .userId(userId).build();
-            notificationWriteService.createBodySurveyNotification(dto);
-        } else if (type.equals("battle")) {
-            List<Battle> battles = battleRepository.findAll();
-            battles.forEach(battle -> {
-                try {
-                    notificationWriteService.createBattleNotification(
-                            NotificationRequestDto.builder()
-                                    .notificationType(NotificationType.BATTLE)
-                                    .userId(userId)
-                                    .build(),
-                            battle.getId(), 0);
-                } catch (ExecutionException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        } else if (type.equals("quest")) {
-            User user = userRepository.findById(userId).get();
-            List<QuestStatus> questStatus = Arrays.asList(QuestStatus.CREATED, QuestStatus.COMPLETED);
-            List<UserQuest> userQuestList = userQuestRepository.findAllByUserAndStatus(user, questStatus);
-
-            userQuestList.forEach(quest -> {
-                try {
-                    notificationWriteService.createUserQuestNotification(
-                            NotificationRequestDto.builder()
-                                    .notificationType(NotificationType.QUEST)
-                                    .userId(userId)
-                                    .build(),
-                            quest.getId());
-                } catch (ExecutionException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        } else {
-            return ApiResponse.error(405, "Unknown parameter: " + type);
-        }
-        return ApiResponse.success(notificationReadService.getNotifications());
-    }
 }
