@@ -6,7 +6,7 @@ import CalendarIcon from '../../assets/svg/calendar.svg';
 import StyledButton from '../../components/Button/StyledButton';
 import HomeIcon1 from '../../assets/svg/homeIcon1.svg';
 import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
-import Character from '@/assets/image/model.png';
+
 import 'chart.js/auto';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
@@ -77,7 +77,7 @@ function ExerciseTimeDisplay() {
 
   return (
     <div className="myInfo">
-      <img src={Character} alt="character" />
+      <img src="{Character}" alt="character" />
       <div className="time">
         <p className="timeTitle">오늘 운동 시간</p>
         <span>{characterContent.todayTime}</span>

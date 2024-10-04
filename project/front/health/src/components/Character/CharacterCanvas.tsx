@@ -1,4 +1,4 @@
-import { Suspense, useRef, useEffect } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -6,23 +6,16 @@ import * as THREE from 'three';
 interface CharacterProps {
   glbUrl: string;
   gender: 'MAN' | 'FEMALE';
-  onCapture?: (snapshot: string) => void; // 캡처한 이미지를 부모로 전달하는 콜백
 }
 
 function Character({ glbUrl, gender }: CharacterProps) {
   const { scene, animations } = useGLTF(glbUrl); // GLB 모델 불러오기
-  const cachedModel = useRef<THREE.Group | null>(null); // 캐싱된 모델 저장
   const mixerRef = useRef<THREE.AnimationMixer | null>(null); // 애니메이션 믹서 저장
-  const canvasRef = useRef<HTMLCanvasElement | null>(null); // 캔버스 참조를 위한 ref
 
-  // 모델을 캐싱하고 애니메이션 설정
   useEffect(() => {
-    if (!cachedModel.current) {
-      console.log('모델 로드 중...', scene);
-      cachedModel.current = scene; // 처음 로드할 때만 캐싱
-    }
+    if (!scene) return; // scene이 없는 경우 바로 반환
 
-    const model = cachedModel.current;
+    const model = scene;
 
     // 성별에 따라 scale 및 position 설정
     if (gender === 'MAN') {
@@ -42,6 +35,13 @@ function Character({ glbUrl, gender }: CharacterProps) {
         action.play();
       });
     }
+
+    return () => {
+      // 컴포넌트 언마운트 시 애니메이션 정리
+      if (mixerRef.current) {
+        mixerRef.current.stopAllAction();
+      }
+    };
   }, [gender, scene, animations]);
 
   // 매 프레임마다 애니메이션 업데이트
@@ -51,27 +51,10 @@ function Character({ glbUrl, gender }: CharacterProps) {
     }
   });
 
-  // 캔버스를 캡처하여 onCapture로 전달
-  const handleCapture = () => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      // const snapshot = canvas.toDataURL('image/png'); // 캔버스를 이미지로 캡처
-      // onCapture(snapshot); // 캡처된 이미지를 부모 컴포넌트로 전달
-    }
-  };
-
-  return (
-    <Suspense fallback={null}>
-      {/* 캐싱된 모델을 사용하여 primitive 렌더링 */}
-      {cachedModel.current && <primitive object={cachedModel.current} />}
-
-      {/* 캡처 버튼 추가 */}
-      <button onClick={handleCapture}>Capture Canvas</button>
-    </Suspense>
-  );
+  return <primitive object={scene} />;
 }
 
-export default function CharacterCanvas({ glbUrl, gender, onCapture }: CharacterProps) {
+export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   return (
     <Canvas camera={{ position: [0, 10, 30], fov: 35 }}>
       {/* 성별에 따라 ambientLight 설정 */}
@@ -81,7 +64,9 @@ export default function CharacterCanvas({ glbUrl, gender, onCapture }: Character
       <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
 
       {/* 캐릭터 컴포넌트 렌더링 */}
-      <Character glbUrl={glbUrl} gender={gender} onCapture={onCapture} />
+      <Suspense fallback={null}>
+        <Character glbUrl={glbUrl} gender={gender} />
+      </Suspense>
 
       {/* OrbitControls 설정 */}
       <OrbitControls

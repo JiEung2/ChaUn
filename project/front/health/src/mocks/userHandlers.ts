@@ -50,14 +50,14 @@ export const userHandlers = [
       message: 'Success',
       data: {
         weightDataList: [
-          {
-            date: '2024-09-16T15:00:00',
-            weight: 75.5,
-          },
-          {
-            date: '2024-08-16T15:00:00',
-            weight: 74,
-          },
+          // {
+          //   date: '2024-09-16T15:00:00',
+          //   weight: 75.5,
+          // },
+          // {
+          //   date: '2024-08-16T15:00:00',
+          //   weight: 74,
+          // },
         ],
       },
     });
