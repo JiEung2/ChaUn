@@ -31,7 +31,7 @@ export const getCrewRanking = async (crew_id: number) => {
 
 // 운동별 크루 랭킹 조회
 export const getExerciseCrewRanking = async (exercise_id: number) => {
-  const response = await axiosInstance.get(`${baseURL}/crew/ranking/${exercise_id}`);
+  const response = await exportAxios.get(`${baseURL}/crew/ranking/${exercise_id}`);
   return response;
 };
 
@@ -42,6 +42,7 @@ export const joinToCrew = async (crew_id: number) => {
 };
 // 크루 배틀 현황 조회
 export interface CrewBattleStatusResponse {
+  id: number;
   battleId: number;
   myTeamName: string;
   myTeamScore: number;

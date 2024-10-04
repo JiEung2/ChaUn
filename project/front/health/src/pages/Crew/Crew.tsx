@@ -86,6 +86,7 @@ export default function CrewPage() {
           BattleList.map((battleData, index) => (
             <BattleBoard
               key={index}
+              crewId={battleData.id}
               battleId={battleData?.battleId || 0}
               myTeamName={battleData?.myTeamName || 'No Battle'}
               myTeamScore={battleData?.myTeamScore || 0}
