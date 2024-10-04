@@ -13,7 +13,7 @@ export const surveySubmit1 = async (nickname: string, birthday: string, gender: 
   const response = await exportAxios.post(`${baseUrl}/users/survey/information`, {
     nickname,
     birthday,
-    newGender,
+    gender: newGender,
   });
 
   return response;
