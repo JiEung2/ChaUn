@@ -85,7 +85,7 @@ public class BattleWriteService {
                 .build();
     }
 
-    @Scheduled(cron = "0 01 11 ? * FRI")
+    @Scheduled(cron = "0 30 4 ? * MON")
     public void finishBattles() {
         List<Battle> ongoingBattles = battleRepository.findByStatus(BattleStatus.STARTED);
 
