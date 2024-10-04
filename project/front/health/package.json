@@ -12,6 +12,8 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@react-three/drei": "^9.114.0",
+    "@react-three/fiber": "^8.17.9",
     "@tanstack/react-query": "^5.56.2",
     "@tanstack/react-query-devtools": "^5.58.0",
     "axios": "^1.7.7",
@@ -32,6 +34,7 @@
     "react-swipeable": "^7.0.1",
     "recharts": "^2.13.0-alpha.5",
     "sass": "^1.78.0",
+    "three": "^0.169.0",
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {

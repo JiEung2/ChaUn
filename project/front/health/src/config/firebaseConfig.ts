@@ -13,20 +13,17 @@
 // };
 
 // // Firebase 초기화
-// const app = initializeApp(firebaseConfig);
+// firebase.initializeApp(firebaseConfig);
 
-// /**
-//  * Messaging 초기화
-//  * 사용자에게 알림 권한을 요청하고, FCM 토큰을 반환한다.
-//  */
-// const messaging = getMessaging(app);
+// // Messaging 초기화
+// const messaging = firebase.messaging();
 
 // /**
 //  * 수신 메시지 처리 함수
 //  * FCM 메시지를 수신하면 알림을 표시한다.
 //  */
 // const handleForegroundMessages = () => {
-//   onMessage(messaging, (payload: any) => {
+//   messaging.onMessage((payload) => {
 //     if (!payload.data) return;
 //     toast.dismiss();
 //     toast.success(payload.data.body);
@@ -38,24 +35,19 @@
 //  * 사용자에게 알림 권한을 요청하고, FCM 토큰을 반환한다.
 //  */
 // const getFcmToken = async () => {
-//   // 세션 스토리지에 FCM 토큰이 있는지 확인
 //   const existingToken = sessionStorage.getItem('fcmToken');
 //   if (existingToken) {
 //     return existingToken; // 이미 토큰이 있는 경우, 해당 토큰을 반환
 //   }
 
 //   try {
-//     // 알림 권한 요청
 //     const permission = await Notification.requestPermission();
 //     if (permission === 'granted') {
-//       // FCM 토큰 가져오기
-//       const currentToken = await getToken(messaging, {
-//         vapidKey:
-//           'BHwpLNL8I7G3uVXMnYxMZWiopgbTh5k0bC-HRQPEVXj6mz7cPrjcNpgEhwDf08bq99wJF7CQA3DRa16ZbBHwpLNL8I7G3uVXMnYxMZWiopgbTh5k0bC-HRQPEVXj6mz7cPrjcNpgEhwDf08bq99wJF7CQA3DRa16Zb', // VAPID 키
+//       const currentToken = await messaging.getToken({
+//         vapidKey: 'BHwpLNL8I7G3uVXMnYxMZWiopgbTh5k0bC-HRQPEVXj6mz7cPrjcNpgEhwDf08bq99wJF7CQA3DRa16Zb',
 //       });
 
 //       if (currentToken) {
-//         // 토큰을 세션 스토리지에 저장
 //         sessionStorage.setItem('fcmToken', currentToken);
 //         return currentToken;
 //       } else {
@@ -63,7 +55,7 @@
 //         return null;
 //       }
 //     } else {
-//       console.log('Notification permission denied.');
+//       console.log('알림 권한이 거부되었습니다.');
 //       return null;
 //     }
 //   } catch (error) {
@@ -72,4 +64,4 @@
 //   }
 // };
 
-// export { getFcmToken, handleForegroundMessages, messaging };
+// // export { getFcmToken, handleForegroundMessages, messaging };
