@@ -4,15 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ssafy.health.common.fcm.dto.request.FcmRequestDto;
 import com.ssafy.health.common.fcm.service.FcmService;
 import com.ssafy.health.domain.account.entity.User;
-import com.ssafy.health.domain.account.exception.UserNotFoundException;
-import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
-import com.ssafy.health.domain.battle.repository.BattleRepository;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.crew.entity.Crew;
-import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.dto.response.StatusUpdateResponseDto;
 import com.ssafy.health.domain.notification.entity.Notification;
 import com.ssafy.health.domain.notification.entity.NotificationStatus;
@@ -44,22 +40,20 @@ import static com.ssafy.health.domain.notification.entity.NotificationMessage.*;
 @RequiredArgsConstructor
 public class NotificationWriteService {
 
-    private final BattleRepository battleRepository;
     private final BodyHistoryRepository bodyHistoryRepository;
     private final NotificationRepository notificationRepository;
-    private final UserRepository userRepository;
     private final FcmService fcmService;
     private final UserQuestRepository userQuestRepository;
     private final CrewQuestRepository crewQuestRepository;
 
-    public void createBodySurveyNotification(NotificationRequestDto dto)
+    public void createBodySurveyNotification(NotificationType notificationType, User user)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
         LocalDateTime lastSurveyedDate = null;
 
         try {
-            lastSurveyedDate = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(dto.getUserId())
+            lastSurveyedDate = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())
                     .orElseThrow().getCreatedAt();
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -67,13 +61,13 @@ public class NotificationWriteService {
         additionalData.put("lastSurveyedDate", lastSurveyedDate);
 
         Notification notification = notificationBuilder(
-                dto.getNotificationType(), dto.getUserId(), SURVEY.getMessage(), additionalData);
+                notificationType, user, SURVEY.getMessage(), additionalData);
         notificationRepository.save(notification);
 
-        sendFcmMessage(dto.getUserId(), "체형 입력 알림", SURVEY.getMessage());
+        sendFcmMessage(user, "체형 입력 알림", SURVEY.getMessage());
     }
 
-    public void createBattleNotification(NotificationRequestDto dto, Battle battle, Crew crew, Integer coinAmount)
+    public void createBattleNotification(NotificationType notificationType, User user, Battle battle, Crew crew, Integer coinAmount)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
@@ -86,8 +80,8 @@ public class NotificationWriteService {
 
         String message = getBattleNotificationMessage(battle.getStatus());
 
-        saveNotification(dto, message, additionalData);
-        sendFcmMessage(dto.getUserId(), "배틀 알림", message);
+        saveNotification(notificationType, user, message, additionalData);
+        sendFcmMessage(user, "배틀 알림", message);
     }
 
     private BattleMatchResponseDto createBattleMatchResponseDto(Battle battle, Crew crew) {
@@ -128,9 +122,9 @@ public class NotificationWriteService {
         return status.equals(BattleStatus.STARTED) ? BATTLE_START.getMessage() : BATTLE_END.getMessage();
     }
 
-    private void saveNotification(NotificationRequestDto dto, String message, Map<String, Object> additionalData) {
+    private void saveNotification(NotificationType notificationType, User user, String message, Map<String, Object> additionalData) {
         Notification battleNotification = notificationBuilder(
-                dto.getNotificationType(), dto.getUserId(), message, additionalData);
+                notificationType, user, message, additionalData);
         notificationRepository.save(battleNotification);
     }
 
@@ -143,7 +137,7 @@ public class NotificationWriteService {
         private int myCoin;
     }
 
-    public void createUserQuestNotification(NotificationRequestDto dto, Long questId)
+    public void createUserQuestNotification(NotificationType notificationType, User user, Long questId)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
@@ -163,13 +157,13 @@ public class NotificationWriteService {
 
         additionalData.put("questDetail", questDetail);
         Notification questNotification = notificationBuilder(
-                dto.getNotificationType(), dto.getUserId(), messageBuilder.toString(), additionalData);
+                notificationType, user, messageBuilder.toString(), additionalData);
         notificationRepository.save(questNotification);
 
-        sendFcmMessage(dto.getUserId(), "퀘스트 알림", messageBuilder.toString());
+        sendFcmMessage(user, "퀘스트 알림", messageBuilder.toString());
     }
 
-    public void createCrewQuestNotification(NotificationRequestDto dto, Crew crew, Long questId)
+    public void createCrewQuestNotification(NotificationType notificationType, User user, Crew crew, Long questId)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
@@ -188,10 +182,10 @@ public class NotificationWriteService {
 
         additionalData.put("questDetail", questDetail);
         Notification questNotification = notificationBuilder(
-                dto.getNotificationType(), dto.getUserId(), messageBuilder.toString(), additionalData);
+                notificationType, user, messageBuilder.toString(), additionalData);
         notificationRepository.save(questNotification);
 
-        sendFcmMessage(dto.getUserId(), "퀘스트 알림", messageBuilder.toString());
+        sendFcmMessage(user, "퀘스트 알림", messageBuilder.toString());
     }
 
     @Data
@@ -226,8 +220,7 @@ public class NotificationWriteService {
                 .build();
     }
 
-    public void sendFcmMessage(Long userId, String title, String body) throws ExecutionException, InterruptedException {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+    public void sendFcmMessage(User user, String title, String body) throws ExecutionException, InterruptedException {
         String token = user.getDeviceToken();
 
         if (token != null) {
@@ -240,22 +233,22 @@ public class NotificationWriteService {
         }
     }
 
-    public Notification notificationBuilder(NotificationType notificationType, Long userId, String message) {
+    public Notification notificationBuilder(NotificationType notificationType, User user, String message) {
         return Notification.builder()
                 .notificationType(notificationType)
                 .notificationStatus(NotificationStatus.UNREAD)
                 .content(message)
-                .userId(userId)
+                .user(user)
                 .build();
     }
 
     public Notification notificationBuilder(
-            NotificationType notificationType, Long userId, String message, Map<String, Object> additionalData) {
+            NotificationType notificationType, User user, String message, Map<String, Object> additionalData) {
         return Notification.builder()
                 .notificationType(notificationType)
                 .notificationStatus(NotificationStatus.UNREAD)
                 .content(message)
-                .userId(userId)
+                .user(user)
                 .additionalData(additionalData)
                 .build();
     }
