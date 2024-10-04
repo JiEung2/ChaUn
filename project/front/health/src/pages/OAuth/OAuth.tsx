@@ -18,6 +18,7 @@ const OAuthCallback = () => {
 
       if (response.status === 200) {
         console.log('토큰 재발급 성공:', response.headers);
+        console.log('토큰 재발급 성공:', response.headers['userid']);
         setUserId(response.headers['userid']);
         const newAccessToken = response.headers['access'];
         setAccessToken(newAccessToken);

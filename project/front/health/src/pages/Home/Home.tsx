@@ -34,16 +34,6 @@ interface ExerciseRecord {
   burnedCalories: number; // 소모된 칼로리
 }
 
-async function getUserData() {
-  const { userId, setNickname, setHasCoin } = useUserStore();
-  try {
-    const response = await getUserDetail(userId);
-    setNickname(response.nickname);
-    setHasCoin(response.coin);
-  } catch (e) {
-    console.log('유저정보를 가져오던 중 에러', e);
-  }
-}
 // 데이터 fetch 함수
 function useExerciseTime() {
   return useSuspenseQuery<ExerciseTimeResponse>({
@@ -199,6 +189,11 @@ function ExerciseRecordChart() {
     ],
   };
 
+  // 데이터가 없는 경우 처리
+  if (!chartData || chartData.length === 0) {
+    return <div>운동 기록이 없습니다.</div>;
+  }
+
   return <Line data={dataConfig} options={options} />;
 }
 
@@ -258,9 +253,22 @@ function HomePageContent() {
 
 // 전체 페이지에서 Suspense를 분리하여 사용
 export default function HomePage() {
+  const { userId, setNickname, setHasCoin } = useUserStore();
+
   // 초기 1회 유저 데이터 저장
   useEffect(() => {
-    getUserData();
-  }, []);
+    async function fetchUserData() {
+      try {
+        const response = await getUserDetail(userId);
+        setNickname(response.nickname);
+        setHasCoin(response.coin);
+      } catch (e) {
+        console.log('유저 정보를 가져오던 중 에러', e);
+      }
+    }
+
+    fetchUserData();
+  }, [userId, setNickname, setHasCoin]);
+
   return <HomePageContent />;
 }
