@@ -1,15 +1,28 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Crew from '@/components/Crew/Crew';
+import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import './Profile.scss';
-import { getUserExerciseTime, getUserWeight6 } from '@/api/user';
+import { getUserDetail, getUserExerciseTime, getUserWeight6 } from '@/api/user';
 import { getUserCrewList } from '@/api/crew';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import queryKeys from '@/utils/querykeys';
 
+// interface UserProps {
+//   userId: number;
+// }
+
 export default function ProfilePage() {
-  const { userId } = useParams<{ userId: string }>();
+  // const { user_id } = useParams<{ user_id: string }>();
+  const userId = 1;
+  const navigate = useNavigate();
+
+  // 회원 디테일
+  const { data: userDetailData } = useSuspenseQuery({
+    queryKey: [queryKeys.USER_DETAIL, userId],
+    queryFn: () => getUserDetail(Number(userId)),
+  });
 
   // 운동 시간 가져오기
   const { data: exerciseTimeData } = useSuspenseQuery({
@@ -27,7 +40,7 @@ export default function ProfilePage() {
   const { data: userCrewList } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
     queryFn: () => getUserCrewList(Number(userId)),
-    select: (response) => response.data.crewList || [],
+    select: (response) => response.crewList || [],
   });
 
   // 6개월 전까지의 날짜 배열을 생성하는 함수
@@ -72,7 +85,7 @@ export default function ProfilePage() {
     datasets: [
       {
         label: '체중 기록 (kg)',
-        data: fillWeightData(weight6Data?.data.data.weightDataList || [], chartLabels),
+        data: fillWeightData(weight6Data?.data.weightDataList || [], chartLabels),
         backgroundColor: '#CDE0FF',
         fill: false,
         tension: 0.1,
@@ -121,18 +134,18 @@ export default function ProfilePage() {
   };
 
   const handleCrewClick = (crewId: number) => {
-    console.log(crewId); // TODO - 해당 크루 상세보기
+    navigate(`/crew/crewDetail/${crewId}`);
   };
-
   return (
     <div className="profileContainer">
-      <p className="titles">닉네임님</p>
+      <p className="titles">{userDetailData?.nickname}님</p>
       <div className="profileHeaderSection">
+        <CharacterCanvas glbUrl={userDetailData?.characterFileUrl || ''} gender={userDetailData?.gender || 'MAN'} />
         <div className="time">
           <p className="timeTitle">오늘의 운동 시간</p>
-          <span>{formatExerciseTime(exerciseTimeData?.data.data.dailyAccumulatedExerciseTime || 0)}</span>
+          <span>{formatExerciseTime(exerciseTimeData?.data.dailyAccumulatedExerciseTime || 0)}</span>
           <p className="timeTitle">이번 주 운동 시간</p>
-          <span>{formatExerciseTime(exerciseTimeData?.data.data.weeklyAccumulatedExerciseTime || 0)}</span>
+          <span>{formatExerciseTime(exerciseTimeData?.data.weeklyAccumulatedExerciseTime || 0)}</span>
         </div>
       </div>
 
