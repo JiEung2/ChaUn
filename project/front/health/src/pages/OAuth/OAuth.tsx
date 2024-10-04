@@ -2,9 +2,10 @@ import { setAccessToken } from '@/utils/localUtils'; // AccessToken을 저장하
 import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위해 사용
 import { useEffect } from 'react'; // 특정 작업을 수행하기 위해 사용
 import axios from 'axios';
-
+import useUserStore from '@/store/userInfo';
 // Access Token을 재발급받기 위한 함수
 const reissueAccessToken = async () => {
+  const { setUserId } = useUserStore();
   try {
     const baseURL = import.meta.env.VITE_APP_BASE_URL;
     // console.log('reissueAccessToken 함수 실행');
@@ -19,6 +20,7 @@ const reissueAccessToken = async () => {
       // console.log('로그인 성공');
       // 응답 헤더에서 새로운 Access Token 가져오기
       console.log('성공 헤더', response.headers);
+      setUserId(response.headers['userId']);
       const newAccessToken = response.headers['access'];
       console.log(newAccessToken);
       // 새로운 Access Token을 저장 또는 사용

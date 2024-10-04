@@ -30,14 +30,8 @@ export default function CustomItem({ item, coinAmount, onPurchase, onApply }: Cu
   return (
     <div className="customItemContainer">
       <div className="customItem" onClick={handleItemClick}>
-        <img
-          src={item.image}
-          alt="CustomItem"
-          className={`itemImage ${item.isLocked ? 'blurred' : ''}`}
-        />
-        {item.isLocked && (
-          <img src={lockIcon} alt="LockIcon" className="lockIcon" />
-        )}
+        <img src={item.image} alt="CustomItem" className={`itemImage ${item.isLocked ? 'blurred' : ''}`} />
+        {item.isLocked && <img src={lockIcon} alt="LockIcon" className="lockIcon" />}
       </div>
       <div>
         <Coin amount={item.price} style="basic" />

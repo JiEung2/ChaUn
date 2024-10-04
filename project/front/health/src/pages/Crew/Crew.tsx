@@ -9,7 +9,7 @@ import '../Crew/Crew.scss';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
 import Crew from '@/components/Crew/Crew';
-import { useQueryClient } from '@tanstack/react-query';
+// import { useQueryClient } from '@tanstack/react-query';
 import queryKeys from '@/utils/querykeys';
 import { getUserCrewList } from '@/api/crew';
 
@@ -85,16 +85,15 @@ export default function CrewPage() {
         {BattleList && BattleList.length > 0 ? (
           BattleList.map((battleData, index) => (
             <BattleBoard
-              crewId={battleData.id} // crewId로 battleData의 id 사용
-              battleId={battleData?.[0]?.battleId || 0}
-              myTeamName={battleData?.[0]?.myTeamName || 'No Battle'}
-              myTeamScore={battleData?.[0]?.myTeamScore || 0}
-              opponentTeamName={battleData?.[0]?.opponentTeamName || 'No Opponent'}
-              opponentTeamScore={battleData?.[0]?.opponentTeamScore || 0}
-              exerciseName={battleData?.[0]?.exerciseName || 'N/A'}
-              dDay={battleData?.[0]?.dDay || 0}
-              battleStatus={battleData?.[0]?.battleStatus}
-              showButton={true}
+              key={index}
+              battleId={battleData?.battleId || 0}
+              myTeamName={battleData?.myTeamName || 'No Battle'}
+              myTeamScore={battleData?.myTeamScore || 0}
+              opponentTeamName={battleData?.opponentTeamName || 'No Opponent'}
+              opponentTeamScore={battleData?.opponentTeamScore || 0}
+              exerciseName={battleData?.exerciseName || 'N/A'}
+              dDay={battleData?.dDay || 0}
+              battleStatus={battleData?.battleStatus}
             />
           ))
         ) : (

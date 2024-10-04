@@ -11,7 +11,14 @@ interface CustomTabProps {
   items: { category: string; price: number; isLocked: boolean; image: string }[];
 }
 
-export default function CustomCategories({ selectedTab, setSelectedTab, userCoin, onPurchase, onApply, items }: CustomTabProps) {
+export default function CustomCategories({
+  selectedTab,
+  setSelectedTab,
+  userCoin,
+  onPurchase,
+  onApply,
+  items,
+}: CustomTabProps) {
   const tabs = ['헤어', '상의', '하의', '아이템'];
 
   return (
@@ -22,8 +29,7 @@ export default function CustomCategories({ selectedTab, setSelectedTab, userCoin
             buttonStyle={{ style: 'outlined', size: 'customTag' }}
             key={tab}
             className={selectedTab === tab ? 'active' : ''}
-            onClick={() => setSelectedTab(tab)}
-          >
+            onClick={() => setSelectedTab(tab)}>
             {tab}
           </GeneralButton>
         ))}

@@ -5,6 +5,7 @@ import { crewHandlers } from './crewHandlers';
 import { exerciseHandlers } from './exerciseHandlers';
 import { userHandlers } from './userHandlers';
 import { alarmHandlers } from './alarmHandlers';
+import { characterHandlers } from './characterHandlers';
 // import { homeHandlers } from './homeHandlers';
 
 export const worker = setupWorker(
@@ -13,6 +14,7 @@ export const worker = setupWorker(
   ...exerciseHandlers,
   ...userHandlers,
   ...crewHandlers,
-  ...alarmHandlers
+  ...alarmHandlers,
+  ...characterHandlers
   // ...homeHandlers
 );

@@ -1,94 +1,116 @@
-import { Suspense, useRef, useState, startTransition } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query'; // SuspenseQuery 사용
+import { Suspense, useRef, useState } from 'react';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import Coin from '@/components/Coin/Coin';
 import GeneralButton from '@/components/Button/GeneralButton';
-import MyModel from '@/assets/image/model.png';
-import CustomItem from '@/assets/image/customItem.jpg';
 import CustomCategories from '@/components/Profile/Custom/CustomCategories';
 import SnapshotList from '@/components/Profile/Snapshot/SnapshotList';
-import html2canvas from 'html2canvas';
+import CharacterCanvas from '@/components/Character/CharacterCanvas';
+// import html2canvas from 'html2canvas';
 import queryKeys from '@/utils/querykeys';
-import { getUserDetail } from '@/api/user';
 import './Mypage.scss';
-import { useParams } from 'react-router-dom';
+import { getPartsList, getMyCharacter, postSnapshot } from '@/api/character';
 
 export default function MypagePage() {
-  const { userId } = useParams<{ userId: string }>();
-  const characterRef = useRef<HTMLImageElement | null>(null);
+  const characterRef = useRef<HTMLDivElement | null>(null); // 캔버스를 참조하는 div로 변경
   const [selectedTab, setSelectedTab] = useState('헤어');
-  const [userCoin, setUserCoin] = useState(0);
-  const [items, setItems] = useState([
-    { id: 1, category: '헤어', price: 100, isLocked: true, image: CustomItem, isApplied: false },
-    { id: 2, category: '헤어', price: 120, isLocked: true, image: CustomItem, isApplied: false },
-    { id: 3, category: '하의', price: 1200, isLocked: true, image: CustomItem, isApplied: false },
-  ]);
-  const [appliedItem, setAppliedItem] = useState<string | null>(null);
-  const [snapshots, setSnapshots] = useState<{ date: string; image: string }[]>([]);
+  // const [canvasSnapshot, setCanvasSnapshot] = useState<string | null>(null); // 스냅샷 상태
 
-  // React Query의 useSuspenseQuery 사용
-  const numericUserId = userId ? Number(userId) : 0;
-
-  const { data: userDetail } = useSuspenseQuery({
-    queryKey: [queryKeys.USER_DETAIL, numericUserId],
-    queryFn: () => getUserDetail(numericUserId),
+  // 캐릭터 및 파츠 리스트 조회
+  const { data: myCharacter, error: characterError } = useSuspenseQuery({
+    queryKey: [queryKeys.CHARACTER],
+    queryFn: () => getMyCharacter(),
   });
 
-  // 아이템 구매 성공 시 호출되는 함수
-  const handlePurchaseSuccess = (updatedItem: any) => {
-    // startTransition을 사용해 UI 업데이트를 비동기적으로 처리
-    startTransition(() => {
-      setItems((prevItems) =>
-        prevItems.map((item) => (item.id === updatedItem.id ? { ...item, isLocked: false } : item))
-      );
-      setUserCoin((prevCoin) => prevCoin - updatedItem.price); // 코인 감소 처리
-    });
-  };
+  if (characterError) {
+    return <p>캐릭터 정보를 불러오는 중 문제가 발생했습니다.</p>;
+  }
 
-  // 아이템 클릭 시 캐릭터에 적용 또는 해제하는 함수
-  const handleApplyItem = (item: any) => {
-    // startTransition을 사용해 UI 업데이트를 비동기적으로 처리
-    startTransition(() => {
-      if (item.isApplied) {
-        setItems((prevItems) => prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: false } : i)));
-        setAppliedItem(null);
-      } else {
-        setItems((prevItems) =>
-          prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: true } : { ...i, isApplied: false }))
-        );
-        setAppliedItem(item.image);
+  const { data: partsList } = useSuspenseQuery({
+    queryKey: [queryKeys.PARTSLIST],
+    queryFn: () => getPartsList(),
+  });
+
+  const mutation = useMutation({
+    mutationFn: (snapshot: string) => postSnapshot(snapshot),
+    onSuccess: (response) => {
+      const { snapshotUrl } = response.data;
+      console.log('스냅샷 전송 성공. URL:', snapshotUrl);
+    },
+    onError: (error) => {
+      console.error('스냅샷 전송 실패:', error);
+    },
+  });
+
+  const characterGlbUrl = myCharacter?.data?.data.characterUrl || '';
+  const characterGender = myCharacter?.data?.data.gender === 'MAN' ? 'MAN' : 'FEMALE';
+
+  // partsList 데이터 매핑
+  const mappedItems =
+    partsList?.data?.data?.partsList?.map((part: any) => {
+      let category = '';
+      switch (part.partsType) {
+        case 'HAIR':
+          category = '헤어';
+          break;
+        case 'BODY':
+          category = '상의';
+          break;
+        case 'PANTS':
+          category = '하의';
+          break;
+        case 'ARM' || 'LEG' || 'NONE':
+          category = '아이템';
+          break;
+        default:
+          category = '아이템';
       }
-    });
-  };
 
-  // 스냅샷을 캡처하고 리스트에 추가하는 함수
-  const handleSnapshot = () => {
-    if (characterRef.current) {
-      html2canvas(characterRef.current, {
-        scale: 2,
-        backgroundColor: '#98e4ff',
-      }).then((canvas) => {
-        const image = canvas.toDataURL('image/png');
-        const now = new Date();
-        const formattedDate = `${String(now.getFullYear()).slice(2)}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
-        setSnapshots((prev) => [{ date: formattedDate, image }, ...prev]);
-      });
-    }
+      return {
+        id: part.id,
+        category,
+        price: part.cost,
+        image: part.partsImage,
+        isLocked: true,
+        isApplied: false,
+      };
+    }) || [];
+
+  // // 스냅샷을 캡처하고 서버로 전송하는 함수
+  // const handleSnapshot = () => {
+  //   if (canvasSnapshot) {
+  //     console.log('Generated Snapshot:', canvasSnapshot);
+  //     mutation.mutate(canvasSnapshot); // 서버로 스냅샷을 전송
+  //   }
+  // };
+
+  // // 스냅샷 캡처 함수
+  // const captureCanvas = (snapshot: string) => {
+  //   setCanvasSnapshot(snapshot); // 캡처한 이미지를 상태에 저장
+  // };
+  const handleCapture = (snapshot: string) => {
+    console.log('Received snapshot in MypagePage:', snapshot);
+    mutation.mutate(snapshot); // 서버로 스냅샷 전송
   };
 
   return (
     <div className="myProfileContainer">
       <div className="profileSection">
         <div className="info">
-          <p className="subtitle">{userDetail?.data.data.nickname} 님</p>
-          <Coin amount={userDetail?.data.data.coin || userCoin} style="styled" />
+          <p className="subtitle">{} 님</p>
+          <Coin amount={100} style="styled" />
         </div>
 
-        <div className="character">
-          <img src={appliedItem || MyModel} alt="myModel" ref={characterRef} />
+        <div className="character" ref={characterRef}>
+          {/* 캔버스를 감싸는 div에 ref 추가 */}
+          {characterGlbUrl ? (
+            <CharacterCanvas glbUrl={characterGlbUrl} gender={characterGender} onCapture={handleCapture} />
+          ) : (
+            <p>캐릭터 정보를 불러오는 중입니다...</p>
+          )}
           <GeneralButton
             buttonStyle={{ style: 'primary', size: 'select' }}
             className="snapshotButton"
-            onClick={handleSnapshot}>
+            onClick={() => handleCapture}>
             스냅샷
           </GeneralButton>
         </div>
@@ -100,10 +122,10 @@ export default function MypagePage() {
           <CustomCategories
             selectedTab={selectedTab}
             setSelectedTab={setSelectedTab}
-            userCoin={userDetail?.data.coin || userCoin}
-            onPurchase={handlePurchaseSuccess}
-            onApply={handleApplyItem}
-            items={items.filter((item) => item.category === selectedTab)}
+            userCoin={100}
+            onPurchase={() => {}}
+            onApply={() => {}}
+            items={mappedItems.filter((item: any) => item.category === selectedTab)}
           />
         </div>
       </div>
@@ -111,7 +133,7 @@ export default function MypagePage() {
       <div className="snapshotSection">
         <p className="subtitle">스냅샷</p>
         <div className="snapshotBox">
-          <SnapshotList snapshots={snapshots} />
+          <SnapshotList snapshots={[]} />
         </div>
       </div>
 
@@ -122,7 +144,6 @@ export default function MypagePage() {
   );
 }
 
-// Suspense로 감싸서 로딩 중 처리 추가
 export function MypagePageWithSuspense() {
   return (
     <Suspense fallback={<div>Loading...</div>}>

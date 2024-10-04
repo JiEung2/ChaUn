@@ -1,16 +1,16 @@
 // import axios from 'axios';
-import axiosInstance from './axiosInstance';
+import exportAxios from './axiosInstance';
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
 export const nicknameCheck = async (nickname: string) => {
-  const response = await axiosInstance.get(`${baseUrl}/users/validate-nickname/${nickname}`);
+  const response = await exportAxios.get(`${baseUrl}/users/validate-nickname/${nickname}`);
   return response;
 };
 
 export const surveySubmit1 = async (nickname: string, birthday: string, gender: string) => {
   // console.log(nickname, birthday, gender);
   const newGender = gender === '남성' ? 'MAN' : 'WOMAN';
-  const response = await axiosInstance.post(`${baseUrl}/users/survey/information`, {
+  const response = await exportAxios.post(`${baseUrl}/users/survey/information`, {
     nickname,
     birthday,
     newGender,
@@ -53,7 +53,7 @@ export const surveySubmit2 = async (
       throw new Error('Invalid body type');
   }
   console.log(height, weight, skeletalMuscleMass, bodyFatRatio, isMuscle, bodyTypeNumber);
-  const response = await axiosInstance.post(`${baseUrl}/users/survey/body`, {
+  const response = await exportAxios.post(`${baseUrl}/users/survey/body`, {
     height,
     weight,
     skeletalMuscleMass,
@@ -71,7 +71,7 @@ export const surveySubmit3 = async (
   snackFrequency: string,
   drinkFrequency: string
 ) => {
-  const response = await axiosInstance.post(`${baseUrl}/users/survey/eating-habits`, {
+  const response = await exportAxios.post(`${baseUrl}/users/survey/eating-habits`, {
     mealCount,
     mealType,
     snackFrequency,

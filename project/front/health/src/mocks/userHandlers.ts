@@ -2,25 +2,22 @@ import { http, HttpResponse } from 'msw';
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
+const userDetail = {
+  nickname: 'JiEung2',
+  coin: 999999,
+};
 export const userHandlers = [
   // 회원 디테일
-  http.get(`${baseUrl}/users/:userId`, ({ params }) => {
-    const { userId } = params;
+  http.get(`${baseUrl}/users/:user_id`, ({ params }) => {
+    const { user_id } = params;
     // userId가 'recommend-crew'가 아닌 경우에만 처리
-    if (userId === 'recommend-crew') {
+    if (user_id === 'recommend-crew') {
       return;
     }
 
-    console.log(userId);
+    console.log(user_id);
 
-    return HttpResponse.json({
-      status: 200,
-      message: '',
-      data: {
-        nickname: 'JiEung2',
-        coin: 999999,
-      },
-    });
+    return HttpResponse.json(userDetail);
   }),
 
   // 회원 운동 시간
