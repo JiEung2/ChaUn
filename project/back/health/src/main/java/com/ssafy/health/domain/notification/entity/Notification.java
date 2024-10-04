@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.notification.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
+import com.ssafy.health.domain.account.entity.User;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,8 +21,9 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
