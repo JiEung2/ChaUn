@@ -38,3 +38,8 @@ export const postSnapshot = async (snapshot: string) => {
   console.log(response);
   return response;
 };
+
+export const getSnapshotList = async () => {
+  const response = await exportAxios.get(`${baseUrl}/users/character/snapshot`);
+  return response;
+};

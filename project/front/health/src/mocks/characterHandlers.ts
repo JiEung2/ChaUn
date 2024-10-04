@@ -102,6 +102,7 @@ export const characterHandlers = [
       },
     });
   }),
+
   // 나의 캐릭터에 파츠 장착/해제
   http.patch(`${baseUrl}/users/character/parts/:parts_id`, ({ params }) => {
     const { parts_id } = params;
@@ -111,6 +112,34 @@ export const characterHandlers = [
       message: '',
       data: {
         characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/81190a19-5560-4931-9169-c65e7767cf13.glb',
+      },
+    });
+  }),
+
+  // 캐릭터 스냅샷 조회
+  http.get(`${baseUrl}/users/character/snapshot`, () => {
+    return HttpResponse.json({
+      status: 200,
+      message: '',
+      data: {
+        snapshots: [
+          {
+            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ce7ca51-02d0-4694-a386-55dff91109b6.png',
+            createdAt: '2024-09-16T15:00:00',
+          },
+          {
+            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ce7ca51-02d0-4694-a386-55dff91109b6.png',
+            createdAt: '2024-08-16T15:00:00',
+          },
+          {
+            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ce7ca51-02d0-4694-a386-55dff91109b6.png',
+            createdAt: '2024-08-16T15:00:00',
+          },
+          {
+            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ce7ca51-02d0-4694-a386-55dff91109b6.png',
+            createdAt: '2024-08-16T15:00:00',
+          },
+        ],
       },
     });
   }),
