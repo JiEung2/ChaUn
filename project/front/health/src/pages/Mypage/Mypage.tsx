@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useMutation, useSuspenseQuery, useQueryClient, useQuery } from '@tanstack/react-query';
+import ShuffleIcon from '@/assets/svg/shuffle.svg';
 import Coin from '@/components/Coin/Coin';
 import GeneralButton from '@/components/Button/GeneralButton';
 import CustomCategories from '@/components/Profile/Custom/CustomCategories';
@@ -116,7 +117,14 @@ export default function MypagePage() {
     }
   };
 
-  // 버튼 클릭 핸들러 - 선택된 애니메이션만 비활성화
+  // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
+  const handleShuffleClick = () => {
+    const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
+    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+    handleButtonClick(randomAnimation);
+  };
+
+  // 버튼 클릭 핸들러 - 선택된 애니메이션 업데이트
   const handleButtonClick = (type: 'standing' | 'dancing' | 'waving') => {
     const url = generateAnimationUrl(type);
     setCharacterGlbUrl(url); // 선택한 모델 URL로 업데이트
@@ -136,9 +144,6 @@ export default function MypagePage() {
         case 'PANTS':
           category = '하의';
           break;
-        // case 'ARM' || 'LEG' || 'NONE':
-        //   category = '아이템';
-        //   break;
         default:
           category = '아이템';
       }
@@ -168,25 +173,8 @@ export default function MypagePage() {
             <p>캐릭터 정보를 불러오는 중입니다...</p>
           )}
 
-          <div className="character-actions">
-            <button
-              className={activeAnimation === 'standing' ? 'disabled' : 'primary'}
-              onClick={() => handleButtonClick('standing')}
-              disabled={activeAnimation === 'standing'}>
-              기본
-            </button>
-            <button
-              className={activeAnimation === 'dancing' ? 'disabled' : 'primary'}
-              onClick={() => handleButtonClick('dancing')}
-              disabled={activeAnimation === 'dancing'}>
-              춤추기
-            </button>
-            <button
-              className={activeAnimation === 'waving' ? 'disabled' : 'primary'}
-              onClick={() => handleButtonClick('waving')}
-              disabled={activeAnimation === 'waving'}>
-              인사
-            </button>
+          <div className="characterActions">
+            <img src={ShuffleIcon} alt="shuffleIcon" onClick={handleShuffleClick} className="icon" />
           </div>
         </div>
       </div>
