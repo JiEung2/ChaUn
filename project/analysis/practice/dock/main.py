@@ -19,12 +19,13 @@ from pymongo import MongoClient
 
 # 데이터 처리 및 예측, 추천 라이브러리
 import pandas as pd
+import json
 import numpy as np
 import joblib
 from copy import deepcopy as dp
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout, Input
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers import LSTM, Dense, Input, BatchNormalization
+from keras.models import load_model
 
 # .env 파일의 환경 변수를 로드
 load_dotenv()
@@ -74,6 +75,18 @@ class UserExerciseRequest(BaseModel):
 
 ### AI 회귀 모델 처리 ###
 # 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
+# v7
+# def build_model(input_shape, forecast_steps):
+#     model = Sequential()
+#     model.add(Input(shape=input_shape))
+#     model.add(LSTM(units=32, dropout=0.5, return_sequences=True))
+#     model.add(LSTM(units=32, dropout=0.5))
+#     model.add(Dense(32, activation='tanh'))
+#     model.add(BatchNormalization())
+#     model.add(Dense(units=forecast_steps, activation='sigmoid'))  # 90일 예측
+#     return model
+
+# # model v2
 def build_model(input_shape, forecast_steps):
     model = Sequential()
     model.add(Input(shape=input_shape))  # input_shape = (timesteps, features)
@@ -109,8 +122,8 @@ async def load_model_startup(app: FastAPI):
 
     model = build_model(input_shape, forecast_steps)
     model = load_model_weights(model, "./models/modelv2.weights.h5")
+    model.summary()
 
-    print(model)
     # Load the saved MinMaxScaler and OneHotEncoder
     scaler = joblib.load('./models/minmax_scaler_v2.pkl')
     encoder = joblib.load('./models/onehot_encoder_v2.pkl')
@@ -151,6 +164,19 @@ def convert_objectid(data):
 def preprocess_data(exercise_data):
     global encoder, scaler
 
+    # ### 현재 수정중...
+    # df = [exercise.dict() for exercise in exercise_data]
+    # df = pd.DataFrame(df)
+    # df['sex'] = df['sex'].astype(int)
+
+    # # 성별 인코딩
+    # df_sex_encoded = encoder.transform(df[['sex']]).toarray()
+    # print(df_sex_encoded)
+    # df_encoded = pd.DataFrame(df_sex_encoded, columns=encoder.get_feature_names_out(['sex']))
+    
+    # # 수치형 피처 스케일링
+    # df[['age', 'BMI', 'weight', 'calories']] = scaler.transform(df[['age', 'BMI', 'weight', 'calories']])
+
     # 입력으로 받은 데이터를 어레이로 저장
     exercise_data = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data])
     # 역 연산처리
@@ -162,6 +188,7 @@ def preprocess_data(exercise_data):
     processed_data = np.hstack([sex_encoded, numerical_data])
 
     return processed_data
+
 
 # APP 정의
 app = FastAPI(lifespan=load_model_startup)
