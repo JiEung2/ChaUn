@@ -9,8 +9,6 @@ import com.ssafy.health.domain.account.repository.FavoredRepository;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.account.service.UserReadService;
-import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
-import com.ssafy.health.domain.body.BodyType.service.BodyTypeReadService;
 import com.ssafy.health.domain.crew.dto.analysis.CrewAnalysisRequestDto;
 import com.ssafy.health.domain.crew.dto.analysis.TotalCrewDataDto;
 import com.ssafy.health.domain.crew.dto.analysis.TotalUserDataDto;
@@ -31,8 +29,6 @@ public class CrewAnalysisRequestService {
     private final UserRepository userRepository;
     private final UserReadService userReadService;
     private final UserCrewRepository userCrewRepository;
-    private final BodyTypeReadService bodyTypeReadService;
-    private final BodyHistoryRepository bodyHistoryRepository;
     private final FavoredRepository favoredRepository;
 
     @Value("${health.analysis.api.url}")
@@ -56,28 +52,30 @@ public class CrewAnalysisRequestService {
     }
 
     private TotalUserDataDto buildUserData() {
-
-        List<User> userList = userRepository.findALLBySurveyCompletedTrue();
         return TotalUserDataDto.builder()
-                .users(userList.stream()
-                        .map(user -> UserData.builder()
-                                .userId(user.getId())
-                                .score(userReadService.calculateUserScore(user.getId()))
-                                .crewList(userCrewRepository.findByUserIdWithCrew(user.getId())
-                                        .stream()
-                                        .map(UserCrew::getId)
-                                        .toList())
-                                .favoriteSports(favoredRepository.findAllByUserId(user.getId())
-                                        .stream()
-                                        .map(favoredExercise -> favoredExercise.getExercise().getId())
-                                        .toList())
-                                .build())
-                        .toList())
+                .users(userDataBuilder(userRepository.findALLBySurveyCompletedTrue()))
                 .build();
     }
 
     private TotalCrewDataDto buildCrewData() {
 
         return TotalCrewDataDto.builder().build();
+    }
+
+    private List<UserData> userDataBuilder(List<User> userList) {
+        return userList.stream()
+                .map(user -> UserData.builder()
+                        .userId(user.getId())
+                        .score(userReadService.calculateUserScore(user.getId()))
+                        .crewList(userCrewRepository.findByUserIdWithCrew(user.getId())
+                                .stream()
+                                .map(UserCrew::getId)
+                                .toList())
+                        .favoriteSports(favoredRepository.findAllByUserId(user.getId())
+                                .stream()
+                                .map(favoredExercise -> favoredExercise.getExercise().getId())
+                                .toList())
+                        .build())
+                .toList();
     }
 }
