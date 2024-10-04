@@ -9,6 +9,7 @@ import com.ssafy.health.common.oauth.service.CookieService;
 import com.ssafy.health.common.oauth.service.RefreshService;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.entity.UserRole;
+import com.ssafy.health.domain.account.repository.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReissueController {
 
     private final JWTUtil jwtUtil;
+    private final UserRepository userRepository;
     private final RefreshRepository refreshRepository;
     private final RefreshService refreshService;
     private final CookieService cookieService;
@@ -44,7 +46,7 @@ public class ReissueController {
 
             if (cookie.getName().equals("refresh")) {
                 refresh = cookie.getValue();
-                log.info("refresh =" + refresh);
+                log.info("refresh = " + refresh);
             }
         }
 
@@ -92,7 +94,7 @@ public class ReissueController {
 
         //response
         response.setHeader("access", newAccess);
-        response.addHeader("userId", String.valueOf(SecurityUtil.getCurrentUserId()));
+        response.setHeader("userId", userRepository.findBySso(username).getId().toString());
         response.addHeader(HttpHeaders.SET_COOKIE, cookieService.createCookie("refresh", newRefresh).toString());
 
         System.out.println("access: " + newAccess);
