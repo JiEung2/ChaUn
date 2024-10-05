@@ -1,5 +1,7 @@
 import './BattleBoard.scss';
 import { useNavigate } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import ButtonState from './ButtonState';
 
 interface BattleBoardProps {
   crewId: number;
@@ -11,7 +13,7 @@ interface BattleBoardProps {
   exerciseName: string;
   dDay: number;
   battleStatus: string;
-  showButton?: boolean;
+  buttonState: ButtonState;
 }
 
 export default function BattleBoard({
@@ -24,13 +26,15 @@ export default function BattleBoard({
   exerciseName,
   dDay,
   battleStatus,
-  showButton,
+  buttonState,
 }: BattleBoardProps) {
   const navigate = useNavigate();
-
+  console.log(crewId);
   const navigateBattlePage = () => {
+    console.log('battleId', battleId);
     navigate(`/crew/battle/${crewId}`);
   };
+  const handleStartBattle = () => {};
 
   const renderContent = () => {
     switch (battleStatus) {
@@ -38,9 +42,10 @@ export default function BattleBoard({
         return (
           <div className="battle-board">
             <p>아직 참여중인 배틀이 없어요!</p>
-            {showButton && (
-              <button className="button join-crew" onClick={navigateBattlePage}>
-                크루 배틀 입장
+            {buttonState === ButtonState.NONE && <div></div>}
+            {buttonState === ButtonState.RANDOM_MATCHING && (
+              <button className="button randomMatch" onClick={handleStartBattle}>
+                랜덤 매칭
               </button>
             )}
           </div>
@@ -65,7 +70,8 @@ export default function BattleBoard({
               </div>
             </div>
             <div className="score-bar" />
-            {showButton && (
+            {buttonState === ButtonState.NONE && <div></div>}
+            {buttonState === ButtonState.BATTLE_ENTRY && (
               <button className="button join-crew" onClick={navigateBattlePage}>
                 크루 배틀 입장
               </button>

@@ -6,11 +6,12 @@ import createIcon from '../../assets/svg/crewCreate.svg';
 import recommendIcon from '../../assets/svg/crewRecommend.svg';
 import rankingIcon from '../../assets/svg/crewRanking.svg';
 import '../Crew/Crew.scss';
-import { useQuery, useSuspenseQuery} from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
 import Crew from '@/components/Crew/Crew';
 import queryKeys from '@/utils/querykeys';
 import { getUserCrewList } from '@/api/crew';
+import ButtonState from './components/ButtonState';
 
 export default function CrewPage() {
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ export default function CrewPage() {
               exerciseName={battleData?.exerciseName || 'N/A'}
               dDay={battleData?.dDay || 0}
               battleStatus={battleData?.battleStatus}
-              showButton={true}
+              buttonState={battleData?.battleStatus === 'none' ? ButtonState.NONE : ButtonState.BATTLE_ENTRY}
             />
           ))
         ) : (

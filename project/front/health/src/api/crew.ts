@@ -51,6 +51,7 @@ export interface CrewBattleStatusResponse {
   exerciseName: string;
   dDay: number;
   battleStatus: string;
+  buttonState: string;
 }
 //크루 배틀 현황
 export const fetchCrewBattleStatus = async (crew_id: number) => {
