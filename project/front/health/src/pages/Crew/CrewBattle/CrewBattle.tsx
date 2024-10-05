@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../../api/crew';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { fetchCrewBattleStatus, CrewBattleStatusResponse, getBattleRanking } from '../../../api/crew';
 import queryKeys from '@/utils/querykeys';
 import { useParams } from 'react-router-dom';
 import BattleBoard from '../components/BattleBoard';
@@ -20,6 +20,16 @@ export default function CrewBattle() {
   }
   console.log(crewId);
   console.log(battleData);
+
+  // 기여도 랭킹 조회
+  // dummy battleId
+  const battleId = 3;
+  const { data: battleRankings } = useQuery({
+    queryKey: [queryKeys.BATTLE_RANKING, battleId],
+    queryFn: () => getBattleRanking(Number(battleId)),
+  });
+
+  console.log('배틀 랭킹', battleRankings);
 
   return (
     <div>
@@ -63,7 +73,9 @@ export default function CrewBattle() {
             opponentTeamScore={battleData.opponentTeamScore}
             buttonState={ButtonState.NONE}
           />
-          <div className="ranking__started"></div>
+          <div className="ranking__started">
+            
+          </div>
         </div>
       ) : (
         <div>Invalid battle status.</div>
