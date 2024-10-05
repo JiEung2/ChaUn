@@ -88,6 +88,36 @@ const crewRandomMatching = {
   battleStatus: 'STARTED',
 };
 
+const crewBattleRanking = {
+  homeCrewMembers: [
+    {
+      userId: 1,
+      nickname: 'JE',
+      userProfileImage: null,
+      exerciseTime: 3600000,
+    },
+    {
+      userId: 1,
+      nickname: 'MY',
+      userProfileImage: null,
+      exerciseTime: 2400000,
+    },
+  ],
+  awayCrewMembers: [
+    {
+      userId: 1,
+      nickname: 'HH',
+      userProfileImage: null,
+      exerciseTime: 4000000,
+    },
+    {
+      userId: 2,
+      nickname: 'MJ',
+      userProfileImage: null,
+      exerciseTime: 1800000,
+    },
+  ],
+};
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
   http.get(`${baseUrl}/users/recommend-crew`, () => {
@@ -174,5 +204,12 @@ export const crewHandlers = [
     const { crew_id } = params;
     console.log('랜덤 배틀 신청크루 id', crew_id);
     return HttpResponse.json(crewRandomMatching, { status: 200 });
+  }),
+
+  // 실시간 크루 배틀 기여도 랭킹
+  http.get(`${baseUrl}/battle/:battle_id`, ({ params }) => {
+    const { battle_id } = params;
+    console.log('배틀id', battle_id);
+    return HttpResponse.json(crewBattleRanking, { status: 200 });
   }),
 ];
