@@ -1,4 +1,4 @@
-// import axios from 'axios';
+import axios from 'axios';
 import exportAxios from './axiosInstance';
 const baseURL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -88,5 +88,11 @@ export const collectCrewCoin = async ({ crew_id, coin_count }: sendCoin): Promis
 //크루 베틀 현황
 export const crewBattleStatus = async (crew_id: number) => {
   const response = await exportAxios.get(`${baseURL}/crew/${crew_id}/battle`);
+  return response.data;
+};
+
+// 배틀 랜덤 매칭
+export const randomMatching = async (crew_id: number) => {
+  const response = await exportAxios.post(`${baseURL}/crew/${crew_id}/battle`);
   return response.data;
 };
