@@ -2,6 +2,9 @@ import './BattleBoard.scss';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ButtonState from './ButtonState';
+import { randomMatching } from '../../../api/crew';
+import querykeys from '../../../utils/querykeys';
+import { useState } from 'react';
 
 interface BattleBoardProps {
   crewId: number;
@@ -29,12 +32,48 @@ export default function BattleBoard({
   buttonState,
 }: BattleBoardProps) {
   const navigate = useNavigate();
-  console.log(crewId);
   const navigateBattlePage = () => {
     console.log('battleId', battleId);
     navigate(`/crew/battle/${crewId}`);
   };
-  const handleStartBattle = () => {};
+
+  const queryClient = useQueryClient();
+  // 배틀 랜덤 매칭
+  const [battleData, setBattleData] = useState({
+    myTeamName,
+    myTeamScore,
+    opponentTeamName,
+    opponentTeamScore,
+    exerciseName,
+    dDay,
+    battleStatus,
+  });
+  const randomMatchingMutation = useMutation({
+    mutationFn: () => randomMatching(crewId),
+    onSuccess: (data) => {
+      console.log('랜덤 매칭 성공:', data);
+      queryClient.invalidateQueries({
+        queryKey: [querykeys.BATTLE_STATUS, crewId],
+      });
+      setBattleData({
+        myTeamName: data.myTeamName,
+        myTeamScore: data.myTeamScore,
+        opponentTeamName: data.opponentTeamName,
+        opponentTeamScore: data.opponentTeamScore,
+        exerciseName: data.exerciseName,
+        dDay: data.dDay,
+        battleStatus: 'STARTED',
+      });
+      navigate(`/crew/battle/${crewId}`);
+    },
+    onError: (error) => {
+      console.error('랜덤 매칭 오류 발생:', error);
+    },
+  });
+
+  const handleStartBattle = () => {
+    randomMatchingMutation.mutate();
+  };
 
   const renderContent = () => {
     switch (battleStatus) {
