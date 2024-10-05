@@ -14,33 +14,23 @@
   }
 
   .profileSection {
+    width: 100%;
     .info {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .character {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
       background-color: colors.$base;
       border-radius: 15px;
-      padding: 20px 0 60px 0;
+      padding: 30px 0;
       position: relative;
       height: 300px;
-
-      img {
-        position: relative;
-        z-index: 1;
-      }
-
-      .snapshotButton {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        z-index: 2;
-        @include typo.coin;
-      }
+      text-align: center;
     }
   }
 }
@@ -76,11 +66,29 @@
   bottom: 12px;
 }
 
-.icon {
-  cursor: pointer;
-  width: 30px;
-  height: 30px;
-  // border: 1px solid colors.$darkGray;
+.iconWrapper {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  justify-content: center;
+}
+
+.navIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 23px;
+  height: 23px;
+  border: 1px solid colors.$darkGray;
   background-color: transparent;
   border-radius: 50%;
+}
+
+.icon {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
 }

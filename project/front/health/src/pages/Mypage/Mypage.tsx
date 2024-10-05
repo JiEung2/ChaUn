@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { useMutation, useSuspenseQuery, useQueryClient, useQuery } from '@tanstack/react-query';
 import ShuffleIcon from '@/assets/svg/shuffle.svg';
+import CamerIcon from '@/assets/svg/camera.svg';
 import Coin from '@/components/Coin/Coin';
 import GeneralButton from '@/components/Button/GeneralButton';
 import CustomCategories from '@/components/Profile/Custom/CustomCategories';
@@ -170,11 +171,17 @@ export default function MypagePage() {
           {characterGlbUrl ? (
             <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} />
           ) : (
-            <p>캐릭터 정보를 불러오는 중입니다...</p>
+            <p>
+              기본, 춤추기, 손 흔들기 중 <br /> 랜덤 동작이 준비 중입니다!
+            </p>
           )}
-
-          <div className="characterActions">
-            <img src={ShuffleIcon} alt="shuffleIcon" onClick={handleShuffleClick} className="icon" />
+          <div className="iconWrapper">
+            <div className="navIcon">
+              <img src={ShuffleIcon} alt="shuffle Icon" className="icon" onClick={handleShuffleClick} />
+            </div>
+            <div className="navIcon">
+              <img src={CamerIcon} alt="camera Icon" className="icon" />
+            </div>
           </div>
         </div>
       </div>

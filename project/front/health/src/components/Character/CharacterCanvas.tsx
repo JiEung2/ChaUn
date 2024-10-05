@@ -1,7 +1,9 @@
 import { Suspense, useEffect, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, OrbitControls } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
 interface CharacterProps {
   glbUrl: string;
@@ -9,32 +11,40 @@ interface CharacterProps {
 }
 
 function Character({ glbUrl, gender }: CharacterProps) {
-  const { scene, animations } = useGLTF(glbUrl); // GLB 모델 불러오기
-  const mixerRef = useRef<THREE.AnimationMixer | null>(null); // 애니메이션 믹서 저장
+  const sceneRef = useRef<THREE.Group | null>(null);
+  const mixerRef = useRef<THREE.AnimationMixer | null>(null);
 
   useEffect(() => {
-    if (!scene) return; // scene이 없는 경우 바로 반환
+    const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
 
-    const model = scene;
+    // DRACOLoader 경로 설정
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    loader.setDRACOLoader(dracoLoader); // GLTFLoader에 DRACOLoader 연결
 
-    // 성별에 따라 scale 및 position 설정
-    if (gender === 'MAN') {
-      model.scale.set(1.1, 1.1, 1.1);
-      model.position.set(0, -9, 0);
-    } else if (gender === 'FEMALE') {
-      model.scale.set(8, 8, 8);
-      model.position.set(0, -7, 0);
-    }
+    loader.load(glbUrl, (gltf: any) => {
+      const model = gltf.scene;
+      sceneRef.current = model;
 
-    // 애니메이션이 있을 경우에만 설정
-    if (animations && animations.length > 0) {
-      const mixer = new THREE.AnimationMixer(model);
-      mixerRef.current = mixer;
-      animations.forEach((clip) => {
-        const action = mixer.clipAction(clip);
-        action.play();
-      });
-    }
+      // 성별에 따른 캐릭터 스케일 및 위치 설정
+      if (gender === 'MAN') {
+        model.scale.set(1.1, 1.1, 1.1);
+        model.position.set(0, -10, 0);
+      } else if (gender === 'FEMALE') {
+        model.scale.set(8, 8, 8);
+        model.position.set(0, -7, 0);
+      }
+
+      // 애니메이션 설정
+      if (gltf.animations.length > 0) {
+        const mixer = new THREE.AnimationMixer(model);
+        mixerRef.current = mixer;
+        gltf.animations.forEach((clip: any) => {
+          const action = mixer.clipAction(clip);
+          action.play();
+        });
+      }
+    });
 
     return () => {
       // 컴포넌트 언마운트 시 애니메이션 정리
@@ -42,16 +52,15 @@ function Character({ glbUrl, gender }: CharacterProps) {
         mixerRef.current.stopAllAction();
       }
     };
-  }, [gender, scene, animations]);
+  }, [glbUrl, gender]);
 
-  // 매 프레임마다 애니메이션 업데이트
   useFrame((_, delta) => {
     if (mixerRef.current) {
       mixerRef.current.update(delta);
     }
   });
 
-  return <primitive object={scene} />;
+  return sceneRef.current ? <primitive object={sceneRef.current} /> : null;
 }
 
 export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
@@ -72,11 +81,11 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
       <OrbitControls
         minPolarAngle={Math.PI / 2.3}
         maxPolarAngle={Math.PI / 2.3}
-        minAzimuthAngle={-Math.PI / 6}
-        maxAzimuthAngle={Math.PI / 6}
+        minAzimuthAngle={-Math.PI / 2}
+        maxAzimuthAngle={Math.PI / 2}
         enableZoom={true}
         minDistance={30}
-        maxDistance={40}
+        maxDistance={20}
       />
     </Canvas>
   );
