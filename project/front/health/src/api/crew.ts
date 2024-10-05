@@ -96,3 +96,9 @@ export const randomMatching = async (crew_id: number) => {
   const response = await exportAxios.post(`${baseURL}/crew/${crew_id}/battle`);
   return response.data;
 };
+
+// 실시간 크루 배틀 기여도 랭킹
+export const getBattleRanking = async (battle_id: number) => {
+  const response = await exportAxios.get(`${baseURL}/battle/${battle_id}`);
+  return response.data;
+};
