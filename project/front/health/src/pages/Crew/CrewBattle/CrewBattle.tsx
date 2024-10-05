@@ -4,6 +4,7 @@ import queryKeys from '@/utils/querykeys';
 import { useParams } from 'react-router-dom';
 import BattleBoard from '../components/BattleBoard';
 import './CrewBattle.scss';
+import ButtonState from '../components/ButtonState';
 
 export default function CrewBattle() {
   const { crewId } = useParams<{ crewId: string }>();
@@ -34,7 +35,7 @@ export default function CrewBattle() {
             myTeamScore={battleData.myTeamScore}
             opponentTeamName={battleData.opponentTeamName}
             opponentTeamScore={battleData.opponentTeamScore}
-            showButton={true}
+            buttonState={ButtonState.RANDOM_MATCHING}
           />
           <div className="ranking__none"></div>
         </div>
@@ -51,7 +52,7 @@ export default function CrewBattle() {
             myTeamScore={battleData.myTeamScore}
             opponentTeamName={battleData.opponentTeamName}
             opponentTeamScore={battleData.opponentTeamScore}
-            showButton={false}
+            buttonState={ButtonState.NONE}
           />
           <div className="ranking__started"></div>
         </div>
