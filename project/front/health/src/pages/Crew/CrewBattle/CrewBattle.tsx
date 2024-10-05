@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import BattleBoard from '../components/BattleBoard';
 import './CrewBattle.scss';
 import ButtonState from '../components/ButtonState';
+import BattleNoneImg from '../../../assets/svg/battlenoneImg.svg';
 
 export default function CrewBattle() {
   const { crewId } = useParams<{ crewId: string }>();
@@ -37,7 +38,15 @@ export default function CrewBattle() {
             opponentTeamScore={battleData.opponentTeamScore}
             buttonState={ButtonState.RANDOM_MATCHING}
           />
-          <div className="ranking__none"></div>
+          <div className="ranking__none">
+            <div className="noneContainer">
+              <img src={BattleNoneImg} alt="" />
+              <span>
+                배틀을 시작하지 않아서 <br />
+                아직 순위 정보가 없어요!
+              </span>
+            </div>
+          </div>
         </div>
       ) : battleData.battleStatus === 'STARTED' ? (
         <div className="started">
