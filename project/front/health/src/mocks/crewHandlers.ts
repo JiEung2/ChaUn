@@ -47,14 +47,14 @@ const memberList = [
 ];
 
 const crewBattleStatus = {
-  //   battleId: 1,
-  //   myTeamName: '달리자크루',
-  //   myTeamScore: 1200,
-  //   opponentTeamName: '크크크루',
-  //   opponentTeamScore: 1000,
-  //   exerciseName: '러닝',
-  //   dDay: 2,
-  //   battleStatus: 'STARTED',
+  battleId: 1,
+  myTeamName: '달리자크루',
+  myTeamScore: 1200,
+  opponentTeamName: '크크크루',
+  opponentTeamScore: 1000,
+  exerciseName: '러닝',
+  dDay: 2,
+  battleStatus: 'STARTED',
   // };
   // {
   //   battleId: 2,
@@ -67,15 +67,27 @@ const crewBattleStatus = {
   //   battleStatus: 'STARTED',
   // },
   // {
-  battleId: 0,
-  myTeamName: 'No Battle',
-  myTeamScore: 0,
-  opponentTeamName: 'No Opponent',
-  opponentTeamScore: 0,
-  exerciseName: 'N/A',
-  dDay: 2,
-  battleStatus: 'NONE',
+  // battleId: 0,
+  // myTeamName: 'No Battle',
+  // myTeamScore: 0,
+  // opponentTeamName: 'No Opponent',
+  // opponentTeamScore: 0,
+  // exerciseName: 'N/A',
+  // dDay: 2,
+  // battleStatus: 'NONE',
 };
+
+const crewRandomMatching = {
+  battleId: 3,
+  myTeamName: '배틀해보자고',
+  myTeamScore: 1200,
+  opponentTeamName: '그래덤벼',
+  opponentTeamScore: 1000,
+  exerciseName: '러닝',
+  dDay: 2,
+  battleStatus: 'STARTED',
+};
+
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
   http.get(`${baseUrl}/users/recommend-crew`, () => {
@@ -100,6 +112,7 @@ export const crewHandlers = [
       coin: 300,
     });
   }),
+
   //상세보기
   http.get(`${baseUrl}/crew/:crew_id/detail`, ({ params }) => {
     const { crew_id } = params;
@@ -121,6 +134,7 @@ export const crewHandlers = [
     console.log('크루 가입 신청의 크루 id', crew_id);
     return HttpResponse.json({ status: 200, message: '크루 가입 신청 성공' });
   }),
+
   //가입된 크루 조회
   http.get(`${baseUrl}/users/:userId/crew-list`, ({ params }) => {
     const { userId } = params;
@@ -153,5 +167,12 @@ export const crewHandlers = [
     const { crew_id } = params;
     console.log('배틀중인 크루id', crew_id);
     return HttpResponse.json(crewBattleStatus, { status: 200 });
+  }),
+
+  // 크루 랜덤 매칭
+  http.post(`${baseUrl}/crew/:crew_id/battle`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('랜덤 배틀 신청크루 id', crew_id);
+    return HttpResponse.json(crewRandomMatching, { status: 200 });
   }),
 ];
