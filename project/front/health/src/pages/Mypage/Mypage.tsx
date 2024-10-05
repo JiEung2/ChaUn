@@ -7,19 +7,21 @@ import GeneralButton from '@/components/Button/GeneralButton';
 import CustomCategories from '@/components/Profile/Custom/CustomCategories';
 import SnapshotList from '@/components/Profile/Snapshot/SnapshotList';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
+import html2canvas from 'html2canvas';
 import queryKeys from '@/utils/querykeys';
 import './Mypage.scss';
-import { getPartsList, getMyCharacter, patchPartsOnOff, getSnapshotList } from '@/api/character';
+import { getPartsList, getMyCharacter, patchPartsOnOff, getSnapshotList, postSnapshot } from '@/api/character';
 
 const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
 
 export default function MypagePage() {
   const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
+  const [preserveBuffer, setPreserveBuffer] = useState(false);
   const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
-  const [activeAnimation, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
+  const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
   const queryClient = useQueryClient();
 
@@ -40,6 +42,7 @@ export default function MypagePage() {
   useEffect(() => {
     if (myCharacter) {
       setGender(myCharacter?.data?.data.gender === 'MAN' ? 'MAN' : 'FEMALE');
+      setActiveAnimation(myCharacter?.data?.data.characterGlbUrl);
     }
   }, [myCharacter]);
 
@@ -47,6 +50,53 @@ export default function MypagePage() {
     queryKey: [queryKeys.PARTS_LIST],
     queryFn: () => getPartsList(),
   });
+
+  const snapshotMutation = useMutation({
+    mutationFn: (snapshot: string) => postSnapshot(snapshot),
+    onSuccess: (data) => {
+      console.log('Success:', data);
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+    },
+  });
+
+  // // 캔버스 캡처 핸들러
+  // const handleCaptureClick = async () => {
+  //   setPreserveBuffer(true);
+
+  //   // 캔버스 렌더링이 완료된 후에 캡처 시도
+  //   requestAnimationFrame(async () => {
+  //     if (characterRef.current) {
+  //       const canvas = await html2canvas(characterRef.current as HTMLElement);
+  //       const base64Image = canvas.toDataURL('image/png').replace(/^data:image\/png;base64,/, '');
+  //       snapshotMutation.mutate(base64Image);
+  //     }
+
+  //     // 캡처 후 성능 최적화를 위해 다시 false로 설정
+  //     setPreserveBuffer(false);
+  //   });
+  // };
+  // 캔버스 캡처 핸들러
+  // 캔버스 캡처 핸들러
+  const handleCaptureClick = async () => {
+    setPreserveBuffer(true);
+
+    requestAnimationFrame(async () => {
+      if (characterRef.current) {
+        try {
+          // 캔버스를 캡처하고 base64로 변환
+          const canvas = await html2canvas(characterRef.current as HTMLElement);
+          const base64Image = canvas.toDataURL('image/png'); // base64 이미지를 postSnapshot 함수로 전송
+          snapshotMutation.mutate(base64Image);
+        } catch (err) {
+          console.error('Error capturing the canvas:', err);
+        }
+      }
+
+      setPreserveBuffer(false);
+    });
+  };
 
   // 스냅샷 리스트 캐시에서 확인
   const cachedSnapshotList = queryClient.getQueryData([queryKeys.SNAPSHOT_LIST]);
@@ -167,20 +217,23 @@ export default function MypagePage() {
           <Coin amount={100} style="styled" />
         </div>
 
-        <div className="character" ref={characterRef}>
-          {characterGlbUrl ? (
-            <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} />
-          ) : (
-            <p>
-              기본, 춤추기, 손 흔들기 중 <br /> 랜덤 동작이 준비 중입니다!
-            </p>
-          )}
+        <div className="characterAndSnapshot">
+          <div className="character" ref={characterRef}>
+            {characterGlbUrl ? (
+              <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
+            ) : (
+              <p>
+                기본, 춤추기, 손 흔들기 중 <br /> 랜덤 동작이 준비 중입니다!
+              </p>
+            )}
+          </div>
+
           <div className="iconWrapper">
             <div className="navIcon">
               <img src={ShuffleIcon} alt="shuffle Icon" className="icon" onClick={handleShuffleClick} />
             </div>
             <div className="navIcon">
-              <img src={CamerIcon} alt="camera Icon" className="icon" />
+              <img src={CamerIcon} alt="camera Icon" className="icon" onClick={handleCaptureClick} />
             </div>
           </div>
         </div>

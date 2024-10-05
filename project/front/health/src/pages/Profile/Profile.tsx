@@ -23,14 +23,12 @@ export default function ProfilePage() {
     queryKey: [queryKeys.USER_DETAIL, userId],
     queryFn: () => getUserDetail(Number(userId)),
   });
-  console.log(userDetailData.data.characterFileUrl);
 
   // 운동 시간 가져오기
   const { data: exerciseTimeData } = useSuspenseQuery({
     queryKey: [queryKeys.USER_EXERCISE_TIME, userId],
     queryFn: () => getUserExerciseTime(Number(userId)),
   });
-  console.log(exerciseTimeData.data);
 
   // 체중 기록 가져오기
   const { data: weight6Data } = useSuspenseQuery({
@@ -42,9 +40,7 @@ export default function ProfilePage() {
   const { data: userCrewList } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
     queryFn: () => getUserCrewList(Number(userId)),
-    // select: (response) => response.crewList || [],
   });
-  console.log(userCrewList.data);
 
   // 6개월 전까지의 날짜 배열을 생성하는 함수
   const generateLast6Months = () => {
@@ -140,6 +136,7 @@ export default function ProfilePage() {
     navigate(`/crew/crewDetail/${crewId}`);
   };
 
+  console.log(weight6Data);
   const hasWeightData = weight6Data?.data.data.weightDataList?.length > 0;
   return (
     <div className="profileContainer">

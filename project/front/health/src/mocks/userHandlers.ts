@@ -18,9 +18,9 @@ export const userHandlers = [
       message: '',
       data: {
         nickname: 'JiEung2',
-        gender: 'MAN',
+        gender: 'FEMALE',
         characterImageUrl: 'image.png',
-        characterFileUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/c76c9ef5-3e85-4ad6-98f0-80e2f18542d9.glb',
+        characterFileUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/0569937f-c1d7-4117-a373-55a8e821f3cd.glb',
       },
     });
   }),

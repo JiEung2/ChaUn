@@ -83,8 +83,8 @@ export const characterHandlers = [
       status: 200,
       message: '',
       data: {
-        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standing.glb',
-        gender: 'MAN',
+        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/GBstanding.glb',
+        gender: 'FEMALE',
         bodyTypeId: 7,
       },
     });
@@ -96,7 +96,7 @@ export const characterHandlers = [
       status: 200,
       message: '',
       data: {
-        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standing.glb',
+        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/GBstanding.glb',
         gender: 'FEMALE',
         bodyTypeId: 7,
       },
@@ -124,15 +124,15 @@ export const characterHandlers = [
       data: {
         snapshots: [
           {
-            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ce7ca51-02d0-4694-a386-55dff91109b6.png',
+            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ba56469-0c4c-4a11-9381-19fa1166dc06.png',
             createdAt: '2024-09-16T15:00:00',
           },
           {
-            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ce7ca51-02d0-4694-a386-55dff91109b6.png',
+            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ba56469-0c4c-4a11-9381-19fa1166dc06.png',
             createdAt: '2024-08-16T15:00:00',
           },
           {
-            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ce7ca51-02d0-4694-a386-55dff91109b6.png',
+            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/53fa6442-383a-48a4-bb3f-834e4d44978a.png',
             createdAt: '2024-08-16T15:00:00',
           },
           {

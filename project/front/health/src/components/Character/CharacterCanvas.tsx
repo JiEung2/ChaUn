@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -8,6 +8,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 interface CharacterProps {
   glbUrl: string;
   gender: 'MAN' | 'FEMALE';
+  preserveDrawingBuffer?: boolean;
 }
 
 function Character({ glbUrl, gender }: CharacterProps) {
@@ -18,36 +19,39 @@ function Character({ glbUrl, gender }: CharacterProps) {
     const loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
 
-    // DRACOLoader 경로 설정
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
-    loader.setDRACOLoader(dracoLoader); // GLTFLoader에 DRACOLoader 연결
+    loader.setDRACOLoader(dracoLoader);
 
-    loader.load(glbUrl, (gltf: any) => {
-      const model = gltf.scene;
-      sceneRef.current = model;
+    const loadModel = async () => {
+      try {
+        const gltf = await loader.loadAsync(glbUrl);
+        const model = gltf.scene;
+        sceneRef.current = model;
 
-      // 성별에 따른 캐릭터 스케일 및 위치 설정
-      if (gender === 'MAN') {
-        model.scale.set(1.1, 1.1, 1.1);
-        model.position.set(0, -10, 0);
-      } else if (gender === 'FEMALE') {
-        model.scale.set(8, 8, 8);
-        model.position.set(0, -7, 0);
-      }
+        if (gender === 'MAN') {
+          model.scale.set(1.1, 1.1, 1.1);
+          model.position.set(0, -10, 0);
+        } else if (gender === 'FEMALE') {
+          model.scale.set(11.1, 11.1, 11.1);
+          model.position.set(0, -10, 0);
+        }
 
-      // 애니메이션 설정
-      if (gltf.animations.length > 0) {
-        const mixer = new THREE.AnimationMixer(model);
-        mixerRef.current = mixer;
-        gltf.animations.forEach((clip: any) => {
+        if (gltf.animations.length > 0) {
+          const mixer = new THREE.AnimationMixer(model);
+          mixerRef.current = mixer;
+
+          const clip = gltf.animations[0];
           const action = mixer.clipAction(clip);
           action.play();
-        });
+        }
+      } catch (error) {
+        console.error('Failed to load GLTF model', error);
       }
-    });
+    };
+
+    loadModel();
 
     return () => {
-      // 컴포넌트 언마운트 시 애니메이션 정리
       if (mixerRef.current) {
         mixerRef.current.stopAllAction();
       }
@@ -56,7 +60,7 @@ function Character({ glbUrl, gender }: CharacterProps) {
 
   useFrame((_, delta) => {
     if (mixerRef.current) {
-      mixerRef.current.update(delta);
+      mixerRef.current.update(delta * 0.5);
     }
   });
 
@@ -64,28 +68,37 @@ function Character({ glbUrl, gender }: CharacterProps) {
 }
 
 export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
+  const [preserveDrawingBuffer, setPreserveDrawingBuffer] = useState(true);
+
+  useEffect(() => {
+    // 2분 후에 preserveDrawingBuffer 값을 false로 변경
+    const timer = setTimeout(
+      () => {
+        setPreserveDrawingBuffer(false);
+      },
+      2 * 60 * 1000
+    ); // 2분 = 120,000 milliseconds
+
+    return () => clearTimeout(timer); // 컴포넌트가 언마운트될 때 타이머 해제
+  }, []);
+
   return (
-    <Canvas camera={{ position: [0, 10, 30], fov: 35 }}>
-      {/* 성별에 따라 ambientLight 설정 */}
+    <Canvas
+      camera={{ position: [0, 10, 30], fov: 35 }}
+      gl={{ preserveDrawingBuffer }} // 상태에 따라 preserveDrawingBuffer 값이 동적으로 변함
+      dpr={Math.min(window.devicePixelRatio, 2)}>
       {gender === 'MAN' ? <ambientLight intensity={4} /> : <ambientLight intensity={8} />}
-
-      {/* Directional Light 설정 */}
-      <directionalLight position={[5, 5, 5]} intensity={1} castShadow />
-
-      {/* 캐릭터 컴포넌트 렌더링 */}
+      <directionalLight position={[5, 5, 5]} intensity={1} castShadow={false} />
       <Suspense fallback={null}>
         <Character glbUrl={glbUrl} gender={gender} />
       </Suspense>
-
-      {/* OrbitControls 설정 */}
       <OrbitControls
         minPolarAngle={Math.PI / 2.3}
         maxPolarAngle={Math.PI / 2.3}
         minAzimuthAngle={-Math.PI / 2}
         maxAzimuthAngle={Math.PI / 2}
-        enableZoom={true}
-        minDistance={30}
-        maxDistance={20}
+        enableZoom={false}
+        enableDamping={false}
       />
     </Canvas>
   );
