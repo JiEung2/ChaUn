@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.crew.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.domain.account.dto.response.ValidateNameSuccessDto;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.service.BattleReadService;
@@ -8,6 +9,7 @@ import com.ssafy.health.domain.battle.service.BattleWriteService;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.*;
 import com.ssafy.health.domain.crew.service.CrewReadService;
+import com.ssafy.health.domain.crew.service.CrewValidator;
 import com.ssafy.health.domain.crew.service.CrewWriteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CrewController implements CrewControllerApi {
 
+    private final CrewValidator crewValidator;
     private final CrewReadService crewReadService;
     private final CrewWriteService crewWriteService;
     private final BattleReadService battleReadService;
@@ -106,5 +109,10 @@ public class CrewController implements CrewControllerApi {
     @GetMapping("/crew/{crew_id}/setting")
     public ApiResponse<CrewSettingResponseDto> getCrewSetting(@PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(crewReadService.getCrewSetting(crewId));
+    }
+
+    @GetMapping("/crew/{crew_name}/validate")
+    public ApiResponse<ValidateNameSuccessDto> validateCrewName(@PathVariable("crew_name") String crewName) {
+        return ApiResponse.success(crewValidator.validateCrewName(crewName));
     }
 }
