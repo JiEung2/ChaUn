@@ -1,4 +1,4 @@
-// import axios from 'axios';
+import axios from 'axios';
 import exportAxios from './axiosInstance';
 const baseURL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -100,5 +100,19 @@ export const randomMatching = async (crew_id: number) => {
 // 실시간 크루 배틀 기여도 랭킹
 export const getBattleRanking = async (battle_id: number) => {
   const response = await exportAxios.get(`${baseURL}/battle/${battle_id}`);
+  return response.data;
+};
+// 크루명 중복 체크
+export const checkCrewName = async (crewName: string) => {
+  const response = await exportAxios.get(`${baseURL}/crew/${crewName}/validate`);
+  return response.data;
+};
+// 크루 생성
+export const createCrew = async (formData: FormData) => {
+  const response = await axios.post(`${baseURL}/crew`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return response.data;
 };

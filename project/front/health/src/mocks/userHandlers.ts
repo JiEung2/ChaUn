@@ -54,12 +54,21 @@ export const userHandlers = [
           //   date: '2024-09-16T15:00:00',
           //   weight: 75.5,
           // },
-          // {
-          //   date: '2024-08-16T15:00:00',
-          //   weight: 74,
-          // },
         ],
       },
+    });
+  }),
+
+  http.patch(`${baseUrl}/users/register-device`, async ({ request }) => {
+    const device = await request.json();
+    const { deviceToken } = device as {
+      deviceToken: string;
+    };
+    console.log(deviceToken);
+    return HttpResponse.json({
+      status: 200,
+      message: '기기가 등록되었습니다.',
+      data: {},
     });
   }),
 ];

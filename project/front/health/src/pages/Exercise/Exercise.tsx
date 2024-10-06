@@ -11,6 +11,7 @@ import { postExerciseRecord } from '../../api/exercise';
 import { useMutation } from '@tanstack/react-query';
 
 Modal.setAppElement('#root');
+
 function formatTime(timer: number) {
   const hours = Math.floor(timer / 3600000)
     .toString()
@@ -21,15 +22,9 @@ function formatTime(timer: number) {
   const seconds = Math.floor((timer % 60000) / 1000)
     .toString()
     .padStart(2, '0');
-  const milliseconds = Math.floor((timer % 1000) / 100); // 밀리초를 0.1초 단위로 표시
+  const milliseconds = Math.floor((timer % 1000) / 100);
   return `${hours}:${minutes}:${seconds}:${milliseconds}`;
 }
-// interface ExerciseProps {
-//   exerciseId: number;
-//   exerciseTime: number;
-//   exerciseStartTime: string;
-//   exerciseEndTime: string;
-// }
 
 export default function Exercise() {
   const [showModal, setShowModal] = useState(false);
@@ -40,16 +35,17 @@ export default function Exercise() {
   const [isStopped, setIsStopped] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [calories, setCalories] = useState(0);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  //불필요해서 우선 주석처리
+  // const [endTime, setEndTime] = useState<Date | null>(null);
   const navigate = useNavigate();
 
-  // 서버에 운동 기록을 전송하고, 성공하면 칼로리 값을 업데이트
   const mutation = useMutation({
-    mutationFn: () =>
-      //TODO - 운동 시작시간, 끝나는 시간 수정 예정
-      postExerciseRecord(selectedExercise!.id, timer, new Date().toISOString(), new Date().toISOString()),
+    mutationFn: ({ startTime, endTime }: { startTime: string; endTime: string }) =>
+      postExerciseRecord(selectedExercise!.id, timer, startTime, endTime),
     onSuccess: (data) => {
       console.log('운동기록 등록에 성공했습니다.', data);
-      setCalories(data.burnedCalories); // 서버에서 받아온 칼로리 값 저장
+      setCalories(data.burnedCalories);
     },
     onError: (error) => {
       console.error('운동기록 등록에 실패했습니다.', error);
@@ -58,9 +54,10 @@ export default function Exercise() {
 
   const startTimer = () => {
     setIsRunning(true);
+    setStartTime(new Date()); // 운동 시작 시간 기록
     const id = setInterval(() => {
-      setTimer((prev) => prev + 10); // 10ms 단위로 증가
-    }, 10); // 10ms마다 업데이트
+      setTimer((prev) => prev + 10);
+    }, 10);
     setIntervalId(id);
   };
 
@@ -75,8 +72,18 @@ export default function Exercise() {
 
   const handleFinish = () => {
     handleStopTimer();
+    const now = new Date();
+    // setEndTime(now); // 운동 끝나는 시간 기록
 
-    mutation.mutate(); // 운동 기록 서버 전송
+    if (startTime) {
+      mutation.mutate({
+        startTime: startTime.toISOString(),
+        endTime: now.toISOString(),
+      });
+    } else {
+      console.error('Start time is null');
+    }
+
     setIsFinished(true);
   };
 
@@ -110,7 +117,7 @@ export default function Exercise() {
           운동 추천
         </GeneralButton>
       </div>
-      <div>{/* Image placeholder */}</div>
+      <div>{/* 이미지 자리 */}</div>
       <GeneralButton
         buttonStyle={{ style: 'primary', size: 'large' }}
         onClick={() => setShowModal(true)}
@@ -122,8 +129,8 @@ export default function Exercise() {
       <Modal
         isOpen={showModal}
         onRequestClose={handleCloseModal}
-        className="modalContent"
-        overlayClassName="modalOverlay">
+        className="exercisingModalContent"
+        overlayClassName="exercisingModalOverlay">
         <ExerciseModal onSelectExercise={handleSelectExercise} multiple={false} onClose={handleCloseModal} />
       </Modal>
 
@@ -151,11 +158,10 @@ export default function Exercise() {
           <div className="recordContainer">
             <div className="recordItem">
               <p>⏱ 운동 시간</p>
-              <span className="time">{new Date(timer * 1000).toISOString().substr(11, 8)}</span>
+              <span className="time">{formatTime(timer)}</span>
             </div>
             <div className="recordItem">
               <p>🔥 칼로리</p>
-              {/* 서버에서 받아온 칼로리 값 표시 */}
               <span className="kcal">{calories} kcal</span>
             </div>
           </div>

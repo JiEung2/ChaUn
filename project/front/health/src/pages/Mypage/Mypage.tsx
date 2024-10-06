@@ -53,36 +53,30 @@ export default function MypagePage() {
 
   const snapshotMutation = useMutation({
     mutationFn: (snapshot: FormData) => postSnapshot(snapshot),
-    onSuccess: (data) => {
-      console.log('Success:', data);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [queryKeys.SNAPSHOT_LIST] });
     },
     onError: (error) => {
       console.error('Error:', error);
     },
   });
 
-  // // 캔버스 캡처 핸들러
-  // const handleCaptureClick = async () => {
-  //   setPreserveBuffer(true);
-
-  //   // 캔버스 렌더링이 완료된 후에 캡처 시도
-  //   requestAnimationFrame(async () => {
-  //     if (characterRef.current) {
-  //       const canvas = await html2canvas(characterRef.current as HTMLElement);
-  //       const base64Image = canvas.toDataURL('image/png').replace(/^data:image\/png;base64,/, '');
-  //       snapshotMutation.mutate(base64Image);
-  //     }
-
-  //     // 캡처 후 성능 최적화를 위해 다시 false로 설정
-  //     setPreserveBuffer(false);
-  //   });
-  // };
   // 캔버스 캡처 핸들러
-  // 캔버스 캡처 핸들러
+  const canvasToBlob = (canvas: HTMLCanvasElement): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob); // Blob 객체가 생성되면 resolve
+        } else {
+          reject(new Error('Canvas to Blob conversion failed.')); // 에러 발생 시 reject
+        }
+      }, 'image/png');
+    });
+  };
+
   const handleCaptureClick = async () => {
-    setPreserveBuffer(true); // 캡처할 때 preserveDrawingBuffer를 true로 설정
+    setPreserveBuffer(true);
 
-    // 캔버스 렌더링이 완료된 후에 캡처를 시도하기 위해 requestAnimationFrame 사용
     requestAnimationFrame(async () => {
       if (characterRef.current) {
         try {
@@ -90,38 +84,30 @@ export default function MypagePage() {
           const canvas = await html2canvas(characterRef.current as HTMLElement);
 
           // PNG 파일로 변환
-          canvas.toBlob((blob) => {
-            if (blob) {
-              // Blob을 파일 형태로 처리 (여기서 png 파일 형태로 준비)
-              const file = new File([blob], 'character_snapshot.png', { type: 'image/png' });
+          const blob = await canvasToBlob(canvas);
+          const file = new File([blob], 'character_snapshot.png', { type: 'image/png' });
 
-              // 이제 'file'은 PNG 파일로 처리되어 다른 곳에서 사용할 수 있음
-              console.log('PNG 파일이 준비되었습니다:', file);
+          // FormData 생성 및 'snapshot' 키로 파일 추가
+          const formData = new FormData();
+          formData.append('snapshot', file);
 
-              // 이후에 API 호출을 위해 FormData에 추가
-              const formData = new FormData();
-              formData.append('snapshot', file); // 파일을 FormData에 추가
-
-              // API로 formData 전송
-              snapshotMutation.mutate(formData);
-            }
-          }, 'image/png');
+          snapshotMutation.mutate(formData);
         } catch (err) {
-          console.error('Error capturing the canvas:', err);
+          console.error(err);
         }
       }
 
-      setPreserveBuffer(false); // 캡처 후 preserveDrawingBuffer를 다시 false로 설정
+      setPreserveBuffer(false);
     });
   };
 
   // 스냅샷 리스트 캐시에서 확인
-  const cachedSnapshotList = queryClient.getQueryData([queryKeys.SNAPSHOT_LIST]);
+  // const cachedSnapshotList = queryClient.getQueryData([queryKeys.SNAPSHOT_LIST]);
 
   const { data: snapshotList } = useQuery({
     queryKey: [queryKeys.SNAPSHOT_LIST],
     queryFn: () => getSnapshotList(),
-    enabled: !cachedSnapshotList, // 캐시된 데이터가 없을 때만 API 호출
+    enabled: true,
   });
   const formattedSnapshots = snapshotList?.data?.data.snapshots.map((snapshot: any) => ({
     date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {

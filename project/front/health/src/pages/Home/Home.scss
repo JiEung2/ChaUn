@@ -89,3 +89,24 @@
     gap: 10px;
   }
 }
+
+.noChartDataContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .noChartData.blurred {
+    filter: blur(4px);
+  }
+}
+.noChartDataMessage {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  text-align: center;
+  @include typo.basic;
+}

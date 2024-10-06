@@ -18,27 +18,37 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation'; // 네비게이션 관련 CSS 추가
 import { Navigation } from 'swiper/modules';
+import useUserStore from '@/store/userInfo';
 
+interface CrewData {
+  crewId: number;
+  crewName: string;
+  exerciseName: string;
+  crewProfileImage: string;
+  basicScore: number;
+  activityScore: number;
+}
 export default function CrewPage() {
   const navigate = useNavigate();
   const swiperRef = useRef<any>(null);
   const [showPrevButton, setShowPrevButton] = useState(false);
   const [showNextButton, setShowNextButton] = useState(false);
-
-  // 임시 dummy Id
-  const userId = 1;
+  const { userId, nickname } = useUserStore();
 
   // 가입된 크루 리스트
-  const { data: userCrewList } = useSuspenseQuery({
+  // console.log('크루 리스트 userId:', userId);
+  const { data: userCrewList = [] } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
     queryFn: () => getUserCrewList(Number(userId)),
     select: (response) => response.data.crewList || [],
   });
+  console.log('userCrewList:', userCrewList);
 
   // 크루의 배틀 현황 리스트
-  const crewIds = userCrewList.map((crew: any) => crew.crewId);
+  const crewIds = userCrewList.map((crew: CrewData) => crew.crewId);
+  console.log('crewIds', crewIds);
   const {
-    data: BattleList,
+    data: BattleList = [],
     error,
     isLoading,
   } = useQuery<CrewBattleStatusResponse[]>({
@@ -79,7 +89,7 @@ export default function CrewPage() {
   return (
     <>
       <div className="my-crew">
-        <p>닉네임님의 크루</p>
+        <p>{nickname}님의 크루</p>
         <div className="crewList">
           {userCrewList && userCrewList.length > 0 ? (
             userCrewList.map((crew: any) => (

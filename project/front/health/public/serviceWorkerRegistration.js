@@ -1,5 +1,6 @@
 // const FIREBASE_VAPID_KEY = import.meta.env.VITE_APP_FIREBASE_VAPID_KEY;
 // console.log(FIREBASE_VAPID_KEY);
+
 const config = {
   apiKey: 'AIzaSyDevxneNic0RRElDsYDwt0GLGtTJIhttjo',
   authDomain: 'ssafy-c106.firebaseapp.com',
