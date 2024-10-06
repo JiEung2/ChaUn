@@ -20,6 +20,8 @@ import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.service.NotificationWriteService;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -107,7 +109,15 @@ public class BattleWriteService {
             } else {
                 remainingMembers = Collections.emptyList();
             }
-            coinService.distributeBattleRewards(winningCrewMemberList, battle, winningCrew);
+
+            HashMap<User, Integer> topMemberCoinResults = coinService.distributeBattleRewards(winningCrewMemberList,
+                    winningUserCrewList);
+            try {
+                notificationRequestDtoList.addAll(createTopMemberNotification(battle, topMemberCoinResults, winningCrew));
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
             coinService.grantCoinsToCrew(winningCrew, 200);
 
             saveRankHistory(winningUserCrewList, winningCrew);
@@ -140,6 +150,17 @@ public class BattleWriteService {
         }).toList();
 
         return requestDtoList;
+    }
+
+    private List<NotificationRequestDto> createTopMemberNotification(Battle battle, Map<User, Integer> topMemberMap,
+                                                                     Crew winningCrew)
+            throws ExecutionException, InterruptedException {
+        List<NotificationRequestDto> notificationRequestDtoList = new ArrayList<>();
+        for (User user : topMemberMap.keySet()) {
+            notificationRequestDtoList.add(notificationWriteService.
+                    createBattleNotification(NotificationType.BATTLE, user, battle,  winningCrew, topMemberMap.get(user)));
+        }
+        return notificationRequestDtoList;
     }
 
     private void sendNotification(List<NotificationRequestDto> notificationRequestDtoList) {
