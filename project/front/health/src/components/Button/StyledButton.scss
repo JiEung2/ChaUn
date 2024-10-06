@@ -32,6 +32,13 @@
 
   &.styledButton1 {
     background-color: colors.$styledButton1;
+    .styledButtonIcon {
+      display: flex;
+      left: 82px;
+      top: 10px;
+      position: absolute;
+      z-index: 2;
+    }
   }
 
   &.styledButton2 {
@@ -47,6 +54,15 @@
       top: 15px;
       position: absolute;
       z-index: 2;
+    }
+    .styledButtonTitle {
+      margin: 0;
+      max-width: 120px; // 너비 제한 설정
+      word-break: break-word; // 너비 초과 시 줄바꿈
+      overflow-wrap: break-word; // 단어가 길어질 경우 강제로 줄바꿈
+      color: colors.$black;
+
+      @include typo.sub;
     }
     .styledButtonDescription {
       margin-bottom: 5px;
@@ -71,7 +87,7 @@
 
 .styledButtonTitle {
   margin: 0;
-  max-width: 200px; // 너비 제한 설정
+  max-width: 70px; // 너비 제한 설정
   word-break: break-word; // 너비 초과 시 줄바꿈
   overflow-wrap: break-word; // 단어가 길어질 경우 강제로 줄바꿈
   color: colors.$black;
@@ -92,7 +108,7 @@
 .styledButtonIcon {
   display: flex;
   right: 7px;
-  top: 20px;
+  top: 15px;
   position: absolute;
   z-index: 2;
 }
