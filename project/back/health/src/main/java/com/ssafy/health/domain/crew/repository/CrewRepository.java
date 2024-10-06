@@ -36,4 +36,6 @@ public interface CrewRepository extends JpaRepository<Crew, Long> {
 
     @Query("SELECT uc.crew FROM UserCrew uc WHERE uc.user = :user AND uc.crew.exercise = :exercise")
     List<Crew> findCrewsByUserAndExercise(User user, Exercise exercise);
+
+    Optional<Crew> findByName(String name);
 }
