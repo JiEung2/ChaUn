@@ -33,6 +33,7 @@ const useUserStore = create<UserState>((set) => ({
   setCharacterImageUrl: (characterImageUrl: string) => set({ characterImageUrl }),
 
   // characterFileUrl을 업데이트하는 함수
+
   setCharacterFileUrl: (characterFileUrl: string) => set({ characterFileUrl }),
 }));
 
