@@ -9,6 +9,7 @@ import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.service.NotificationWriteService;
 import com.ssafy.health.domain.quest.dto.request.QuestCreateRequestDto;
 import com.ssafy.health.domain.quest.entity.*;
+import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
 import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.repository.QuestRepository;
 import com.ssafy.health.domain.quest.repository.UserQuestRepository;
@@ -40,16 +41,17 @@ public class QuestWriteService {
                 requestDto.getCoins()));
     }
 
-    // TODO: 주기별 퀘스트 생성 시 해당 주기에 이미 퀘스트가 생성되어 있다면 예외 처리
     @Scheduled(cron = "0 0 0 * * *")
     public void createDailyQuest() {
 
+        endQuests(QuestPeriod.DAILY);
         buildQuestList(QuestPeriod.DAILY);
     }
 
     @Scheduled(cron = "0 0 0 1 * *")
     public void createMonthlyQuest() {
 
+        endQuests(QuestPeriod.MONTHLY);
         buildQuestList(QuestPeriod.MONTHLY);
     }
 
@@ -88,6 +90,8 @@ public class QuestWriteService {
             coinService.grantCoinsToUser(user, quest.getQuest().getCompletionCoins());
 
             notificationWriteService.createUserQuestNotification(NotificationType.QUEST, user, quest.getId());
+        } else {
+            throw new QuestNotFoundException();
         }
     }
 
@@ -105,7 +109,15 @@ public class QuestWriteService {
                     throw new RuntimeException(e);
                 }
             });
+        } else {
+            throw new QuestNotFoundException();
         }
+    }
+
+    private void endQuests(QuestPeriod period) {
+
+        userQuestRepository.updateAllStatusByPeriod(period, QuestStatus.FINISHED);
+        crewQuestRepository.updateAllStatusByPeriod(period, QuestStatus.FINISHED);
     }
 
     private Quest questBuilder(QuestType type, String title, QuestPeriod period, Integer coins) {
