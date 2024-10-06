@@ -5,6 +5,7 @@ import com.ssafy.health.domain.account.dto.response.SurveyCompletedResponseDto;
 import com.ssafy.health.domain.account.dto.response.UserDetailDto;
 import com.ssafy.health.domain.account.entity.RecommendedCrew;
 import com.ssafy.health.domain.account.entity.User;
+import com.ssafy.health.domain.account.exception.RecommendCrewListNotFoundException;
 import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -71,13 +73,17 @@ public class UserReadService {
 
     public CrewListResponseDto getRecommendedCrew() {
         Long userId = SecurityUtil.getCurrentUserId();
-        RecommendedCrew recommendedCrew = recommendedCrewRepository.findByUserId(userId);
+        Optional<RecommendedCrew> recommendedCrew = recommendedCrewRepository.findByUserId(userId);
 
-        List<Crew> crewList = recommendedCrew.getCrewRecommend().stream()
-                .map(recommendList ->
-                        crewRepository.findById(recommendList.getCrewId()).orElseThrow(CrewNotFoundException::new))
-                .toList();
-        return crewReadService.createCrewListResponseDto(crewList);
+        if (recommendedCrew.isPresent()) {
+            List<Crew> crewList = recommendedCrew.get().getCrewRecommend().stream()
+                    .map(recommendList ->
+                            crewRepository.findById(recommendList.getCrewId()).orElseThrow(CrewNotFoundException::new))
+                    .toList();
+            return crewReadService.createCrewListResponseDto(crewList);
+        } else {
+            throw new RecommendCrewListNotFoundException();
+        }
     }
 
     public ScoreData calculateUserScore(Long userId) {
