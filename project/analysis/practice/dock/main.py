@@ -25,6 +25,7 @@ import joblib
 from copy import deepcopy as dp
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Input, BatchNormalization
+from sklearn.metrics.pairwise import cosine_similarity
 from keras.models import load_model
 
 # .env 파일의 환경 변수를 로드
@@ -424,6 +425,14 @@ def min_max_scaler(data):
     max_val = data.max()
     return (data - min_val) / (max_val - min_val)
 
+# 전체 스포츠 목록에 대한 이진 벡터 생성
+def create_sport_matrix(users, total_sports=30):
+    sport_matrix = np.zeros((len(users), total_sports))
+    for idx, user in enumerate(users):
+        for sport in user['favorite_sports']:
+            sport_matrix[idx, sport - 1] = 1  # 스포츠 ID는 1부터 시작한다고 가정
+    return sport_matrix
+
 # 4-2. 피어슨 유사도 계산 함수 - 협업 필터링
 def pearson_similarity(user, crew):
     # 사용자-크루간 4개 지표 상관관계수 유사도 (나이, 기본 점수, 활동 점수, 식습관 점수)
@@ -440,28 +449,35 @@ def pearson_similarity(user, crew):
 
     # 체형 유사도: 전체 유사도 3:7
     combined_similarity = (0.7 * similarity) + (0.3 * body_similarity)
-    # print('sim :', similarity)
-    # print('body_sim', body_similarity)
-    # print('combine_sim :', combined_similarity)
     return combined_similarity
 
 # 4. 메인 추천 함수
 def recommend_crews(now_user, crew_df, top_n=6):
+    global user_df
     similarities = []
+
+    # 전체 유저의 스포츠 선호도를 벡터로 변환 (한 번에 처리)
+    user_sport_matrix = create_sport_matrix(user_df.to_dict('records'))
+    now_user_vec = create_sport_matrix([now_user.to_dict()])[0]  # 현재 사용자 벡터
+
+    # 2-2. Cosine Similarity를 모든 사용자와 한 번에 계산
+    cosine_similarities = cosine_similarity([now_user_vec], user_sport_matrix)[0]
 
     for i in range(len(crew_df)):
         # 크루에 속해 있지 않을 때 (새로운 크루만 추천 받게)
         # user_data에 있는 crew_list = List[crew_id]에 현재 인덱스의 crew_id 있는지 확인
         now_crew = crew_df.loc[i]
+
         if now_crew['crew_id'] not in now_user['crew_list']:
-            crew_sports = now_crew['crew_sports']
-
-            # 4-1. 콘텐츠 기반 필터링 [수정 필요]
-            content_similarity = 0.8 if crew_sports in now_user['favorite_sports'] else 0.5 # 유저가 선호하는 운동에 포함될 때
-            content_similarity *= 0.3
-
-
-
+            crew_members = user_df[user_df['crew_list'].apply(lambda crew_list: now_crew['crew_id'] in crew_list)]
+            crew_member_indices = crew_members.index.tolist()
+            
+            # 해당 크루에 속한 사용자들의 코사인 유사도 평균 계산
+            if crew_member_indices:
+                content_similarity = np.mean(cosine_similarities[crew_member_indices])
+                content_similarity *= 0.3  # 가중치 0.3 적용
+            else:
+                content_similarity = 0
 
             # 4-2. 유저와 크루간 협업 필터링 (return combined_sim)
             pearson_sim = pearson_similarity(now_user, now_crew)
@@ -563,8 +579,9 @@ def crew_recommendation(request: TotalData):
             'crew_recommended' : [{'crew_id': int(crew[0]), 'similarity': round(crew[1], 3)} for crew in recommended_crews]
         }
         
+        print(result)
         # 6. MongoDB 저장
-        crew_recommend.insert_one(result)
+        # crew_recommend.insert_one(result)
 
     return {"message" : "Crew_Recommendation Completed!"}
 
