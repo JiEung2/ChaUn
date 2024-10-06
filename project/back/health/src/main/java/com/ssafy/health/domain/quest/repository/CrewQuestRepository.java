@@ -15,7 +15,7 @@ public interface CrewQuestRepository extends JpaRepository<CrewQuest, Long> {
     @Query("SELECT q FROM CrewQuest q WHERE q.crew = :crew AND q.status IN :status")
     List<CrewQuest> findAllByCrewAndStatus(Crew crew, List<QuestStatus> status);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE CrewQuest cq SET cq.status = :status WHERE cq.quest.period = :period")
     void updateAllStatusByPeriod(QuestPeriod period, QuestStatus status);
 

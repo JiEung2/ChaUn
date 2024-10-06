@@ -15,7 +15,7 @@ public interface UserQuestRepository extends JpaRepository<UserQuest, Long> {
     @Query("SELECT q FROM UserQuest q WHERE q.user = :user AND q.status IN :status")
     List<UserQuest> findAllByUserAndStatus(User user, List<QuestStatus> status);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE UserQuest uq SET uq.status = :status WHERE uq.quest.period = :period")
     void updateAllStatusByPeriod(QuestPeriod period, QuestStatus status);
 
