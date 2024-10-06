@@ -46,13 +46,12 @@
     }
 
     .snapshotImage {
-      width: 70px; // 이미지의 너비 수정
-      height: 200px; // 이미지의 높이 수정
+      width: 80px;
+      height: 250px;
       object-fit: cover;
       border-radius: 5px;
     }
   }
-
   .noSnapshotMessage {
     @include typo.basic;
   }

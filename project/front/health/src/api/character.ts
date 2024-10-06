@@ -23,20 +23,21 @@ export const patchPartsOnOff = async (parts_id: number) => {
   return response;
 };
 
-export const postSnapshot = async (snapshot: string) => {
-  // FormData 객체 생성
-  const formData = new FormData();
-  formData.append('snapshot', snapshot);
+export const postSnapshot = async (formData: FormData) => {
+  try {
+    // Axios 요청으로 FormData 전송
+    const response = await exportAxios.post(`${baseUrl}/character/snapshot/save`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
-  // POST 요청 보내기
-  const response = await exportAxios.post(`${baseUrl}/character/snapshot`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-
-  console.log(response);
-  return response;
+    console.log('Snapshot successfully uploaded:', response);
+    return response;
+  } catch (error) {
+    console.error('postSnapshot Error:', error);
+    throw error;
+  }
 };
 
 export const getSnapshotList = async () => {
