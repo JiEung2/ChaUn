@@ -5,7 +5,6 @@ import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.coin.service.CoinService;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
-import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.service.NotificationWriteService;
 import com.ssafy.health.domain.quest.dto.request.QuestCreateRequestDto;
@@ -14,6 +13,7 @@ import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.repository.QuestRepository;
 import com.ssafy.health.domain.quest.repository.UserQuestRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,8 +40,8 @@ public class QuestWriteService {
                 requestDto.getCoins()));
     }
 
-    // TODO: 스프링 스케줄러 사용하여 일별, 월별 퀘스트 생성
     // TODO: 주기별 퀘스트 생성 시 해당 주기에 이미 퀘스트가 생성되어 있다면 예외 처리
+    @Scheduled(cron = "0 0 0 * * *")
     public void createDailyQuest() {
         List<Quest> dailyQuestList = questRepository.findAllByPeriod(QuestPeriod.DAILY);
         List<User> userList = userRepository.findAll();
@@ -62,12 +62,12 @@ public class QuestWriteService {
         });
     }
 
+    @Scheduled(cron = "0 0 0 1 * *")
     public void createMonthlyQuest() {
         List<Quest> monthlyQuestList = questRepository.findAllByPeriod(QuestPeriod.MONTHLY);
         List<User> userList = userRepository.findAll();
         List<Crew> crewList = crewRepository.findAll();
 
-        // 퀘스트 생성
         monthlyQuestList.forEach(quest -> {
             if (quest.getType().equals(QuestType.INDIVIDUAL)) {
                 userList.forEach(user -> userQuestRepository.save(UserQuest.builder()
