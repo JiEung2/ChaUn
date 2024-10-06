@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import './CrewRecommend.scss';
 import CrewModal from '../../../components/Crew/CrewModal';
 import { getCrewRecommendList } from '@/api/crew';
+import useUserStore from '@/store/userInfo';
 
 interface Crew {
   crewId: number;
@@ -12,7 +13,7 @@ interface Crew {
 }
 
 export default function CrewRecommend() {
-  const [nickname] = useState('닉네임');
+  const [nickname] = useState(useUserStore.getState().nickname);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCrewId, setSelectedCrewId] = useState<number | null>(null);
   const [crews, setCrews] = useState<Crew[]>([]); // crews 배열을 상태로 관리
@@ -44,9 +45,7 @@ export default function CrewRecommend() {
 
   return (
     <div>
-      <h3>
-        <span className="nickname">{nickname}</span>님, 이런 <span className="highlight">크루</span>를 추천드려요!
-      </h3>
+      <h3>{nickname}님, 이런 크루를 추천드려요!</h3>
       <div className="crew-recommend">
         <div className="crew-grid">
           {crews.map((crew) => (
