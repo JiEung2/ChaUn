@@ -122,8 +122,8 @@ export default function Exercise() {
       <Modal
         isOpen={showModal}
         onRequestClose={handleCloseModal}
-        className="modalContent"
-        overlayClassName="modalOverlay">
+        className="exercisingModalContent"
+        overlayClassName="exercisingModalOverlay">
         <ExerciseModal onSelectExercise={handleSelectExercise} multiple={false} onClose={handleCloseModal} />
       </Modal>
 

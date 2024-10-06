@@ -190,7 +190,16 @@ function ExerciseRecordChart() {
 
   // 데이터가 없는 경우 처리
   if (!chartData || chartData.length === 0) {
-    return <div>운동 기록이 없습니다.</div>;
+    return (
+      <div className="noChartDataContainer">
+        <div className={`noChartData blurred`}>
+          <Line data={dataConfig} options={options} />
+        </div>
+        <div className="noChartDataMessage">
+          <p>이번 주 운동 기록이 없습니다.</p>
+        </div>
+      </div>
+    );
   }
 
   return <Line data={dataConfig} options={options} />;
@@ -223,6 +232,7 @@ function HomePageContent() {
       <div className="chartSection">
         <p className="chartTitle">이번 주 운동 그래프</p>
         {/* 운동 기록 차트 Suspense로 감쌈 */}
+
         <Suspense fallback={<div>Loading chart...</div>}>
           <ExerciseRecordChart />
         </Suspense>

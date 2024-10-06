@@ -3,7 +3,7 @@ import App from './App.tsx';
 import './styles/global.scss';
 import { worker } from './mocks/browser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 
@@ -56,7 +56,7 @@ async function startApp() {
   if (rootElement) {
     createRoot(rootElement).render(
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={true} />
+        {/* <ReactQueryDevtools initialIsOpen={true} /> */}
         <App />
       </QueryClientProvider>
     );

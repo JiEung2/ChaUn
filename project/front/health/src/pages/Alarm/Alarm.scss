@@ -45,3 +45,14 @@
     color: colors.$blue;
   }
 }
+
+.noAlarm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  .noAlarmMessage {
+    text-align: center;
+  }
+}
