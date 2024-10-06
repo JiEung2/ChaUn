@@ -13,23 +13,33 @@ import queryKeys from '@/utils/querykeys';
 import { getUserCrewList } from '@/api/crew';
 import ButtonState from './components/ButtonState';
 import useUserStore from '@/store/userInfo';
+interface CrewData {
+  crewId: number;
+  crewName: string;
+  exerciseName: string;
+  crewProfileImage: string;
+  basicScore: number;
+  activityScore: number;
+}
 export default function CrewPage() {
   const navigate = useNavigate();
   const { userId } = useUserStore();
   // 임시 dummy Id
   // const userId = 1;
   // 가입된 크루 리스트
-  console.log('크루 리스트 userId:', userId);
-  const { data: userCrewList } = useSuspenseQuery({
+  // console.log('크루 리스트 userId:', userId);
+  const { data: userCrewList = [] } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
     queryFn: () => getUserCrewList(Number(userId)),
     select: (response) => response.data.crewList || [],
   });
+  console.log('userCrewList:', userCrewList);
 
   // 크루의 배틀 현황 리스트
-  const crewIds = userCrewList.map((crew: any) => crew.crewId);
+  const crewIds = userCrewList.map((crew: CrewData) => crew.crewId);
+  console.log('crewIds', crewIds);
   const {
-    data: BattleList,
+    data: BattleList = [],
     error,
     isLoading,
   } = useQuery<CrewBattleStatusResponse[]>({
