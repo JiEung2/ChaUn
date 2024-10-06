@@ -43,41 +43,26 @@ public class QuestWriteService {
     // TODO: 주기별 퀘스트 생성 시 해당 주기에 이미 퀘스트가 생성되어 있다면 예외 처리
     @Scheduled(cron = "0 0 0 * * *")
     public void createDailyQuest() {
-        List<Quest> dailyQuestList = questRepository.findAllByPeriod(QuestPeriod.DAILY);
-        List<User> userList = userRepository.findAll();
-        List<Crew> crewList = crewRepository.findAll();
 
-        List<UserQuest> userQuestList = new ArrayList<>();
-        List<CrewQuest> crewQuestList = new ArrayList<>();
-
-        dailyQuestList.forEach(quest -> {
-            if (quest.getType().equals(QuestType.INDIVIDUAL)) {
-                userList.forEach(user -> userQuestList.add(UserQuest.builder()
-                        .quest(quest)
-                        .user(user)
-                        .build()));
-            } else if (quest.getType().equals(QuestType.CREW)) {
-                crewList.forEach(crew -> crewQuestList.add(CrewQuest.builder()
-                        .quest(quest)
-                        .crew(crew)
-                        .build()));
-            }
-        });
-
-        userQuestRepository.saveAll(userQuestList);
-        crewQuestRepository.saveAll(crewQuestList);
+        buildQuestList(QuestPeriod.DAILY);
     }
 
     @Scheduled(cron = "0 0 0 1 * *")
     public void createMonthlyQuest() {
-        List<Quest> monthlyQuestList = questRepository.findAllByPeriod(QuestPeriod.MONTHLY);
+
+        buildQuestList(QuestPeriod.MONTHLY);
+    }
+
+    private void buildQuestList(QuestPeriod period) {
+
+        List<Quest> questList = questRepository.findAllByPeriod(period);
         List<User> userList = userRepository.findAll();
         List<Crew> crewList = crewRepository.findAll();
 
         List<UserQuest> userQuestList = new ArrayList<>();
         List<CrewQuest> crewQuestList = new ArrayList<>();
 
-        monthlyQuestList.forEach(quest -> {
+        questList.forEach(quest -> {
             if (quest.getType().equals(QuestType.INDIVIDUAL)) {
                 userList.forEach(user -> userQuestList.add(UserQuest.builder()
                         .quest(quest)
