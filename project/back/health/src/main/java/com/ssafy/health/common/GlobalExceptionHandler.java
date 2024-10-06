@@ -8,6 +8,8 @@ import com.ssafy.health.domain.attendance.exception.AttendanceAlreadyExistsExcep
 import com.ssafy.health.domain.battle.exception.BattleAlreadyExistsException;
 import com.ssafy.health.domain.battle.exception.BattleNotFoundException;
 import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundException;
+import com.ssafy.health.domain.body.BodyPredict.exception.BasicDataNotFoundException;
+import com.ssafy.health.domain.body.BodyPredict.exception.ExtraDataNotFoundException;
 import com.ssafy.health.domain.body.BodyType.exception.BodyTypeNotFoundException;
 import com.ssafy.health.domain.character.exception.CharacterNotFoundException;
 import com.ssafy.health.domain.character.exception.CharacterSetNotFoundException;
@@ -108,6 +110,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handlePartsNotFoundException(PartsNotFoundException e) {
         ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(BasicDataNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBasicPredictDataNotFoundException(BasicDataNotFoundException e) {
+        ApiResponse<Void> reponse = ApiResponse.error(e.getStatue(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reponse);
+    }
+
+    @ExceptionHandler(ExtraDataNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleExtraPredictDataNotFoundException(ExtraDataNotFoundException e) {
+        ApiResponse<Void> reponse = ApiResponse.error(e.getStatue(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reponse);
     }
 
     // 400 - Bad Request

@@ -6,6 +6,8 @@ import com.ssafy.health.domain.body.BodyPredict.dto.response.BasicPredictionResp
 import com.ssafy.health.domain.body.BodyPredict.dto.response.ExtraPredictionResponseDto;
 import com.ssafy.health.domain.body.BodyPredict.entity.BodyBasicPrediction;
 import com.ssafy.health.domain.body.BodyPredict.entity.BodyExtraPrediction;
+import com.ssafy.health.domain.body.BodyPredict.exception.BasicDataNotFoundException;
+import com.ssafy.health.domain.body.BodyPredict.exception.ExtraDataNotFoundException;
 import com.ssafy.health.domain.body.BodyPredict.repository.BodyBasicPredictRepository;
 import com.ssafy.health.domain.body.BodyPredict.repository.BodyExtraPredictRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +24,7 @@ public class BodyPredictReadService {
 
         Long userId = SecurityUtil.getCurrentUserId();
         BodyBasicPrediction basicPrediction = basicRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
-                .orElseThrow();
+                .orElseThrow(BasicDataNotFoundException::new);
 
         return BasicPredictionResponseDto.builder()
                 .userId(basicPrediction.getUserId())
@@ -36,7 +38,7 @@ public class BodyPredictReadService {
 
         Long userId = SecurityUtil.getCurrentUserId();
         BodyExtraPrediction extraPrediction = extraRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
-                .orElseThrow();
+                .orElseThrow(ExtraDataNotFoundException::new);
 
         return ExtraPredictionResponseDto.builder()
                 .userId(extraPrediction.getUserId())
