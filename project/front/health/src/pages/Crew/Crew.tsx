@@ -9,9 +9,9 @@ import '../Crew/Crew.scss';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
 import Crew from '@/components/Crew/Crew';
-// import { useQueryClient } from '@tanstack/react-query';
 import queryKeys from '@/utils/querykeys';
 import { getUserCrewList } from '@/api/crew';
+import ButtonState from './components/ButtonState';
 
 export default function CrewPage() {
   const navigate = useNavigate();
@@ -43,6 +43,7 @@ export default function CrewPage() {
       );
     },
   });
+  console.log('BattleList:', BattleList);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -93,7 +94,7 @@ export default function CrewPage() {
               exerciseName={battleData?.exerciseName || 'N/A'}
               dDay={battleData?.dDay || 0}
               battleStatus={battleData?.battleStatus}
-              showButton={true}
+              buttonState={battleData?.battleStatus === 'none' ? ButtonState.NONE : ButtonState.BATTLE_ENTRY}
             />
           ))
         ) : (

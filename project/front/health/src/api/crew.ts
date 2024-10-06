@@ -51,6 +51,7 @@ export interface CrewBattleStatusResponse {
   exerciseName: string;
   dDay: number;
   battleStatus: string;
+  buttonState: string;
 }
 //크루 배틀 현황
 export const fetchCrewBattleStatus = async (crew_id: number) => {
@@ -87,5 +88,17 @@ export const collectCrewCoin = async ({ crew_id, coin_count }: sendCoin): Promis
 //크루 베틀 현황
 export const crewBattleStatus = async (crew_id: number) => {
   const response = await exportAxios.get(`${baseURL}/crew/${crew_id}/battle`);
+  return response.data;
+};
+
+// 배틀 랜덤 매칭
+export const randomMatching = async (crew_id: number) => {
+  const response = await exportAxios.post(`${baseURL}/crew/${crew_id}/battle`);
+  return response.data;
+};
+
+// 실시간 크루 배틀 기여도 랭킹
+export const getBattleRanking = async (battle_id: number) => {
+  const response = await exportAxios.get(`${baseURL}/battle/${battle_id}`);
   return response.data;
 };
