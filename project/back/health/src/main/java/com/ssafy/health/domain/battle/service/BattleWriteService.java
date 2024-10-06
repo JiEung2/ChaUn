@@ -19,6 +19,7 @@ import com.ssafy.health.domain.crew.repository.CrewRepository;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.service.NotificationWriteService;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -100,6 +101,12 @@ public class BattleWriteService {
             Crew winningCrew = crews[0];
             List<UserCrew> winningUserCrewList = findUserCrewOrderByScore(winningCrew);
             List<User> winningCrewMemberList = winningUserCrewList.stream().map(UserCrew::getUser).toList();
+            List<User> remainingMembers;
+            if (winningCrewMemberList.size() > 3) {
+                remainingMembers = winningCrewMemberList.subList(3, winningCrewMemberList.size());
+            } else {
+                remainingMembers = Collections.emptyList();
+            }
             coinService.distributeBattleRewards(winningCrewMemberList, battle, winningCrew);
             coinService.grantCoinsToCrew(winningCrew, 200);
 
@@ -113,7 +120,7 @@ public class BattleWriteService {
             saveRankHistory(losingUserCrewList, losingCrew);
             resetScore(losingCrew, losingUserCrewList);
 
-            notificationRequestDtoList.addAll(createNotification(battle, winningCrewMemberList, winningCrew));
+            notificationRequestDtoList.addAll(createNotification(battle, remainingMembers, winningCrew));
             notificationRequestDtoList.addAll(createNotification(battle, losingCrewMemberList, losingCrew));
 
         });
@@ -127,7 +134,7 @@ public class BattleWriteService {
                 return notificationWriteService.createBattleNotification(
                         NotificationType.BATTLE, user, battle, winningCrew, 0);
             } catch (ExecutionException | InterruptedException e) {
-                System.err.println("Failed to send notification: " + e.getMessage());
+                System.err.println("Failed to create notification: " + e.getMessage());
                 return null;
             }
         }).toList();
@@ -151,9 +158,10 @@ public class BattleWriteService {
     }
 
     private void saveRankHistory(List<UserCrew> userCrewList, Crew crew) {
+        List<RankHistory> rankHistoryList = new ArrayList<>();
         for (int i = 0; i < userCrewList.size(); i++) {
             UserCrew userCrew = userCrewList.get(i);
-            rankHistoryRepository.save(RankHistory.builder()
+            rankHistoryList.add(RankHistory.builder()
                     .user(userCrew.getUser())
                     .crew(crew)
                     .ranking(i + 1)
@@ -162,6 +170,7 @@ public class BattleWriteService {
                     .endDate(LocalDate.now().minusDays(1))
                     .build());
         }
+        rankHistoryRepository.saveAll(rankHistoryList);
     }
 
     private void resetScore(Crew crew, List<UserCrew> userCrew) {
