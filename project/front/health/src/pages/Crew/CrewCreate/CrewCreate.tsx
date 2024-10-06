@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
 import './CrewCreate.scss';
 import ExerciseModal from '@/components/Exercise/ExerciseModal';
+import { createCrew } from '@/api/crew';
 
 export default function CrewCreate() {
   const [crewName, setCrewName] = useState<string>('');
   const [profileImage, setprofileImage] = useState<File | null>(null);
   const [description, setDescription] = useState<string>('');
-  const [_, setExerciseId] = useState<number | null>(null);
+  const [exerciseId, setExerciseId] = useState<number | null>(null);
   const [exerciseName, setExerciseName] = useState<string | null>(null);
   const [showExerciseModal, setShowExerciseModal] = useState(false);
 
+  const sendCreatCrew = () => {
+    const formData = new FormData();
+    formData.append('crewName', crewName);
+    formData.append('exerciseId', String(exerciseId));
+    formData.append('description', description);
+    if (profileImage) {
+      formData.append('profileImage', profileImage);
+    }
+    createCrew(formData);
+  };
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCrewName(event.target.value);
   };
@@ -37,6 +48,8 @@ export default function CrewCreate() {
       profileImage,
       description,
     });
+
+    sendCreatCrew();
     alert('크루가 성공적으로 생성되었습니다.');
   };
 

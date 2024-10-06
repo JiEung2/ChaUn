@@ -353,4 +353,11 @@ export const crewHandlers = [
 
     return HttpResponse.json(battleStatus, { status: 200 });
   }),
+
+  //크루 생성
+  http.post(`${baseUrl}/crew`, ({ request }) => {
+    console.log('크루 생성 정보:', request);
+    console.log('크루 생성');
+    return HttpResponse.json({ status: 200, message: '크루 생성 성공' });
+  }),
 ];

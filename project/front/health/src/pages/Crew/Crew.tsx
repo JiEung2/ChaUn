@@ -13,6 +13,7 @@ import queryKeys from '@/utils/querykeys';
 import { getUserCrewList } from '@/api/crew';
 import ButtonState from './components/ButtonState';
 import useUserStore from '@/store/userInfo';
+
 interface CrewData {
   crewId: number;
   crewName: string;
@@ -23,7 +24,7 @@ interface CrewData {
 }
 export default function CrewPage() {
   const navigate = useNavigate();
-  const { userId } = useUserStore();
+  const { userId, nickname } = useUserStore();
   // 임시 dummy Id
   // const userId = 1;
   // 가입된 크루 리스트
@@ -72,7 +73,7 @@ export default function CrewPage() {
   return (
     <>
       <div className="my-crew">
-        <p>닉네임님의 크루</p>
+        <p>{nickname}님의 크루</p>
 
         <div className="crewList">
           {userCrewList && userCrewList.length > 0 ? (
