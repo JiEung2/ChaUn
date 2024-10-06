@@ -360,4 +360,10 @@ export const crewHandlers = [
     console.log('크루 생성');
     return HttpResponse.json({ status: 200, message: '크루 생성 성공' });
   }),
+
+  http.get(`${baseUrl}/crew/:crewName/validate`, ({ params }) => {
+    const { crewName } = params;
+    console.log('크루명 중복 체크', crewName);
+    return HttpResponse.json({ status: 200, message: '사용 가능한 이름입니다.' });
+  }),
 ];

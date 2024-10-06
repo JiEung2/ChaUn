@@ -102,7 +102,11 @@ export const getBattleRanking = async (battle_id: number) => {
   const response = await exportAxios.get(`${baseURL}/battle/${battle_id}`);
   return response.data;
 };
-
+// 크루명 중복 체크
+export const checkCrewName = async (crewName: string) => {
+  const response = await exportAxios.get(`${baseURL}/crew/${crewName}/validate`);
+  return response.data;
+};
 // 크루 생성
 export const createCrew = async (crewData: FormData) => {
   const response = await axios.post(`${baseURL}/crew`, crewData, {
