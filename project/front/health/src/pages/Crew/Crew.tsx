@@ -1,10 +1,12 @@
+import { useRef, useState } from 'react';
 import BattleBoard from './components/BattleBoard';
-// import CrewList from './components/CrewList';
 import StyledButton from '../../components/Button/StyledButton';
 import { useNavigate } from 'react-router-dom';
 import createIcon from '../../assets/svg/crewCreate.svg';
 import recommendIcon from '../../assets/svg/crewRecommend.svg';
 import rankingIcon from '../../assets/svg/crewRanking.svg';
+import leftArrowIcon from '../../assets/svg/leftArrow.svg'; // 좌측 화살표 아이콘
+import rightArrowIcon from '../../assets/svg/rightArrow.svg'; // 우측 화살표 아이콘
 import '../Crew/Crew.scss';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
@@ -12,12 +14,20 @@ import Crew from '@/components/Crew/Crew';
 import queryKeys from '@/utils/querykeys';
 import { getUserCrewList } from '@/api/crew';
 import ButtonState from './components/ButtonState';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation'; // 네비게이션 관련 CSS 추가
+import { Navigation } from 'swiper/modules';
 
 export default function CrewPage() {
   const navigate = useNavigate();
+  const swiperRef = useRef<any>(null);
+  const [showPrevButton, setShowPrevButton] = useState(false);
+  const [showNextButton, setShowNextButton] = useState(false);
 
   // 임시 dummy Id
   const userId = 1;
+
   // 가입된 크루 리스트
   const { data: userCrewList } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
@@ -43,6 +53,7 @@ export default function CrewPage() {
       );
     },
   });
+
   console.log('BattleList:', BattleList);
 
   if (isLoading) {
@@ -53,16 +64,22 @@ export default function CrewPage() {
     return <div>Error fetching battle status: {error.message}</div>;
   }
 
-  // 내 크루 이동
+  // STARTED 상태의 배틀이 있는지 확인
+  const startedBattles =
+    BattleList === undefined ? [] : BattleList.filter((battle) => battle.battleStatus === 'STARTED');
+
   const handleCrewClick = (crewId: number) => {
     navigate(`/crew/mycrew/${crewId}`);
+  };
+  const handleSwiperChange = (swiper: any) => {
+    setShowPrevButton(!swiper.isBeginning);
+    setShowNextButton(!swiper.isEnd);
   };
 
   return (
     <>
       <div className="my-crew">
         <p>닉네임님의 크루</p>
-
         <div className="crewList">
           {userCrewList && userCrewList.length > 0 ? (
             userCrewList.map((crew: any) => (
@@ -81,24 +98,61 @@ export default function CrewPage() {
       </div>
 
       <div className="battleBoardList">
-        {BattleList && BattleList.length > 0 ? (
-          BattleList.map((battleData, index) => (
-            <BattleBoard
-              key={index}
-              crewId={battleData?.crewId}
-              battleId={battleData?.battleId || 0}
-              myTeamName={battleData?.myTeamName || 'No Battle'}
-              myTeamScore={battleData?.myTeamScore || 0}
-              opponentTeamName={battleData?.opponentTeamName || 'No Opponent'}
-              opponentTeamScore={battleData?.opponentTeamScore || 0}
-              exerciseName={battleData?.exerciseName || 'N/A'}
-              dDay={battleData?.dDay || 0}
-              battleStatus={battleData?.battleStatus}
-              buttonState={battleData?.battleStatus === 'none' ? ButtonState.NONE : ButtonState.BATTLE_ENTRY}
-            />
-          ))
+        {startedBattles.length > 0 ? (
+          <Swiper
+            spaceBetween={50}
+            slidesPerView={1}
+            onSlideChange={handleSwiperChange}
+            onInit={(swiper) => {
+              handleSwiperChange(swiper);
+              swiperRef.current = swiper;
+            }}
+            navigation={{
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev',
+            }}
+            modules={[Navigation]}>
+            {startedBattles.map((battleData, index) => (
+              <SwiperSlide key={index}>
+                <BattleBoard
+                  crewId={battleData.crewId}
+                  battleId={battleData.battleId || 0}
+                  myTeamName={battleData.myTeamName || 'No Battle'}
+                  myTeamScore={battleData.myTeamScore || 0}
+                  opponentTeamName={battleData.opponentTeamName || 'No Opponent'}
+                  opponentTeamScore={battleData.opponentTeamScore || 0}
+                  exerciseName={battleData.exerciseName || 'N/A'}
+                  dDay={battleData.dDay || 0}
+                  battleStatus={battleData.battleStatus}
+                  buttonState={battleData.battleStatus === 'none' ? ButtonState.NONE : ButtonState.BATTLE_ENTRY}
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         ) : (
-          <p>현재 진행 중인 배틀이 없습니다.</p>
+          <BattleBoard
+            crewId={0}
+            battleId={0}
+            myTeamName="No Battle"
+            myTeamScore={0}
+            opponentTeamName="No Opponent"
+            opponentTeamScore={0}
+            exerciseName="N/A"
+            dDay={0}
+            battleStatus="NONE"
+            buttonState={ButtonState.NONE}
+          />
+        )}
+
+        {showPrevButton && (
+          <div className="swiper-button-prev" onClick={() => swiperRef.current && swiperRef.current.slidePrev()}>
+            <img src={leftArrowIcon} alt="Previous" />
+          </div>
+        )}
+        {showNextButton && (
+          <div className="swiper-button-next" onClick={() => swiperRef.current && swiperRef.current.slideNext()}>
+            <img src={rightArrowIcon} alt="Next" />
+          </div>
         )}
       </div>
 
