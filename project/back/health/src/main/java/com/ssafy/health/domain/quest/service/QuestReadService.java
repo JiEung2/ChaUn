@@ -13,6 +13,7 @@ import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.repository.UserQuestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class QuestReadService {
 
     private final UserRepository userRepository;
@@ -63,8 +65,6 @@ public class QuestReadService {
     }
 
     private Crew findCrewById(Long crewId) {
-        // TODO: 낙관적 락을 사용한 쿼리 시 오류 해결
-        // return crewRepository.findByIdWithOptimisticLock(crewId);
         return crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
     }
 }
