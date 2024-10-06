@@ -40,36 +40,6 @@ export const characterHandlers = [
             cost: 300,
             partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
           },
-          {
-            id: 6,
-            partsType: 'PANTS',
-            cost: 200,
-            partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
-          },
-          {
-            id: 7,
-            partsType: 'HAIR',
-            cost: 300,
-            partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
-          },
-          {
-            id: 2,
-            partsType: 'PANTS',
-            cost: 200,
-            partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
-          },
-          {
-            id: 1,
-            partsType: 'HAIR',
-            cost: 300,
-            partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
-          },
-          {
-            id: 2,
-            partsType: 'PANTS',
-            cost: 200,
-            partsImage: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/bb8eba8d-3f41-463a-8992-b717c75932a4.png',
-          },
         ],
       },
     });
@@ -127,19 +97,20 @@ export const characterHandlers = [
             snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ba56469-0c4c-4a11-9381-19fa1166dc06.png',
             createdAt: '2024-09-16T15:00:00',
           },
-          {
-            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ba56469-0c4c-4a11-9381-19fa1166dc06.png',
-            createdAt: '2024-08-16T15:00:00',
-          },
-          {
-            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/53fa6442-383a-48a4-bb3f-834e4d44978a.png',
-            createdAt: '2024-08-16T15:00:00',
-          },
-          {
-            snapshotUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/5ce7ca51-02d0-4694-a386-55dff91109b6.png',
-            createdAt: '2024-08-16T15:00:00',
-          },
         ],
+      },
+    });
+  }),
+
+  // 캐릭터 스냅샷 저장
+  http.post(`${baseUrl}/character/snapshot`, async ({ request }) => {
+    const snapshot = await request.formData();
+    console.log(`${snapshot}`);
+    return HttpResponse.json({
+      status: 200,
+      message: '',
+      data: {
+        message: '스냅샷을 저장하였습니다.',
       },
     });
   }),
