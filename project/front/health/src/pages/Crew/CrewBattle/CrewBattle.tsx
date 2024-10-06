@@ -6,30 +6,40 @@ import BattleBoard from '../components/BattleBoard';
 import './CrewBattle.scss';
 import ButtonState from '../components/ButtonState';
 import BattleNoneImg from '../../../assets/svg/battlenoneImg.svg';
+import CrewAndMemberList from '../../../components/Crew/CrewAndMemberList';
+import { useState } from 'react';
 
 export default function CrewBattle() {
   const { crewId } = useParams<{ crewId: string }>();
 
-  const { data: battleData } = useQuery<CrewBattleStatusResponse>({
+  const [selectedTeam, setSelectedTeam] = useState<'home' | 'away'>('home');
+
+  const handleTeamSwitch = (team: 'home' | 'away') => {
+    setSelectedTeam(team);
+  };
+
+  // Fetch battle data
+  const { data: battleData, isLoading: isBattleDataLoading } = useQuery<CrewBattleStatusResponse>({
     queryKey: [queryKeys.BATTLE_STATUS, Number(crewId)],
     queryFn: () => fetchCrewBattleStatus(Number(crewId)),
     enabled: !!crewId, // crewId가 있을 때만 쿼리를 실행
   });
-  if (!battleData) {
-    return null;
-  }
-  console.log(crewId);
-  console.log(battleData);
 
-  // 기여도 랭킹 조회
-  // dummy battleId
+  // Fetch ranking data, use dummy battleId = 3 for now
   const battleId = 3;
-  const { data: battleRankings } = useQuery({
+  const { data: battleRankings, isLoading: isRankingsLoading } = useQuery({
     queryKey: [queryKeys.BATTLE_RANKING, battleId],
     queryFn: () => getBattleRanking(Number(battleId)),
   });
 
-  console.log('배틀 랭킹', battleRankings);
+  // Handle loading or error state
+  if (isBattleDataLoading || isRankingsLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!battleData) {
+    return <div>No battle data available.</div>;
+  }
 
   return (
     <div>
@@ -73,7 +83,27 @@ export default function CrewBattle() {
             opponentTeamScore={battleData.opponentTeamScore}
             buttonState={ButtonState.NONE}
           />
-          <div className="ranking__started"></div>
+          <div className="ranking__started">
+            <div className="team-toggle">
+              <button
+                onClick={() => handleTeamSwitch('home')}
+                className={`team-btn ${selectedTeam === 'home' ? 'active' : ''}`}>
+                {battleData.myTeamName}
+              </button>
+              <button
+                onClick={() => handleTeamSwitch('away')}
+                className={`team-btn ${selectedTeam === 'away' ? 'active' : ''}`}>
+                {battleData.opponentTeamName}
+              </button>
+            </div>
+            <div className="ranking__list">
+              {selectedTeam === 'home' ? (
+                <CrewAndMemberList type="member" data={battleRankings?.homeCrewMembers} />
+              ) : (
+                <CrewAndMemberList type="member" data={battleRankings?.awayCrewMembers} />
+              )}
+            </div>
+          </div>
         </div>
       ) : (
         <div>Invalid battle status.</div>
