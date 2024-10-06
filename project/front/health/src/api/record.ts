@@ -1,10 +1,10 @@
 // import axios from 'axios';
-import axiosInstance from './axiosInstance';
+import exportAxios from './axiosInstance';
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
 // 나의 특정 달의 체형 기록 조회
 export const getBodyRecord = async (year: number, month: number) => {
-  const response = await axiosInstance.get(`${baseUrl}/users/body`, {
+  const response = await exportAxios.get(`${baseUrl}/users/body`, {
     params: {
       year,
       month,
@@ -16,17 +16,17 @@ export const getBodyRecord = async (year: number, month: number) => {
 
 // 기본 체형 예측 조회
 export const getPredictBasic = async () => {
-  const response = await axiosInstance.get(`${baseUrl}/users/predict/basic`);
+  const response = await exportAxios.get(`${baseUrl}/users/predict/basic`);
   console.log('기본체형 예측', response);
   return response;
 };
 
 export const getPredictExtra = async () => {
-  const response = await axiosInstance.get(`${baseUrl}/users/predict/extra`);
+  const response = await exportAxios.get(`${baseUrl}/users/predict/extra`);
   return response;
 };
 
 export const postPredictExerciseDetail = async (exercise_id: number, count: number, duration: number) => {
-  const response = await axiosInstance.post(`${baseUrl}/users/predict/request-extra`, { exercise_id, count, duration });
+  const response = await exportAxios.post(`${baseUrl}/users/predict/request-extra`, { exercise_id, count, duration });
   return response;
 };

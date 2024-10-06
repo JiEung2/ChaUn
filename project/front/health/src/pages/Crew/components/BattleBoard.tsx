@@ -36,6 +36,7 @@ export default function BattleBoard({
     console.log('battleId', battleId);
     navigate(`/crew/battle/${crewId}`);
   };
+  console.log(battleId);
 
   const queryClient = useQueryClient();
   // 배틀 랜덤 매칭

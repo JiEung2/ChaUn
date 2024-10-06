@@ -98,12 +98,17 @@ export default function RecordPage() {
     queryKey: [queryKeys.MY_BODY_PREDICT],
     queryFn: getPredictBasic,
     select: (response) => {
-      const { current, p30, p90 } = response.data.data;
-      return [
-        { time: '현재', weight: current },
-        { time: '1달 후', weight: p30 },
-        { time: '3달 후', weight: p90 },
-      ];
+      const { current, p30, p90, current_image, p30_image, p90_image } = response.data.data;
+      return {
+        predictions: [
+          { time: '현재', weight: current },
+          { time: '1달 후', weight: p30 },
+          { time: '3달 후', weight: p90 },
+        ],
+        current_image,
+        p30_image,
+        p90_image,
+      };
     },
   });
 
@@ -111,12 +116,17 @@ export default function RecordPage() {
     queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
     queryFn: getPredictExtra,
     select: (response) => {
-      const { current, p30, p90 } = response.data.data;
-      return [
-        { time: '현재', weight: current },
-        { time: '1달 후', weight: p30 },
-        { time: '3달 후', weight: p90 },
-      ];
+      const { current, p30, p90, current_image, p30_image, p90_image } = response.data.data;
+      return {
+        predictions: [
+          { time: '현재', weight: current },
+          { time: '1달 후', weight: p30 },
+          { time: '3달 후', weight: p90 },
+        ],
+        current_image,
+        p30_image,
+        p90_image,
+      };
     },
   });
 

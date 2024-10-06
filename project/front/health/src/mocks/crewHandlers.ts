@@ -18,11 +18,11 @@ const crewList = [
 
 const crewDetail = {
   crewId: 1,
-  crewName: '달리는 번개',
+  crewName: '달리는 번개2',
   exerciseName: '러닝',
   profileImage: 'crew-profile-image.jpg',
   description: '번개맨보다 빠른 러너들의 모임',
-  crewCoins: 300,
+  crewCoins: 350,
   crewRanking: 3,
   totalBattleCount: 10,
   winCount: 7,
@@ -118,6 +118,29 @@ const crewBattleRanking = {
     },
   ],
 };
+
+const sendCoin = {
+  message: '코인을 전송하였습니다.',
+  crewCoin: 1000,
+  myCoin: 900,
+};
+const CrewQuest = [
+  {
+    questId: 3,
+    title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기',
+    questPeriod: 'DAILY',
+    isCompleted: true,
+  },
+];
+const battleStatus = {
+  myTeamName: '달리자크루',
+  myTeamScore: 400,
+  opponentTeamName: '크크크루',
+  opponentTeamScore: 500,
+  exerciseName: '러닝',
+  battleStatus: 'STARTED',
+  dDay: 2,
+};
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
   http.get(`${baseUrl}/users/recommend-crew`, () => {
@@ -149,6 +172,7 @@ export const crewHandlers = [
     console.log('크루 상세보기의 크루 id', crew_id);
     return HttpResponse.json(crewDetail, { status: 200 });
   }),
+
   // 크루 내 랭킹 조회
   http.get(`${baseUrl}/crew/:crew_id/ranking`, ({ params }) => {
     const { crew_id } = params;
@@ -157,6 +181,95 @@ export const crewHandlers = [
     console.log('크루 내 랭킹 조회의 크루 id', numberCrewId);
 
     return HttpResponse.json(memberList, { status: 200 });
+  }),
+
+  // 운동별 크루 랭킹 조회
+  http.get(`${baseUrl}/crew/ranking/:exercise_id`, ({ params }) => {
+    const { exercise_id } = params;
+    const rankingId = Array.isArray(exercise_id) ? exercise_id[0] : exercise_id;
+
+    console.log('운동별 크루 랭킹 id', rankingId);
+
+    return HttpResponse.json({
+      status: 200,
+      message: '',
+      data: {
+        crewList: [
+          {
+            crewId: 2,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 100,
+            activityScore: 200,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+          {
+            crewId: 3,
+            crewName: '달리자',
+            exerciseName: '러닝',
+            crewProfileImage: 'crew-profile-image.jpg',
+            basicScore: 1000,
+            activityScore: 2000,
+          },
+        ],
+      },
+    });
   }),
 
   http.post(`${baseUrl}/crew/:crew_id/join`, ({ params }) => {
@@ -211,5 +324,33 @@ export const crewHandlers = [
     const { battle_id } = params;
     console.log('배틀id', battle_id);
     return HttpResponse.json(crewBattleRanking, { status: 200 });
+  }),
+
+  // 퀘스트 조회
+  http.get(`${baseUrl}/quest/get/crew`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('quest get crew', crew_id);
+    return HttpResponse.json(CrewQuest, { status: 200 });
+  }),
+
+  // 크루 랜덤 매칭 동의 여부
+  http.post(`${baseUrl}/crew/:crew_id/battle/ready`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('크루 랜덤 매칭 동의여부 크루 id', crew_id);
+  }),
+
+  // 코인 전송
+  http.post(`${baseUrl}/crew/:crew_id/coin/:coin_count`, ({ params }) => {
+    const { crew_id, coin_count } = params;
+    console.log('코인 전송', crew_id, coin_count);
+    return HttpResponse.json(sendCoin, { status: 200 });
+  }),
+
+  //배틀 현황
+  http.get(`${baseUrl}/crew/:crew_id/battle`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('배틀 현황', crew_id);
+
+    return HttpResponse.json(battleStatus, { status: 200 });
   }),
 ];

@@ -6,6 +6,7 @@ import BodyType from '@/components/Survey/BodyType';
 import EatingHabits from '@/components/Survey/EatingHabits';
 import './BodyAddModal.scss';
 import { surveySubmit2, surveySubmit3 } from '@/api/survey';
+import { useMutation } from '@tanstack/react-query';
 
 interface BodyAddModalProps {
   onClose: () => void;
@@ -50,14 +51,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
   };
 
   // BodyType 데이터 변경 핸들러
-  const handleBodyDataChange = (data: {
-    height: number;
-    weight: number;
-    skeletalMuscleMass: number;
-    bodyFat: number;
-    bodyMuscle: boolean;
-    bodyShape: string;
-  }) => {
+  const handleBodyDataChange = (data: BodyData) => {
     setBodyData(data);
   };
 
@@ -66,17 +60,32 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
     validateForm();
   }, [bodyData, mealsPerDay, foodType, snacksPerDay, drinksPerDay]);
 
-  // 다음 단계로 이동 및 데이터 전송 함수
-  const handleComplete = async () => {
-    try {
-      const { height, weight, skeletalMuscleMass, bodyFat, bodyMuscle, bodyShape } = bodyData;
-      await surveySubmit2(height, weight, skeletalMuscleMass, bodyFat, bodyMuscle, bodyShape);
-      await surveySubmit3(mealsPerDay, foodType, snacksPerDay, drinksPerDay);
+  // BodyData 전송 mutation
+  const bodyMutation = useMutation({
+    mutationFn: (data: BodyData) =>
+      surveySubmit2(data.height, data.weight, data.skeletalMuscleMass, data.bodyFat, data.bodyMuscle, data.bodyShape),
+    onSuccess: () => {},
+    onError: (error) => {
+      console.error('체형 정보 전송 실패:', error);
+    },
+  });
+
+  // EatingHabits 전송 mutation
+  const eatingHabitsMutation = useMutation({
+    mutationFn: (data: { mealsPerDay: number; foodType: string; snacksPerDay: string; drinksPerDay: string }) =>
+      surveySubmit3(data.mealsPerDay, data.foodType, data.snacksPerDay, data.drinksPerDay),
+    onSuccess: () => {
       onClose();
-    } catch (error) {
-      console.error('데이터 전송 중 오류:', error);
-      alert('오류가 발생했습니다. 다시 시도해 주세요.');
-    }
+    },
+    onError: (error) => {
+      console.error('식습관 설문 전송 실패:', error);
+    },
+  });
+
+  // 다음 단계로 이동 및 데이터 전송 함수
+  const handleComplete = () => {
+    bodyMutation.mutate(bodyData);
+    eatingHabitsMutation.mutate({ mealsPerDay, foodType, snacksPerDay, drinksPerDay });
   };
 
   return (

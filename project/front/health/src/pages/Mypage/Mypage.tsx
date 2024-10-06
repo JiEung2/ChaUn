@@ -1,96 +1,258 @@
-import { Suspense, useRef, useState, startTransition } from 'react';
-import { useSuspenseQuery } from '@tanstack/react-query'; // SuspenseQuery 사용
+import { useRef, useState, useEffect } from 'react';
+import { useMutation, useSuspenseQuery, useQueryClient, useQuery } from '@tanstack/react-query';
+import ShuffleIcon from '@/assets/svg/shuffle.svg';
+import CamerIcon from '@/assets/svg/camera.svg';
 import Coin from '@/components/Coin/Coin';
 import GeneralButton from '@/components/Button/GeneralButton';
-import MyModel from '@/assets/image/model.png';
-import CustomItem from '@/assets/image/customItem.jpg';
 import CustomCategories from '@/components/Profile/Custom/CustomCategories';
 import SnapshotList from '@/components/Profile/Snapshot/SnapshotList';
+import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import html2canvas from 'html2canvas';
 import queryKeys from '@/utils/querykeys';
-import { getUserDetail } from '@/api/user';
 import './Mypage.scss';
-import { useParams } from 'react-router-dom';
+import { getPartsList, getMyCharacter, patchPartsOnOff, getSnapshotList, postSnapshot } from '@/api/character';
+
+const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
 
 export default function MypagePage() {
-  const { userId } = useParams<{ userId: string }>();
-  const characterRef = useRef<HTMLImageElement | null>(null);
+  const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
-  const [userCoin, setUserCoin] = useState(0);
-  const [items, setItems] = useState([
-    { id: 1, category: '헤어', price: 100, isLocked: true, image: CustomItem, isApplied: false },
-    { id: 2, category: '헤어', price: 120, isLocked: true, image: CustomItem, isApplied: false },
-    { id: 3, category: '하의', price: 1200, isLocked: true, image: CustomItem, isApplied: false },
-  ]);
-  const [appliedItem, setAppliedItem] = useState<string | null>(null);
-  const [snapshots, setSnapshots] = useState<{ date: string; image: string }[]>([]);
+  const [preserveBuffer, setPreserveBuffer] = useState(false);
+  const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
+  const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
+  const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
+  const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
+  const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
+  const queryClient = useQueryClient();
 
-  // React Query의 useSuspenseQuery 사용
-  const numericUserId = userId ? Number(userId) : 0;
+  // 로컬 스토리지에서 구매한 파츠 정보 불러오기
+  useEffect(() => {
+    const storedPurchasedParts = localStorage.getItem('purchasedParts');
+    if (storedPurchasedParts) {
+      setPurchasedParts(JSON.parse(storedPurchasedParts));
+    }
+  }, []);
 
-  const { data: userDetail } = useSuspenseQuery({
-    queryKey: [queryKeys.USER_DETAIL, numericUserId],
-    queryFn: () => getUserDetail(numericUserId),
+  // 캐릭터 및 파츠 리스트 조회
+  const { data: myCharacter } = useSuspenseQuery({
+    queryKey: [queryKeys.CHARACTER],
+    queryFn: () => getMyCharacter(),
   });
 
-  // 아이템 구매 성공 시 호출되는 함수
-  const handlePurchaseSuccess = (updatedItem: any) => {
-    // startTransition을 사용해 UI 업데이트를 비동기적으로 처리
-    startTransition(() => {
-      setItems((prevItems) =>
-        prevItems.map((item) => (item.id === updatedItem.id ? { ...item, isLocked: false } : item))
-      );
-      setUserCoin((prevCoin) => prevCoin - updatedItem.price); // 코인 감소 처리
-    });
-  };
+  useEffect(() => {
+    if (myCharacter) {
+      setGender(myCharacter?.data?.data.gender === 'MAN' ? 'MAN' : 'FEMALE');
+      setActiveAnimation(myCharacter?.data?.data.characterGlbUrl);
+    }
+  }, [myCharacter]);
 
-  // 아이템 클릭 시 캐릭터에 적용 또는 해제하는 함수
-  const handleApplyItem = (item: any) => {
-    // startTransition을 사용해 UI 업데이트를 비동기적으로 처리
-    startTransition(() => {
-      if (item.isApplied) {
-        setItems((prevItems) => prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: false } : i)));
-        setAppliedItem(null);
-      } else {
-        setItems((prevItems) =>
-          prevItems.map((i) => (i.id === item.id ? { ...i, isApplied: true } : { ...i, isApplied: false }))
-        );
-        setAppliedItem(item.image);
+  const { data: partsList } = useSuspenseQuery({
+    queryKey: [queryKeys.PARTS_LIST],
+    queryFn: () => getPartsList(),
+  });
+
+  const snapshotMutation = useMutation({
+    mutationFn: (snapshot: FormData) => postSnapshot(snapshot),
+    onSuccess: (data) => {
+      console.log('Success:', data);
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+    },
+  });
+
+  // // 캔버스 캡처 핸들러
+  // const handleCaptureClick = async () => {
+  //   setPreserveBuffer(true);
+
+  //   // 캔버스 렌더링이 완료된 후에 캡처 시도
+  //   requestAnimationFrame(async () => {
+  //     if (characterRef.current) {
+  //       const canvas = await html2canvas(characterRef.current as HTMLElement);
+  //       const base64Image = canvas.toDataURL('image/png').replace(/^data:image\/png;base64,/, '');
+  //       snapshotMutation.mutate(base64Image);
+  //     }
+
+  //     // 캡처 후 성능 최적화를 위해 다시 false로 설정
+  //     setPreserveBuffer(false);
+  //   });
+  // };
+  // 캔버스 캡처 핸들러
+  // 캔버스 캡처 핸들러
+  const handleCaptureClick = async () => {
+    setPreserveBuffer(true); // 캡처할 때 preserveDrawingBuffer를 true로 설정
+
+    // 캔버스 렌더링이 완료된 후에 캡처를 시도하기 위해 requestAnimationFrame 사용
+    requestAnimationFrame(async () => {
+      if (characterRef.current) {
+        try {
+          // 캔버스를 캡처하고 base64로 변환
+          const canvas = await html2canvas(characterRef.current as HTMLElement);
+
+          // PNG 파일로 변환
+          canvas.toBlob((blob) => {
+            if (blob) {
+              // Blob을 파일 형태로 처리 (여기서 png 파일 형태로 준비)
+              const file = new File([blob], 'character_snapshot.png', { type: 'image/png' });
+
+              // 이제 'file'은 PNG 파일로 처리되어 다른 곳에서 사용할 수 있음
+              console.log('PNG 파일이 준비되었습니다:', file);
+
+              // 이후에 API 호출을 위해 FormData에 추가
+              const formData = new FormData();
+              formData.append('snapshot', file); // 파일을 FormData에 추가
+
+              // API로 formData 전송
+              snapshotMutation.mutate(formData);
+            }
+          }, 'image/png');
+        } catch (err) {
+          console.error('Error capturing the canvas:', err);
+        }
       }
+
+      setPreserveBuffer(false); // 캡처 후 preserveDrawingBuffer를 다시 false로 설정
     });
   };
 
-  // 스냅샷을 캡처하고 리스트에 추가하는 함수
-  const handleSnapshot = () => {
-    if (characterRef.current) {
-      html2canvas(characterRef.current, {
-        scale: 2,
-        backgroundColor: '#98e4ff',
-      }).then((canvas) => {
-        const image = canvas.toDataURL('image/png');
-        const now = new Date();
-        const formattedDate = `${String(now.getFullYear()).slice(2)}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
-        setSnapshots((prev) => [{ date: formattedDate, image }, ...prev]);
-      });
+  // 스냅샷 리스트 캐시에서 확인
+  const cachedSnapshotList = queryClient.getQueryData([queryKeys.SNAPSHOT_LIST]);
+
+  const { data: snapshotList } = useQuery({
+    queryKey: [queryKeys.SNAPSHOT_LIST],
+    queryFn: () => getSnapshotList(),
+    enabled: !cachedSnapshotList, // 캐시된 데이터가 없을 때만 API 호출
+  });
+  const formattedSnapshots = snapshotList?.data?.data.snapshots.map((snapshot: any) => ({
+    date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+    }),
+    image: snapshot.snapshotUrl,
+  }));
+
+  // 파츠 적용/해제를 위한 mutation
+  const partsOnoffMutation = useMutation({
+    mutationFn: (parts_id: number) => patchPartsOnOff(parts_id),
+    onSuccess: (response) => {
+      const newCharacterUrl = response?.data?.characterUrl;
+      setCharacterGlbUrl(newCharacterUrl); // 캐릭터 URL 업데이트
+    },
+    onError: (error) => {
+      console.error('파츠 적용/해제 실패:', error);
+    },
+  });
+
+  // 파츠 적용/해제 핸들러
+  const handleApply = (item: any) => {
+    const isApplied = appliedParts[item.id];
+    setAppliedParts((prev) => ({ ...prev, [item.id]: !isApplied })); // 적용/해제 토글
+    partsOnoffMutation.mutate(item.id); // partsOnOff 호출
+  };
+
+  // 아이템 구매 후 `isLocked` 해제 로직 추가 및 로컬 스토리지 저장
+  const handlePurchase = (item: any) => {
+    setPurchasedParts((prev) => {
+      const updatedParts = { ...prev, [item.id]: true };
+      localStorage.setItem('purchasedParts', JSON.stringify(updatedParts)); // 구매한 파츠 로컬 스토리지에 저장
+      return updatedParts;
+    });
+  };
+
+  // 애니메이션 URL 생성 로직 (남성/여성 및 파츠 적용 여부에 따라 다름)
+  const generateAnimationUrl = (type: 'standing' | 'dancing' | 'waving') => {
+    const hasPartsApplied = Object.values(appliedParts).some((applied) => applied);
+
+    if (gender === 'MAN') {
+      switch (type) {
+        case 'standing':
+          return hasPartsApplied ? `${baseUrl}B5standingPants.glb` : `${baseUrl}B5standing.glb`;
+        case 'dancing':
+          return hasPartsApplied ? `${baseUrl}B5dancingPants.glb` : `${baseUrl}B5dancing.glb`;
+        case 'waving':
+          return hasPartsApplied ? `${baseUrl}B5wavingPants.glb` : `${baseUrl}B5waving.glb`;
+      }
+    } else {
+      switch (type) {
+        case 'standing':
+          return `${baseUrl}GBstanding.glb`;
+        case 'dancing':
+          return `${baseUrl}GBdancing.glb`;
+        case 'waving':
+          return `${baseUrl}GBwaving.glb`;
+      }
     }
   };
+
+  // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
+  const handleShuffleClick = () => {
+    const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
+    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+    handleButtonClick(randomAnimation);
+  };
+
+  // 버튼 클릭 핸들러 - 선택된 애니메이션 업데이트
+  const handleButtonClick = (type: 'standing' | 'dancing' | 'waving') => {
+    const url = generateAnimationUrl(type);
+    setCharacterGlbUrl(url); // 선택한 모델 URL로 업데이트
+    setActiveAnimation(type); // 현재 선택된 애니메이션 저장
+  };
+
+  const mappedItems =
+    partsList?.data?.data?.partsList?.map((part: any) => {
+      let category = '';
+      switch (part.partsType) {
+        case 'HAIR':
+          category = '헤어';
+          break;
+        case 'BODY':
+          category = '상의';
+          break;
+        case 'PANTS':
+          category = '하의';
+          break;
+        default:
+          category = '아이템';
+      }
+
+      return {
+        id: part.id,
+        category,
+        price: part.cost,
+        image: part.partsImage,
+        isLocked: !purchasedParts[part.id], // 구매 여부에 따라 블러 처리
+        isApplied: appliedParts[part.id] || false, // 적용 상태 추가
+      };
+    }) || [];
 
   return (
     <div className="myProfileContainer">
       <div className="profileSection">
         <div className="info">
-          <p className="subtitle">{userDetail?.data.data.nickname} 님</p>
-          <Coin amount={userDetail?.data.data.coin || userCoin} style="styled" />
+          <p className="subtitle">{/* 사용자 이름 */}님</p>
+          <Coin amount={100} style="styled" />
         </div>
 
-        <div className="character">
-          <img src={appliedItem || MyModel} alt="myModel" ref={characterRef} />
-          <GeneralButton
-            buttonStyle={{ style: 'primary', size: 'select' }}
-            className="snapshotButton"
-            onClick={handleSnapshot}>
-            스냅샷
-          </GeneralButton>
+        <div className="characterAndSnapshot">
+          <div className="character" ref={characterRef}>
+            {characterGlbUrl ? (
+              <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
+            ) : (
+              <p>
+                기본, 춤추기, 손 흔들기 중 <br /> 랜덤 동작이 준비 중입니다!
+              </p>
+            )}
+          </div>
+
+          <div className="iconWrapper">
+            <div className="navIcon">
+              <img src={ShuffleIcon} alt="shuffle Icon" className="icon" onClick={handleShuffleClick} />
+            </div>
+            <div className="navIcon">
+              <img src={CamerIcon} alt="camera Icon" className="icon" onClick={handleCaptureClick} />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -100,33 +262,22 @@ export default function MypagePage() {
           <CustomCategories
             selectedTab={selectedTab}
             setSelectedTab={setSelectedTab}
-            userCoin={userDetail?.data.coin || userCoin}
-            onPurchase={handlePurchaseSuccess}
-            onApply={handleApplyItem}
-            items={items.filter((item) => item.category === selectedTab)}
+            userCoin={100}
+            onPurchase={handlePurchase}
+            onApply={handleApply}
+            items={mappedItems.filter((item: any) => item.category === selectedTab)}
           />
         </div>
       </div>
 
       <div className="snapshotSection">
         <p className="subtitle">스냅샷</p>
-        <div className="snapshotBox">
-          <SnapshotList snapshots={snapshots} />
-        </div>
+        <div className="snapshotBox">{formattedSnapshots && <SnapshotList snapshots={formattedSnapshots} />}</div>
       </div>
 
       <GeneralButton buttonStyle={{ style: 'floating', size: 'small' }} className="logout">
         로그아웃
       </GeneralButton>
     </div>
-  );
-}
-
-// Suspense로 감싸서 로딩 중 처리 추가
-export function MypagePageWithSuspense() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <MypagePage />
-    </Suspense>
   );
 }

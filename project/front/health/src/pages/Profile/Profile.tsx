@@ -1,15 +1,28 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Crew from '@/components/Crew/Crew';
+import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import './Profile.scss';
-import { getUserExerciseTime, getUserWeight6 } from '@/api/user';
+import { getUserDetail, getUserExerciseTime, getUserWeight6 } from '@/api/user';
 import { getUserCrewList } from '@/api/crew';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import queryKeys from '@/utils/querykeys';
 
+// interface UserProps {
+//   userId: number;
+// }
+
 export default function ProfilePage() {
-  const { userId } = useParams<{ userId: string }>();
+  // const { user_id } = useParams<{ user_id: string }>();
+  const userId = 1;
+  const navigate = useNavigate();
+
+  // 회원 디테일
+  const { data: userDetailData } = useSuspenseQuery({
+    queryKey: [queryKeys.USER_DETAIL, userId],
+    queryFn: () => getUserDetail(Number(userId)),
+  });
 
   // 운동 시간 가져오기
   const { data: exerciseTimeData } = useSuspenseQuery({
@@ -27,7 +40,6 @@ export default function ProfilePage() {
   const { data: userCrewList } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
     queryFn: () => getUserCrewList(Number(userId)),
-    select: (response) => response.data.crewList || [],
   });
 
   // 6개월 전까지의 날짜 배열을 생성하는 함수
@@ -121,31 +133,47 @@ export default function ProfilePage() {
   };
 
   const handleCrewClick = (crewId: number) => {
-    console.log(crewId); // TODO - 해당 크루 상세보기
+    navigate(`/crew/crewDetail/${crewId}`);
   };
 
+  console.log(weight6Data);
+  const hasWeightData = weight6Data?.data.data.weightDataList?.length > 0;
   return (
     <div className="profileContainer">
-      <p className="titles">닉네임님</p>
+      <p className="titles">{userDetailData.data.nickname}님</p>
       <div className="profileHeaderSection">
+        <div className="userProfileInfo">
+          <CharacterCanvas glbUrl={userDetailData.data.characterFileUrl} gender={userDetailData.data.gender} />
+        </div>
+
         <div className="time">
           <p className="timeTitle">오늘의 운동 시간</p>
-          <span>{formatExerciseTime(exerciseTimeData?.data.data.dailyAccumulatedExerciseTime || 0)}</span>
+          <span>{formatExerciseTime(exerciseTimeData.data.data.dailyAccumulatedExerciseTime)}</span>
           <p className="timeTitle">이번 주 운동 시간</p>
-          <span>{formatExerciseTime(exerciseTimeData?.data.data.weeklyAccumulatedExerciseTime || 0)}</span>
+          <span>{formatExerciseTime(exerciseTimeData.data.data.weeklyAccumulatedExerciseTime)}</span>
         </div>
       </div>
 
       <div className="userChartContainer">
-        <Line data={chartData} options={options} />
+        <div className={`userChartContent ${!hasWeightData ? 'blurred' : ''}`}>
+          <Line data={chartData} options={options} />
+        </div>
+        {!hasWeightData && (
+          <div className="noWeightMessage">
+            <p>
+              지난 6개월 동안 <br />
+              입력된 체형 정보가 없습니다.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="crewContainer">
-        <p className="titles">닉네임님의 크루</p>
+        <p className="titles">{userDetailData.data.nickname}님의 크루</p>
 
         <div className="crewList">
-          {userCrewList && userCrewList.length > 0 ? (
-            userCrewList.map((crew: any) => (
+          {userCrewList.data && userCrewList.data.crewList.length > 0 ? (
+            userCrewList.data.crewList.map((crew: any) => (
               <Crew
                 key={crew.crewId}
                 imageUrl={crew.crewProfileImage}

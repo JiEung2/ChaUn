@@ -22,7 +22,7 @@ export const alarmHandlers = [
               coins: 50,
             },
           },
-          content: '크루 퀘스트를 달성했어요.',
+          content: '퀘스트를 달성했어요.',
           createdAt: '2024-10-01T17:23:07.3202412',
         },
         {
@@ -86,6 +86,19 @@ export const alarmHandlers = [
           createdAt: '2024-09-27T14:14:13.869796',
         },
       ],
+    });
+  }),
+  http.patch(`${baseUrl}/notification/read/:notification_Id`, ({ params }) => {
+    const { notification_Id } = params;
+    console.log(notification_Id);
+    return HttpResponse.json({
+      status: 200,
+      message: 'Success',
+      data: {
+        message: '알림 상태 변경 완료',
+        previousStatus: 'UNREAD',
+        currentStatus: 'READ',
+      },
     });
   }),
 ];

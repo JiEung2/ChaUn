@@ -27,4 +27,6 @@ export default {
   CREW_QUEST: 'crewQuest',
   NOTIFICATION: 'notification',
   BATTLE_MATCHING: 'battleMatching',
+  PARTS_LIST: 'partslist',
+  SNAPSHOT_LIST: 'snapshotList',
 };

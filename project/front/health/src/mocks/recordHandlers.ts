@@ -10,9 +10,12 @@ export const recordHandlers = [
       message: 'Success',
       data: {
         userId: 1,
-        current: 73.23,
-        p30: 73.23,
-        p90: 74.3,
+        current: 79.23,
+        current_image: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/eca0d72a-0c99-43c7-8003-8ecb0c21d16c.png',
+        p30: 78.23,
+        p30_image: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/eca0d72a-0c99-43c7-8003-8ecb0c21d16c.png',
+        p90: 77.3,
+        p90_image: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/a31ba8f3-7042-460b-b331-3bf0df446860.png',
         createdAt: '2024-09-20T05:10:42.658',
       },
     });
@@ -25,15 +28,13 @@ export const recordHandlers = [
       message: 'Success',
       data: {
         userId: 1,
-        current: 73.23,
-        p30: 72.23,
-        p90: 70.3,
+        current: 79.23,
+        current_image: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/eca0d72a-0c99-43c7-8003-8ecb0c21d16c.png',
+        p30: 75.23,
+        p30_image: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/ead7f946-f313-487c-9ea8-7735353a1c56.png',
+        p90: 74.3,
+        p90_image: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/a31ba8f3-7042-460b-b331-3bf0df446860.png',
         createdAt: '2024-09-20T05:10:42.658',
-        exercise: {
-          exerciseId: 3,
-          count: 2,
-          duration: 30,
-        },
       },
     });
   }),

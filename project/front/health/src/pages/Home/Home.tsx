@@ -1,4 +1,4 @@
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Line } from 'react-chartjs-2';
 import QuestIcon from '../../assets/svg/quest.svg';
@@ -6,14 +6,15 @@ import CalendarIcon from '../../assets/svg/calendar.svg';
 import StyledButton from '../../components/Button/StyledButton';
 import HomeIcon1 from '../../assets/svg/homeIcon1.svg';
 import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
-import Character from '@/assets/image/model.png';
+
 import 'chart.js/auto';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
 import { exerciseTime, exerciseRecord } from '@/api/home';
 import { useSuspenseQuery } from '@tanstack/react-query';
-
+import { getUserDetail } from '@/api/user';
+import useUserStore from '@/store/userInfo';
 Chart.register(annotationPlugin);
 
 interface ExerciseTimeResponse {
@@ -66,7 +67,7 @@ function ExerciseTimeDisplay() {
 
   return (
     <div className="myInfo">
-      <img src={Character} alt="character" />
+      <img src="{Character}" alt="character" />
       <div className="time">
         <p className="timeTitle">오늘 운동 시간</p>
         <span>{characterContent.todayTime}</span>
@@ -188,6 +189,11 @@ function ExerciseRecordChart() {
     ],
   };
 
+  // 데이터가 없는 경우 처리
+  if (!chartData || chartData.length === 0) {
+    return <div>운동 기록이 없습니다.</div>;
+  }
+
   return <Line data={dataConfig} options={options} />;
 }
 
@@ -247,5 +253,22 @@ function HomePageContent() {
 
 // 전체 페이지에서 Suspense를 분리하여 사용
 export default function HomePage() {
+  const { userId, setNickname, setHasCoin } = useUserStore();
+
+  // 초기 1회 유저 데이터 저장
+  useEffect(() => {
+    async function fetchUserData() {
+      try {
+        const response = await getUserDetail(userId);
+        setNickname(response.nickname);
+        setHasCoin(response.coin);
+      } catch (e) {
+        console.log('유저 정보를 가져오던 중 에러', e);
+      }
+    }
+
+    fetchUserData();
+  }, [userId, setNickname, setHasCoin]);
+
   return <HomePageContent />;
 }
