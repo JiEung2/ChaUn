@@ -11,8 +11,8 @@ import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
 import { exerciseTime, exerciseRecord } from '@/api/home';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getUserDetail } from '@/api/user';
+import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
+import { getUserDetail, patchDeviceToken } from '@/api/user';
 import useUserStore from '@/store/userInfo';
 Chart.register(annotationPlugin);
 
@@ -253,18 +253,52 @@ function HomePageContent() {
 // 전체 페이지에서 Suspense를 분리하여 사용
 export default function HomePage() {
   const { userId, setNickname, setHasCoin } = useUserStore();
+  const [isTokenSent, setIsTokenSent] = useState(() => {
+    return localStorage.getItem('isTokenSent') === 'true';
+  });
 
-  // 초기 1회 유저 데이터 저장
+  const tokenMutation = useMutation({
+    mutationFn: (deviceToken: string) => patchDeviceToken(deviceToken),
+    onSuccess: () => {
+      localStorage.setItem('isTokenSent', 'true');
+      setIsTokenSent(true);
+    },
+    onError: (error) => {
+      console.error('FCM 토큰 서버 전송 중 오류:', error);
+    },
+  });
+
   useEffect(() => {
-    navigator.serviceWorker.register('/serviceWorkerRegistration.js');
+    if (!isTokenSent) {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+          .register('/firebase-messaging-sw.js')
+          .then(() => {
+            console.log('서비스 워커가 등록되었습니다.');
+          })
+          .catch((error) => {
+            console.error('서비스 워커 등록 실패:', error);
+          });
+      }
 
+      const storedToken = sessionStorage.getItem('fcmToken');
+      if (storedToken) {
+        console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
+        tokenMutation.mutate(storedToken);
+      } else {
+        console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
+      }
+    }
+  }, [isTokenSent, tokenMutation]);
+  // 두 번째 useEffect: 유저 데이터 가져오기
+  useEffect(() => {
     async function fetchUserData() {
       try {
         const response = await getUserDetail(userId);
         setNickname(response.nickname);
         setHasCoin(response.coin);
       } catch (e) {
-        console.log('유저 정보를 가져오던 중 에러', e);
+        console.log('유저 정보를 가져오는 중 에러:', e);
       }
     }
 
