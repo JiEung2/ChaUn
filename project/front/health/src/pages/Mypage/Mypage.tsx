@@ -52,7 +52,7 @@ export default function MypagePage() {
   });
 
   const snapshotMutation = useMutation({
-    mutationFn: (snapshot: string) => postSnapshot(snapshot),
+    mutationFn: (snapshot: FormData) => postSnapshot(snapshot),
     onSuccess: (data) => {
       console.log('Success:', data);
     },
@@ -80,21 +80,38 @@ export default function MypagePage() {
   // 캔버스 캡처 핸들러
   // 캔버스 캡처 핸들러
   const handleCaptureClick = async () => {
-    setPreserveBuffer(true);
+    setPreserveBuffer(true); // 캡처할 때 preserveDrawingBuffer를 true로 설정
 
+    // 캔버스 렌더링이 완료된 후에 캡처를 시도하기 위해 requestAnimationFrame 사용
     requestAnimationFrame(async () => {
       if (characterRef.current) {
         try {
           // 캔버스를 캡처하고 base64로 변환
           const canvas = await html2canvas(characterRef.current as HTMLElement);
-          const base64Image = canvas.toDataURL('image/png'); // base64 이미지를 postSnapshot 함수로 전송
-          snapshotMutation.mutate(base64Image);
+
+          // PNG 파일로 변환
+          canvas.toBlob((blob) => {
+            if (blob) {
+              // Blob을 파일 형태로 처리 (여기서 png 파일 형태로 준비)
+              const file = new File([blob], 'character_snapshot.png', { type: 'image/png' });
+
+              // 이제 'file'은 PNG 파일로 처리되어 다른 곳에서 사용할 수 있음
+              console.log('PNG 파일이 준비되었습니다:', file);
+
+              // 이후에 API 호출을 위해 FormData에 추가
+              const formData = new FormData();
+              formData.append('snapshot', file); // 파일을 FormData에 추가
+
+              // API로 formData 전송
+              snapshotMutation.mutate(formData);
+            }
+          }, 'image/png');
         } catch (err) {
           console.error('Error capturing the canvas:', err);
         }
       }
 
-      setPreserveBuffer(false);
+      setPreserveBuffer(false); // 캡처 후 preserveDrawingBuffer를 다시 false로 설정
     });
   };
 

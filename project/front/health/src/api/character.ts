@@ -23,24 +23,20 @@ export const patchPartsOnOff = async (parts_id: number) => {
   return response;
 };
 
-export const postSnapshot = async (snapshot: string) => {
+export const postSnapshot = async (formData: FormData) => {
   try {
-    // FormData 객체 생성
-    const formData = new FormData();
-
-    // FormData에 'snapshot'이라는 이름으로 base64 이미지 데이터 추가
-    formData.append('snapshot', snapshot);
-
-    // Axios 요청
+    // Axios 요청으로 FormData 전송
     const response = await exportAxios.post(`${baseUrl}/character/snapshot/save`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
 
+    console.log('Snapshot successfully uploaded:', response);
     return response;
   } catch (error) {
     console.error('postSnapshot Error:', error);
+    throw error;
   }
 };
 
