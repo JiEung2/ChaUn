@@ -22,7 +22,7 @@ public interface UserCrewRepository extends JpaRepository<UserCrew, Long> {
 
     Optional<UserCrew> findByCrewIdAndUserId(Long crewId, Long userId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE UserCrew uc " +
             "SET uc.basicScore = uc.basicScore + :basicScore " +
             "WHERE uc.user = :user " +
