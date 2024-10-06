@@ -12,12 +12,12 @@ import Crew from '@/components/Crew/Crew';
 import queryKeys from '@/utils/querykeys';
 import { getUserCrewList } from '@/api/crew';
 import ButtonState from './components/ButtonState';
-
+import useUserStore from '@/store/userInfo';
 export default function CrewPage() {
   const navigate = useNavigate();
-
+  const { userId } = useUserStore();
   // 임시 dummy Id
-  const userId = 1;
+  // const userId = 1;
   // 가입된 크루 리스트
   const { data: userCrewList } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],

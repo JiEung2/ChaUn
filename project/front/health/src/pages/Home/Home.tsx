@@ -91,7 +91,7 @@ function ExerciseRecordChart() {
         calories: record.burnedCalories,
       }))
     : [];
-  console.log('운동 기록', exerciseRecordData);
+  // console.log('운동 기록', exerciseRecordData);
   const handleChartClick = (_: any, elements: any) => {
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
