@@ -108,8 +108,8 @@ export const checkCrewName = async (crewName: string) => {
   return response.data;
 };
 // 크루 생성
-export const createCrew = async (crewData: FormData) => {
-  const response = await axios.post(`${baseURL}/crew`, crewData, {
+export const createCrew = async (formData: FormData) => {
+  const response = await axios.post(`${baseURL}/crew`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
