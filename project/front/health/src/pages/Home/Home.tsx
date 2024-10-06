@@ -48,12 +48,17 @@ function useExerciseRecord(year: number, month: number, week: number) {
     queryFn: () => exerciseRecord(year, month, week),
   });
 }
-
-function formatTime(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours}h ${mins}m`;
-}
+const formatTime = (timeInMs: number) => {
+  // console.log('크루 운동 시간', timeInMs);
+  const hours = Math.floor(timeInMs / (1000 * 60 * 60));
+  const minutes = Math.floor((timeInMs % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
+};
+// function formatTime(minutes: number) {
+//   const hours = Math.floor(minutes / 60);
+//   const mins = minutes % 60;
+//   return `${hours}h ${mins}m`;
+// }
 
 // 운동 시간 표시 컴포넌트
 function ExerciseTimeDisplay() {

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface UserState {
   userId: number;
@@ -13,28 +14,27 @@ interface UserState {
   setCharacterFileUrl: (characterFileUrl: string) => void;
 }
 
-const useUserStore = create<UserState>((set) => ({
-  userId: 0, // 초기값 설정
-  nickname: '',
-  coin: 0,
-  characterImageUrl: '',
-  characterFileUrl: '',
+const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      userId: 0,
+      nickname: '',
+      coin: 0,
+      characterImageUrl: '',
+      characterFileUrl: '',
 
-  // userId를 업데이트하는 함수
-  setUserId: (id: number) => set({ userId: id }),
-
-  // nickname을 업데이트하는 함수
-  setNickname: (nickname: string) => set({ nickname }),
-
-  // hasCoin을 업데이트하는 함수
-  setHasCoin: (hasCoin: number) => set({ coin: hasCoin }),
-
-  // characterImageUrl을 업데이트하는 함수
-  setCharacterImageUrl: (characterImageUrl: string) => set({ characterImageUrl }),
-
-  // characterFileUrl을 업데이트하는 함수
-
-  setCharacterFileUrl: (characterFileUrl: string) => set({ characterFileUrl }),
-}));
+      setUserId: (id: number) => set({ userId: id }),
+      setNickname: (nickname: string) => set({ nickname }),
+      setHasCoin: (hasCoin: number) => set({ coin: hasCoin }),
+      setCharacterImageUrl: (characterImageUrl: string) => set({ characterImageUrl }),
+      setCharacterFileUrl: (characterFileUrl: string) => set({ characterFileUrl }),
+    }),
+    {
+      name: 'user-storage', // 저장될 스토리지의 키 이름
+      // 필요한 경우 storage를 커스터마이즈할 수 있습니다. (예: sessionStorage)
+      // getStorage: () => sessionStorage,
+    }
+  )
+);
 
 export default useUserStore;
