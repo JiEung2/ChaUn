@@ -19,6 +19,7 @@ export default function CrewPage() {
   // 임시 dummy Id
   // const userId = 1;
   // 가입된 크루 리스트
+  console.log('크루 리스트 userId:', userId);
   const { data: userCrewList } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
     queryFn: () => getUserCrewList(Number(userId)),
