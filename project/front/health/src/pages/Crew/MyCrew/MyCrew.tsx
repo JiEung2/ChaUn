@@ -323,7 +323,7 @@ export default function MyCrew() {
             )}
 
             {isCrewLeader ? (
-              <button className="battleButton" onClick={() => navigate('/crew/battle')}>
+              <button className="battleButton" onClick={() => navigate(`/crew/battle/${crewId}`)}>
                 {isInBattle ? '입장하기' : '참여하기'}
               </button>
             ) : (
