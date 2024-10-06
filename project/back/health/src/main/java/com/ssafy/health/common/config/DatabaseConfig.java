@@ -1,5 +1,7 @@
 package com.ssafy.health.common.config;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +90,20 @@ public class DatabaseConfig {
 
     @Bean
     public MongoClient mongoClient(MongoProperties mongoProperties) {
-        return MongoClients.create(mongoProperties.getUri());
+
+        String connectionString = String.format(
+                "mongodb://%s:%s@%s:%d/%s?authSource=%s",
+                mongoProperties.getUsername(),
+                String.valueOf(mongoProperties.getPassword()),
+                mongoProperties.getHost(),
+                mongoProperties.getPort(),
+                mongoProperties.getDatabase(),
+                mongoProperties.getAuthenticationDatabase()
+        );
+
+        return MongoClients.create(MongoClientSettings.builder()
+                .applyConnectionString(new ConnectionString(connectionString))
+                .build());
     }
 
     @Bean
