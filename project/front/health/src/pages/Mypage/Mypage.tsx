@@ -1,23 +1,27 @@
 import { useRef, useState, useEffect } from 'react';
 import { useMutation, useSuspenseQuery, useQueryClient, useQuery } from '@tanstack/react-query';
+import ShuffleIcon from '@/assets/svg/shuffle.svg';
+import CamerIcon from '@/assets/svg/camera.svg';
 import Coin from '@/components/Coin/Coin';
 import GeneralButton from '@/components/Button/GeneralButton';
 import CustomCategories from '@/components/Profile/Custom/CustomCategories';
 import SnapshotList from '@/components/Profile/Snapshot/SnapshotList';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
+import html2canvas from 'html2canvas';
 import queryKeys from '@/utils/querykeys';
 import './Mypage.scss';
-import { getPartsList, getMyCharacter, patchPartsOnOff, getSnapshotList } from '@/api/character';
+import { getPartsList, getMyCharacter, patchPartsOnOff, getSnapshotList, postSnapshot } from '@/api/character';
 
 const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
 
 export default function MypagePage() {
   const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
+  const [preserveBuffer, setPreserveBuffer] = useState(false);
   const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
-  const [activeAnimation, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
+  const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
   const queryClient = useQueryClient();
 
@@ -38,6 +42,7 @@ export default function MypagePage() {
   useEffect(() => {
     if (myCharacter) {
       setGender(myCharacter?.data?.data.gender === 'MAN' ? 'MAN' : 'FEMALE');
+      setActiveAnimation(myCharacter?.data?.data.characterGlbUrl);
     }
   }, [myCharacter]);
 
@@ -45,6 +50,70 @@ export default function MypagePage() {
     queryKey: [queryKeys.PARTS_LIST],
     queryFn: () => getPartsList(),
   });
+
+  const snapshotMutation = useMutation({
+    mutationFn: (snapshot: FormData) => postSnapshot(snapshot),
+    onSuccess: (data) => {
+      console.log('Success:', data);
+    },
+    onError: (error) => {
+      console.error('Error:', error);
+    },
+  });
+
+  // // 캔버스 캡처 핸들러
+  // const handleCaptureClick = async () => {
+  //   setPreserveBuffer(true);
+
+  //   // 캔버스 렌더링이 완료된 후에 캡처 시도
+  //   requestAnimationFrame(async () => {
+  //     if (characterRef.current) {
+  //       const canvas = await html2canvas(characterRef.current as HTMLElement);
+  //       const base64Image = canvas.toDataURL('image/png').replace(/^data:image\/png;base64,/, '');
+  //       snapshotMutation.mutate(base64Image);
+  //     }
+
+  //     // 캡처 후 성능 최적화를 위해 다시 false로 설정
+  //     setPreserveBuffer(false);
+  //   });
+  // };
+  // 캔버스 캡처 핸들러
+  // 캔버스 캡처 핸들러
+  const handleCaptureClick = async () => {
+    setPreserveBuffer(true); // 캡처할 때 preserveDrawingBuffer를 true로 설정
+
+    // 캔버스 렌더링이 완료된 후에 캡처를 시도하기 위해 requestAnimationFrame 사용
+    requestAnimationFrame(async () => {
+      if (characterRef.current) {
+        try {
+          // 캔버스를 캡처하고 base64로 변환
+          const canvas = await html2canvas(characterRef.current as HTMLElement);
+
+          // PNG 파일로 변환
+          canvas.toBlob((blob) => {
+            if (blob) {
+              // Blob을 파일 형태로 처리 (여기서 png 파일 형태로 준비)
+              const file = new File([blob], 'character_snapshot.png', { type: 'image/png' });
+
+              // 이제 'file'은 PNG 파일로 처리되어 다른 곳에서 사용할 수 있음
+              console.log('PNG 파일이 준비되었습니다:', file);
+
+              // 이후에 API 호출을 위해 FormData에 추가
+              const formData = new FormData();
+              formData.append('snapshot', file); // 파일을 FormData에 추가
+
+              // API로 formData 전송
+              snapshotMutation.mutate(formData);
+            }
+          }, 'image/png');
+        } catch (err) {
+          console.error('Error capturing the canvas:', err);
+        }
+      }
+
+      setPreserveBuffer(false); // 캡처 후 preserveDrawingBuffer를 다시 false로 설정
+    });
+  };
 
   // 스냅샷 리스트 캐시에서 확인
   const cachedSnapshotList = queryClient.getQueryData([queryKeys.SNAPSHOT_LIST]);
@@ -116,7 +185,14 @@ export default function MypagePage() {
     }
   };
 
-  // 버튼 클릭 핸들러 - 선택된 애니메이션만 비활성화
+  // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
+  const handleShuffleClick = () => {
+    const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
+    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+    handleButtonClick(randomAnimation);
+  };
+
+  // 버튼 클릭 핸들러 - 선택된 애니메이션 업데이트
   const handleButtonClick = (type: 'standing' | 'dancing' | 'waving') => {
     const url = generateAnimationUrl(type);
     setCharacterGlbUrl(url); // 선택한 모델 URL로 업데이트
@@ -136,9 +212,6 @@ export default function MypagePage() {
         case 'PANTS':
           category = '하의';
           break;
-        // case 'ARM' || 'LEG' || 'NONE':
-        //   category = '아이템';
-        //   break;
         default:
           category = '아이템';
       }
@@ -161,32 +234,24 @@ export default function MypagePage() {
           <Coin amount={100} style="styled" />
         </div>
 
-        <div className="character" ref={characterRef}>
-          {characterGlbUrl ? (
-            <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} />
-          ) : (
-            <p>캐릭터 정보를 불러오는 중입니다...</p>
-          )}
+        <div className="characterAndSnapshot">
+          <div className="character" ref={characterRef}>
+            {characterGlbUrl ? (
+              <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
+            ) : (
+              <p>
+                기본, 춤추기, 손 흔들기 중 <br /> 랜덤 동작이 준비 중입니다!
+              </p>
+            )}
+          </div>
 
-          <div className="character-actions">
-            <button
-              className={activeAnimation === 'standing' ? 'disabled' : 'primary'}
-              onClick={() => handleButtonClick('standing')}
-              disabled={activeAnimation === 'standing'}>
-              기본
-            </button>
-            <button
-              className={activeAnimation === 'dancing' ? 'disabled' : 'primary'}
-              onClick={() => handleButtonClick('dancing')}
-              disabled={activeAnimation === 'dancing'}>
-              춤추기
-            </button>
-            <button
-              className={activeAnimation === 'waving' ? 'disabled' : 'primary'}
-              onClick={() => handleButtonClick('waving')}
-              disabled={activeAnimation === 'waving'}>
-              인사
-            </button>
+          <div className="iconWrapper">
+            <div className="navIcon">
+              <img src={ShuffleIcon} alt="shuffle Icon" className="icon" onClick={handleShuffleClick} />
+            </div>
+            <div className="navIcon">
+              <img src={CamerIcon} alt="camera Icon" className="icon" onClick={handleCaptureClick} />
+            </div>
           </div>
         </div>
       </div>

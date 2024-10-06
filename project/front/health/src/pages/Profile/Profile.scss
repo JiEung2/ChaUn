@@ -17,12 +17,12 @@
   background-color: #f0f4f8;
   border-radius: 15px;
   padding: 20px 0;
-  margin: 0 10px;
   position: relative;
+
   .userProfileInfo {
-    width: 100px; /* Canvas 크기를 줄임 */
+    width: 150px; /* Canvas 크기를 줄임 */
     height: 250px; /* Canvas 높이 설정 */
-    transform: translateX(-30px); /* 왼쪽으로 약간 이동 */
+    transform: translateX(-20px); /* 왼쪽으로 약간 이동 */
 
     canvas {
       width: 100% !important;
