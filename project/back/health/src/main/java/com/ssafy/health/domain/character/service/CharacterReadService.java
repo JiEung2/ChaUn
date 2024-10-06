@@ -51,8 +51,11 @@ public class CharacterReadService {
         }
         Character character = characterRepository.findById(id).orElseThrow(CharacterNotFoundException::new);
 
-        return CharacterResponseDto.builder().characterUrl(character.getCharacterFile())
-                .bodyTypeId(character.getBodyType().getId()).build();
+        return CharacterResponseDto.builder()
+                .characterUrl(character.getCharacterFile())
+                .bodyTypeId(character.getBodyType().getId())
+                .gender(character.getGender())
+                .build();
     }
 
     public PartsListDto getParts(){
