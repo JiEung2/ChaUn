@@ -57,6 +57,7 @@ public class UserReadService {
                 .nickname(user.getNickname())
                 .characterImageUrl(myCharacter.getCharacterImage())
                 .characterFileUrl(myCharacter.getCharacterFile())
+                .gender(user.getGender())
                 .build();
     }
 
