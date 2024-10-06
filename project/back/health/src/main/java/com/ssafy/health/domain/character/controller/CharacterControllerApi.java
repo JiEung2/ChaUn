@@ -32,6 +32,7 @@ public interface CharacterControllerApi {
                                       "data": {
                                         "characterUrl": "character-url.glb",
                                         "bodyTypeId": 4
+                                        "gender": "MAN"
                                       }
                                     }"""
                             ))
@@ -53,6 +54,7 @@ public interface CharacterControllerApi {
                                       "data": {
                                         "characterUrl": "character-url.glb",
                                         "bodyTypeId": 4
+                                        "gender": "MAN"
                                       }
                                     }"""
                             ))
