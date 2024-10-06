@@ -15,7 +15,9 @@
   width: 154px;
   height: 90px;
   text-align: left;
-  transition: transform 0.1s, box-shadow 0.1s;
+  transition:
+    transform 0.1s,
+    box-shadow 0.1s;
   overflow: hidden;
   position: relative;
 
@@ -38,6 +40,23 @@
 
   &.styledButton3 {
     background-color: colors.$styledButton3;
+    width: 310px;
+    .styledButtonIcon {
+      display: flex;
+      right: 7px;
+      top: 15px;
+      position: absolute;
+      z-index: 2;
+    }
+    .styledButtonDescription {
+      margin-bottom: 5px;
+      max-width: 140px;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      color: colors.$darkGray;
+
+      @include typo.description2;
+    }
   }
 }
 
@@ -52,7 +71,7 @@
 
 .styledButtonTitle {
   margin: 0;
-  max-width: 70px; // 너비 제한 설정
+  max-width: 200px; // 너비 제한 설정
   word-break: break-word; // 너비 초과 시 줄바꿈
   overflow-wrap: break-word; // 단어가 길어질 경우 강제로 줄바꿈
   color: colors.$black;
@@ -61,8 +80,8 @@
 }
 
 .styledButtonDescription {
-  margin: 0;
-  max-width: 128px; 
+  margin-bottom: 5px;
+  max-width: 60px;
   word-break: break-word;
   overflow-wrap: break-word;
   color: colors.$darkGray;
@@ -72,7 +91,7 @@
 
 .styledButtonIcon {
   display: flex;
-  left: 85px;
+  right: 7px;
   top: 20px;
   position: absolute;
   z-index: 2;

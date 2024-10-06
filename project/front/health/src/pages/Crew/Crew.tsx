@@ -109,20 +109,23 @@ export default function CrewPage() {
             icon={createIcon}
             onClick={() => navigate('/crew/create')}
             backgroundColor="styledButton1"
+            description="새로운 크루를 만들어요!"
           />
           <StyledButton
             title="크루 추천"
             icon={recommendIcon}
             onClick={() => navigate('/crew/recommend')}
             backgroundColor="styledButton2"
+            description="내게 더욱 맞는 크루를!"
           />
         </div>
         <div className="rankingButtonSection">
           <StyledButton
-            title="실시간 크루랭킹"
+            title="실시간 크루 랭킹"
             icon={rankingIcon}
             onClick={() => navigate('/crew/ranking')}
             backgroundColor="styledButton3"
+            description="우리 크루의 랭킹은 과연 몇등일지!   다른 크루들을 앞질러보세요!"
           />
         </div>
       </div>
