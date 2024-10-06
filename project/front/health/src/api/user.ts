@@ -28,3 +28,10 @@ export const getUserWeight6 = async (userId: number) => {
   const response = await exportAxios.get(`${baseUrl}/users/${userId}/weight`, { params: { userId } });
   return response;
 };
+
+// 기기 등록
+export const patchDeviceToken = async (deviceToken: string) => {
+  console.log('axios test:', deviceToken);
+  const response = await exportAxios.patch(`${baseUrl}/users/register-device`, { deviceToken });
+  return response;
+};

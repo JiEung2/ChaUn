@@ -6,14 +6,13 @@ import CalendarIcon from '../../assets/svg/calendar.svg';
 import StyledButton from '../../components/Button/StyledButton';
 import HomeIcon1 from '../../assets/svg/homeIcon1.svg';
 import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
-
 import 'chart.js/auto';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
 import { exerciseTime, exerciseRecord } from '@/api/home';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getUserDetail } from '@/api/user';
+import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
+import { getUserDetail, patchDeviceToken } from '@/api/user';
 import useUserStore from '@/store/userInfo';
 Chart.register(annotationPlugin);
 
@@ -190,7 +189,16 @@ function ExerciseRecordChart() {
   };
 
   if (!chartData || chartData.length === 0) {
-    return <div>운동 기록이 없습니다.</div>;
+    return (
+      <div className="noChartDataContainer">
+        <div className={`noChartData blurred`}>
+          <Line data={dataConfig} options={options} />
+        </div>
+        <div className="noChartDataMessage">
+          <p>이번 주 운동 기록이 없습니다.</p>
+        </div>
+      </div>
+    );
   }
 
   return <Line data={dataConfig} options={options} />;
@@ -221,6 +229,8 @@ function HomePageContent({ nickname }: { nickname: string }) {
 
       <div className="chartSection">
         <p className="chartTitle">이번 주 운동 그래프</p>
+        {/* 운동 기록 차트 Suspense로 감쌈 */}
+
         <Suspense fallback={<div>Loading chart...</div>}>
           <ExerciseRecordChart />
         </Suspense>
@@ -249,8 +259,45 @@ function HomePageContent({ nickname }: { nickname: string }) {
 }
 
 export default function HomePage() {
-  const { userId, nickname, setNickname, setHasCoin } = useUserStore();
+  const { userId, setNickname, setHasCoin } = useUserStore();
+  const [isTokenSent, setIsTokenSent] = useState(() => {
+    return localStorage.getItem('isTokenSent') === 'true';
+  });
 
+  const tokenMutation = useMutation({
+    mutationFn: (deviceToken: string) => patchDeviceToken(deviceToken),
+    onSuccess: () => {
+      localStorage.setItem('isTokenSent', 'true');
+      setIsTokenSent(true);
+    },
+    onError: (error) => {
+      console.error('FCM 토큰 서버 전송 중 오류:', error);
+    },
+  });
+
+  useEffect(() => {
+    if (!isTokenSent) {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+          .register('/firebase-messaging-sw.js')
+          .then(() => {
+            console.log('서비스 워커가 등록되었습니다.');
+          })
+          .catch((error) => {
+            console.error('서비스 워커 등록 실패:', error);
+          });
+      }
+
+      const storedToken = sessionStorage.getItem('fcmToken');
+      if (storedToken) {
+        console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
+        tokenMutation.mutate(storedToken);
+      } else {
+        console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
+      }
+    }
+  }, [isTokenSent, tokenMutation]);
+  // 두 번째 useEffect: 유저 데이터 가져오기
   useEffect(() => {
     async function fetchUserData() {
       try {
@@ -258,7 +305,7 @@ export default function HomePage() {
         setNickname(response.nickname);
         setHasCoin(response.coin);
       } catch (e) {
-        console.log('유저 정보를 가져오던 중 에러', e);
+        console.log('유저 정보를 가져오는 중 에러:', e);
       }
     }
 

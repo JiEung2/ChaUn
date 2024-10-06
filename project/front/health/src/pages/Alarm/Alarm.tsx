@@ -3,6 +3,7 @@ import bodyIcon from '@/assets/svg/home/Icon2.svg';
 import battleStartIcon from '@/assets/svg/crewRecommend.svg';
 import questIcon from '@/assets/svg/homeIcon1.svg';
 import battleFinishIcon from '@/assets/svg/crewRanking.svg';
+import bellOffImage from '@/assets/svg/bellOff.svg';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import RightArrow from '@/assets/svg/rightArrow.svg';
@@ -155,16 +156,25 @@ export default function AlarmPage() {
 
   return (
     <div className="alarmContainer">
-      {alarmList?.data?.data.map((alarm: Notification) => (
-        <div className="alarmItemContainer" key={alarm.notificationId}>
-          <img src={getIcon(alarm)} alt="Icon" className="alarmIcon" />
-          <div className="messageContainer">
-            {renderMessage(alarm)}
-            <p className="date">{formatDate(alarm.createdAt)}</p>
+      {alarmList?.data?.data.length > 0 ? (
+        alarmList.data.data.map((alarm: Notification) => (
+          <div className="alarmItemContainer" key={alarm.notificationId}>
+            <img src={getIcon(alarm)} alt="Icon" className="alarmIcon" />
+            <div className="messageContainer">
+              {renderMessage(alarm)}
+              <p className="date">{formatDate(alarm.createdAt)}</p>
+            </div>
+            <img src={RightArrow} alt="moveArrow" className="arrow" onClick={() => handleNavigation(alarm)} />
           </div>
-          <img src={RightArrow} alt="moveArrow" className="arrow" onClick={() => handleNavigation(alarm)} />
+        ))
+      ) : (
+        <div className="noAlarm">
+          <img src={bellOffImage} alt="noAlarm" />
+          <p className="noAlarmMessage">
+            새로운 알림이 없습니다. <br /> 크루 활동 및 퀘스트를 통해 알림을 받아보세요.
+          </p>
         </div>
-      ))}
+      )}
 
       {isModalOpen && selectedAlarm && selectedAlarm.additionalData?.battleDetail && (
         <AlarmModal

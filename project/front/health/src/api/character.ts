@@ -1,4 +1,4 @@
-// import axios from 'axios';
+import axios from 'axios';
 import exportAxios from './axiosInstance';
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
@@ -25,8 +25,7 @@ export const patchPartsOnOff = async (parts_id: number) => {
 
 export const postSnapshot = async (formData: FormData) => {
   try {
-    // Axios 요청으로 FormData 전송
-    const response = await exportAxios.post(`${baseUrl}/character/snapshot/save`, formData, {
+    const response = await axios.post(`${baseUrl}/character/snapshot`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -35,8 +34,7 @@ export const postSnapshot = async (formData: FormData) => {
     console.log('Snapshot successfully uploaded:', response);
     return response;
   } catch (error) {
-    console.error('postSnapshot Error:', error);
-    throw error;
+    console.log('API에서 에러 발생:', error);
   }
 };
 
