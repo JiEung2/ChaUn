@@ -38,9 +38,9 @@ MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
 # MongoClient 생성
 try:
     # 테스트 용
-    # client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
+    client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     # 실제 서버 상태 확인
-    client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
+    # client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     server_status = client.admin.command("ping")
     db = client['Health']
     predict_basic = db['predict_basic']
@@ -451,139 +451,105 @@ def pearson_similarity(user, crew):
     combined_similarity = (0.7 * similarity) + (0.3 * body_similarity)
     return combined_similarity
 
-# 4. 메인 추천 함수
-def recommend_crews(now_user, crew_df, top_n=6):
-    global user_df
+# 4. 메인 추천 함수 (user_df를 인자로 받도록 수정)
+def recommend_crews(now_user, user_df, crew_df, top_n=6):
     similarities = []
 
     # 전체 유저의 스포츠 선호도를 벡터로 변환 (한 번에 처리)
     user_sport_matrix = create_sport_matrix(user_df.to_dict('records'))
     now_user_vec = create_sport_matrix([now_user.to_dict()])[0]  # 현재 사용자 벡터
 
-    # 2-2. Cosine Similarity를 모든 사용자와 한 번에 계산
+    # Cosine Similarity를 모든 사용자와 한 번에 계산
     cosine_similarities = cosine_similarity([now_user_vec], user_sport_matrix)[0]
 
     for i in range(len(crew_df)):
-        # 크루에 속해 있지 않을 때 (새로운 크루만 추천 받게)
-        # user_data에 있는 crew_list = List[crew_id]에 현재 인덱스의 crew_id 있는지 확인
         now_crew = crew_df.loc[i]
 
         if now_crew['crew_id'] not in now_user['crew_list']:
             crew_members = user_df[user_df['crew_list'].apply(lambda crew_list: now_crew['crew_id'] in crew_list)]
             crew_member_indices = crew_members.index.tolist()
-            
+
             # 해당 크루에 속한 사용자들의 코사인 유사도 평균 계산
             if crew_member_indices:
                 content_similarity = np.mean(cosine_similarities[crew_member_indices])
                 content_similarity *= 0.3  # 가중치 0.3 적용
             else:
                 content_similarity = 0
-
-            # 4-2. 유저와 크루간 협업 필터링 (return combined_sim)
             pearson_sim = pearson_similarity(now_user, now_crew)
-
-            # 협업 필터링과 콘텐츠 필터링의 가중치를 합산 (7:3) # 컨텐츠 필터링 = 0.24, 0.15
             combined_similarity = (0.7 * pearson_sim) + content_similarity
+            similarities.append((now_crew['crew_id'], combined_similarity, pearson_sim, content_similarity))
 
-            similarities.append((now_crew['crew_id'], combined_similarity, pearson_sim, content_similarity))  # (crew_id, total_sim) 저장
-    
-    # 유사도 내림차순으로 정렬 후 상위 top_n 크루 선택
     similarities.sort(key=lambda x: x[1], reverse=True)
-    # 유사도가 0.2 이상인 항목만 필터링 (= 적당히 유사해야 한다.)
     filtered_similarities = [item for item in similarities[:20] if item[1] >= 0.2]
-    # print('필터 된 목록 :', len(filtered_similarities))
 
-    # 유사도 0.2 이상 상위 20개가 9개가 될 경우
     if len(filtered_similarities) >= 9:
-        top_crews = filtered_similarities[:top_n]  # 상위 6개는 가져가자
-        # 유사도 상위 20개 중 3개 랜덤으로 선택
+        top_crews = filtered_similarities[:top_n]
         additional_crew_numbers = np.random.choice(range(top_n, len(filtered_similarities)), 3, replace=False)
         for idx in additional_crew_numbers:
             top_crews += [filtered_similarities[idx]]
-    else :
+    else:
         top_crews = filtered_similarities
-    
+
     np.random.shuffle(top_crews)
     return top_crews
 
-'''
-로직 정리 :: 내가 속해있는 크루 정보도 알아야 한다.
-해결책으로 엔드포인트르 두 개로 나눈다? 아니면 속해 있는 크루도 포함해서 왕창 DB에 저장? -> 효율적인가? -> 리소스 많이 쓰는 것 같은데
 
-
-데이터 플로우 정리 ::
-우선,spring에서 요청을 보낼 때, 한번의 요청으로 모든 회원의 정보를 보고 크루 추천 리스트를 MongoDB에 저장해야한다.
-그럼, 모델을 수정하는게 더 빠르지 않을까? spring에서 내가 속한 crew_id를 알고 있는 List를 보내주기만 하면
-찾아서 제외해서 추천 리스트 만드는게 더 편할 것 같다.
-
-'''
-
-
-# API :: 크루 추천 (동기 처리)
+# API :: 크루 추천 (동기 처리) (user_df를 인자로 넘겨줌)
 @app.post("/api/v1/users/crew-recommendation/fast-api")
 def crew_recommendation(request: TotalData):
 
     # 1-1. request body 받아서 JSON에서 List를 DF 변환과 전처리
-    user_data = pd.DataFrame([
-        {
-            'user_id': u.user_id,
-            'm_type': u.score.m_type,
-            'type': u.score.type,
-            'age': u.score.age,
-            'score_1': u.score.score_1,
-            'score_2': u.score.score_2,
-            'score_3': u.score.score_3,
-            'favorite_sports': u.favorite_sports,
-            'crew_list': u.crew_list
-        } for u in request.total_users.users
-    ])
-    crew_data = pd.DataFrame([
-        {
-            'crew_id': c.crew_id,
-            'm_type': c.score.m_type,
-            'type': c.score.type,
-            'age': c.score.age,
-            'score_1': c.score.score_1,
-            'score_2': c.score.score_2,
-            'score_3': c.score.score_3,
-            'crew_sports': c.crew_sports
-        } for c in request.total_crews.crews
-    ])
+    user_data = pd.DataFrame([{
+        'user_id': u.user_id,
+        'm_type': u.score.m_type,
+        'type': u.score.type,
+        'age': u.score.age,
+        'score_1': u.score.score_1,
+        'score_2': u.score.score_2,
+        'score_3': u.score.score_3,
+        'favorite_sports': u.favorite_sports,
+        'crew_list': u.crew_list
+    } for u in request.total_users.users])
+
+    crew_data = pd.DataFrame([{
+        'crew_id': c.crew_id,
+        'm_type': c.score.m_type,
+        'type': c.score.type,
+        'age': c.score.age,
+        'score_1': c.score.score_1,
+        'score_2': c.score.score_2,
+        'score_3': c.score.score_3,
+        'crew_sports': c.crew_sports
+    } for c in request.total_crews.crews])
 
     # 1-2. 데이터 정규화
-    user_data_scaled = (user_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']]).apply(min_max_scaler) # 나이, 체형, 기본 점수, 활동 점수, 식습관 점수
-    crew_data_scaled = (crew_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']]).apply(min_max_scaler)
-    # 1-3. DataFrame생성 (Matrix)
+    user_data_scaled = user_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']].apply(min_max_scaler)
+    crew_data_scaled = crew_data[['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3']].apply(min_max_scaler)
+
+    # DataFrame 생성
     user_df = pd.DataFrame(user_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
     crew_df = pd.DataFrame(crew_data_scaled, columns=['m_type', 'type', 'age', 'score_1', 'score_2', 'score_3'])
-    # 1-4. 유저 df, 크루 df -> 필요 정보 불러오기
+
     user_df['user_id'] = user_data['user_id']
     user_df['favorite_sports'] = user_data['favorite_sports']
     user_df['crew_list'] = user_data['crew_list']
 
     crew_df['crew_id'] = crew_data['crew_id']
     crew_df['crew_sports'] = crew_data['crew_sports']
-    # _data = row DF, _scaled = 정규화된 DF, _df = 스케일 + 전체 col
 
-    # 2. 완전 탐색 MongoDB Depth
-    for user_idx in range(len(user_df)): # 첫 row부터 끝 row까지 확인할 것
-        # 3. user_df의 user_idx번의 row의 user 데이터를 가지고 있는 객체
+    for user_idx in range(len(user_df)):
         now_user = user_df.loc[user_idx]
+        recommended_crews = recommend_crews(now_user, user_df, crew_df)
 
-        # 4. 크루 추천 (params = 현재 유저 정보, 전체 유저 df, 전체 크루 df)
-        recommended_crews = recommend_crews(now_user, crew_df)
-
-        # 5. 저장할 정보 리스트로 만들기
         result = {
-            'user_id' : int(now_user['user_id']),
-            'crew_recommended' : [{'crew_id': int(crew[0]), 'similarity': round(crew[1], 3)} for crew in recommended_crews]
+            'user_id': int(now_user['user_id']),
+            'crew_recommended': [{'crew_id': int(crew[0]), 'similarity': round(crew[1], 3)} for crew in recommended_crews]
         }
-        
-        print(result)
-        # 6. MongoDB 저장
-        # crew_recommend.insert_one(result)
 
-    return {"message" : "Crew_Recommendation Completed!"}
+        crew_recommend.insert_one(result)
+
+    return {"message": "Crew_Recommendation Completed!"}
+
 
 # CLI 실행을 main 함수에서 실행
 if __name__ == "__main__":
