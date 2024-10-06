@@ -9,6 +9,7 @@ import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.crew.entity.Crew;
+import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.dto.response.StatusUpdateResponseDto;
 import com.ssafy.health.domain.notification.entity.Notification;
 import com.ssafy.health.domain.notification.entity.NotificationStatus;
@@ -20,6 +21,7 @@ import com.ssafy.health.domain.quest.entity.UserQuest;
 import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
 import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.repository.UserQuestRepository;
+import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +69,7 @@ public class NotificationWriteService {
         sendFcmMessage(user, "체형 입력 알림", SURVEY.getMessage());
     }
 
-    public void createBattleNotification(NotificationType notificationType, User user, Battle battle, Crew crew, Integer coinAmount)
+    public NotificationRequestDto createBattleNotification(NotificationType notificationType, User user, Battle battle, Crew crew, Integer coinAmount)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
@@ -80,8 +82,12 @@ public class NotificationWriteService {
 
         String message = getBattleNotificationMessage(battle.getStatus());
 
-        saveNotification(notificationType, user, message, additionalData);
-        sendFcmMessage(user, "배틀 알림", message);
+        return NotificationRequestDto.builder()
+                .notificationType(notificationType)
+                .user(user)
+                .message(message)
+                .additionalData(additionalData)
+                .build();
     }
 
     private BattleMatchResponseDto createBattleMatchResponseDto(Battle battle, Crew crew) {
@@ -122,10 +128,19 @@ public class NotificationWriteService {
         return status.equals(BattleStatus.STARTED) ? BATTLE_START.getMessage() : BATTLE_END.getMessage();
     }
 
-    private void saveNotification(NotificationType notificationType, User user, String message, Map<String, Object> additionalData) {
-        Notification battleNotification = notificationBuilder(
-                notificationType, user, message, additionalData);
-        notificationRepository.save(battleNotification);
+    public void saveNotification(List<NotificationRequestDto> requestDtoList) {
+        List<Notification> battleNotificationList = requestDtoList.stream()
+                .map(dto -> {
+                    try {
+                        sendFcmMessage(dto.getUser(), "배틀 알림", dto.getMessage());
+                    } catch (ExecutionException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    return notificationBuilder(dto.getNotificationType(), dto.getUser(), dto.getMessage(), dto.getAdditionalData());
+                })
+                .toList();
+
+        notificationRepository.saveAll(battleNotificationList);
     }
 
 

@@ -71,8 +71,11 @@ public class BattleWriteService {
         List<User> homeCrewMembers = userRepository.findUserByCrewId(myCrew.getId());
         List<User> awayCrewMembers = userRepository.findUserByCrewId(opponentCrew.getId());
 
-        sendNotification(battle, homeCrewMembers, myCrew);
-        sendNotification(battle, awayCrewMembers, opponentCrew);
+        List<NotificationRequestDto> notificationRequestDtoList = new ArrayList<>();
+        notificationRequestDtoList.addAll(createNotification(battle, homeCrewMembers, myCrew));
+        notificationRequestDtoList.addAll(createNotification(battle, awayCrewMembers, opponentCrew));
+
+        sendNotification(notificationRequestDtoList);
 
         return BattleMatchResponseDto.builder()
                 .exerciseName(myCrew.getExercise().getName())
@@ -87,6 +90,7 @@ public class BattleWriteService {
     @Scheduled(cron = "0 30 4 ? * MON")
     public void finishBattles() {
         List<Battle> ongoingBattles = battleRepository.findByStatus(BattleStatus.STARTED);
+        List<NotificationRequestDto> notificationRequestDtoList = new ArrayList<>();
 
         ongoingBattles.forEach(battle -> {
             battle.finishBattle();
@@ -106,24 +110,33 @@ public class BattleWriteService {
             List<UserCrew> losingUserCrewList = findUserCrewOrderByScore(losingCrew);
             List<User> losingCrewMemberList = losingUserCrewList.stream().map(UserCrew::getUser).toList();
 
-            sendNotification(battle, winningCrewMemberList, winningCrew);
-            sendNotification(battle, losingCrewMemberList, losingCrew);
-
             saveRankHistory(losingUserCrewList, losingCrew);
             resetScore(losingCrew, losingUserCrewList);
 
+            notificationRequestDtoList.addAll(createNotification(battle, winningCrewMemberList, winningCrew));
+            notificationRequestDtoList.addAll(createNotification(battle, losingCrewMemberList, losingCrew));
+
         });
+
+        sendNotification(notificationRequestDtoList);
     }
 
-    private void sendNotification(Battle battle, List<User> winningCrewMemberList, Crew winningCrew) {
-        winningCrewMemberList.forEach(user -> {
+    private List<NotificationRequestDto> createNotification(Battle battle, List<User> winningCrewMemberList, Crew winningCrew) {
+        List<NotificationRequestDto> requestDtoList = winningCrewMemberList.stream().map(user -> {
             try {
-                notificationWriteService.createBattleNotification(
-                        NotificationType.BATTLE, user, battle, winningCrew,0);
+                return notificationWriteService.createBattleNotification(
+                        NotificationType.BATTLE, user, battle, winningCrew, 0);
             } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
+                System.err.println("Failed to send notification: " + e.getMessage());
+                return null;
             }
-        });
+        }).toList();
+
+        return requestDtoList;
+    }
+
+    private void sendNotification(List<NotificationRequestDto> notificationRequestDtoList) {
+        notificationWriteService.saveNotification(notificationRequestDtoList);
     }
 
     private Crew[] determineWinningCrew(Battle battle) {
