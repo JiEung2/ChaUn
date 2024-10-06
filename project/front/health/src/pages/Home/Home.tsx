@@ -6,7 +6,6 @@ import CalendarIcon from '../../assets/svg/calendar.svg';
 import StyledButton from '../../components/Button/StyledButton';
 import HomeIcon1 from '../../assets/svg/homeIcon1.svg';
 import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
-
 import 'chart.js/auto';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
@@ -257,6 +256,8 @@ export default function HomePage() {
 
   // 초기 1회 유저 데이터 저장
   useEffect(() => {
+    navigator.serviceWorker.register('/serviceWorkerRegistration.js');
+
     async function fetchUserData() {
       try {
         const response = await getUserDetail(userId);
