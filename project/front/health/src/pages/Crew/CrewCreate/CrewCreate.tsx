@@ -15,9 +15,13 @@ export default function CrewCreate() {
 
   const sendCreatCrew = () => {
     const formData = new FormData();
-    formData.append('crewName', crewName);
-    formData.append('exerciseId', String(exerciseId));
-    formData.append('description', description);
+    const createCrewRequestDto = {
+      name: crewName,
+      description: description,
+      exerciseId: exerciseId,
+    };
+    formData.append('createCrewRequestDto', JSON.stringify(createCrewRequestDto));
+
     if (profileImage) {
       formData.append('profileImage', profileImage);
     }
