@@ -135,6 +135,7 @@ public interface UserControllerApi {
                                     "    \"nickname\": \"JiEung2\",\n" +
                                     "    \"characterImageUrl\": \"image.png\",\n" +
                                     "    \"characterFileUrl\": \"image.glb\"\n" +
+                                    "    \"gender\": \"MAN\"\n" +
                                     "  }\n" +
                                     "}"
                             )
