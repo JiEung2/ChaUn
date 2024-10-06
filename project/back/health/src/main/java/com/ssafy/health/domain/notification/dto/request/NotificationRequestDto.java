@@ -1,6 +1,8 @@
 package com.ssafy.health.domain.notification.dto.request;
 
+import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.notification.entity.NotificationType;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,5 +11,8 @@ import lombok.Getter;
 public class NotificationRequestDto {
 
     private NotificationType notificationType;
-    private Long userId;
+    private User user;
+    private String message;
+    Map<String, Object> additionalData;
+
 }
