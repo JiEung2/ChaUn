@@ -7,8 +7,12 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   // 경로에 따라 헤더의 텍스트를 설정
+
   const getHeaderTitle = () => {
     const path = location.pathname.toLowerCase();
+    if (path.startsWith('/crew')) {
+      return '크루';
+    }
     switch (path) {
       case '/home':
         return '캐운';
@@ -26,10 +30,6 @@ export default function Header() {
         return '기록';
       case '/record/bodyDetail':
         return '체형조회';
-      case '/crew':
-        return '크루';
-      case '/crew/recommend':
-        return '크루 추천';
       case '/mypage':
         return '마이페이지';
       case '/alarm':
