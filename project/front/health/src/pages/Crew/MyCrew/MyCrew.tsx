@@ -10,6 +10,7 @@ import { getCrewQuest } from '@/api/quest';
 import { getCrewDetail, getCrewRanking, agreeRandomMatching, collectCrewCoin, crewBattleStatus } from '@/api/crew';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import querykeys from '@/utils/querykeys';
+import CloseButton from '@/assets/svg/xCircle.svg';
 
 export default function MyCrew() {
   interface CrewInfo {
@@ -293,9 +294,7 @@ export default function MyCrew() {
         <div className="modalOverlay">
           <div className="modalContent">
             <span className="modalTitle">오늘의 퀘스트</span>
-            <button className="closeButton" onClick={toggleQuestModal}>
-              &times;
-            </button>
+            <img src={CloseButton} className="closeButton" onClick={toggleQuestModal}></img>
             <div className="questLayout">
               {todayQuests &&
                 todayQuests.map((questData, index) => (
@@ -311,9 +310,7 @@ export default function MyCrew() {
         <div className="modalOverlay">
           <div className="modalContent">
             <span>크루 배틀 현황</span>
-            <button className="closeButton" onClick={toggleBattleModal}>
-              &times;
-            </button>
+            <img src={CloseButton} className="closeButton" onClick={toggleBattleModal}></img>
             {isInBattle ? (
               <div>
                 <div className="battleInfo">
@@ -342,9 +339,7 @@ export default function MyCrew() {
           <div className="modalContent">
             <div className="modalHeader">
               <h3>{crewInfo?.crewName}</h3>
-              <button className="closeButton" onClick={toggleDepositModal}>
-                &times;
-              </button>
+              <img src={CloseButton} className="closeButton" onClick={toggleDepositModal}></img>
             </div>
             <div className="modalBody">
               <div className="coinSelector">
@@ -364,12 +359,10 @@ export default function MyCrew() {
 
       {/*크루 설정 모달 */}
       {isSettingsModalOpen && (
-        <div className="modalOverlay">
+        <div className="modal">
           <div className="modalContent">
             <span>내 크루 설정</span>
-            <button className="closeButton" onClick={toggleSettingsModal}>
-              &times;
-            </button>
+            <img src={CloseButton} className="closeButton" onClick={toggleSettingsModal}></img>
             <div className="crewSettings">
               <div>
                 <p className="settingTitle">크루 배틀 랜덤 매칭 동의</p>
