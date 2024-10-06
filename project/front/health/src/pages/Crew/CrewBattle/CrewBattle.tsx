@@ -1,4 +1,4 @@
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse, getBattleRanking } from '../../../api/crew';
 import queryKeys from '@/utils/querykeys';
 import { useParams } from 'react-router-dom';
@@ -73,9 +73,7 @@ export default function CrewBattle() {
             opponentTeamScore={battleData.opponentTeamScore}
             buttonState={ButtonState.NONE}
           />
-          <div className="ranking__started">
-            
-          </div>
+          <div className="ranking__started"></div>
         </div>
       ) : (
         <div>Invalid battle status.</div>

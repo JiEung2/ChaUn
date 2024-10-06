@@ -48,18 +48,18 @@ function useExerciseRecord(year: number, month: number, week: number) {
   });
 }
 
-function formatTime(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours}h ${mins}m`;
-}
+const formatTime = (timeInMs: number) => {
+  const hours = Math.floor(timeInMs / (1000 * 60 * 60));
+  const minutes = Math.floor((timeInMs % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
+};
 
 // 운동 시간 표시 컴포넌트
-function ExerciseTimeDisplay() {
+function ExerciseTimeDisplay({ nickname }: { nickname: string }) {
   const { data: exerciseTimeData } = useExerciseTime();
 
   const characterContent = {
-    nickname: '민영',
+    nickname: nickname,
     todayTime: formatTime(exerciseTimeData?.dailyAccumulatedExerciseTime || 0),
     weeklyTime: formatTime(exerciseTimeData?.weeklyAccumulatedExerciseTime || 0),
   };
@@ -90,7 +90,7 @@ function ExerciseRecordChart() {
         calories: record.burnedCalories,
       }))
     : [];
-
+  // console.log('운동 기록', exerciseRecordData);
   const handleChartClick = (_: any, elements: any) => {
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
@@ -188,7 +188,6 @@ function ExerciseRecordChart() {
     ],
   };
 
-  // 데이터가 없는 경우 처리
   if (!chartData || chartData.length === 0) {
     return (
       <div className="noChartDataContainer">
@@ -205,14 +204,14 @@ function ExerciseRecordChart() {
   return <Line data={dataConfig} options={options} />;
 }
 
-function HomePageContent() {
+function HomePageContent({ nickname }: { nickname: string }) {
   const navigate = useNavigate();
 
   return (
     <div className="homeContainer">
       <div className="characterContainer">
         <div className="title">
-          <p className="character">민영님</p>
+          <p className="character">{nickname}</p>
           <div className="iconWrapper">
             <div className="navIcon" onClick={() => navigate('/home/quest')}>
               <img src={QuestIcon} alt="Quest Icon" className="icon" />
@@ -223,9 +222,8 @@ function HomePageContent() {
           </div>
         </div>
 
-        {/* 운동 시간 Suspense로 감쌈 */}
         <Suspense fallback={<div>Loading exercise time...</div>}>
-          <ExerciseTimeDisplay />
+          <ExerciseTimeDisplay nickname={nickname} />
         </Suspense>
       </div>
 
@@ -260,7 +258,6 @@ function HomePageContent() {
   );
 }
 
-// 전체 페이지에서 Suspense를 분리하여 사용
 export default function HomePage() {
   const { userId, setNickname, setHasCoin } = useUserStore();
   const [isTokenSent, setIsTokenSent] = useState(() => {
@@ -315,5 +312,5 @@ export default function HomePage() {
     fetchUserData();
   }, [userId, setNickname, setHasCoin]);
 
-  return <HomePageContent />;
+  return <HomePageContent nickname={nickname} />;
 }

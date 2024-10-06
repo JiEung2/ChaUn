@@ -40,7 +40,7 @@ export default function BattleBoard({
 
   const queryClient = useQueryClient();
   // 배틀 랜덤 매칭
-  const [battleData, setBattleData] = useState({
+  const [_, setBattleData] = useState({
     myTeamName,
     myTeamScore,
     opponentTeamName,

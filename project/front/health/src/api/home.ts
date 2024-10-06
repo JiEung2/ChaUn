@@ -30,5 +30,7 @@ export const exerciseRecord = async (year: number, month: number, week: number):
       week,
     },
   });
+
+  console.log('exerciseRecord', response);
   return response.data;
 };
