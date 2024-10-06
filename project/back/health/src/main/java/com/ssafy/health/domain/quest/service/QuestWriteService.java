@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -31,7 +32,6 @@ public class QuestWriteService {
     private final CoinService coinService;
     private final NotificationWriteService notificationWriteService;
 
-    // 퀘스트 생성
     public Quest createQuest(QuestCreateRequestDto requestDto) {
         return questRepository.save(questBuilder(
                 requestDto.getQuestType(),
@@ -47,19 +47,25 @@ public class QuestWriteService {
         List<User> userList = userRepository.findAll();
         List<Crew> crewList = crewRepository.findAll();
 
+        List<UserQuest> userQuestList = new ArrayList<>();
+        List<CrewQuest> crewQuestList = new ArrayList<>();
+
         dailyQuestList.forEach(quest -> {
             if (quest.getType().equals(QuestType.INDIVIDUAL)) {
-                userList.forEach(user -> userQuestRepository.save(UserQuest.builder()
+                userList.forEach(user -> userQuestList.add(UserQuest.builder()
                         .quest(quest)
                         .user(user)
                         .build()));
             } else if (quest.getType().equals(QuestType.CREW)) {
-                crewList.forEach(crew -> crewQuestRepository.save(CrewQuest.builder()
+                crewList.forEach(crew -> crewQuestList.add(CrewQuest.builder()
                         .quest(quest)
                         .crew(crew)
                         .build()));
             }
         });
+
+        userQuestRepository.saveAll(userQuestList);
+        crewQuestRepository.saveAll(crewQuestList);
     }
 
     @Scheduled(cron = "0 0 0 1 * *")
@@ -68,19 +74,25 @@ public class QuestWriteService {
         List<User> userList = userRepository.findAll();
         List<Crew> crewList = crewRepository.findAll();
 
+        List<UserQuest> userQuestList = new ArrayList<>();
+        List<CrewQuest> crewQuestList = new ArrayList<>();
+
         monthlyQuestList.forEach(quest -> {
             if (quest.getType().equals(QuestType.INDIVIDUAL)) {
-                userList.forEach(user -> userQuestRepository.save(UserQuest.builder()
+                userList.forEach(user -> userQuestList.add(UserQuest.builder()
                         .quest(quest)
                         .user(user)
                         .build()));
             } else if (quest.getType().equals(QuestType.CREW)) {
-                crewList.forEach(crew -> crewQuestRepository.save(CrewQuest.builder()
+                crewList.forEach(crew -> crewQuestList.add(CrewQuest.builder()
                         .quest(quest)
                         .crew(crew)
                         .build()));
             }
         });
+
+        userQuestRepository.saveAll(userQuestList);
+        crewQuestRepository.saveAll(crewQuestList);
     }
 
     public void updateUserQuestStatus(User user, String title, QuestStatus status)
