@@ -114,14 +114,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BasicDataNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleBasicPredictDataNotFoundException(BasicDataNotFoundException e) {
-        ApiResponse<Void> reponse = ApiResponse.error(e.getStatue(), e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reponse);
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @ExceptionHandler(ExtraDataNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleExtraPredictDataNotFoundException(ExtraDataNotFoundException e) {
-        ApiResponse<Void> reponse = ApiResponse.error(e.getStatue(), e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(reponse);
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(RecommendCrewListNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleERecommendCrewListNotFoundException(RecommendCrewListNotFoundException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     // 400 - Bad Request

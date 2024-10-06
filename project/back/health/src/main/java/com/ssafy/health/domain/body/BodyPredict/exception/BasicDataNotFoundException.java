@@ -7,7 +7,7 @@ public class BasicDataNotFoundException extends RuntimeException {
         return BodyPredictExceptionMessage.BASIC_DATA_NOT_AVAILABLE.getMessage();
     }
 
-    public int getStatue() {
+    public int getStatus() {
         return BodyPredictExceptionMessage.BASIC_DATA_NOT_AVAILABLE.getStatus();
     }
 }

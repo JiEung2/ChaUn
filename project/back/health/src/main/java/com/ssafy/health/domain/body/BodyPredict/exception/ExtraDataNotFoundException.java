@@ -7,7 +7,7 @@ public class ExtraDataNotFoundException extends RuntimeException {
         return BodyPredictExceptionMessage.EXTRA_DATA_NOT_AVAILABLE.getMessage();
     }
 
-    public int getStatue() {
+    public int getStatus() {
         return BodyPredictExceptionMessage.EXTRA_DATA_NOT_AVAILABLE.getStatus();
     }
 }
