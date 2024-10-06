@@ -35,7 +35,7 @@ public class UserController implements UserControllerApi {
     private final ExerciseHistoryWriteService exerciseHistoryWriteService;
 
     @GetMapping("/validate-nickname/{nickname}")
-    public ApiResponse<ValidateNicknameSuccessDto> validateNickname(@PathVariable("nickname") String nickname) {
+    public ApiResponse<ValidateNameSuccessDto> validateNickname(@PathVariable("nickname") String nickname) {
         return ApiResponse.success(userValidator.validateNickname(nickname));
     }
 

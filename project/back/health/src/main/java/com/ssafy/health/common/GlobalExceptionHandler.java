@@ -154,8 +154,8 @@ public class GlobalExceptionHandler {
 
     // 409 - CONFLICT
 
-    @ExceptionHandler(NicknameDuplicateException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNicknameDuplicateException(final NicknameDuplicateException e) {
+    @ExceptionHandler(NameDuplicateException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNicknameDuplicateException(final NameDuplicateException e) {
         ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }

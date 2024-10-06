@@ -6,6 +6,7 @@ import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.entity.NotificationType;
 import com.ssafy.health.domain.notification.service.NotificationWriteService;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,8 @@ public class CoinService {
                 3, THIRD_PLACE_REWARD.getAmount()
         );
 
+        List<NotificationRequestDto> requestDtoList = new ArrayList<>();
+
         crewMemberRanking.stream()
                 .limit(3)
                 .forEach(user -> {
@@ -50,12 +53,14 @@ public class CoinService {
                     }
 
                     try {
-                        notificationWriteService.createBattleNotification(
-                                NotificationType.BATTLE, user, battle, crew, coinAmount);
+                        requestDtoList.add(notificationWriteService.createBattleNotification(
+                                NotificationType.BATTLE, user, battle, crew, coinAmount));
                     } catch (ExecutionException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 });
+
+        notificationWriteService.saveNotification(requestDtoList);
     }
 
     public void giveAttendanceReward(User user) {

@@ -50,18 +50,18 @@ public interface UserControllerApi {
                             ))
             ),
     })
-    ApiResponse<ValidateNicknameSuccessDto> validateNickname(@PathVariable("nickname") String nickname);
+    ApiResponse<ValidateNameSuccessDto> validateNickname(@PathVariable("nickname") String nickname);
 
     @Operation(
-            summary = "회원 정보 설문조사",
-            description = "닉네임, 생년월일, 성별을 입력받고 회원정보에 저장합니다."
+            summary = "닉네임 검증",
+            description = "사용가능한 닉네임인지 검증합니다."
     )
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 정보 설문조사 완료",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "닉네임 검증 완료",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
                                     "  \"status\": 200,\n" +
-                                    "  \"message\": \"회원 정보 설문조사를 완료했습니다.\",\n" +
+                                    "  \"message\": \"사용 가능한 이름입니다.\",\n" +
                                     "  \"data\": {\n" +
                                     "  }\n" +
                                     "}"

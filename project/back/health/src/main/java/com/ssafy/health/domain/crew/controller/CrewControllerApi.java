@@ -1,6 +1,7 @@
 package com.ssafy.health.domain.crew.controller;
 
 import com.ssafy.health.common.ApiResponse;
+import com.ssafy.health.domain.account.dto.response.ValidateNameSuccessDto;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.*;
@@ -458,4 +459,33 @@ public interface CrewControllerApi {
             )
     })
     ApiResponse<CrewSettingResponseDto> getCrewSetting(@PathVariable("crew_id") Long crewId);
+
+
+    @Operation(
+            summary = "크루 이름 중복 확인",
+            description = "입력된 이름이 이미 존재하는지 확인하고, 사용 가능한 닉네임인지 검사합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "사용 가능한 이름",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 200,\n" +
+                                    "  \"message\": \"사용 가능한 이름입니다.\",\n" +
+                                    "  \"data\": {\n" +
+                                    "  }\n" +
+                                    "}"
+                            ))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "409", description = "이미 존재하는 이름",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 409,\n" +
+                                    "  \"message\": \"이미 사용중인 이름입니다.\",\n" +
+                                    "  \"data\": {}\n" +
+                                    "}"
+                            ))
+            ),
+    })
+    ApiResponse<ValidateNameSuccessDto> validateCrewName(@PathVariable("crew_name") String crewName);
+
 }
