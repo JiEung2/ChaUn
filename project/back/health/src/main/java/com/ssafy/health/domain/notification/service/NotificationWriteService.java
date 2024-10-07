@@ -271,15 +271,6 @@ public class NotificationWriteService {
         }
     }
 
-    public Notification notificationBuilder(NotificationType notificationType, User user, String message) {
-        return Notification.builder()
-                .notificationType(notificationType)
-                .notificationStatus(NotificationStatus.UNREAD)
-                .content(message)
-                .user(user)
-                .build();
-    }
-
     public Notification notificationBuilder(
             NotificationType notificationType, User user, String message, Map<String, Object> additionalData) {
         return Notification.builder()
