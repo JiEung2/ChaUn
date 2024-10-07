@@ -87,6 +87,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
     bodyMutation.mutate(bodyData);
     eatingHabitsMutation.mutate({ mealsPerDay, foodType, snacksPerDay, drinksPerDay });
   };
+  console.log(mealsPerDay, foodType, snacksPerDay, drinksPerDay);
 
   return (
     <div className="bodyAddModal">
