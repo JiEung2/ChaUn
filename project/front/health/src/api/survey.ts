@@ -66,16 +66,16 @@ export const surveySubmit2 = async (
 };
 
 export const surveySubmit3 = async (
-  pre_ealCount: string,
+  pre_mealCount: string,
   pre_dietType: string,
   pre_snackFrequency: string,
   pre_drinkFrequency: string
 ) => {
-  // console.log('surveySubmit3', str_ealCount, mealType, snackFrequency, drinkFrequency);
+  console.log('surveySubmit3', pre_mealCount, pre_dietType, pre_snackFrequency, pre_drinkFrequency);
 
   let mealCount: number;
 
-  switch (pre_ealCount) {
+  switch (pre_mealCount) {
     case '1끼':
       mealCount = 1;
       break;
