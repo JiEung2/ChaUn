@@ -21,7 +21,7 @@ const useUserStore = create<UserState>()(
       nickname: '',
       coin: 0,
       // characterImageUrl: '',
-      // characterFileUrl: '',
+      // characterFileUr'',
 
       setUserId: (id: number) => set({ userId: id }),
       setNickname: (nickname: string) => set({ nickname }),
