@@ -26,7 +26,10 @@ export default function MypagePage() {
   const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
   const queryClient = useQueryClient();
-
+  interface snapshots {
+    snapshotUrl: string;
+    createdAt: string;
+  }
   // 로컬 스토리지에서 구매한 파츠 정보 불러오기
   useEffect(() => {
     const storedPurchasedParts = localStorage.getItem('purchasedParts');
@@ -114,7 +117,7 @@ export default function MypagePage() {
     enabled: true,
   });
   console.log('snapshotList', snapshotList);
-  const formattedSnapshots = snapshotList.snapshots.map((snapshot: any) => ({
+  const formattedSnapshots = snapshotList.snapshots.map((snapshot: snapshots) => ({
     date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {
       year: '2-digit',
       month: '2-digit',
