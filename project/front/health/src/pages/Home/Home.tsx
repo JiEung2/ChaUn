@@ -259,7 +259,7 @@ function HomePageContent({ nickname }: { nickname: string }) {
 }
 
 export default function HomePage() {
-  const { userId, setNickname, setHasCoin } = useUserStore();
+  const { userId, nickname, setNickname, setHasCoin } = useUserStore();
   const [isTokenSent, setIsTokenSent] = useState(() => {
     return localStorage.getItem('isTokenSent') === 'true';
   });
@@ -310,7 +310,7 @@ export default function HomePage() {
     }
 
     fetchUserData();
-  }, [userId, setNickname, setHasCoin]);
+  }, [userId, nickname, setNickname, setHasCoin]);
 
   return <HomePageContent nickname={nickname} />;
 }
