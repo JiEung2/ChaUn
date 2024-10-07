@@ -89,7 +89,8 @@ export const surveySubmit3 = async (
       mealCount = 4;
       break;
     default:
-      throw new Error('Invalid meal count');
+      mealCount = 1;
+      console.log('pre_mealCount', pre_mealCount);
   }
   let dietType: string;
   switch (pre_dietType) {
@@ -106,7 +107,8 @@ export const surveySubmit3 = async (
       dietType = 'FAST_FOOD_PROCESSED';
       break;
     default:
-      throw new Error('Invalid meal count');
+      console.log('pre_dietType', pre_dietType);
+      dietType = 'VEGETARIAN';
   }
   let snackFrequency;
   switch (pre_snackFrequency) {
@@ -123,7 +125,8 @@ export const surveySubmit3 = async (
       snackFrequency = 'VERY_OFTEN';
       break;
     default:
-      throw new Error('Invalid snack frequency');
+      console.log('pre_snackFrequency', pre_snackFrequency);
+      snackFrequency = 'NEVER';
   }
 
   let drinkFrequency;
@@ -141,7 +144,8 @@ export const surveySubmit3 = async (
       drinkFrequency = 'VERY_OFTEN';
       break;
     default:
-      throw new Error('Invalid drink frequency');
+      console.log('pre_drinkFrequency', pre_drinkFrequency);
+      drinkFrequency = 'NEVER';
   }
   console.log('식습관 설문 보낼 데이터', mealCount, dietType, snackFrequency, drinkFrequency);
   const response = await exportAxios.post(`${baseUrl}/users/survey/eating-habits`, {
