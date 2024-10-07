@@ -11,4 +11,5 @@ public class UserDetailDto {
     private String characterImageUrl;
     private String characterFileUrl;
     private Gender gender;
+    private Integer coins;
 }

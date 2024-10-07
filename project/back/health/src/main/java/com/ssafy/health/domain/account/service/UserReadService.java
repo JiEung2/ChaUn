@@ -60,6 +60,7 @@ public class UserReadService {
                 .characterImageUrl(myCharacter.getCharacterImage())
                 .characterFileUrl(myCharacter.getCharacterFile())
                 .gender(user.getGender())
+                .coins(user.getCoin())
                 .build();
     }
 
