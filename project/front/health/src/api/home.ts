@@ -32,7 +32,7 @@ export const exerciseRecord = async (year: number, month: number, week: number):
     },
   });
   if (response.data.data !== undefined) {
-    response.data = response.data.data;
+    return response.data.data;
   }
   console.log('exerciseRecord', response);
   return response.data;
