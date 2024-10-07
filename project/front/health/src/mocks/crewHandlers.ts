@@ -47,14 +47,14 @@ const memberList = [
 ];
 
 const crewBattleStatus = {
-  battleId: 1,
-  myTeamName: '달리자크루',
-  myTeamScore: 1200,
-  opponentTeamName: '크크크루',
-  opponentTeamScore: 1000,
-  exerciseName: '러닝',
-  dDay: 2,
-  battleStatus: 'STARTED',
+  // battleId: 1,
+  // myTeamName: '달리자크루',
+  // myTeamScore: 1200,
+  // opponentTeamName: '크크크루',
+  // opponentTeamScore: 1000,
+  // exerciseName: '러닝',
+  // dDay: 2,
+  // battleStatus: 'STARTED',
   // };
   // {
   //   battleId: 2,
@@ -67,14 +67,14 @@ const crewBattleStatus = {
   //   battleStatus: 'STARTED',
   // },
   // {
-  // battleId: 0,
-  // myTeamName: 'No Battle',
-  // myTeamScore: 0,
-  // opponentTeamName: 'No Opponent',
-  // opponentTeamScore: 0,
-  // exerciseName: 'N/A',
-  // dDay: 2,
-  // battleStatus: 'NONE',
+  battleId: 0,
+  myTeamName: 'No Battle',
+  myTeamScore: 0,
+  opponentTeamName: 'No Opponent',
+  opponentTeamScore: 0,
+  exerciseName: 'N/A',
+  dDay: 2,
+  battleStatus: 'NONE',
 };
 
 const crewRandomMatching = {

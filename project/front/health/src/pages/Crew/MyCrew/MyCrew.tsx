@@ -11,6 +11,7 @@ import { getCrewDetail, getCrewRanking, agreeRandomMatching, collectCrewCoin, cr
 import { useQuery, useMutation } from '@tanstack/react-query';
 import querykeys from '@/utils/querykeys';
 import CloseButton from '@/assets/svg/xCircle.svg';
+import CrewAndMemberList from '@/components/Crew/CrewAndMemberList';
 
 export default function MyCrew() {
   interface CrewInfo {
@@ -240,7 +241,7 @@ export default function MyCrew() {
               배틀 현황: {crewInfo?.totalBattleCount}전 {crewInfo?.winCount}승{' '}
               {crewInfo!.totalBattleCount - crewInfo!.winCount}패
             </p>
-            <p>크루 평균 연령: {crewInfo?.averageAge}대 후반</p>
+            <p>크루 평균 연령: {crewInfo?.averageAge}세</p>
             <p>활동 점수: {crewInfo?.activityScore}점</p>
             <p>기본 점수: {crewInfo?.basicScore}점</p>
           </div>
@@ -274,19 +275,10 @@ export default function MyCrew() {
           </button>
         </div>
       )}
+
       {/* 크루 랭킹 */}
       <div className="crewRankingContainer">
-        {members &&
-          members!.map((member, index) => (
-            <div key={member.userId} className="rankingList">
-              <div className="rankingItem">
-                <span>{index + 1}</span>
-                <img className="memberProfileImageSmall" src={member.userProfileImage} alt="member profile" />
-                <span>{member.nickname}</span>
-                <span className="time">{formatExerciseTime(member.exerciseTime)}</span>
-              </div>
-            </div>
-          ))}
+        {members && members.length > 0 ? <CrewAndMemberList type="member" data={members} /> : <p>랭킹이 없습니다.</p>}
       </div>
 
       {/* 퀘스트 모달 */}
