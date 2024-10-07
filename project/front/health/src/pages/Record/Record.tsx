@@ -131,7 +131,7 @@ export default function RecordPage() {
       };
     },
   });
-
+  console.log('predictionExtraData', predictionExtraData);
   useEffect(() => {
     const weeklyExerciseCount = weeklyExerciseTime.exerciseHistoryList.length || 0;
     setExerciseDays(weeklyExerciseCount);
