@@ -33,7 +33,7 @@ export const postSnapshot = async (formData: FormData) => {
     });
 
     console.log('Snapshot successfully uploaded:', response);
-    return response.data;
+    return response;
   } catch (error) {
     console.log('API에서 에러 발생:', error);
   }
