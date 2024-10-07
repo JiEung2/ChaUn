@@ -24,11 +24,17 @@ import OAuth from './pages/OAuth/OAuth';
 import CrewBattle from './pages/Crew/CrewBattle/CrewBattle';
 // import CrewCreate from './pages/Crew/CrewCreate/CrewCreate';
 import { Toaster } from 'react-hot-toast';
-
+import Lottie from 'lottie-react';
+import LoadingLottile from '@/assets/Lottie/loading.json';
 export default function App() {
   return (
     <>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <div>
+            <Lottie animationData={LoadingLottile} />
+          </div>
+        }>
         <Toaster />
         <Router>
           <Routes>

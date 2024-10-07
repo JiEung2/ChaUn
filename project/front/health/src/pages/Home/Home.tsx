@@ -264,6 +264,39 @@ export default function HomePage() {
     return localStorage.getItem('isTokenSent') === 'true';
   });
 
+  // const tokenMutation = useMutation({
+  //   mutationFn: (deviceToken: string) => patchDeviceToken(deviceToken),
+  //   onSuccess: () => {
+  //     localStorage.setItem('isTokenSent', 'true');
+  //     setIsTokenSent(true);
+  //   },
+  //   onError: (error) => {
+  //     console.error('FCM 토큰 서버 전송 중 오류:', error);
+  //   },
+  // });
+
+  // useEffect(() => {
+  //   if (!isTokenSent) {
+  //     if ('serviceWorker' in navigator) {
+  //       navigator.serviceWorker
+  //         .register('/firebase-messaging-sw.js')
+  //         .then(() => {
+  //           console.log('서비스 워커가 등록되었습니다.');
+  //         })
+  //         .catch((error) => {
+  //           console.error('서비스 워커 등록 실패:', error);
+  //         });
+  //     }
+
+  //     const storedToken = sessionStorage.getItem('fcmToken');
+  //     if (storedToken) {
+  //       console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
+  //       tokenMutation.mutate(storedToken);
+  //     } else {
+  //       console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
+  //     }
+  //   }
+  // }, [isTokenSent, tokenMutation]);
   const tokenMutation = useMutation({
     mutationFn: (deviceToken: string) => patchDeviceToken(deviceToken),
     onSuccess: () => {
@@ -275,28 +308,32 @@ export default function HomePage() {
     },
   });
 
-  useEffect(() => {
-    if (!isTokenSent) {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker
-          .register('/firebase-messaging-sw.js')
-          .then(() => {
-            console.log('서비스 워커가 등록되었습니다.');
-          })
-          .catch((error) => {
-            console.error('서비스 워커 등록 실패:', error);
-          });
-      }
-
-      const storedToken = sessionStorage.getItem('fcmToken');
-      if (storedToken) {
-        console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
-        tokenMutation.mutate(storedToken);
-      } else {
-        console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
-      }
+  const registerServiceWorker = () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/firebase-messaging-sw.js')
+        .then(() => {
+          console.log('서비스 워커가 등록되었습니다.');
+          const storedToken = sessionStorage.getItem('fcmToken');
+          if (storedToken) {
+            console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
+            tokenMutation.mutate(storedToken);
+          } else {
+            console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
+          }
+        })
+        .catch((error) => {
+          console.error('서비스 워커 등록 실패:', error);
+        });
     }
-  }, [isTokenSent, tokenMutation]);
+  };
+
+  useEffect(() => {
+    // 예: 특정 조건이 만족될 때만 서비스 워커 등록
+    if (!isTokenSent && userId) {
+      registerServiceWorker();
+    }
+  }, [isTokenSent, userId, tokenMutation]);
   // 두 번째 useEffect: 유저 데이터 가져오기
   useEffect(() => {
     async function fetchUserData() {
@@ -312,5 +349,5 @@ export default function HomePage() {
     fetchUserData();
   }, [userId, setNickname, setHasCoin]);
 
-  return <HomePageContent nickname={nickname} />;
+  return <HomePageContent nickname="닉네임" />;
 }
