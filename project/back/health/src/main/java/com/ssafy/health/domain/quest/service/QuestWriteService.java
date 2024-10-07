@@ -92,8 +92,6 @@ public class QuestWriteService {
             coinService.grantCoinsToUser(user, quest.getQuest().getCompletionCoins());
 
             notificationWriteService.createUserQuestNotification(NotificationType.QUEST, user, quest.getId());
-        } else {
-            throw new QuestNotFoundException();
         }
     }
 
