@@ -28,7 +28,9 @@ export const surveySubmit2 = async (
 ) => {
   let bodyTypeNumber: number;
 
-  switch (bodyTypeString.trim()) {
+  switch (
+    bodyTypeString.replace(/\s+/g, '') // 모든 공백 제거
+  ) {
     case '슬림':
       bodyTypeNumber = 1;
       break;
@@ -72,7 +74,9 @@ export const surveySubmit3 = async (
   console.log('surveySubmit3', pre_mealCount, pre_dietType, pre_snackFrequency, pre_drinkFrequency);
 
   let mealCount: number;
-  switch (pre_mealCount.trim()) {
+  switch (
+    pre_mealCount.replace(/\s+/g, '') // 모든 공백 제거
+  ) {
     case '1끼':
       mealCount = 1;
       break;
@@ -82,7 +86,7 @@ export const surveySubmit3 = async (
     case '3끼':
       mealCount = 3;
       break;
-    case '4끼 이상':
+    case '4끼이상': // 공백이 없어지므로 '4끼 이상' -> '4끼이상'
       mealCount = 4;
       break;
     default:
@@ -91,17 +95,19 @@ export const surveySubmit3 = async (
   }
 
   let dietType: string;
-  switch (pre_dietType.trim()) {
-    case '주로 채식 (채소, 과일 중심)':
+  switch (
+    pre_dietType.replace(/\s+/g, '') // 모든 공백 제거
+  ) {
+    case '주로채식(채소,과일중심)':
       dietType = 'VEGETARIAN';
       break;
-    case '균형 잡힌 식사 (단백질, 탄수화물, 지방의 균형)':
+    case '균형잡힌식사(단백질,탄수화물,지방의균형)':
       dietType = 'BALANCED';
       break;
-    case '주로 고기류와 탄수화물':
+    case '주로고기류와탄수화물':
       dietType = 'HIGH_MEAT_CARB';
       break;
-    case '주로 패스트푸드, 가공식품':
+    case '주로패스트푸드,가공식품':
       dietType = 'FAST_FOOD_PROCESSED';
       break;
     default:
@@ -110,17 +116,19 @@ export const surveySubmit3 = async (
   }
 
   let snackFrequency: string;
-  switch (pre_snackFrequency.trim()) {
-    case '전혀 섭취하지 않음':
+  switch (
+    pre_snackFrequency.replace(/\s+/g, '') // 모든 공백 제거
+  ) {
+    case '전혀섭취하지않음':
       snackFrequency = 'NEVER';
       break;
-    case '가끔 (1-2회)':
+    case '가끔(1-2회)':
       snackFrequency = 'RARELY';
       break;
-    case '자주 (3-4회)':
+    case '자주(3-4회)':
       snackFrequency = 'OFTEN';
       break;
-    case '매우 자주 (5회 이상)':
+    case '매우자주(5회이상)':
       snackFrequency = 'VERY_OFTEN';
       break;
     default:
@@ -129,17 +137,19 @@ export const surveySubmit3 = async (
   }
 
   let drinkFrequency: string;
-  switch (pre_drinkFrequency.trim()) {
-    case '전혀 섭취하지 않음':
+  switch (
+    pre_drinkFrequency.replace(/\s+/g, '') // 모든 공백 제거
+  ) {
+    case '전혀섭취하지않음':
       drinkFrequency = 'NEVER';
       break;
-    case '가끔 (1-2회)':
+    case '가끔(1-2회)':
       drinkFrequency = 'RARELY';
       break;
-    case '자주 (3-4회)':
+    case '자주(3-4회)':
       drinkFrequency = 'OFTEN';
       break;
-    case '매우 자주 (5회 이상)':
+    case '매우자주(5회이상)':
       drinkFrequency = 'VERY_OFTEN';
       break;
     default:
