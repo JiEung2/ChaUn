@@ -181,11 +181,11 @@ public interface UserControllerApi {
     ApiResponse<CaloriesSurveySuccessDto> saveCaloriesSurvey(@RequestBody CaloriesSurveyRequestDto caloriesSurveyRequestDto);
 
     @Operation(
-            summary = "회원 식습관 설문조사",
-            description = "회원 식습관을 입력받아 평균 하루 섭취 칼로리를 계산합니다."
+            summary = "회원 선호 운동 설문조사",
+            description = "회원의 선호하는 운동을 입력받습니다.."
     )
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 식습관 설문조사 완료",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원 선호 운동 등록 완료",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = "{\n" +
                                     "  \"status\": 200,\n" +
