@@ -1,12 +1,7 @@
 package com.ssafy.health.domain.character.entity;
 
 import com.ssafy.health.domain.account.entity.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,11 +16,11 @@ public class CharacterSet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "characters_id")
     private Character character;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "parts_id")
     private Parts parts;
 
