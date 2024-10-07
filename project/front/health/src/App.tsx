@@ -26,42 +26,56 @@ import CrewBattle from './pages/Crew/CrewBattle/CrewBattle';
 import { Toaster } from 'react-hot-toast';
 import Lottie from 'lottie-react';
 import LoadingLottile from '@/assets/Lottie/loading.json';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 export default function App() {
   return (
     <>
       <Suspense
         fallback={
-          <div>
-            <Lottie animationData={LoadingLottile} />
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100vh',
+              textAlign: 'center',
+            }}>
+            <Lottie animationData={LoadingLottile} style={{ width: '200px', height: '200px' }} />
+            <p>
+              페이지 로딩 중 입니다. <br /> 잠시만 기다려주세요.
+            </p>
           </div>
         }>
-        <Toaster />
-        <Router>
-          <Routes>
-            <Route element={<CommonLayout />}>
-              <Route path="/" element={<Login />} />
-              <Route path="/survey" element={<Survey />} />
-              <Route path="/surveyResult" element={<SurveyResult />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/home/calendar" element={<Calendar />} />
-              <Route path="/home/quest" element={<Quest />} />
-              <Route path="/exercise/recommend" element={<ExerciseRecommend />} />
-              <Route path="/exercise" element={<Exercise />} />
-              <Route path="/record" element={<Record />} />
-              <Route path="/record/bodyDetail" element={<BodyDetail />} />
-              <Route path="/crew" element={<Crew />} />
-              <Route path="/crew/recommend" element={<CrewRecommend />} />
-              <Route path="/mypage" element={<Mypage />} />
-              <Route path="/alarm" element={<Alarm />} />
-              <Route path="/profile/:userId" element={<Profile />} />
-              <Route path="/crew/mycrew/:crewId" element={<MyCrew />} />
-              <Route path="/crew/create" element={<CrewCreate />} />
-              <Route path="/crew/battle/:crewId" element={<CrewBattle />} />
-              <Route path="/crew/ranking" element={<CrewRanking />} />
-              <Route path="/oauth" element={<OAuth />} />
-            </Route>
-          </Routes>
-        </Router>
+        <ErrorBoundary>
+          <Toaster />
+          <Router>
+            <Routes>
+              <Route element={<CommonLayout />}>
+                <Route path="/" element={<Login />} />
+                <Route path="/survey" element={<Survey />} />
+                <Route path="/surveyResult" element={<SurveyResult />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/home/calendar" element={<Calendar />} />
+                <Route path="/home/quest" element={<Quest />} />
+                <Route path="/exercise/recommend" element={<ExerciseRecommend />} />
+                <Route path="/exercise" element={<Exercise />} />
+                <Route path="/record" element={<Record />} />
+                <Route path="/record/bodyDetail" element={<BodyDetail />} />
+                <Route path="/crew" element={<Crew />} />
+                <Route path="/crew/recommend" element={<CrewRecommend />} />
+                <Route path="/mypage" element={<Mypage />} />
+                <Route path="/alarm" element={<Alarm />} />
+                <Route path="/profile/:userId" element={<Profile />} />
+                <Route path="/crew/mycrew/:crewId" element={<MyCrew />} />
+                <Route path="/crew/create" element={<CrewCreate />} />
+                <Route path="/crew/battle/:crewId" element={<CrewBattle />} />
+                <Route path="/crew/ranking" element={<CrewRanking />} />
+                <Route path="/oauth" element={<OAuth />} />
+              </Route>
+            </Routes>
+          </Router>
+        </ErrorBoundary>
       </Suspense>
     </>
   );
