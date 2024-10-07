@@ -36,7 +36,7 @@ export default function CrewRankingPage() {
 
   return (
     <div className="realTimeRankingContainer">
-      <p className="realTimeRankingTitle">실시간 크루 랭킹</p>
+      <h2 className="realTimeRankingTitle">실시간 크루 랭킹</h2>
 
       {showModal && (
         <ExerciseModal onSelectExercise={handleSelectExercise} multiple={false} onClose={handleCloseModal} />
