@@ -9,13 +9,13 @@ import { getUserCrewList } from '@/api/crew';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import queryKeys from '@/utils/querykeys';
 
-// interface UserProps {
-//   userId: number;
-// }
+interface UserProps {
+  userId: number;
+}
 
-export default function ProfilePage() {
+export default function ProfilePage(userId: UserProps) {
   // const { user_id } = useParams<{ user_id: string }>();
-  const userId = 1;
+  // const userId = 1;
   const navigate = useNavigate();
 
   // 회원 디테일
