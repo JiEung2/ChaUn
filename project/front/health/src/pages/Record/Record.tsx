@@ -169,7 +169,7 @@ export default function RecordPage() {
         <p className="predictionText">
           <strong>{nickname}님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
         </p>
-        <BodyWeightRecord data={predictionData} />
+        {predictionExtraData !== undefined ? <BodyWeightRecord data={predictionData} /> : <p>무게 정보가 없습니다</p>}
       </div>
 
       <div>
