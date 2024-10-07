@@ -36,4 +36,11 @@ public class QuestController implements QuestControllerApi {
     public ApiResponse<List<QuestResponseDto>> getCrewQuestList(@RequestParam("crew_id") Long crewId) {
         return ApiResponse.success(questReadService.getAchievableQuest(QuestType.CREW, crewId));
     }
+
+    @PostMapping("/test")
+    public ApiResponse<List<QuestResponseDto>>testQuest() {
+        questWriteService.createDailyQuest();
+        questWriteService.createMonthlyQuest();
+        return ApiResponse.success(questReadService.getAchievableQuest(QuestType.INDIVIDUAL, 0L));
+    }
 }
