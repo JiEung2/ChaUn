@@ -91,6 +91,7 @@ export const surveySubmit3 = async (
     default:
       throw new Error('Invalid meal count');
   }
+  console.log('식습관 설문 보낼 데이터', mealCount, mealType, snackFrequency, drinkFrequency);
   const response = await exportAxios.post(`${baseUrl}/users/survey/eating-habits`, {
     mealCount,
     mealType,
