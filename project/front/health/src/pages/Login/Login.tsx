@@ -1,7 +1,7 @@
 import './Login.scss'; // SCSS 파일 임포트
 import KakaoButton from '@/components/Button/LoginButton/KakaoButtom';
 import GoogleButton from '@/components/Button/LoginButton/Google';
-import startPage from '../../assets/image/startPage.png';
+// import startPage from '../../assets/image/startPage.png';
 
 export default function LoginPage() {
   // const navigate = useNavigate();
