@@ -3,10 +3,9 @@ package com.ssafy.health.domain.notification.controller;
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.entity.User;
+import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserRepository;
-import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
-import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
 import com.ssafy.health.domain.notification.dto.response.NotificationResponseDto;
 import com.ssafy.health.domain.notification.dto.response.StatusUpdateResponseDto;
 import com.ssafy.health.domain.notification.entity.NotificationStatus;
@@ -52,38 +51,31 @@ public class NotificationController implements NotificationControllerApi {
     @PostMapping("/test/{type}")
     public ApiResponse<?> testNotification(@PathVariable("type") String type) throws ExecutionException, InterruptedException {
         Long userId = SecurityUtil.getCurrentUserId();
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+
         if (type.equals("survey")) {
-            NotificationRequestDto dto = NotificationRequestDto.builder()
-                    .notificationType(NotificationType.SURVEY)
-                    .userId(userId).build();
-            notificationWriteService.createBodySurveyNotification(dto);
-        } else if (type.equals("battle")) {
-            List<Battle> battles = battleRepository.findAll();
-            battles.forEach(battle -> {
-                try {
-                    notificationWriteService.createBattleNotification(
-                            NotificationRequestDto.builder()
-                                    .notificationType(NotificationType.BATTLE)
-                                    .userId(userId)
-                                    .build(),
-                            battle.getId(), 0);
-                } catch (ExecutionException | InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            });
+            notificationWriteService.createBodySurveyNotification(user);
+//        } else if (type.equals("battle")) {
+//            List<Battle> battles = battleRepository.findAll();
+//            battles.forEach(battle -> {
+//                try {
+//                    notificationWriteService.createBattleNotification(
+//                            NotificationType.BATTLE, user, battle,
+//                                    .notificationType()
+//                                    .user(user)
+//                                    .build(),
+//                            battle.getId(), 0);
+//                } catch (ExecutionException | InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            });
         } else if (type.equals("quest")) {
-            User user = userRepository.findById(userId).get();
             List<QuestStatus> questStatus = Arrays.asList(QuestStatus.CREATED, QuestStatus.COMPLETED);
             List<UserQuest> userQuestList = userQuestRepository.findAllByUserAndStatus(user, questStatus);
 
             userQuestList.forEach(quest -> {
                 try {
-                    notificationWriteService.createUserQuestNotification(
-                            NotificationRequestDto.builder()
-                                    .notificationType(NotificationType.QUEST)
-                                    .userId(userId)
-                                    .build(),
-                            quest.getId());
+                    notificationWriteService.createUserQuestNotification(NotificationType.QUEST, user, quest.getId());
                 } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
