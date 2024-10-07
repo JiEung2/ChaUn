@@ -275,20 +275,10 @@ export default function MyCrew() {
           </button>
         </div>
       )}
+
       {/* 크루 랭킹 */}
       <div className="crewRankingContainer">
-        <CrewAndMemberList type="member" data={members} />
-        {/* {members &&
-          members!.map((member, index) => (
-            <div key={member.userId} className="rankingList">
-              <div className="rankingItem">
-                <span>{index + 1}</span>
-                <img className="memberProfileImageSmall" src={member.userProfileImage} alt="member profile" />
-                <span>{member.nickname}</span>
-                <span className="time">{formatExerciseTime(member.exerciseTime)}</span>
-              </div>
-            </div>
-          ))} */}
+        {members && members.length > 0 ? <CrewAndMemberList type="member" data={members} /> : <p>랭킹이 없습니다.</p>}
       </div>
 
       {/* 퀘스트 모달 */}
