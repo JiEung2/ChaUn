@@ -13,6 +13,6 @@ public class NotificationRequestDto {
     private NotificationType notificationType;
     private User user;
     private String message;
-    Map<String, Object> additionalData;
+    private Map<String, Object> additionalData;
 
 }
