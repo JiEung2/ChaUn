@@ -26,7 +26,7 @@ export default function QuestPage() {
       startTransition(() => {
         const daily: PersonalQuest[] = [];
         const monthly: PersonalQuest[] = [];
-        const quests: PersonalQuest[] = data?.data?.todayQuests || [];
+        const quests: PersonalQuest[] = data?.todayQuests || [];
 
         quests.forEach((quest) => {
           if (quest.questPeriod === 'DAILY') {
