@@ -14,7 +14,10 @@ import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.entity.CrewRole;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
+import com.ssafy.health.domain.exercise.entity.Exercise;
+import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
+import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +38,7 @@ public class CrewReadService {
     private final UserRepository userRepository;
     private final CrewRepository crewRepository;
     private final BattleRepository battleRepository;
+    private final ExerciseRepository exerciseRepository;
     private final UserCrewRepository userCrewRepository;
     private final ExerciseHistoryRepository exerciseHistoryRepository;
 
@@ -132,12 +136,13 @@ public class CrewReadService {
     }
 
     public CrewListResponseDto getCrewRankingByExercise(Long exerciseId) {
+        Exercise exercise = exerciseRepository.findById(exerciseId).orElseThrow(ExerciseNotFoundException::new);
         List<Crew> crewList = crewRepository.findByExerciseIdOrderByTotalScoreDesc(exerciseId);
 
         if (crewList.isEmpty()) {
             return CrewListResponseDto.builder().crewList(Collections.emptyList()).build();
         }
-        return createCrewListResponseDto(crewList);
+        return createCrewListResponseDto(crewList, exercise);
     }
 
     public CrewMemberDailyExerciseTimeListDto getCrewMemberDailyExerciseTimeList(Long crewId) {
@@ -247,6 +252,23 @@ public class CrewReadService {
     public CrewListResponseDto createCrewListResponseDto(List<Crew> crewList) {
         List<CrewInfo> crewInfoList = crewList.stream()
                 .map(this::createCrewInfo)
+                .toList();
+
+        return CrewListResponseDto.builder()
+                .crewList(crewInfoList)
+                .build();
+    }
+
+    public CrewListResponseDto createCrewListResponseDto(List<Crew> crewList, Exercise exercise) {
+        List<CrewInfo> crewInfoList = crewList.stream()
+                .map(crew -> CrewInfo.builder()
+                        .crewId(crew.getId())
+                        .crewName(crew.getName())
+                        .crewProfileImage(crew.getProfileImage())
+                        .exerciseName(exercise.getName())
+                        .basicScore(crew.getBasicScore())
+                        .activityScore(crew.getActivityScore())
+                        .build())
                 .toList();
 
         return CrewListResponseDto.builder()
