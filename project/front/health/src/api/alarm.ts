@@ -5,7 +5,7 @@ const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
 export const getNotificationList = async () => {
   const response = await axiosInstance.get(`${baseUrl}/notification/get`);
-  return response;
+  return response.data;
 };
 
 export const patchNotification = async (notificationId: number) => {
