@@ -9,22 +9,22 @@ export const alarmHandlers = [
       status: 200,
       message: 'Success',
       data: [
-        // {
-        //   notificationId: 1,
-        //   notificationType: 'QUEST',
-        //   additionalData: {
-        //     questDetail: {
-        //       type: 'CREW',
-        //       questId: 6,
-        //       crewId: 7,
-        //       crewName: '달리자크루',
-        //       title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기',
-        //       coins: 50,
-        //     },
-        //   },
-        //   content: '퀘스트를 달성했어요.',
-        //   createdAt: '2024-10-01T17:23:07.3202412',
-        // },
+        {
+          notificationId: 1,
+          notificationType: 'QUEST',
+          additionalData: {
+            questDetail: {
+              type: 'CREW',
+              questId: 6,
+              crewId: 7,
+              crewName: '달리자크루',
+              title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기',
+              coins: 50,
+            },
+          },
+          content: '퀘스트를 달성했어요.',
+          createdAt: '2024-10-01T17:23:07.3202412',
+        },
         // {
         //   notificationId: 2,
         //   notificationType: 'QUEST',

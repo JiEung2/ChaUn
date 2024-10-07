@@ -9,7 +9,7 @@ export const getPartsList = async () => {
 };
 
 export const getUserCharacter = async (userId: number) => {
-  const response = await exportAxios.get(`${baseUrl}/users/:user_id/character`, { params: { userId } });
+  const response = await exportAxios.get(`${baseUrl}/users/${userId}/character`, { params: { userId } });
   return response;
 };
 

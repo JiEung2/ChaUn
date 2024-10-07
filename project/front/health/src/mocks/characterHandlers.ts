@@ -49,6 +49,7 @@ export const characterHandlers = [
   http.get(`${baseUrl}/users/:user_id/character`, ({ params }) => {
     const { user_id } = params;
     console.log('회원ID : ', user_id);
+    if (user_id === 'my') return;
     return HttpResponse.json({
       status: 200,
       message: '',
@@ -66,8 +67,8 @@ export const characterHandlers = [
       status: 200,
       message: '',
       data: {
-        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/GBstanding.glb',
-        gender: 'FEMALE',
+        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_model/B5.glb',
+        gender: 'MAN',
         bodyTypeId: 7,
       },
     });

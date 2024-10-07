@@ -31,6 +31,8 @@ interface ExerciseRecord {
   createdAt: string;
   exerciseDuration: number; // 초 단위의 운동 시간
   burnedCalories: number; // 소모된 칼로리
+  exerciseName: string;
+  id: number;
 }
 
 // 데이터 fetch 함수
@@ -79,12 +81,18 @@ function ExerciseTimeDisplay({ nickname }: { nickname: string }) {
 
 // 운동 기록 차트 컴포넌트
 function ExerciseRecordChart() {
-  const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 3);
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줌
+  const currentWeek = Math.ceil(currentDate.getDate() / 7); // 날짜를 7로 나누어 몇 번째 주인지 계산
+
+  const { data: exerciseRecordData } = useExerciseRecord(currentYear, currentMonth, currentWeek);
+  // const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 4);
   const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
   const chartData = Array.isArray(exerciseRecordData)
-    ? exerciseRecordData.map((record: any) => ({
+    ? exerciseRecordData.map((record: ExerciseRecord) => ({
         day: new Date(record.createdAt).toLocaleDateString('ko-KR', { weekday: 'short' }),
         time: record.exerciseDuration / 60, // 초 단위를 분으로 변환
         calories: record.burnedCalories,
@@ -275,28 +283,32 @@ export default function HomePage() {
     },
   });
 
-  useEffect(() => {
-    if (!isTokenSent) {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker
-          .register('/firebase-messaging-sw.js')
-          .then(() => {
-            console.log('서비스 워커가 등록되었습니다.');
-          })
-          .catch((error) => {
-            console.error('서비스 워커 등록 실패:', error);
-          });
-      }
-
-      const storedToken = sessionStorage.getItem('fcmToken');
-      if (storedToken) {
-        console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
-        tokenMutation.mutate(storedToken);
-      } else {
-        console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
-      }
+  const registerServiceWorker = () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/firebase-messaging-sw.js')
+        .then(() => {
+          console.log('서비스 워커가 등록되었습니다.');
+          const storedToken = sessionStorage.getItem('fcmToken');
+          console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
+          if (storedToken) {
+            tokenMutation.mutate(storedToken);
+          } else {
+            console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
+          }
+        })
+        .catch((error) => {
+          console.error('서비스 워커 등록 실패:', error);
+        });
     }
-  }, [isTokenSent, tokenMutation]);
+  };
+
+  useEffect(() => {
+    if (!isTokenSent && userId) {
+      registerServiceWorker();
+    }
+  }, [isTokenSent, userId, tokenMutation]);
+
   // 두 번째 useEffect: 유저 데이터 가져오기
   useEffect(() => {
     async function fetchUserData() {

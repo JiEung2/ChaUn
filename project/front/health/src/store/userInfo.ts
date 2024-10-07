@@ -5,13 +5,13 @@ interface UserState {
   userId: number;
   nickname: string;
   coin: number;
-  characterImageUrl: string;
-  characterFileUrl: string;
+  // characterImageUrl: string;
+  // characterFileUrl: string;
   setUserId: (id: number) => void;
   setNickname: (nickname: string) => void;
   setHasCoin: (hasCoin: number) => void;
-  setCharacterImageUrl: (characterImageUrl: string) => void;
-  setCharacterFileUrl: (characterFileUrl: string) => void;
+  // setCharacterImageUrl: (characterImageUrl: string) => void;
+  // setCharacterFileUrl: (characterFileUrl: string) => void;
 }
 
 const useUserStore = create<UserState>()(
@@ -20,14 +20,14 @@ const useUserStore = create<UserState>()(
       userId: 0,
       nickname: '',
       coin: 0,
-      characterImageUrl: '',
-      characterFileUrl: '',
+      // characterImageUrl: '',
+      // characterFileUrl: '',
 
       setUserId: (id: number) => set({ userId: id }),
       setNickname: (nickname: string) => set({ nickname }),
       setHasCoin: (hasCoin: number) => set({ coin: hasCoin }),
-      setCharacterImageUrl: (characterImageUrl: string) => set({ characterImageUrl }),
-      setCharacterFileUrl: (characterFileUrl: string) => set({ characterFileUrl }),
+      // setCharacterImageUrl: (characterImageUrl: string) => set({ characterImageUrl }),
+      // setCharacterFileUrl: (characterFileUrl: string) => set({ characterFileUrl }),
     }),
     {
       name: 'user-storage', // 저장될 스토리지의 키 이름
