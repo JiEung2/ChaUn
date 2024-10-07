@@ -157,8 +157,8 @@ export default function AlarmPage() {
 
   return (
     <div className="alarmContainer">
-      {alarmList.data.length > 0 ? (
-        alarmList.data.data.map((alarm: Notification) => (
+      {alarmList.length > 0 ? (
+        alarmList.data.map((alarm: Notification) => (
           <div className="alarmItemContainer" key={alarm.notificationId}>
             <img src={getIcon(alarm)} alt="Icon" className="alarmIcon" />
             <div className="messageContainer">
