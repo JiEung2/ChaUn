@@ -20,6 +20,12 @@ interface BodyData {
   bodyMuscle: boolean;
   bodyShape: string;
 }
+type FormData = {
+  mealsPerDay: string;
+  foodType: string;
+  snacksPerDay: string;
+  drinksPerDay: string;
+};
 
 export default function BodyAddModal({ onClose }: BodyAddModalProps) {
   const { register, watch } = useForm();
@@ -72,8 +78,8 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
 
   // EatingHabits 전송 mutation
   const eatingHabitsMutation = useMutation({
-    mutationFn: (data: { mealsPerDay: number; foodType: string; snacksPerDay: string; drinksPerDay: string }) =>
-      surveySubmit3(data.mealsPerDay, data.foodType, data.snacksPerDay, data.drinksPerDay),
+    mutationFn: (data: FormData) =>
+      surveySubmit3(Number(data.mealsPerDay), data.foodType, data.snacksPerDay, data.drinksPerDay),
     onSuccess: () => {
       onClose();
     },
@@ -99,14 +105,14 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
       <div className="scrollableContent">
         <BodyType onBodyDataChange={handleBodyDataChange} />
         <EatingHabits register={register} />
+        <GeneralButton
+          buttonStyle={{ style: 'floating', size: 'semiTiny' }}
+          onClick={handleComplete}
+          className="completedButton"
+          disabled={!isFormValid}>
+          완료
+        </GeneralButton>
       </div>
-      <GeneralButton
-        buttonStyle={{ style: 'floating', size: 'semiTiny' }}
-        onClick={handleComplete}
-        className="completedButton"
-        disabled={!isFormValid}>
-        완료
-      </GeneralButton>
     </div>
   );
 }
