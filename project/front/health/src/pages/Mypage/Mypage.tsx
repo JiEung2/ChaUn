@@ -113,6 +113,7 @@ export default function MypagePage() {
     queryFn: () => getSnapshotList(),
     enabled: true,
   });
+  console.log('snapshotList', snapshotList);
   const formattedSnapshots = snapshotList.snapshots.map((snapshot: any) => ({
     date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {
       year: '2-digit',
