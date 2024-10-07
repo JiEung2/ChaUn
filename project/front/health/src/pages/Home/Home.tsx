@@ -268,14 +268,15 @@ function HomePageContent({ nickname }: { nickname: string }) {
 
 export default function HomePage() {
   const { userId, nickname, setNickname, setHasCoin } = useUserStore();
-  const [isTokenSent, setIsTokenSent] = useState(() => {
-    return localStorage.getItem('isTokenSent') === 'true';
-  });
+  const [isTokenSent, setIsTokenSent] = useState(
+    false
+    // return localStorage.getItem('isTokenSent') === 'true';
+  );
 
   const tokenMutation = useMutation({
     mutationFn: (deviceToken: string) => patchDeviceToken(deviceToken),
     onSuccess: () => {
-      localStorage.setItem('isTokenSent', 'true');
+      // localStorage.setItem('isTokenSent', 'true');
       setIsTokenSent(true);
     },
     onError: (error) => {
