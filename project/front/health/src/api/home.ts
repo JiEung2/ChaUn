@@ -32,8 +32,9 @@ export const exerciseRecord = async (year: number, month: number, week: number):
     },
   });
   if (response.data.data !== undefined) {
+    console.log('운동기록 조회1', response.data.data);
     return response.data.data;
   }
-  console.log('exerciseRecord', response);
+  console.log('운동기록 조회2', response.data);
   return response.data;
 };
