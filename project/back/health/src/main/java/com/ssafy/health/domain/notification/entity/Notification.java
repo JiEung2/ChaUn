@@ -36,7 +36,7 @@ public class Notification extends BaseEntity {
     private LocalDateTime checkedTime;
 
     @Type(JsonType.class)
-    @Column(name = "additionalData", columnDefinition = "longtext")
+    @Column(columnDefinition = "JSON")
     private Map<String, Object> additionalData;
 
     public void updateNotificationStatus(NotificationStatus notificationStatus) {

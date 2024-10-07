@@ -72,13 +72,13 @@ public class NotificationWriteService {
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
-        LocalDateTime lastSurveyedDate = null;
+        String lastSurveyedDate = null;
 
         BodyHistory bodyHistory = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())
                 .orElse(null);
 
         if (bodyHistory != null) {
-            lastSurveyedDate = bodyHistory.getCreatedAt();
+            lastSurveyedDate = bodyHistory.getCreatedAt().toString();
         }
 
         additionalData.put("lastSurveyedDate", lastSurveyedDate);
