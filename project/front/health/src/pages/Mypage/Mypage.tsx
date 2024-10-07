@@ -21,7 +21,7 @@ export default function MypagePage() {
   const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
-  const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
+  const [activeAnimation, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
   const queryClient = useQueryClient();
 
@@ -174,10 +174,15 @@ export default function MypagePage() {
   // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
   const handleShuffleClick = () => {
     const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
-    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+
+    // 현재 애니메이션을 제외한 나머지 애니메이션 필터링
+    const availableAnimations = animations.filter((animation) => animation !== activeAnimation);
+
+    // 필터링된 애니메이션 중에서 무작위로 선택
+    const randomAnimation = availableAnimations[Math.floor(Math.random() * availableAnimations.length)];
+
     handleButtonClick(randomAnimation);
   };
-
   // 버튼 클릭 핸들러 - 선택된 애니메이션 업데이트
   const handleButtonClick = (type: 'standing' | 'dancing' | 'waving') => {
     const url = generateAnimationUrl(type);
