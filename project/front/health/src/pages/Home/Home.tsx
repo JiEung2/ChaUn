@@ -295,13 +295,13 @@ export default function HomePage() {
             console.error('서비스 워커 등록 실패:', error);
           });
       }
-      const storedToken = sessionStorage.getItem('fcmToken');
-      if (storedToken) {
-        console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
-        tokenMutation.mutate(storedToken);
-      } else {
-        console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
-      }
+    }
+    const storedToken = sessionStorage.getItem('fcmToken');
+    if (storedToken) {
+      console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
+      tokenMutation.mutate(storedToken);
+    } else {
+      console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
     }
   }, [isTokenSent, tokenMutation]);
 
