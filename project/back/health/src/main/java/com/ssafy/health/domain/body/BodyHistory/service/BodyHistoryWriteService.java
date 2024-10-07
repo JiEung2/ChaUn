@@ -14,6 +14,7 @@ import com.ssafy.health.domain.body.BodyType.exception.BodyTypeNotFoundException
 import com.ssafy.health.domain.body.BodyType.repository.BodyTypeRepository;
 import com.ssafy.health.domain.character.service.CharacterWriteService;
 import com.ssafy.health.domain.quest.entity.QuestStatus;
+import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
 import com.ssafy.health.domain.quest.service.QuestWriteService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,11 @@ public class BodyHistoryWriteService {
         characterWriteService.createPersonalCharacter(user, bodyTypeId);
         log.info("Create personal character");
 
-        questWriteService.updateUserQuestStatus(user, "몸무게 입력", QuestStatus.CREATED);
+        try {
+            questWriteService.updateUserQuestStatus(user, "몸무게 입력", QuestStatus.CREATED);
+        } catch (QuestNotFoundException e) {
+            log.info("완료 처리할 체형 입력 퀘스트가 없음");
+        }
 
         return new BodySurveySuccessDto();
     }
@@ -69,7 +74,7 @@ public class BodyHistoryWriteService {
         if (isMuscle && bodyTypeId <= BODY_TYPE_MIDDLE_NUMBER) {
             return bodyTypeId + MUSCLE_BODY_TYPE_OFFSET;
         }
-        log.info("bodyTypeId = "+bodyTypeId.toString());
+        log.info("bodyTypeId = " + bodyTypeId.toString());
         return bodyTypeId;
     }
 
