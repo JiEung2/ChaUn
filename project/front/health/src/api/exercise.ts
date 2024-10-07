@@ -37,7 +37,7 @@ export const getWeeklyExerciseRecord = async (year: number, month: number, week:
       },
     });
     console.log(response);
-    return response;
+    return response.data;
   } catch (error) {
     console.error('API 요청 중 에러 발생:', error);
     throw error; // 에러를 상위로 던짐

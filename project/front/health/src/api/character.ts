@@ -24,6 +24,7 @@ export const patchPartsOnOff = async (parts_id: number) => {
 };
 
 export const postSnapshot = async (formData: FormData) => {
+  console.log(formData);
   try {
     const response = await axios.post(`${baseUrl}/character/snapshot`, formData, {
       headers: {

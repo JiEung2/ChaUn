@@ -18,12 +18,12 @@ export const getBodyRecord = async (year: number, month: number) => {
 export const getPredictBasic = async () => {
   const response = await exportAxios.get(`${baseUrl}/users/predict/basic`);
   console.log('기본체형 예측', response);
-  return response;
+  return response.data;
 };
 
 export const getPredictExtra = async () => {
   const response = await exportAxios.get(`${baseUrl}/users/predict/extra`);
-  return response;
+  return response.data;
 };
 
 export const postPredictExerciseDetail = async (exercise_id: number, count: number, duration: number) => {
