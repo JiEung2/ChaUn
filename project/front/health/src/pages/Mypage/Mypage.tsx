@@ -113,7 +113,7 @@ export default function MypagePage() {
     queryFn: () => getSnapshotList(),
     enabled: true,
   });
-  const formattedSnapshots = snapshotList?.data?.data.snapshots.map((snapshot: any) => ({
+  const formattedSnapshots = snapshotList.snapshots.map((snapshot: any) => ({
     date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {
       year: '2-digit',
       month: '2-digit',
@@ -126,7 +126,7 @@ export default function MypagePage() {
   const partsOnoffMutation = useMutation({
     mutationFn: (parts_id: number) => patchPartsOnOff(parts_id),
     onSuccess: (response) => {
-      const newCharacterUrl = response?.data?.characterUrl;
+      const newCharacterUrl = response.characterUrl;
       setCharacterGlbUrl(newCharacterUrl); // 캐릭터 URL 업데이트
     },
     onError: (error) => {
@@ -191,7 +191,7 @@ export default function MypagePage() {
   };
 
   const mappedItems =
-    partsList?.data?.data?.partsList?.map((part: any) => {
+    partsList.partsList.map((part: any) => {
       let category = '';
       switch (part.partsType) {
         case 'HAIR':
