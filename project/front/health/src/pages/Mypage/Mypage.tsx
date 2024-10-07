@@ -117,14 +117,17 @@ export default function MypagePage() {
     enabled: true,
   });
   console.log('snapshotList', snapshotList);
-  const formattedSnapshots = snapshotList.snapshots.map((snapshot: snapshots) => ({
-    date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {
-      year: '2-digit',
-      month: '2-digit',
-      day: '2-digit',
-    }),
-    image: snapshot.snapshotUrl,
-  }));
+  const formattedSnapshots =
+    snapshotList !== undefined
+      ? snapshotList.snapshots.map((snapshot: snapshots) => ({
+          date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {
+            year: '2-digit',
+            month: '2-digit',
+            day: '2-digit',
+          }),
+          image: snapshot.snapshotUrl,
+        }))
+      : [];
 
   // 파츠 적용/해제를 위한 mutation
   const partsOnoffMutation = useMutation({
