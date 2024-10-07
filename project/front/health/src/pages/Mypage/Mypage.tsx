@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, Suspense } from 'react';
 import { useMutation, useSuspenseQuery, useQueryClient, useQuery } from '@tanstack/react-query';
 import ShuffleIcon from '@/assets/svg/shuffle.svg';
 import CamerIcon from '@/assets/svg/camera.svg';
@@ -213,57 +213,72 @@ export default function MypagePage() {
     }) || [];
 
   return (
-    <div className="myProfileContainer">
-      <div className="profileSection">
-        <div className="info">
-          <p className="subtitle">{/* 사용자 이름 */}님</p>
-          <Coin amount={100} style="styled" />
+    <Suspense
+      fallback={
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            textAlign: 'center',
+          }}>
+          <p>
+            페이지 로딩 중 입니다. <br /> 잠시만 기다려주세요.
+          </p>
         </div>
-
-        <div className="characterAndSnapshot">
-          <div className="character" ref={characterRef}>
-            {characterGlbUrl ? (
-              <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
-            ) : (
-              <p>
-                기본, 춤추기, 손 흔들기 중 <br /> 랜덤 동작이 준비 중입니다!
-              </p>
-            )}
+      }>
+      <div className="myProfileContainer">
+        <div className="profileSection">
+          <div className="info">
+            <p className="subtitle">{/* 사용자 이름 */}님</p>
+            <Coin amount={100} style="styled" />
           </div>
 
-          <div className="iconWrapper">
-            <div className="navIcon">
-              <img src={ShuffleIcon} alt="shuffle Icon" className="icon" onClick={handleShuffleClick} />
+          <div className="characterAndSnapshot">
+            <div className="character" ref={characterRef}>
+              {characterGlbUrl ? (
+                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
+              ) : (
+                <p>{/*닉네임*/}님의 캐릭터를 불러오지 못했어요</p>
+              )}
             </div>
-            <div className="navIcon">
-              <img src={CamerIcon} alt="camera Icon" className="icon" onClick={handleCaptureClick} />
+
+            <div className="iconWrapper">
+              <div className="navIcon">
+                <img src={ShuffleIcon} alt="shuffle Icon" className="icon" onClick={handleShuffleClick} />
+              </div>
+              <div className="navIcon">
+                <img src={CamerIcon} alt="camera Icon" className="icon" onClick={handleCaptureClick} />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="customSection">
-        <p className="subtitle">커스텀</p>
-        <div className="customBox">
-          <CustomCategories
-            selectedTab={selectedTab}
-            setSelectedTab={setSelectedTab}
-            userCoin={100}
-            onPurchase={handlePurchase}
-            onApply={handleApply}
-            items={mappedItems.filter((item: any) => item.category === selectedTab)}
-          />
+        <div className="customSection">
+          <p className="subtitle">커스텀</p>
+          <div className="customBox">
+            <CustomCategories
+              selectedTab={selectedTab}
+              setSelectedTab={setSelectedTab}
+              userCoin={100}
+              onPurchase={handlePurchase}
+              onApply={handleApply}
+              items={mappedItems.filter((item: any) => item.category === selectedTab)}
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="snapshotSection">
-        <p className="subtitle">스냅샷</p>
-        <div className="snapshotBox">{formattedSnapshots && <SnapshotList snapshots={formattedSnapshots} />}</div>
-      </div>
+        <div className="snapshotSection">
+          <p className="subtitle">스냅샷</p>
+          <div className="snapshotBox">{formattedSnapshots && <SnapshotList snapshots={formattedSnapshots} />}</div>
+        </div>
 
-      <GeneralButton buttonStyle={{ style: 'floating', size: 'small' }} className="logout">
-        로그아웃
-      </GeneralButton>
-    </div>
+        <GeneralButton buttonStyle={{ style: 'floating', size: 'small' }} className="logout">
+          로그아웃
+        </GeneralButton>
+      </div>
+    </Suspense>
   );
 }

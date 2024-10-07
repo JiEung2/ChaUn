@@ -4,7 +4,8 @@ import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-
+import Lottie from 'lottie-react';
+import LoadingLottile from '@/assets/Lottie/loading.json';
 interface CharacterProps {
   glbUrl: string;
   gender: 'MAN' | 'FEMALE';
@@ -89,7 +90,23 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
       dpr={Math.min(window.devicePixelRatio, 2)}>
       {gender === 'MAN' ? <ambientLight intensity={4} /> : <ambientLight intensity={8} />}
       <directionalLight position={[5, 5, 5]} intensity={1} castShadow={false} />
-      <Suspense fallback={null}>
+      <Suspense
+        fallback={
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100vh',
+              textAlign: 'center',
+            }}>
+            <Lottie animationData={LoadingLottile} style={{ width: '200px', height: '200px' }} />
+            <p>
+              기본, 춤추기, 손 흔들기 모션을 랜덤으로 보여줍니다. <br /> 잠시만 기다려주세요.
+            </p>
+          </div>
+        }>
         <Character glbUrl={glbUrl} gender={gender} />
       </Suspense>
       <OrbitControls
