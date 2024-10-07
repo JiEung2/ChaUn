@@ -8,15 +8,15 @@ export const getPartsList = async () => {
   return response.data;
 };
 
-// export const getUserCharacter = async (userId: number) => {
-//   const response = await exportAxios.get(`${baseUrl}/users/${userId}/character`, { params: { userId } });
-//   return response.data;
-// };
+export const getUserCharacter = async (userId: number) => {
+  const response = await exportAxios.get(`${baseUrl}/users/${userId}/character`, { params: { userId } });
+  return response.data;
+};
 
-// export const getMyCharacter = async () => {
-//   const response = await exportAxios.get(`${baseUrl}/users/my/character`);
-//   return response.data;
-// };
+export const getMyCharacter = async () => {
+  const response = await exportAxios.get(`${baseUrl}/users/my/character`);
+  return response.data;
+};
 
 export const patchPartsOnOff = async (parts_id: number) => {
   const response = await exportAxios.patch(`${baseUrl}/users/character/parts/${parts_id}`, { parts_id });

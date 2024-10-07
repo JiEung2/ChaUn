@@ -11,7 +11,7 @@ import html2canvas from 'html2canvas';
 import queryKeys from '@/utils/querykeys';
 import './Mypage.scss';
 import { getUserDetail } from '@/api/user';
-import { getPartsList, patchPartsOnOff, getSnapshotList, postSnapshot } from '@/api/character';
+import { getMyCharacter, getPartsList, patchPartsOnOff, getSnapshotList, postSnapshot } from '@/api/character';
 import useUserStore from '@/store/userInfo';
 const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
 
@@ -25,6 +25,7 @@ export default function MypagePage() {
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
   const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
+  const [bodyTypeId, setBodyTypeId] = useState<number | null>(null);
   const queryClient = useQueryClient();
   interface snapshots {
     snapshotUrl: string;
@@ -39,19 +40,25 @@ export default function MypagePage() {
   }, []);
 
   // 캐릭터 및 파츠 리스트 조회
-  const { data: myCharacter } = useSuspenseQuery({
+  const { data: myDetail } = useSuspenseQuery({
     queryKey: [queryKeys.USER_DETAIL, userId],
     queryFn: () => getUserDetail(userId),
   });
-  console.log('myCharacter.characterFileUrl', myCharacter.characterFileUrl, userId);
+  console.log('myDetail.characterFileUrl', myDetail.characterFileUrl, userId);
+
+  const { data: myCharacter } = useSuspenseQuery({
+    queryKey: [queryKeys.CHARACTER],
+    queryFn: () => getMyCharacter(),
+  });
 
   useEffect(() => {
-    if (myCharacter) {
-      setGender(myCharacter.gender === 'MAN' ? 'MAN' : 'FEMALE');
-      setCharacterGlbUrl(myCharacter.characterFileUrl);
-      setHasCoin(myCharacter.coin);
+    if (myDetail) {
+      setGender(myDetail.gender === 'MAN' ? 'MAN' : 'FEMALE');
+      setCharacterGlbUrl(myDetail.characterFileUrl);
+      setHasCoin(myDetail.coin);
+      setBodyTypeId(myCharacter.bodyTypeId);
     }
-  }, [myCharacter]);
+  }, [myDetail]);
 
   const { data: partsList } = useSuspenseQuery({
     queryKey: [queryKeys.PARTS_LIST],
@@ -185,9 +192,13 @@ export default function MypagePage() {
 
   // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
   const handleShuffleClick = () => {
-    const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
-    const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
-    handleButtonClick(randomAnimation);
+    if (bodyTypeId === 5) {
+      const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
+      const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
+      handleButtonClick(randomAnimation);
+    } else {
+      return;
+    }
   };
 
   // 버튼 클릭 핸들러 - 선택된 애니메이션 업데이트
