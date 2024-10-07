@@ -95,7 +95,9 @@ export default function MypagePage() {
       if (characterRef.current) {
         try {
           // 캔버스를 캡처하고 base64로 변환
-          const canvas = await html2canvas(characterRef.current as HTMLElement);
+          const canvas = await html2canvas(characterRef.current as HTMLElement, {
+            backgroundColor: '#72C0E6',
+          });
 
           // PNG 파일로 변환
           const blob = await canvasToBlob(canvas);
