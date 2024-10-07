@@ -11,7 +11,7 @@ export const getBodyRecord = async (year: number, month: number) => {
     },
   });
   // console.log('체형 기록 조회', response);
-  return response;
+  return response.data;
 };
 
 // 기본 체형 예측 조회
