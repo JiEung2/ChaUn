@@ -8,8 +8,10 @@ import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
 import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
 import { getWeeklyExerciseRecord } from '@/api/exercise';
 import queryKeys from '@/utils/querykeys';
+import useUserStore from '@/store/userInfo';
 
 export default function RecordPage() {
+  const { nickname } = useUserStore();
   const navigate = useNavigate();
   const [exerciseId, setExerciseId] = useState<number | null>(null);
   const [duration, setDuration] = useState('');
@@ -131,7 +133,7 @@ export default function RecordPage() {
   });
 
   useEffect(() => {
-    const weeklyExerciseCount = weeklyExerciseTime?.data?.data?.exerciseHistoryList?.length || 0;
+    const weeklyExerciseCount = weeklyExerciseTime?.data?.exerciseHistoryList?.length || 0;
     setExerciseDays(weeklyExerciseCount);
   }, [weeklyExerciseTime]);
 
@@ -165,7 +167,7 @@ export default function RecordPage() {
 
       <div className="currentPrediction">
         <p className="predictionText">
-          <strong>민영님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
+          <strong>{nickname}님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
         </p>
         <BodyWeightRecord data={predictionData} />
       </div>
@@ -174,7 +176,7 @@ export default function RecordPage() {
         {!showBodyWeightRecord && exerciseDays < 4 ? (
           <div className="exercisePrediction">
             <p className="predictionText">
-              <strong>민영님</strong>의 운동 강도를 높였을 때, 체형 예측 결과를 조회해보세요
+              <strong>{nickname}님</strong>의 운동 강도를 높였을 때, 체형 예측 결과를 조회해보세요
             </p>
             <ExerciseInput
               onShowPrediction={handleShowBodyWeightRecord}
@@ -190,7 +192,7 @@ export default function RecordPage() {
         ) : showBodyWeightRecord ? (
           <div className="predictionResult">
             <p className="predictionText">
-              <strong>민영님</strong>이 선택한 운동을 하루 <strong>{duration}분</strong>, <br />
+              <strong>{nickname}님</strong>이 선택한 운동을 하루 <strong>{duration}분</strong>, <br />
               <strong>총 {exerciseDays}일</strong> 추가로 진행했을 때 <br />
               예측되는 체형을 알려드릴게요!
             </p>
@@ -205,7 +207,7 @@ export default function RecordPage() {
         ) : (
           <div className="exerciseAdvice">
             <p className="adviceText">
-              <strong>민영님</strong>, <br />
+              <strong>{nickname}님</strong>, <br />
               저번 주 운동을 <strong>{exerciseDays}일</strong> 진행하셨군요!
               <p>
                 꾸준한 건강 관리 및 부상 방지를 위해 <br />
