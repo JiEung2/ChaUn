@@ -26,8 +26,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 - Not Found
+    // 204 - No Content
+    @ExceptionHandler(BasicDataNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleBasicPredictDataNotFoundException(BasicDataNotFoundException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
 
+    @ExceptionHandler(ExtraDataNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleExtraPredictDataNotFoundException(ExtraDataNotFoundException e) {
+        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+    }
+
+    // 404 - Not Found
     @ExceptionHandler(NotFoundRefreshTokenException.class)
     public ResponseEntity<ApiResponse<Void>> handleNotFoundRefreshTokenException(NotFoundRefreshTokenException e) {
         ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
@@ -112,20 +124,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
-    @ExceptionHandler(BasicDataNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleBasicPredictDataNotFoundException(BasicDataNotFoundException e) {
-        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
-
-    @ExceptionHandler(ExtraDataNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleExtraPredictDataNotFoundException(ExtraDataNotFoundException e) {
-        ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-    }
-
     @ExceptionHandler(RecommendCrewListNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleERecommendCrewListNotFoundException(RecommendCrewListNotFoundException e) {
+    public ResponseEntity<ApiResponse<Void>> handleRecommendCrewListNotFoundException(RecommendCrewListNotFoundException e) {
         ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
