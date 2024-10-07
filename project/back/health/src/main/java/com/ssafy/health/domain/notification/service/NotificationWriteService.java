@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ssafy.health.common.fcm.dto.request.FcmRequestDto;
 import com.ssafy.health.common.fcm.service.FcmService;
 import com.ssafy.health.domain.account.entity.User;
+import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
+import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundException;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
@@ -21,10 +23,10 @@ import com.ssafy.health.domain.quest.entity.UserQuest;
 import com.ssafy.health.domain.quest.exception.QuestNotFoundException;
 import com.ssafy.health.domain.quest.repository.CrewQuestRepository;
 import com.ssafy.health.domain.quest.repository.UserQuestRepository;
-import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -33,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -47,29 +50,43 @@ public class NotificationWriteService {
     private final FcmService fcmService;
     private final UserQuestRepository userQuestRepository;
     private final CrewQuestRepository crewQuestRepository;
+    private final UserRepository userRepository;
 
-    public void createBodySurveyNotification(NotificationType notificationType, User user)
+    @Scheduled(cron = "0 0 9 * * Mon")
+    public void sendBodySurveyNotification() {
+
+        LocalDateTime dueDate = LocalDateTime.now().minusDays(14);
+        List<User> usersToSend = userRepository.findAllByBodyHistoryAvailability(dueDate);
+
+        usersToSend.forEach(user -> {
+            try {
+                createBodySurveyNotification(user);
+            } catch (ExecutionException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+
+    private void createBodySurveyNotification(User user)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
         LocalDateTime lastSurveyedDate = null;
 
-        try {
-            lastSurveyedDate = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())
-                    .orElseThrow().getCreatedAt();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        lastSurveyedDate = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())
+                .orElseThrow(BodyHistoryNotFoundException::new).getCreatedAt();
         additionalData.put("lastSurveyedDate", lastSurveyedDate);
 
         Notification notification = notificationBuilder(
-                notificationType, user, SURVEY.getMessage(), additionalData);
+                NotificationType.SURVEY, user, SURVEY.getMessage(), additionalData);
         notificationRepository.save(notification);
 
         sendFcmMessage(user, "체형 입력 알림", SURVEY.getMessage());
     }
 
-    public NotificationRequestDto createBattleNotification(NotificationType notificationType, User user, Battle battle, Crew crew, Integer coinAmount)
+    public NotificationRequestDto createBattleNotification(
+            NotificationType notificationType, User user, Battle battle, Crew crew, Integer coinAmount)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
@@ -136,7 +153,8 @@ public class NotificationWriteService {
                     } catch (ExecutionException | InterruptedException e) {
                         throw new RuntimeException(e);
                     }
-                    return notificationBuilder(dto.getNotificationType(), dto.getUser(), dto.getMessage(), dto.getAdditionalData());
+                    return notificationBuilder(dto.getNotificationType(),
+                            dto.getUser(), dto.getMessage(), dto.getAdditionalData());
                 })
                 .toList();
 
