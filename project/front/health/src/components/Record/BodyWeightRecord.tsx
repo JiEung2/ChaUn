@@ -11,6 +11,7 @@ interface BodyWeightRecordProps {
 }
 
 export default function BodyWeightRecord({ data }: BodyWeightRecordProps) {
+  console.log('bodyWeght data', data);
   return (
     <div className="bodyWeightRecord">
       <div className="predictionCards">

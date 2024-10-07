@@ -131,7 +131,7 @@ export default function RecordPage() {
       };
     },
   });
-
+  console.log('predictionExtraData', predictionExtraData);
   useEffect(() => {
     const weeklyExerciseCount = weeklyExerciseTime.exerciseHistoryList.length || 0;
     setExerciseDays(weeklyExerciseCount);
@@ -169,7 +169,7 @@ export default function RecordPage() {
         <p className="predictionText">
           <strong>{nickname}님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
         </p>
-        <BodyWeightRecord data={predictionData} />
+        {predictionExtraData !== undefined ? <BodyWeightRecord data={predictionData} /> : <p>무게 정보가 없습니다</p>}
       </div>
 
       <div>
@@ -196,7 +196,11 @@ export default function RecordPage() {
               <strong>총 {day}일</strong> 추가로 진행했을 때 <br />
               예측되는 체형을 알려드릴게요!
             </p>
-            <BodyWeightRecord data={predictionExtraData} />
+            {predictionExtraData !== undefined ? (
+              <BodyWeightRecord data={predictionExtraData} />
+            ) : (
+              <p>무게 정보가 없습니다</p>
+            )}
             <GeneralButton
               buttonStyle={{ style: 'primary', size: 'large' }}
               onClick={handleResetInput}
