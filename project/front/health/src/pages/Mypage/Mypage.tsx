@@ -96,7 +96,7 @@ export default function MypagePage() {
         try {
           // 캔버스를 캡처하고 base64로 변환
           const canvas = await html2canvas(characterRef.current as HTMLElement, {
-            backgroundColor: '#72C0E6',
+            backgroundColor: '#98e4ff',
           });
 
           // PNG 파일로 변환
@@ -117,15 +117,12 @@ export default function MypagePage() {
     });
   };
 
-  // 스냅샷 리스트 캐시에서 확인
-  // const cachedSnapshotList = queryClient.getQueryData([queryKeys.SNAPSHOT_LIST]);
-
   const { data: snapshotList } = useQuery({
     queryKey: [queryKeys.SNAPSHOT_LIST],
     queryFn: () => getSnapshotList(),
     enabled: true,
   });
-  console.log('snapshotList', snapshotList);
+
   const formattedSnapshots =
     snapshotList !== undefined
       ? snapshotList.snapshots.map((snapshot: snapshots) => ({
