@@ -325,7 +325,7 @@
 .crewSettings {
   display: flex;
   align-items: center;
-  margin: 20px;
+  margin: 20px 5px;
   .settingTitle {
     font-weight: bold;
     font-size: 16px;
@@ -340,9 +340,10 @@
 .toggleSwitch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
-  transform: scale(0.65);
+  width: 80px;
+  height: 31px;
+  transform: scale(0.8);
+  margin-left: -20px;
 }
 
 .toggleSwitch input {
