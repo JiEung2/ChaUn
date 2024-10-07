@@ -6,7 +6,7 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-  padding: 20px;
+  padding: 20px 20px 30px;
   background: white;
   border-radius: 30px 30px 0 0;
   box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
@@ -21,10 +21,10 @@
   z-index: 10000;
 
   .closeIcon {
-    position: absolute; 
+    position: absolute;
     top: 40px;
-    right: 30px; 
-    cursor: pointer; 
+    right: 30px;
+    cursor: pointer;
   }
 
   .description {
@@ -43,9 +43,7 @@
   // 모든 웹킷 브라우저에서 스크롤바 숨기기
   &::-webkit-scrollbar {
     display: none;
-  }  
-  
-
+  }
 }
 
 .divider {
