@@ -28,5 +28,5 @@ export const getPredictExtra = async () => {
 
 export const postPredictExerciseDetail = async (exercise_id: number, count: number, duration: number) => {
   const response = await exportAxios.post(`${baseUrl}/users/predict/request-extra`, { exercise_id, count, duration });
-  return response.data;
+  return response;
 };

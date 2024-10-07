@@ -84,7 +84,7 @@ export default function ProfilePage() {
     datasets: [
       {
         label: '체중 기록 (kg)',
-        data: fillWeightData(weight6Data?.data.data.weightDataList || [], chartLabels),
+        data: fillWeightData(weight6Data.weightDataList || [], chartLabels),
         backgroundColor: '#CDE0FF',
         fill: false,
         tension: 0.1,
@@ -137,20 +137,20 @@ export default function ProfilePage() {
   };
 
   console.log(weight6Data);
-  const hasWeightData = weight6Data?.data.data.weightDataList?.length > 0;
+  const hasWeightData = weight6Data.weightDataList.length > 0;
   return (
     <div className="profileContainer">
-      <p className="titles">{userDetailData.data.nickname}님</p>
+      <p className="titles">{userDetailData.nickname}님</p>
       <div className="profileHeaderSection">
         <div className="userProfileInfo">
-          <CharacterCanvas glbUrl={userDetailData.data.characterFileUrl} gender={userDetailData.data.gender} />
+          <CharacterCanvas glbUrl={userDetailData.characterFileUrl} gender={userDetailData.gender} />
         </div>
 
         <div className="time">
           <p className="timeTitle">오늘의 운동 시간</p>
-          <span>{formatExerciseTime(exerciseTimeData.data.data.dailyAccumulatedExerciseTime)}</span>
+          <span>{formatExerciseTime(exerciseTimeData.dailyAccumulatedExerciseTime)}</span>
           <p className="timeTitle">이번 주 운동 시간</p>
-          <span>{formatExerciseTime(exerciseTimeData.data.data.weeklyAccumulatedExerciseTime)}</span>
+          <span>{formatExerciseTime(exerciseTimeData.weeklyAccumulatedExerciseTime)}</span>
         </div>
       </div>
 
@@ -169,11 +169,11 @@ export default function ProfilePage() {
       </div>
 
       <div className="crewContainer">
-        <p className="titles">{userDetailData.data.nickname}님의 크루</p>
+        <p className="titles">{userDetailData.nickname}님의 크루</p>
 
         <div className="crewList">
-          {userCrewList.data && userCrewList.data.crewList.length > 0 ? (
-            userCrewList.data.crewList.map((crew: any) => (
+          {userCrewList && userCrewList.crewList.length > 0 ? (
+            userCrewList.crewList.map((crew: any) => (
               <Crew
                 key={crew.crewId}
                 imageUrl={crew.crewProfileImage}
