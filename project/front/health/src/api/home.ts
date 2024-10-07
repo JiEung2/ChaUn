@@ -12,6 +12,7 @@ interface ExerciseRecord {
   burnedCalories: number;
   exerciseName: string;
   createdAt: string;
+  data?: ExerciseRecord;
 }
 
 // 본인의 이번주, 오늘 운동시간 조회
@@ -30,7 +31,9 @@ export const exerciseRecord = async (year: number, month: number, week: number):
       week,
     },
   });
-
+  if (response.data.data !== undefined) {
+    response.data = response.data.data;
+  }
   console.log('exerciseRecord', response);
   return response.data;
 };
