@@ -196,7 +196,7 @@ export default function RecordPage() {
               <strong>총 {day}일</strong> 추가로 진행했을 때 <br />
               예측되는 체형을 알려드릴게요!
             </p>
-            <BodyWeightRecord data={predictionExtraData} />
+            {predictionExtraData ? <BodyWeightRecord data={predictionExtraData} /> : <p>무게 정보가 없습니다</p>}
             <GeneralButton
               buttonStyle={{ style: 'primary', size: 'large' }}
               onClick={handleResetInput}
