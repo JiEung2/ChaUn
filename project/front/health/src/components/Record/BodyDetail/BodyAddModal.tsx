@@ -20,12 +20,6 @@ interface BodyData {
   bodyMuscle: boolean;
   bodyShape: string;
 }
-type FormData = {
-  mealsPerDay: string;
-  foodType: string;
-  snacksPerDay: string;
-  drinksPerDay: string;
-};
 
 export default function BodyAddModal({ onClose }: BodyAddModalProps) {
   const { register, watch } = useForm();
@@ -78,7 +72,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
 
   // EatingHabits 전송 mutation
   const eatingHabitsMutation = useMutation({
-    mutationFn: (data: FormData) =>
+    mutationFn: (data: { mealsPerDay: string; foodType: string; snacksPerDay: string; drinksPerDay: string }) =>
       surveySubmit3(Number(data.mealsPerDay), data.foodType, data.snacksPerDay, data.drinksPerDay),
     onSuccess: () => {
       onClose();
