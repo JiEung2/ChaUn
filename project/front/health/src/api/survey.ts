@@ -71,6 +71,7 @@ export const surveySubmit3 = async (
   snackFrequency: string,
   drinkFrequency: string
 ) => {
+  console.log('surveySubmit3', mealCount, mealType, snackFrequency, drinkFrequency);
   const response = await exportAxios.post(`${baseUrl}/users/survey/eating-habits`, {
     mealCount,
     mealType,
