@@ -66,16 +66,16 @@ export const surveySubmit2 = async (
 };
 
 export const surveySubmit3 = async (
-  str_ealCount: string,
-  mealType: string,
-  snackFrequency: string,
-  drinkFrequency: string
+  pre_ealCount: string,
+  pre_dietType: string,
+  pre_snackFrequency: string,
+  pre_drinkFrequency: string
 ) => {
   // console.log('surveySubmit3', str_ealCount, mealType, snackFrequency, drinkFrequency);
 
   let mealCount: number;
 
-  switch (str_ealCount) {
+  switch (pre_ealCount) {
     case '1끼':
       mealCount = 1;
       break;
@@ -91,10 +91,62 @@ export const surveySubmit3 = async (
     default:
       throw new Error('Invalid meal count');
   }
-  console.log('식습관 설문 보낼 데이터', mealCount, mealType, snackFrequency, drinkFrequency);
+  let dietType: string;
+  switch (pre_dietType) {
+    case '주로 채식 (채소, 과일 중심)':
+      dietType = 'VEGETARIAN';
+      break;
+    case '균형 잡힌 식사 (단백질, 탄수화물, 지방의 균형)':
+      dietType = 'BALANCED';
+      break;
+    case '주로 고기류와 탄수화물':
+      dietType = 'HIGH_MEAT_CARB';
+      break;
+    case '주로 패스트푸드, 가공식품':
+      dietType = 'FAST_FOOD_PROCESSED';
+      break;
+    default:
+      throw new Error('Invalid meal count');
+  }
+  let snackFrequency;
+  switch (pre_snackFrequency) {
+    case '전혀 섭취하지 않음':
+      snackFrequency = 'NEVER';
+      break;
+    case '가끔 (1-2회)':
+      snackFrequency = 'RARELY';
+      break;
+    case '자주 (3-4회)':
+      snackFrequency = 'OFTEN';
+      break;
+    case '매우 자주 (5회 이상)':
+      snackFrequency = 'VERY_OFTEN';
+      break;
+    default:
+      throw new Error('Invalid snack frequency');
+  }
+
+  let drinkFrequency;
+  switch (pre_drinkFrequency) {
+    case '전혀 섭취하지 않음':
+      drinkFrequency = 'NEVER';
+      break;
+    case '가끔 (1-2회)':
+      drinkFrequency = 'RARELY';
+      break;
+    case '자주 (3-4회)':
+      drinkFrequency = 'OFTEN';
+      break;
+    case '매우 자주 (5회 이상)':
+      drinkFrequency = 'VERY_OFTEN';
+      break;
+    default:
+      throw new Error('Invalid drink frequency');
+  }
+  console.log('식습관 설문 보낼 데이터', mealCount, dietType, snackFrequency, drinkFrequency);
   const response = await exportAxios.post(`${baseUrl}/users/survey/eating-habits`, {
     mealCount,
-    mealType,
+    mealType: dietType,
     snackFrequency,
     drinkFrequency,
   });
