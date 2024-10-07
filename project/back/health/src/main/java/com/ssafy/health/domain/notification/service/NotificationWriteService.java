@@ -68,7 +68,7 @@ public class NotificationWriteService {
     }
 
 
-    private void createBodySurveyNotification(User user)
+    public void createBodySurveyNotification(User user)
             throws ExecutionException, InterruptedException {
 
         Map<String, Object> additionalData = new HashMap<>();
