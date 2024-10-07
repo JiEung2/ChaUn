@@ -10,11 +10,13 @@ import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import html2canvas from 'html2canvas';
 import queryKeys from '@/utils/querykeys';
 import './Mypage.scss';
-import { getPartsList, getMyCharacter, patchPartsOnOff, getSnapshotList, postSnapshot } from '@/api/character';
-
+import { getUserDetail } from '@/api/user';
+import { getPartsList, patchPartsOnOff, getSnapshotList, postSnapshot } from '@/api/character';
+import useUserStore from '@/store/userInfo';
 const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
 
 export default function MypagePage() {
+  const { userId, nickname, coin, setHasCoin } = useUserStore();
   const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
   const [preserveBuffer, setPreserveBuffer] = useState(false);
@@ -35,14 +37,16 @@ export default function MypagePage() {
 
   // 캐릭터 및 파츠 리스트 조회
   const { data: myCharacter } = useSuspenseQuery({
-    queryKey: [queryKeys.CHARACTER],
-    queryFn: () => getMyCharacter(),
+    queryKey: [queryKeys.USER_DETAIL, userId],
+    queryFn: () => getUserDetail(userId),
   });
+  console.log(myCharacter.data.characterFileUrl, userId);
 
   useEffect(() => {
     if (myCharacter) {
-      setGender(myCharacter?.data?.data.gender === 'MAN' ? 'MAN' : 'FEMALE');
-      setActiveAnimation(myCharacter?.data?.data.characterGlbUrl);
+      setGender(myCharacter.data.gender === 'MAN' ? 'MAN' : 'FEMALE');
+      setCharacterGlbUrl(myCharacter.data.characterFileUrl);
+      setHasCoin(myCharacter.data.coin);
     }
   }, [myCharacter]);
 
@@ -142,6 +146,7 @@ export default function MypagePage() {
     setPurchasedParts((prev) => {
       const updatedParts = { ...prev, [item.id]: true };
       localStorage.setItem('purchasedParts', JSON.stringify(updatedParts)); // 구매한 파츠 로컬 스토리지에 저장
+      setHasCoin(coin - item.price);
       return updatedParts;
     });
   };
@@ -232,8 +237,8 @@ export default function MypagePage() {
       <div className="myProfileContainer">
         <div className="profileSection">
           <div className="info">
-            <p className="subtitle">{/* 사용자 이름 */}님</p>
-            <Coin amount={100} style="styled" />
+            <p className="subtitle">{nickname}님</p>
+            <Coin amount={coin} style="styled" />
           </div>
 
           <div className="characterAndSnapshot">
@@ -241,7 +246,7 @@ export default function MypagePage() {
               {characterGlbUrl ? (
                 <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
               ) : (
-                <p>{/*닉네임*/}님의 캐릭터를 불러오지 못했어요</p>
+                <p>{nickname}님의 캐릭터를 불러오지 못했어요</p>
               )}
             </div>
 
@@ -262,7 +267,7 @@ export default function MypagePage() {
             <CustomCategories
               selectedTab={selectedTab}
               setSelectedTab={setSelectedTab}
-              userCoin={100}
+              userCoin={coin}
               onPurchase={handlePurchase}
               onApply={handleApply}
               items={mappedItems.filter((item: any) => item.category === selectedTab)}
