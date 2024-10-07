@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios';
 import exportAxios from './axiosInstance';
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
@@ -26,7 +26,7 @@ export const patchPartsOnOff = async (parts_id: number) => {
 export const postSnapshot = async (formData: FormData) => {
   console.log(formData);
   try {
-    const response = await axios.post(`${baseUrl}/character/snapshot`, formData, {
+    const response = await exportAxios.post(`${baseUrl}/character/snapshot`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

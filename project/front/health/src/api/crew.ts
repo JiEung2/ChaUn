@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios';
 import exportAxios from './axiosInstance';
 const baseURL = import.meta.env.VITE_APP_BASE_URL;
 
@@ -109,7 +109,7 @@ export const checkCrewName = async (crewName: string) => {
 };
 // 크루 생성
 export const createCrew = async (formData: FormData) => {
-  const response = await axios.post(`${baseURL}/crew`, formData, {
+  const response = await exportAxios.post(`${baseURL}/crew`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
