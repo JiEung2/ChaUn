@@ -98,10 +98,10 @@ export const surveySubmit3 = async (
   switch (
     pre_dietType.replace(/\s+/g, '') // 모든 공백 제거
   ) {
-    case '주로채식(채소,과일중심)':
+    case '주로채식':
       dietType = 'VEGETARIAN';
       break;
-    case '균형잡힌식사(단백질,탄수화물,지방의균형)':
+    case '균형잡힌식사':
       dietType = 'BALANCED';
       break;
     case '주로고기류와탄수화물':
@@ -122,13 +122,13 @@ export const surveySubmit3 = async (
     case '전혀섭취하지않음':
       snackFrequency = 'NEVER';
       break;
-    case '가끔(1-2회)':
+    case '가끔':
       snackFrequency = 'RARELY';
       break;
-    case '자주(3-4회)':
+    case '자주':
       snackFrequency = 'OFTEN';
       break;
-    case '매우자주(5회이상)':
+    case '매우자주':
       snackFrequency = 'VERY_OFTEN';
       break;
     default:
@@ -143,13 +143,13 @@ export const surveySubmit3 = async (
     case '전혀섭취하지않음':
       drinkFrequency = 'NEVER';
       break;
-    case '가끔(1-2회)':
+    case '가끔':
       drinkFrequency = 'RARELY';
       break;
-    case '자주(3-4회)':
+    case '자주':
       drinkFrequency = 'OFTEN';
       break;
-    case '매우자주(5회이상)':
+    case '매우자주':
       drinkFrequency = 'VERY_OFTEN';
       break;
     default:
