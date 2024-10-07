@@ -73,7 +73,7 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
   // EatingHabits 전송 mutation
   const eatingHabitsMutation = useMutation({
     mutationFn: (data: { mealsPerDay: string; foodType: string; snacksPerDay: string; drinksPerDay: string }) =>
-      surveySubmit3(Number(data.mealsPerDay), data.foodType, data.snacksPerDay, data.drinksPerDay),
+      surveySubmit3(data.mealsPerDay, data.foodType, data.snacksPerDay, data.drinksPerDay),
     onSuccess: () => {
       onClose();
     },

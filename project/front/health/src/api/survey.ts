@@ -66,12 +66,31 @@ export const surveySubmit2 = async (
 };
 
 export const surveySubmit3 = async (
-  mealCount: number,
+  str_ealCount: string,
   mealType: string,
   snackFrequency: string,
   drinkFrequency: string
 ) => {
-  console.log('surveySubmit3', mealCount, mealType, snackFrequency, drinkFrequency);
+  // console.log('surveySubmit3', str_ealCount, mealType, snackFrequency, drinkFrequency);
+
+  let mealCount: number;
+
+  switch (str_ealCount) {
+    case '1끼':
+      mealCount = 1;
+      break;
+    case '2끼':
+      mealCount = 2;
+      break;
+    case '3끼':
+      mealCount = 3;
+      break;
+    case '4끼 이상':
+      mealCount = 4;
+      break;
+    default:
+      throw new Error('Invalid meal count');
+  }
   const response = await exportAxios.post(`${baseUrl}/users/survey/eating-habits`, {
     mealCount,
     mealType,
