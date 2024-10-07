@@ -8,7 +8,7 @@ import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
 import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
-import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundException;
+import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.notification.dto.request.NotificationRequestDto;
@@ -74,8 +74,13 @@ public class NotificationWriteService {
         Map<String, Object> additionalData = new HashMap<>();
         LocalDateTime lastSurveyedDate = null;
 
-        lastSurveyedDate = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())
-                .orElseThrow(BodyHistoryNotFoundException::new).getCreatedAt();
+        BodyHistory bodyHistory = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(user.getId())
+                .orElse(null);
+
+        if (bodyHistory != null) {
+            lastSurveyedDate = bodyHistory.getCreatedAt();
+        }
+
         additionalData.put("lastSurveyedDate", lastSurveyedDate);
 
         Notification notification = notificationBuilder(
