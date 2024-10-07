@@ -31,7 +31,7 @@ function Character({ glbUrl, gender }: CharacterProps) {
 
         if (gender === 'MAN') {
           model.scale.set(1.1, 1.1, 1.1);
-          model.position.set(0, -10, 0);
+          model.position.set(0, -8, 0);
         } else if (gender === 'FEMALE') {
           model.scale.set(11.1, 11.1, 11.1);
           model.position.set(0, -10, 0);
