@@ -100,7 +100,7 @@ export default function RecordPage() {
     queryKey: [queryKeys.MY_BODY_PREDICT],
     queryFn: getPredictBasic,
     select: (response) => {
-      const { current, p30, p90, current_image, p30_image, p90_image } = response.data;
+      const { current, p30, p90, current_image, p30_image, p90_image } = response.data.data;
       return {
         predictions: [
           { time: '현재', weight: current },
@@ -118,8 +118,7 @@ export default function RecordPage() {
     queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
     queryFn: getPredictExtra,
     select: (response) => {
-      console.log(response.data);
-      const { current, p30, p90, current_image, p30_image, p90_image } = response.data;
+      const { current, p30, p90, current_image, p30_image, p90_image } = response.data.data;
       return {
         predictions: [
           { time: '현재', weight: current },
@@ -194,7 +193,7 @@ export default function RecordPage() {
           <div className="predictionResult">
             <p className="predictionText">
               <strong>{nickname}님</strong>이 선택한 운동을 하루 <strong>{duration}분</strong>, <br />
-              <strong>총 {exerciseDays}일</strong> 추가로 진행했을 때 <br />
+              <strong>총 {day}일</strong> 추가로 진행했을 때 <br />
               예측되는 체형을 알려드릴게요!
             </p>
             <BodyWeightRecord data={predictionExtraData} />
@@ -209,7 +208,7 @@ export default function RecordPage() {
           <div className="exerciseAdvice">
             <p className="adviceText">
               <strong>{nickname}님</strong>, <br />
-              저번 주 운동을 <strong>{exerciseDays}일</strong> 진행하셨군요!
+              저번 주 운동을 <strong>{day}일</strong> 진행하셨군요!
               <p>
                 꾸준한 건강 관리 및 부상 방지를 위해 <br />
                 주 2~3일 운동을 권장하고 있습니다. <br />
