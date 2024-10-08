@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './CrewCreate.scss';
 import ExerciseModal from '@/components/Exercise/ExerciseModal';
 import { createCrew, checkCrewName } from '@/api/crew';
+import { redirect, useNavigate } from 'react-router-dom';
 
 export default function CrewCreate() {
   const [crewName, setCrewName] = useState<string>('');
@@ -13,6 +14,7 @@ export default function CrewCreate() {
   const [nameCheckMessage, setNameCheckMessage] = useState<string | null>(null); // 중복 체크 메시지 상태 추가
   const [isNameValid, setIsNameValid] = useState<boolean | null>(null); // 이름 유효 여부 상태 추가
 
+  const navigate = useNavigate();
   const sendCreatCrew = () => {
     const formData = new FormData();
 
@@ -60,7 +62,7 @@ export default function CrewCreate() {
     setDescription(event.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Crew 생성 정보:', {
       crewName,
       exerciseName,
@@ -68,8 +70,14 @@ export default function CrewCreate() {
       description,
     });
 
-    sendCreatCrew();
-    alert('크루가 성공적으로 생성되었습니다.');
+    try {
+      await sendCreatCrew();
+      alert('크루가 성공적으로 생성되었습니다.');
+      navigate('/crew');
+    } catch (error) {
+      console.error('크루 생성 실패:', error);
+      alert('크루 생성에 실패했습니다.');
+    }
   };
 
   const handleExerciseSelect = (selected: { id: number; name: string } | { id: number; name: string }[]) => {

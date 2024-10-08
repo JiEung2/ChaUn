@@ -97,7 +97,7 @@ export default function BodyDetailGraph({ filteredData }: BodyDetailGraphProps) 
       },
       {
         type: 'line' as const,
-        label: '체지방량',
+        label: '체지방률',
         data: fillDataForLabels('fat') as (number | null)[],
         borderColor: '#ff6384',
         backgroundColor: '#ff6384',
