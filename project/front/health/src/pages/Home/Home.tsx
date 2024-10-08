@@ -59,7 +59,7 @@ const formatTime = (timeInMs: number) => {
 
 // 운동 시간 표시 컴포넌트
 function ExerciseTimeDisplay({ nickname }: { nickname: string }) {
-  const { gender, characterFileUrl } = useUserStore();
+  const { gender } = useUserStore();
   const { data: exerciseTimeData } = useExerciseTime();
 
   const characterContent = {
