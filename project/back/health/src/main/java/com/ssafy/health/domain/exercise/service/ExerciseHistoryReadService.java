@@ -148,6 +148,10 @@ public class ExerciseHistoryReadService {
         LocalDate firstMondayOfMonth = firstDayOfWeek.with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY));
         LocalDate startOfWeek = firstMondayOfMonth.plusWeeks(week - 1);
 
+        if(startOfWeek.getDayOfMonth() > 1 && startOfWeek.getDayOfMonth() < 8){
+            startOfWeek = firstMondayOfMonth.plusWeeks(week - 2);
+        }
+
         LocalDateTime startDateTime = startOfWeek.atStartOfDay();
         LocalDateTime endDateTime = startOfWeek.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).atTime(23, 59, 59);
 
