@@ -19,7 +19,7 @@ import Profile from './pages/Profile/Profile';
 import MyCrew from './pages/Crew/MyCrew/MyCrew';
 import CrewCreate from './pages/Crew/CrewCreate/CrewCreate';
 import CrewRanking from './pages/Crew/CrewRanking/CrewRanking';
-// import CrewDetail from './pages/Crew/CrewDetail/CrewDetail';
+import CrewDetail from './pages/Crew/CrewDetail/CrewDetail';
 import OAuth from './pages/OAuth/OAuth';
 import CrewBattle from './pages/Crew/CrewBattle/CrewBattle';
 // import CrewCreate from './pages/Crew/CrewCreate/CrewCreate';
@@ -68,6 +68,7 @@ export default function App() {
                 <Route path="/alarm" element={<Alarm />} />
                 <Route path="/profile/:userId" element={<Profile />} />
                 <Route path="/crew/mycrew/:crewId" element={<MyCrew />} />
+                <Route path="/crew/detail/:crewId" element={<CrewDetail />} />
                 <Route path="/crew/create" element={<CrewCreate />} />
                 <Route path="/crew/battle/:crewId" element={<CrewBattle />} />
                 <Route path="/crew/ranking" element={<CrewRanking />} />
