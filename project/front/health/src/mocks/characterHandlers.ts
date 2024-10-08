@@ -54,8 +54,8 @@ export const characterHandlers = [
       status: 200,
       message: '',
       data: {
-        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/GBstanding.glb',
-        gender: 'FEMALE',
+        characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_model/B5.glb',
+        gender: 'MAN',
         bodyTypeId: 7,
       },
     });

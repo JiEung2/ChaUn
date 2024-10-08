@@ -154,7 +154,7 @@ function Character({ glbUrl, gender }: CharacterProps) {
         sceneRef.current = model;
 
         if (gender === 'MAN') {
-          model.scale.set(1.1, 1.1, 1.1);
+          model.scale.set(0.8, 0.8, 0.8);
           model.position.set(0, -9, 0);
         } else if (gender === 'FEMALE') {
           model.scale.set(11.1, 11.1, 11.1);
