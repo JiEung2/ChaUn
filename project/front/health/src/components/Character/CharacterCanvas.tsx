@@ -122,7 +122,7 @@
 // }
 
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -130,6 +130,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import Lottie from 'lottie-react';
 import LoadingLottie from '@/assets/Lottie/loading.json';
 
+extend(THREE);
 interface CharacterProps {
   glbUrl: string;
   gender: 'MAN' | 'FEMALE';
