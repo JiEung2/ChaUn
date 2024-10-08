@@ -20,11 +20,16 @@ const messaging = firebase.messaging();
 
 /**
  * 수신 메시지 처리 함수
- * FCM 메시지를 수신하면 알림을 표시한다.
+ * FCM 메시지를 수신하면 데이터만 처리하고 알림을 표시하지 않는다.
  */
 const handleForegroundMessages = () => {
   messaging.onMessage((payload) => {
     if (!payload.data) return;
+
+    // 포그라운드에서는 데이터만 처리하고 알림을 표시하지 않음
+    console.log('Foreground message:', payload);
+
+    // 필요에 따라 토스트 메시지를 표시할 수 있음 (선택적)
     toast.dismiss();
     toast.success(payload.data.body);
   });
