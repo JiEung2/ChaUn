@@ -210,7 +210,7 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   }, []);
 
   return (
-    <Canvas camera={{ position: [0, 10, 30], fov: 35 }} gl={{ preserveDrawingBuffer }} dpr={[1, 2]} frameloop="demand">
+    <Canvas camera={{ position: [0, 10, 30], fov: 35 }} gl={{ preserveDrawingBuffer }} dpr={[1, 2]}>
       {gender === 'MAN' ? <ambientLight intensity={4} /> : <ambientLight intensity={8} />}
       <directionalLight position={[5, 5, 5]} intensity={1} castShadow={false} />
       <Suspense
