@@ -168,3 +168,12 @@ export const surveySubmit3 = async (
 
   return response;
 };
+
+export const surveySubmit4 = async (favoredExerciseIdList: number[]) => {
+  console.log('선호 운동 ID 리스트', favoredExerciseIdList);
+  const response = await exportAxios.post(`${baseUrl}/users/survey/favorite-exercises`, {
+    favoredExerciseIdList,
+  });
+
+  return response;
+};
