@@ -3,6 +3,7 @@ import './CrewCreate.scss';
 import ExerciseModal from '@/components/Exercise/ExerciseModal';
 import { createCrew, checkCrewName } from '@/api/crew';
 import { useNavigate } from 'react-router-dom';
+import useUserStore from '@/store/userInfo';
 
 export default function CrewCreate() {
   const [crewName, setCrewName] = useState<string>('');
@@ -13,6 +14,7 @@ export default function CrewCreate() {
   const [showExerciseModal, setShowExerciseModal] = useState(false);
   const [nameCheckMessage, setNameCheckMessage] = useState<string | null>(null); // 중복 체크 메시지 상태 추가
   const [isNameValid, setIsNameValid] = useState<boolean | null>(null); // 이름 유효 여부 상태 추가
+  const { userId } = useUserStore();
 
   const navigate = useNavigate();
   const sendCreatCrew = () => {
@@ -21,6 +23,7 @@ export default function CrewCreate() {
     formData.append(
       'createCrewRequestDto',
       JSON.stringify({
+        userId: userId,
         name: crewName,
         description: description,
         exerciseId: exerciseId,
