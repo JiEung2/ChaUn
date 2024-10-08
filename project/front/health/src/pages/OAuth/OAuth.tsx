@@ -36,9 +36,9 @@ const OAuthCallback = () => {
     // 페이지에 들어오면 reissueAccessToken 함수 실행
     reissueAccessToken().then(() => {
       // 토큰 재발급 후 필요한 작업 수행 (예: 페이지 이동)
-      checkSurvey().then((surveyCompleted) => {
-        // console.log('response:', response);
-        if (surveyCompleted === true) {
+      checkSurvey().then((response) => {
+        console.log('response:', response);
+        if (response.surveyCompleted === true) {
           navigate('/home');
         } else {
           navigate('/survey');
