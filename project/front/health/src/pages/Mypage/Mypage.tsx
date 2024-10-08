@@ -26,6 +26,7 @@ export default function MypagePage() {
   const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
   const [bodyTypeId, setBodyTypeId] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
   interface snapshots {
     snapshotUrl: string;
@@ -192,6 +193,7 @@ export default function MypagePage() {
   // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
   const handleShuffleClick = () => {
     if (bodyTypeId === 5) {
+      setIsLoading(true);
       const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
       const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
       handleButtonClick(randomAnimation);
@@ -261,7 +263,12 @@ export default function MypagePage() {
           <div className="characterAndSnapshot">
             <div className="character" ref={characterRef}>
               {characterGlbUrl ? (
-                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
+                <CharacterCanvas
+                  glbUrl={characterGlbUrl}
+                  gender={gender}
+                  preserveDrawingBuffer={preserveBuffer}
+                  setIsLoading={setIsLoading}
+                />
               ) : (
                 <p>{nickname}님의 캐릭터를 불러오지 못했어요</p>
               )}
