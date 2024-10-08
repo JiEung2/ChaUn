@@ -50,6 +50,7 @@ export default function MypagePage() {
     queryKey: [queryKeys.CHARACTER],
     queryFn: () => getMyCharacter(),
   });
+  console.log(myDetail.coin);
 
   useEffect(() => {
     if (myDetail) {
