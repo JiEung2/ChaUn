@@ -56,3 +56,58 @@
 // }
 
 // requestPermission();
+
+// glb 파일 캐싱 코드
+const CACHE_NAME = 'app-cache-v1';
+const FILES_TO_CACHE = [
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standingPants.glb',
+  '/styles/global.css',
+  '/assets/character1.glb',
+  '/assets/character2.glb',
+  // 필요한 파일들을 여기에 추가
+];
+
+self.addEventListener('install', (event) => {
+  // 설치 중 서비스 워커가 캐시를 미리 로드
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('Opened cache and caching files');
+      return cache.addAll(FILES_TO_CACHE);
+    })
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        console.log('Serving cached file:', event.request.url);
+        return cachedResponse;
+      }
+
+      // 캐시에 없을 경우 네트워크에서 파일을 가져옴
+      return fetch(event.request).then((networkResponse) => {
+        // 응답을 캐시에 저장
+        return caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, networkResponse.clone());
+          return networkResponse;
+        });
+      });
+    })
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!cacheWhitelist.includes(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
