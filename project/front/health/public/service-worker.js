@@ -60,7 +60,7 @@
 // glb 파일 캐싱 코드
 const CACHE_NAME = 'app-cache-v1';
 const FILES_TO_CACHE = [
-  //   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standingPants.glb',
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standingPants.glb',
   // 필요한 파일들을 여기에 추가
 ];
 

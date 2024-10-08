@@ -59,7 +59,7 @@ const formatTime = (timeInMs: number) => {
 
 // 운동 시간 표시 컴포넌트
 function ExerciseTimeDisplay({ nickname }: { nickname: string }) {
-  const { gender, characterFileUrl } = useUserStore();
+  const { gender } = useUserStore();
   const { data: exerciseTimeData } = useExerciseTime();
 
   const characterContent = {
@@ -71,7 +71,10 @@ function ExerciseTimeDisplay({ nickname }: { nickname: string }) {
   return (
     <div className="myInfo">
       <div className="myProfileInfo">
-        <CharacterCanvas glbUrl={characterFileUrl} gender={gender} />
+        <CharacterCanvas
+          glbUrl={'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standingPants.glb'}
+          gender={gender}
+        />
       </div>
       <div className="time">
         <p className="timeTitle">오늘 운동 시간</p>
