@@ -65,7 +65,7 @@ export default function ProfilePage() {
 
   // 체중 데이터 매핑 함수
   const fillWeightData = (weightDataList: { date: string; weight: number }[], chartLabels: string[]) => {
-    return chartLabels.map((label) => {
+    return chartLabels?.map((label) => {
       const foundData = weightDataList.find((data) => formatDateToYearMonth(data.date) === label);
       return foundData ? foundData.weight : null;
     });
@@ -75,7 +75,10 @@ export default function ProfilePage() {
   const formatExerciseTime = (timeInMs: number) => {
     const hours = Math.floor(timeInMs / (1000 * 60 * 60));
     const minutes = Math.floor((timeInMs % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
+    const hoursText = hours ? `${hours}h` : '0h';
+    const minutesText = minutes ? `${minutes}m` : '0m';
+
+    return `${hoursText} ${minutesText}`.trim();
   };
 
   // 차트 데이터 설정
@@ -137,7 +140,7 @@ export default function ProfilePage() {
   };
 
   console.log(weight6Data);
-  const hasWeightData = weight6Data.weightDataList.length > 0;
+  const hasWeightData = weight6Data.weightDataList?.length > 0;
   return (
     <div className="profileContainer">
       <p className="titles">{userDetailData.nickname}님</p>
@@ -172,8 +175,8 @@ export default function ProfilePage() {
         <p className="titles">{userDetailData.nickname}님의 크루</p>
 
         <div className="crewList">
-          {userCrewList && userCrewList.crewList.length > 0 ? (
-            userCrewList.crewList.map((crew: any) => (
+          {userCrewList && userCrewList.crewList?.length > 0 ? (
+            userCrewList.crewList?.map((crew: any) => (
               <Crew
                 key={crew.crewId}
                 imageUrl={crew.crewProfileImage}

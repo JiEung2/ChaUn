@@ -43,14 +43,16 @@
   border-radius: 10px;
   gap: 10px;
 }
-
-.snapshotBox {
-  display: flex;
-  flex-direction: column;
-  background-color: colors.$lightGray;
-  padding: 15px 7px 15px 15px;
-  border-radius: 10px;
-  gap: 10px;
+.snapshotSection {
+  width: 100%;
+  .snapshotBox {
+    display: flex;
+    flex-direction: column;
+    background-color: colors.$lightGray;
+    padding: 15px 7px 15px 15px;
+    border-radius: 10px;
+    gap: 10px;
+  }
 }
 
 .logout {
@@ -86,4 +88,11 @@
   width: 17px;
   height: 17px;
   cursor: pointer;
+}
+
+.snapshotdDescript {
+  color: colors.$darkGray;
+  font-size: 10px;
+  font-weight: 400;
+  margin: -8px 0 5px;
 }

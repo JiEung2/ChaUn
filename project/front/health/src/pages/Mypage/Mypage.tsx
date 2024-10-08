@@ -125,7 +125,7 @@ export default function MypagePage() {
 
   const formattedSnapshots =
     snapshotList !== undefined
-      ? snapshotList.snapshots.map((snapshot: snapshots) => ({
+      ? snapshotList.snapshots?.map((snapshot: snapshots) => ({
           date: new Date(snapshot.createdAt).toLocaleDateString('ko-KR', {
             year: '2-digit',
             month: '2-digit',
@@ -208,7 +208,7 @@ export default function MypagePage() {
   };
 
   const mappedItems =
-    partsList.partsList.map((part: any) => {
+    partsList.partsList?.map((part: any) => {
       let category = '';
       switch (part.partsType) {
         case 'HAIR':
@@ -294,6 +294,7 @@ export default function MypagePage() {
 
         <div className="snapshotSection">
           <p className="subtitle">스냅샷</p>
+          <p className="snapshotdDescript">카메라 버튼을 눌러 스냅샷을 남겨보세요</p>
           <div className="snapshotBox">{formattedSnapshots && <SnapshotList snapshots={formattedSnapshots} />}</div>
         </div>
 
