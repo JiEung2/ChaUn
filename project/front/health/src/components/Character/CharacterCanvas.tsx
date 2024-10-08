@@ -122,7 +122,7 @@
 // }
 
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, extend } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -130,6 +130,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import Lottie from 'lottie-react';
 import LoadingLottie from '@/assets/Lottie/loading.json';
 
+extend(THREE);
 interface CharacterProps {
   glbUrl: string;
   gender: 'MAN' | 'FEMALE';
@@ -139,7 +140,6 @@ interface CharacterProps {
 function Character({ glbUrl, gender }: CharacterProps) {
   const sceneRef = useRef<THREE.Group | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
-  const [modelLoaded, setModelLoaded] = useState(false);
 
   useEffect(() => {
     const loader = new GLTFLoader();
@@ -169,8 +169,6 @@ function Character({ glbUrl, gender }: CharacterProps) {
           const action = mixer.clipAction(clip);
           action.play();
         }
-
-        setModelLoaded(true);
       } catch (error) {
         console.error('Failed to load GLTF model', error);
       }
@@ -192,7 +190,7 @@ function Character({ glbUrl, gender }: CharacterProps) {
     }
   });
 
-  return modelLoaded && sceneRef.current ? <primitive object={sceneRef.current} /> : null;
+  return sceneRef.current ? <primitive object={sceneRef.current} /> : null;
 }
 
 export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
