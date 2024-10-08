@@ -10,7 +10,7 @@ export const getExercise = async () => {
 
 // 나의 운동 추천 목록 조회
 export const getExerciseRecommendation = async () => {
-  const response = await exportAxios.get(`${baseUrl}/users/excercise/recommendation`);
+  const response = await exportAxios.get(`${baseUrl}/excercise/recommendation`);
   // console.log(response);
   return response.data;
 };

@@ -70,7 +70,7 @@ export const exerciseHandlers = [
     return HttpResponse.json(exerciseCategory);
   }),
   //운동 추천 목록 조회
-  http.get(`${baseUrl}/users/excercise/recommendation`, () => {
+  http.get(`${baseUrl}/excercise/recommendation`, () => {
     return HttpResponse.json(exercises);
   }),
 
