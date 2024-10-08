@@ -77,7 +77,7 @@ export default function CrewModal({ onClose, crewId }: CrewModalProps) {
     getCrewData();
   }, [crewId]);
   const moveCrewDetail = () => {
-    navigate(`/crew/detail/${crewId}`);
+    navigate(`/crew/crewDetail/${crewId}`);
   };
   if (!crewData || !radarData) {
     return null; // crewData나 radarData가 없으면 모달을 렌더링하지 않음
