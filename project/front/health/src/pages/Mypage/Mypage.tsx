@@ -50,13 +50,13 @@ export default function MypagePage() {
     queryKey: [queryKeys.CHARACTER],
     queryFn: () => getMyCharacter(),
   });
-  console.log(myDetail.coin);
+  console.log(myDetail.coins);
 
   useEffect(() => {
     if (myDetail) {
       setGender(myDetail.gender === 'MAN' ? 'MAN' : 'FEMALE');
       setCharacterGlbUrl(myDetail.characterFileUrl);
-      setHasCoin(myDetail.coin);
+      setHasCoin(myDetail.coins);
       setBodyTypeId(myCharacter.bodyTypeId);
     }
   }, [myDetail]);
