@@ -237,7 +237,7 @@ function HomePageContent({ nickname }: { nickname: string }) {
 
       <div className="chartSection">
         <p className="chartTitle">이번 주 운동 그래프</p>
-        <p className="snapshotdDescript">해당 요일의 그래프를 누르면 운동 시간과 소모된 칼로리가 보여요</p>
+        <p className="snapshotdDescript">해당 기록을 누르면 운동 시간과 소모된 칼로리가 보여요</p>
         <Suspense fallback={<div>Loading chart...</div>}>
           <ExerciseRecordChart />
         </Suspense>
