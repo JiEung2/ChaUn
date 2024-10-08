@@ -10,15 +10,15 @@
   font-size: 20px;
   margin-bottom: 20px;
 }
-
-.highlight {
-  color: colors.$pink; // 하이라이트 색상, 필요시 조정
+.exerciseSpan {
+  color: colors.$pink;
 }
 
 .tabs {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
+  padding: 5px;
 }
 
 .recommendSection,
@@ -50,4 +50,16 @@
 .characterImage {
   width: 100px; // 이미지 크기 조정 필요시 변경
   height: auto;
+}
+.exerciseRecommendContainer {
+  position: relative;
+  height: 80vh;
+}
+.ExerciseRecommendImage {
+  position: absolute;
+  bottom: 20px;
+  right: -8px;
+  margin-left: 10px;
+  transform: translate(0, 0);
+  z-index: 3;
 }

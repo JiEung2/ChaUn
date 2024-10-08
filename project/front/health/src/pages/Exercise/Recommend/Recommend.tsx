@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getExerciseRecommendation } from '@/api/exercise';
 import queryKeys from '@/utils/querykeys'; // 제공된 쿼리 키를 가져옴
 import useUserStore from '@/store/userInfo';
+import ExerciseRecommendImage from '@/assets/image/exerciseRecommendImage.png';
 
 interface ExerciseRecommendation {
   id: number;
@@ -27,6 +28,7 @@ export default function ExerciseRecommendPage() {
     queryFn: () => getExerciseRecommendation(),
   });
 
+  console.log('recommendations:', recommendations);
   // 데이터가 로딩 중일 때
   if (isLoading) {
     return <div>Loading...</div>;
@@ -44,23 +46,22 @@ export default function ExerciseRecommendPage() {
 
   // 선택된 운동의 설명을 찾는 함수
   const getSelectedExercise = () => {
-    return recommendations?.recommendedExerciseList.find(
+    return recommendations?.recommendedExerciseList?.find(
       (rec: ExerciseRecommendation) => rec.exerciseName === selectedTab
     );
   };
-  console.log(recommendations);
 
   return (
     <div className="exerciseRecommendContainer">
       <h2 className="greeting">{nickname}님,</h2>
       <h3 className="recommendTitle">
-        이런 <span className="highlight">운동</span>을 추천드려요!
+        이런 <span className="exerciseSpan">운동</span>을 추천드려요!
       </h3>
 
       {/* 운동 카테고리 선택 버튼 */}
       <div className="tabs">
         {recommendations &&
-          recommendations?.recommendedExerciseList.map((rec: ExerciseRecommendation) => (
+          recommendations.recommendedExerciseList?.map((rec: ExerciseRecommendation) => (
             <GeneralButton
               buttonStyle={{ style: 'outlined', size: 'semiTiny' }}
               key={rec.id}
@@ -85,6 +86,9 @@ export default function ExerciseRecommendPage() {
           </div>
         </div>
       )}
+      <div className="ExerciseRecommendImage">
+        <img src={ExerciseRecommendImage} alt="ExerciseRecommendImage" />
+      </div>
     </div>
   );
 }
