@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위해 �
 import { useEffect } from 'react'; // 특정 작업을 수행하기 위해 사용
 import axios from 'axios';
 import useUserStore from '@/store/userInfo';
+import { checkSurvey } from '@/api/survey';
 
 const OAuthCallback = () => {
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 페이지를 이동합니다.
@@ -35,6 +36,14 @@ const OAuthCallback = () => {
     // 페이지에 들어오면 reissueAccessToken 함수 실행
     reissueAccessToken().then(() => {
       // 토큰 재발급 후 필요한 작업 수행 (예: 페이지 이동)
+      checkSurvey().then((surveyCompleted) => {
+        // console.log('response:', response);
+        if (surveyCompleted === true) {
+          navigate('/home');
+        } else {
+          navigate('/survey');
+        }
+      });
       navigate('/survey');
     });
   }, [navigate]);

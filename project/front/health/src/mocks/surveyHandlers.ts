@@ -9,7 +9,7 @@ const mockUser = ['닉네임'];
 // const mockDatabase = {
 //   users: [],
 // };
-
+const surveyCompleted = true;
 export const surveyHandlers = [
   // get 테스트
   // http.get('https://example.com/test', () => {
@@ -81,5 +81,9 @@ export const surveyHandlers = [
     console.log('받은 운동 request body', request);
 
     return HttpResponse.json({ message: '회원 정보 설문조사를 완료했습니다.' }, { status: 200 });
+  }),
+
+  http.get(`${baseUrl}/users/survey`, async () => {
+    return HttpResponse.json(surveyCompleted, { status: 200 });
   }),
 ];

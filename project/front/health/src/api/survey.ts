@@ -177,3 +177,9 @@ export const surveySubmit4 = async (favoredExerciseIdList: number[]) => {
 
   return response;
 };
+
+//설문조사 완료했는지 체크
+export const checkSurvey = async () => {
+  const response = await exportAxios.get(`${baseUrl}/users/survey`);
+  return response.data;
+};
