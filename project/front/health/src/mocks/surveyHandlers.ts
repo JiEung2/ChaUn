@@ -77,4 +77,9 @@ export const surveyHandlers = [
 
     return HttpResponse.json({ message: '회원 정보 설문조사를 완료했습니다.' }, { status: 200 });
   }),
+  http.post(`${baseUrl}/users/survey/favorite-exercises`, async ({ request }) => {
+    console.log('받은 운동 request body', request);
+
+    return HttpResponse.json({ message: '회원 정보 설문조사를 완료했습니다.' }, { status: 200 });
+  }),
 ];

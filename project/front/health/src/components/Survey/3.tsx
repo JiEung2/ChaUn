@@ -2,6 +2,8 @@ import GeneralButton from '../Button/GeneralButton';
 import { useForm } from 'react-hook-form';
 import EatingHabits from './EatingHabits'; // EatingHabits 컴포넌트 import
 import styles from './3.module.scss'; // SCSS 파일을 모듈로 가져옴
+import { useMutation } from '@tanstack/react-query'; // useMutation 추가
+import { surveySubmit3 } from '@/api/survey'; // API 함수 가져오기
 
 interface ThreeProps {
   handleNext: (data: FormData) => void;
@@ -27,9 +29,24 @@ export default function Three({ handleNext, handlePrev }: ThreeProps) {
   // 모든 필드가 선택되었는지 확인
   const isFormValid = mealsPerDay && foodType && snacksPerDay && drinksPerDay;
 
+  // useMutation 설정
+  const mutation = useMutation({
+    mutationFn: (data: FormData) =>
+      surveySubmit3(data.mealsPerDay, data.foodType, data.snacksPerDay, data.drinksPerDay),
+    onSuccess: () => {
+      console.log('식습관 정보 전송 성공');
+      // handleNext 함수를 호출하여 다음 단계로 이동
+      handleNext({ mealsPerDay, foodType, snacksPerDay, drinksPerDay });
+    },
+    onError: (error) => {
+      console.error('식습관 정보 전송 실패:', error);
+    },
+  });
+
   // 데이터를 저장하고, handleNext 함수로 넘김
   const onSubmit = (data: FormData) => {
-    handleNext(data); // handleNext 함수에 formData 전달
+    // 서버로 데이터 전송
+    mutation.mutate(data);
   };
 
   return (
