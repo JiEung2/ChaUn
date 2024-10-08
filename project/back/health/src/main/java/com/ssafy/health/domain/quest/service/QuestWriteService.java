@@ -128,4 +128,59 @@ public class QuestWriteService {
                 .completionCoins(coins)
                 .build();
     }
+
+    public Void testCreateQuest() {
+
+        createDailyQuest();
+        createMonthlyQuest();
+        return null;
+    }
+
+    public Void testCompleteQuest(QuestType questType) {
+
+        if (questType.equals(QuestType.INDIVIDUAL)) {
+            List<User> userList = userRepository.findAll();
+
+            userList.forEach(user -> {
+                List<UserQuest> questList = userQuestRepository.findAllByUserAndStatus(
+                        user, List.of(QuestStatus.CREATED));
+
+                questList.forEach(quest -> {
+                    quest.updateStatus(QuestStatus.COMPLETED);
+                    coinService.grantCoinsToUser(user, quest.getQuest().getCompletionCoins());
+
+                    try {
+                        notificationWriteService.createUserQuestNotification(
+                                NotificationType.QUEST, user, quest.getId());
+                    } catch (ExecutionException | InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            });
+
+        } else if (questType.equals(QuestType.CREW)) {
+            List<Crew> crewList = crewRepository.findAll();
+
+            crewList.forEach(crew -> {
+                List<CrewQuest> questList = crewQuestRepository.findAllByCrewAndStatus(
+                        crew, List.of(QuestStatus.CREATED));
+
+                questList.forEach(quest -> {
+                    quest.updateStatus(QuestStatus.COMPLETED);
+                    coinService.grantCoinsToCrew(crew, quest.getQuest().getCompletionCoins());
+
+                    List<User> userList = userRepository.findUserByCrewId(crew.getId());
+                    userList.forEach(user -> {
+                        try {
+                            notificationWriteService.createCrewQuestNotification(
+                                    NotificationType.QUEST, user, crew, quest.getId());
+                        } catch (ExecutionException | InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                });
+            });
+        }
+        return null;
+    }
 }
