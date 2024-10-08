@@ -43,7 +43,9 @@ export default function ExerciseRecommendPage() {
 
   // 선택된 운동의 설명을 찾는 함수
   const getSelectedExercise = () => {
-    return recommendations?.find((rec: ExerciseRecommendation) => rec.exerciseName === selectedTab);
+    return recommendations?.recommendedExerciseList.find(
+      (rec: ExerciseRecommendation) => rec.exerciseName === selectedTab
+    );
   };
   console.log(recommendations);
 
