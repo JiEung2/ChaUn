@@ -1,12 +1,12 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import BattleBoard from './components/BattleBoard';
 import StyledButton from '../../components/Button/StyledButton';
 import { useNavigate } from 'react-router-dom';
 import createIcon from '../../assets/svg/crewCreate.svg';
 import recommendIcon from '../../assets/svg/crewRecommend.svg';
 import rankingIcon from '../../assets/svg/crewRanking.svg';
-import leftArrowIcon from '../../assets/svg/leftArrow.svg'; // 좌측 화살표 아이콘
-import rightArrowIcon from '../../assets/svg/rightArrow.svg'; // 우측 화살표 아이콘
+import leftArrowIcon from '../../assets/svg/leftArrow.svg';
+import rightArrowIcon from '../../assets/svg/rightArrow.svg';
 import '../Crew/Crew.scss';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
@@ -16,9 +16,10 @@ import { getUserCrewList } from '@/api/crew';
 import ButtonState from './components/ButtonState';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
-import 'swiper/css/navigation'; // 네비게이션 관련 CSS 추가
+import 'swiper/css/navigation';
 import { Navigation } from 'swiper/modules';
 import useUserStore from '@/store/userInfo';
+import useBattleDataStore from '@/store/battleInfo';
 
 interface CrewData {
   crewId: number;
@@ -28,25 +29,29 @@ interface CrewData {
   basicScore: number;
   activityScore: number;
 }
+
 export default function CrewPage() {
   const navigate = useNavigate();
   const swiperRef = useRef<any>(null);
   const [showPrevButton, setShowPrevButton] = useState(false);
   const [showNextButton, setShowNextButton] = useState(false);
   const { userId, nickname } = useUserStore();
+  const { setMultipleBattles, battles } = useBattleDataStore(); // Use the global store to manage battle data
 
-  // 가입된 크루 리스트
-  // console.log('크루 리스트 userId:', userId);
+  // Fetch the user's crew list
   const { data: userCrewList = [] } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
     queryFn: () => getUserCrewList(Number(userId)),
     select: (response) => response.data.crewList || [],
   });
+
   console.log('userCrewList:', userCrewList);
 
-  // 크루의 배틀 현황 리스트
+  // Get the crew IDs
   const crewIds = userCrewList.map((crew: CrewData) => crew.crewId);
   console.log('crewIds', crewIds);
+
+  // Fetch the battle status for all crews
   const {
     data: BattleList = [],
     error,
@@ -54,17 +59,34 @@ export default function CrewPage() {
   } = useQuery<CrewBattleStatusResponse[]>({
     queryKey: [queryKeys.BATTLE_STATUS, crewIds],
     queryFn: ({ queryKey }) => {
-      const [, crewIds] = queryKey as [string, number[]]; // crewIds가 배열 형태로 지정됨
+      const [, crewIds] = queryKey as [string, number[]];
       return Promise.all(
         crewIds.map(async (crewId) => {
           const crewBattleStatus = await fetchCrewBattleStatus(crewId);
-          return { ...crewBattleStatus, crewId }; // 각 객체에 id 추가
+          return { ...crewBattleStatus, crewId }; // Attach crewId to each battle status
         })
       );
     },
   });
 
-  console.log('BattleList:', BattleList);
+  useEffect(() => {
+    // Once the battle list is fetched, store it globally
+    if (BattleList.length > 0) {
+      setMultipleBattles(BattleList); // Set all battles in the global store
+    }
+  }, [BattleList, setMultipleBattles]);
+
+  // Filter only the battles that have started
+  const startedBattles = battles.filter((battle) => battle.battleStatus === 'STARTED');
+
+  const handleCrewClick = (crewId: number) => {
+    navigate(`/crew/mycrew/${crewId}`);
+  };
+
+  const handleSwiperChange = (swiper: any) => {
+    setShowPrevButton(!swiper.isBeginning);
+    setShowNextButton(!swiper.isEnd);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -73,18 +95,6 @@ export default function CrewPage() {
   if (error) {
     return <div>Error fetching battle status: {error.message}</div>;
   }
-
-  // STARTED 상태의 배틀이 있는지 확인
-  const startedBattles =
-    BattleList === undefined ? [] : BattleList.filter((battle) => battle.battleStatus === 'STARTED');
-
-  const handleCrewClick = (crewId: number) => {
-    navigate(`/crew/mycrew/${crewId}`);
-  };
-  const handleSwiperChange = (swiper: any) => {
-    setShowPrevButton(!swiper.isBeginning);
-    setShowNextButton(!swiper.isEnd);
-  };
 
   return (
     <>
