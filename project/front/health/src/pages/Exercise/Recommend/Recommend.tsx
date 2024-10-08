@@ -43,6 +43,7 @@ export default function ExerciseRecommendPage() {
   const getSelectedExercise = () => {
     return recommendations?.find((rec) => rec.name === selectedTab);
   };
+  console.log(recommendations);
 
   return (
     <div className="exerciseRecommendContainer">
