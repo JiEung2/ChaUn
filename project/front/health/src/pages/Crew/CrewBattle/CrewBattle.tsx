@@ -7,55 +7,67 @@ import './CrewBattle.scss';
 import ButtonState from '../components/ButtonState';
 import BattleNoneImg from '../../../assets/svg/battlenoneImg.svg';
 import CrewAndMemberList from '../../../components/Crew/CrewAndMemberList';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import useBattleDataStore from '@/store/battleInfo';
 
 export default function CrewBattle() {
   const { crewId } = useParams<{ crewId: string }>();
-
   const [selectedTeam, setSelectedTeam] = useState<'home' | 'away'>('home');
+
+  const { battles, setBattleData } = useBattleDataStore();
+
+  const existingBattle = battles.find((battle) => battle.crewId === Number(crewId));
 
   const handleTeamSwitch = (team: 'home' | 'away') => {
     setSelectedTeam(team);
   };
 
-  // Fetch battle data
+  // 배틀 현황
   const { data: battleData, isLoading: isBattleDataLoading } = useQuery<CrewBattleStatusResponse>({
     queryKey: [queryKeys.BATTLE_STATUS, Number(crewId)],
     queryFn: () => fetchCrewBattleStatus(Number(crewId)),
-    enabled: !!crewId, // crewId가 있을 때만 쿼리를 실행
+    enabled: !!crewId && !existingBattle, //
   });
 
-  // Fetch ranking data, use dummy battleId = 3 for now
-  const battleId = 3;
+  useEffect(() => {
+    if (battleData) {
+      console.log(battleData);
+      setBattleData({ ...battleData, crewId: Number(crewId) });
+    }
+  }, [battleData]);
+
+  const battleToRender = existingBattle || battleData;
+
+  // 배틀 랭킹
+  const battleId = battleToRender ? battleToRender.battleId : 0;
   const { data: battleRankings, isLoading: isRankingsLoading } = useQuery({
     queryKey: [queryKeys.BATTLE_RANKING, battleId],
     queryFn: () => getBattleRanking(Number(battleId)),
   });
 
-  // Handle loading or error state
   if (isBattleDataLoading || isRankingsLoading) {
     return <div>Loading...</div>;
   }
 
-  if (!battleData) {
+  if (!battleToRender) {
     return <div>No battle data available.</div>;
   }
 
   return (
     <div>
-      {battleData.battleStatus === 'NONE' ? (
+      {battleToRender.battleStatus === 'NONE' ? (
         <div className="none">
           <h3>배틀 중인 크루</h3>
           <BattleBoard
             crewId={Number(crewId)}
-            battleId={battleData.battleId}
-            battleStatus={battleData.battleStatus}
-            dDay={battleData.dDay}
-            exerciseName={battleData.exerciseName}
-            myTeamName={battleData.myTeamName}
-            myTeamScore={battleData.myTeamScore}
-            opponentTeamName={battleData.opponentTeamName}
-            opponentTeamScore={battleData.opponentTeamScore}
+            battleId={battleToRender.battleId}
+            battleStatus={battleToRender.battleStatus}
+            dDay={battleToRender.dDay}
+            exerciseName={battleToRender.exerciseName}
+            myTeamName={battleToRender.myTeamName}
+            myTeamScore={battleToRender.myTeamScore}
+            opponentTeamName={battleToRender.opponentTeamName}
+            opponentTeamScore={battleToRender.opponentTeamScore}
             buttonState={ButtonState.RANDOM_MATCHING}
           />
           <div className="ranking__none">
@@ -68,19 +80,19 @@ export default function CrewBattle() {
             </div>
           </div>
         </div>
-      ) : battleData.battleStatus === 'STARTED' ? (
+      ) : battleToRender.battleStatus === 'STARTED' ? (
         <div className="started">
           <h3>배틀 중인 크루</h3>
           <BattleBoard
             crewId={Number(crewId)}
-            battleId={battleData.battleId}
-            battleStatus={battleData.battleStatus}
-            dDay={battleData.dDay}
-            exerciseName={battleData.exerciseName}
-            myTeamName={battleData.myTeamName}
-            myTeamScore={battleData.myTeamScore}
-            opponentTeamName={battleData.opponentTeamName}
-            opponentTeamScore={battleData.opponentTeamScore}
+            battleId={battleToRender.battleId}
+            battleStatus={battleToRender.battleStatus}
+            dDay={battleToRender.dDay}
+            exerciseName={battleToRender.exerciseName}
+            myTeamName={battleToRender.myTeamName}
+            myTeamScore={battleToRender.myTeamScore}
+            opponentTeamName={battleToRender.opponentTeamName}
+            opponentTeamScore={battleToRender.opponentTeamScore}
             buttonState={ButtonState.NONE}
           />
           <div className="ranking__started">
@@ -88,12 +100,12 @@ export default function CrewBattle() {
               <button
                 onClick={() => handleTeamSwitch('home')}
                 className={`team-btn ${selectedTeam === 'home' ? 'active' : ''}`}>
-                {battleData.myTeamName}
+                {battleToRender.myTeamName}
               </button>
               <button
                 onClick={() => handleTeamSwitch('away')}
                 className={`team-btn ${selectedTeam === 'away' ? 'active' : ''}`}>
-                {battleData.opponentTeamName}
+                {battleToRender.opponentTeamName}
               </button>
             </div>
             <div className="ranking__list">
