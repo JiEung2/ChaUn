@@ -1,39 +1,47 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
-interface BattleDataState {
+interface BattleData {
+  crewId: number; // Even though it's manually added, it must be part of the interface
+  battleId: number;
   myTeamName: string;
   myTeamScore: number;
   opponentTeamName: string;
   opponentTeamScore: number;
   exerciseName: string;
-  dDay: string;
-  battleStatus: string;
-
-  // 한꺼번에 battleData를 업데이트할 수 있는 메서드
-  setBattleData: (battleData: Omit<BattleDataState, 'setBattleData'>) => void;
+  dDay: number;
+  battleStatus: string; // Status like "STARTED", "ENDED", etc.
 }
 
-const useBattleDataStore = create<BattleDataState>()(
-  persist(
-    (set) => ({
-      myTeamName: '',
-      myTeamScore: 0,
-      opponentTeamName: '',
-      opponentTeamScore: 0,
-      exerciseName: '',
-      dDay: '',
-      battleStatus: '',
+interface BattleDataState {
+  battles: BattleData[]; // Store all battles
+  setBattleData: (battleData: BattleData) => void; // Add or update a specific battle
+  setMultipleBattles: (battleDataArray: BattleData[]) => void; // Add multiple battles at once
+}
 
-      // battleData 객체를 받아서 한 번에 상태 업데이트
-      setBattleData: (battleData) => set(battleData),
+const useBattleDataStore = create<BattleDataState>((set) => ({
+  battles: [], // Initialize with an empty array
+
+  // Set or update a specific battle by battleId
+  setBattleData: (battleData) =>
+    set((state) => {
+      const existingBattleIndex = state.battles.findIndex((battle) => battle.battleId === battleData.battleId);
+
+      if (existingBattleIndex > -1) {
+        // If the battle exists, update it
+        const updatedBattles = [...state.battles];
+        updatedBattles[existingBattleIndex] = battleData;
+        return { battles: updatedBattles };
+      } else {
+        // If it's a new battle, add it
+        return { battles: [...state.battles, battleData] };
+      }
     }),
-    {
-      name: 'battle-data-storage', // localStorage에 저장될 키 이름
-      // 필요에 따라 sessionStorage로 변경할 수 있습니다.
-      // getStorage: () => sessionStorage,
-    }
-  )
-);
+
+  // Set multiple battles at once (replace the entire list of battles)
+  setMultipleBattles: (battleDataArray) =>
+    set(() => ({
+      battles: [...battleDataArray],
+    })),
+}));
 
 export default useBattleDataStore;
