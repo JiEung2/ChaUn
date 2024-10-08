@@ -140,7 +140,6 @@ interface CharacterProps {
 function Character({ glbUrl, gender }: CharacterProps) {
   const sceneRef = useRef<THREE.Group | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
-  const [modelLoaded, setModelLoaded] = useState(false);
 
   useEffect(() => {
     const loader = new GLTFLoader();
@@ -170,8 +169,6 @@ function Character({ glbUrl, gender }: CharacterProps) {
           const action = mixer.clipAction(clip);
           action.play();
         }
-
-        setModelLoaded(true); // 모델이 로드 완료되었음을 상태로 설정
       } catch (error) {
         console.error('Failed to load GLTF model', error);
       }
@@ -193,7 +190,7 @@ function Character({ glbUrl, gender }: CharacterProps) {
     }
   });
 
-  return modelLoaded && sceneRef.current ? <primitive object={sceneRef.current} /> : null;
+  return sceneRef.current ? <primitive object={sceneRef.current} /> : null;
 }
 
 export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
