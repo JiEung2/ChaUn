@@ -13,6 +13,7 @@ import './Home.scss';
 import { exerciseTime, exerciseRecord } from '@/api/home';
 import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
 import { getUserDetail, patchDeviceToken } from '@/api/user';
+import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import useUserStore from '@/store/userInfo';
 Chart.register(annotationPlugin);
 
@@ -58,6 +59,7 @@ const formatTime = (timeInMs: number) => {
 
 // 운동 시간 표시 컴포넌트
 function ExerciseTimeDisplay({ nickname }: { nickname: string }) {
+  const { gender, characterFileUrl } = useUserStore();
   const { data: exerciseTimeData } = useExerciseTime();
 
   const characterContent = {
@@ -68,7 +70,9 @@ function ExerciseTimeDisplay({ nickname }: { nickname: string }) {
 
   return (
     <div className="myInfo">
-      <img src="{Character}" alt="character" />
+      <div className="myProfileInfo">
+        <CharacterCanvas glbUrl={characterFileUrl} gender={gender} />
+      </div>
       <div className="time">
         <p className="timeTitle">오늘 운동 시간</p>
         <span>{characterContent.todayTime}</span>
@@ -217,9 +221,9 @@ function HomePageContent({ nickname }: { nickname: string }) {
 
   return (
     <div className="homeContainer">
+      <p className="character">{nickname}</p>
       <div className="characterContainer">
         <div className="title">
-          <p className="character">{nickname}</p>
           <div className="iconWrapper">
             <div className="navIcon" onClick={() => navigate('/home/quest')}>
               <img src={QuestIcon} alt="Quest Icon" className="icon" />
@@ -266,7 +270,8 @@ function HomePageContent({ nickname }: { nickname: string }) {
 }
 
 export default function HomePage() {
-  const { userId, nickname, setNickname, setHasCoin } = useUserStore();
+  const { userId, nickname, gender, setNickname, setHasCoin, setGender, setCharacterFileUrl } = useUserStore();
+
   const [isTokenSent, setIsTokenSent] = useState(() => {
     return localStorage.getItem('isTokenSent') === 'true';
   });
@@ -315,13 +320,15 @@ export default function HomePage() {
         const response = await getUserDetail(userId);
         setNickname(response.nickname);
         setHasCoin(response.coin);
+        setGender(response.gender);
+        setCharacterFileUrl(response.characterFileUrl);
       } catch (e) {
         console.log('유저 정보를 가져오는 중 에러:', e);
       }
     }
 
     fetchUserData();
-  }, [userId, nickname, setNickname, setHasCoin]);
+  }, [userId, nickname, setNickname, setHasCoin, gender]);
 
   return <HomePageContent nickname={nickname} />;
 }
