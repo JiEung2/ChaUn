@@ -92,7 +92,6 @@
 
 .snapshotdDescript {
   color: colors.$darkGray;
-  font-size: 10px;
-  font-weight: 400;
   margin: -8px 0 5px;
+  @include typo.description;
 }

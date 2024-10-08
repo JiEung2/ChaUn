@@ -95,18 +95,21 @@ export default function BodyAddModal({ onClose }: BodyAddModalProps) {
       <img src={xCircle} alt="Close" className="closeIcon" onClick={onClose} />
       <div>
         <h1 className="title">체형 입력</h1>
-        <p className="description">보다 정확한 체형 분석 및 예측을 위해 체형과 식습관 정보를 입력해주세요.</p>
+        <p className="description">보다 정확한 체형 분석 및 예측을 위해 체형과 식습관 정보를 입력해주세요</p>
       </div>
+
       <div className="scrollableContent">
         <BodyType onBodyDataChange={handleBodyDataChange} />
         <EatingHabits register={register} />
-        <GeneralButton
-          buttonStyle={{ style: 'floating', size: 'semiTiny' }}
-          onClick={handleComplete}
-          className="completedButton"
-          disabled={!isFormValid}>
-          완료
-        </GeneralButton>
+        <div className="completedButton">
+          <GeneralButton
+            buttonStyle={{ style: 'floating', size: 'semiTiny' }}
+            onClick={handleComplete}
+            disabled={!isFormValid}
+            className="completedButton">
+            완료
+          </GeneralButton>
+        </div>
       </div>
     </div>
   );
