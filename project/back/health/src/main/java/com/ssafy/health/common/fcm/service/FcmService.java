@@ -29,7 +29,7 @@ public class FcmService {
     private Message messageBuilder(FcmRequestDto fcmRequestDto) {
         Notification notification = Notification.builder()
                 .setTitle(fcmRequestDto.getTitle())
-                .setBody(fcmRequestDto.getTitle())
+                .setBody(fcmRequestDto.getBody())
                 .build();
         return Message.builder()
                 .setNotification(notification)
