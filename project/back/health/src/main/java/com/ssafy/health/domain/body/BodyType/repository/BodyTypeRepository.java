@@ -9,6 +9,10 @@ import java.util.Optional;
 
 public interface BodyTypeRepository extends JpaRepository<BodyType, Long> {
 
-    @Query("SELECT b FROM BodyType b WHERE b.gender = :gender AND :bmi BETWEEN b.minFatRatio AND b.maxFatRatio")
+    @Query("""
+            SELECT b FROM BodyType b
+            WHERE b.gender = :gender AND :bmi BETWEEN b.minFatRatio AND b.maxFatRatio
+            ORDER BY b.id ASC LIMIT 1
+            """)
     Optional<BodyType> findByBmiAndGender(Float bmi, Gender gender);
 }

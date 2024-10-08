@@ -42,25 +42,29 @@ public class BodyPredictReadService {
         Optional<BodyBasicPrediction> basicPrediction = basicRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
         Optional<BodyHistory> bodyHistory = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
 
-        return basicPrediction.map(bodyBasicPrediction -> BasicPredictionResponseDto.builder()
-                .userId(bodyBasicPrediction.getUserId())
-                .current(bodyHistory.get().getWeight())
-                .currentImage(characterRepository.findByBodyTypeIdAndGender(
-                        bodyHistory.get().getBodyType().getId(), user.getGender()).get().getCharacterImage())
-                .p30(bodyBasicPrediction.getP30())
-                .p30Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
-                                bodyHistory.get().getHeight(),
-                                bodyBasicPrediction.getP30(),
-                                user.getGender()))
-                        .getCharacterImage())
-                .p90(bodyBasicPrediction.getP90())
-                .p90Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
-                                bodyHistory.get().getHeight(),
-                                bodyBasicPrediction.getP90(),
-                                user.getGender()))
-                        .getCharacterImage())
-                .createdAt(bodyBasicPrediction.getCreatedAt())
-                .build()).orElse(null);
+        if (basicPrediction.isPresent() && bodyHistory.isPresent()) {
+            return basicPrediction.map(bodyBasicPrediction -> BasicPredictionResponseDto.builder()
+                    .userId(bodyBasicPrediction.getUserId())
+                    .current(bodyHistory.get().getWeight())
+                    .currentImage(characterRepository.findByBodyTypeId(
+                            bodyHistory.get().getBodyType().getId()).getCharacterImage())
+                    .p30(bodyBasicPrediction.getP30())
+                    .p30Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
+                                    bodyHistory.get().getHeight(),
+                                    bodyBasicPrediction.getP30(),
+                                    user.getGender()))
+                            .getCharacterImage())
+                    .p90(bodyBasicPrediction.getP90())
+                    .p90Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
+                                    bodyHistory.get().getHeight(),
+                                    bodyBasicPrediction.getP90(),
+                                    user.getGender()))
+                            .getCharacterImage())
+                    .createdAt(bodyBasicPrediction.getCreatedAt())
+                    .build()).orElse(null);
+        } else {
+            return null;
+        }
     }
 
     public ExtraPredictionResponseDto getExtraPrediction() {
@@ -71,30 +75,34 @@ public class BodyPredictReadService {
         Optional<BodyExtraPrediction> extraPrediction = extraRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
         Optional<BodyHistory> bodyHistory = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
 
-        return extraPrediction.map(bodyExtraPrediction -> ExtraPredictionResponseDto.builder()
-                .userId(bodyExtraPrediction.getUserId())
-                .current(bodyHistory.get().getWeight())
-                .currentImage(characterRepository.findByBodyTypeIdAndGender(
-                        bodyHistory.get().getBodyType().getId(), user.getGender()).get().getCharacterImage())
-                .p30(bodyExtraPrediction.getP30())
-                .p30Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
-                                bodyHistory.get().getHeight(),
-                                bodyExtraPrediction.getP30(),
-                                user.getGender()))
-                        .getCharacterImage())
-                .p90(bodyExtraPrediction.getP90())
-                .p90Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
-                                bodyHistory.get().getHeight(),
-                                bodyExtraPrediction.getP90(),
-                                user.getGender()))
-                        .getCharacterImage())
-                .exercise(ExerciseDetailDto.builder()
-                        .exerciseId(bodyExtraPrediction.getExercise().getExerciseId())
-                        .duration(bodyExtraPrediction.getExercise().getDuration())
-                        .count(bodyExtraPrediction.getExercise().getCount())
-                        .build())
-                .createdAt(bodyExtraPrediction.getCreatedAt())
-                .build()).orElse(null);
+        if (extraPrediction.isPresent() && bodyHistory.isPresent()) {
+            return extraPrediction.map(bodyExtraPrediction -> ExtraPredictionResponseDto.builder()
+                    .userId(bodyExtraPrediction.getUserId())
+                    .current(bodyHistory.get().getWeight())
+                    .currentImage(characterRepository.findByBodyTypeId(
+                            bodyHistory.get().getBodyType().getId()).getCharacterImage())
+                    .p30(bodyExtraPrediction.getP30())
+                    .p30Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
+                                    bodyHistory.get().getHeight(),
+                                    bodyExtraPrediction.getP30(),
+                                    user.getGender()))
+                            .getCharacterImage())
+                    .p90(bodyExtraPrediction.getP90())
+                    .p90Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
+                                    bodyHistory.get().getHeight(),
+                                    bodyExtraPrediction.getP90(),
+                                    user.getGender()))
+                            .getCharacterImage())
+                    .exercise(ExerciseDetailDto.builder()
+                            .exerciseId(bodyExtraPrediction.getExercise().getExerciseId())
+                            .duration(bodyExtraPrediction.getExercise().getDuration())
+                            .count(bodyExtraPrediction.getExercise().getCount())
+                            .build())
+                    .createdAt(bodyExtraPrediction.getCreatedAt())
+                    .build()).orElse(null);
+        } else {
+            return null;
+        }
     }
 
     private Long findBodyTypeByBmi(Float height, Float weight, Gender gender) {
