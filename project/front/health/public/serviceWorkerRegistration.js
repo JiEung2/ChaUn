@@ -13,6 +13,7 @@ const config = {
 firebase.initializeApp(config);
 
 const messaging = firebase.messaging();
+
 async function registerServiceWorker() {
   if ('serviceWorker' in navigator) {
     try {
@@ -20,10 +21,8 @@ async function registerServiceWorker() {
       const firebaseRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
       console.log('Firebase Service Worker 등록 성공:', firebaseRegistration.scope);
 
-      // 알림 권한 상태 확인
       if (Notification.permission === 'granted') {
         console.log('알림 권한이 이미 허용됨');
-
         await retrieveToken(firebaseRegistration);
       } else if (Notification.permission === 'denied') {
         console.log('알림 권한이 거부되었습니다.');
@@ -54,11 +53,14 @@ async function retrieveToken(serviceWorkerRegistration) {
 
     if (currentToken) {
       console.log('FCM 토큰:', currentToken);
-      if (!sessionStorage.getItem('fcmToken')) {
+
+      // 세션 스토리지의 기존 토큰과 비교하여 다를 경우 갱신
+      const existingToken = sessionStorage.getItem('fcmToken');
+      if (existingToken !== currentToken) {
         sessionStorage.setItem('fcmToken', currentToken);
-        console.log('FCM 토큰 발급 성공:', currentToken);
+        console.log('새로운 FCM 토큰 발급 성공:', currentToken);
       } else {
-        console.log('기존 FCM 토큰이 세션에 저장되어 있습니다.');
+        console.log('세션에 저장된 토큰이 현재 토큰과 동일합니다.');
       }
     } else {
       console.warn('FCM 토큰을 가져올 수 없습니다.');
