@@ -193,7 +193,6 @@ export default function MypagePage() {
   // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
   const handleShuffleClick = () => {
     if (bodyTypeId === 5) {
-      setIsLoading(true);
       const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
       const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
       handleButtonClick(randomAnimation);
@@ -263,12 +262,7 @@ export default function MypagePage() {
           <div className="characterAndSnapshot">
             <div className="character" ref={characterRef}>
               {characterGlbUrl ? (
-                <CharacterCanvas
-                  glbUrl={characterGlbUrl}
-                  gender={gender}
-                  preserveDrawingBuffer={preserveBuffer}
-                  setIsLoading={setIsLoading}
-                />
+                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
               ) : (
                 <p>{nickname}님의 캐릭터를 불러오지 못했어요</p>
               )}

@@ -120,6 +120,7 @@
 //     </Canvas>
 //   );
 // }
+
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
@@ -133,12 +134,12 @@ interface CharacterProps {
   glbUrl: string;
   gender: 'MAN' | 'FEMALE';
   preserveDrawingBuffer?: boolean;
-  setIsLoading: (loading: boolean) => void;
 }
 
-function Character({ glbUrl, gender, setIsLoading }: CharacterProps) {
+function Character({ glbUrl, gender }: CharacterProps) {
   const sceneRef = useRef<THREE.Group | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
+  const [modelLoaded, setModelLoaded] = useState(false);
 
   useEffect(() => {
     const loader = new GLTFLoader();
@@ -148,7 +149,6 @@ function Character({ glbUrl, gender, setIsLoading }: CharacterProps) {
 
     const loadModel = async () => {
       try {
-        setIsLoading(true); // 로딩 시작
         const gltf = await loader.loadAsync(glbUrl);
         const model = gltf.scene;
         sceneRef.current = model;
@@ -170,10 +170,9 @@ function Character({ glbUrl, gender, setIsLoading }: CharacterProps) {
           action.play();
         }
 
-        setIsLoading(false); // 로딩 완료
+        setModelLoaded(true); // 모델이 로드 완료되었음을 상태로 설정
       } catch (error) {
         console.error('Failed to load GLTF model', error);
-        setIsLoading(false);
       }
     };
 
@@ -193,7 +192,7 @@ function Character({ glbUrl, gender, setIsLoading }: CharacterProps) {
     }
   });
 
-  return sceneRef.current ? <primitive object={sceneRef.current} /> : null;
+  return modelLoaded && sceneRef.current ? <primitive object={sceneRef.current} /> : null;
 }
 
 export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
@@ -211,32 +210,66 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
     return () => clearTimeout(timer);
   }, []);
 
+  // 모델 로딩 중 감지
+  useEffect(() => {
+    const loader = new GLTFLoader();
+    loader.load(
+      glbUrl,
+      () => {
+        setIsLoading(false); // 다운로드 완료 시 로딩 상태 업데이트
+      },
+      (xhr) => {
+        // 다운로드 진행률을 계산
+        if (xhr.lengthComputable) {
+          const percentComplete = (xhr.loaded / xhr.total) * 100;
+          console.log(`Download progress: ${percentComplete}%`);
+        }
+      },
+      (error) => {
+        console.error('An error happened while loading the model:', error);
+      }
+    );
+  }, [glbUrl]);
+
   return (
     <Canvas camera={{ position: [0, 10, 30], fov: 35 }} gl={{ preserveDrawingBuffer }} dpr={[1, 2]}>
       {gender === 'MAN' ? <ambientLight intensity={4} /> : <ambientLight intensity={8} />}
       <directionalLight position={[5, 5, 5]} intensity={1} castShadow={false} />
-      {isLoading ? (
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            textAlign: 'center',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
-          }}>
-          <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
-          <p>캐릭터가 로드되는 중입니다. 잠시만 기다려주세요.</p>
-        </div>
-      ) : null}
-      <Suspense fallback={null}>
-        <Character glbUrl={glbUrl} gender={gender} setIsLoading={setIsLoading} />
+      <Suspense
+        fallback={
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100vh',
+              textAlign: 'center',
+            }}>
+            <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
+            <p>
+              캐릭터가 로드되는 중입니다. <br /> 새로 고침 또는 잠시만 기다려주세요.
+            </p>
+          </div>
+        }>
+        {isLoading ? (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100vh',
+              textAlign: 'center',
+            }}>
+            <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
+            <p>
+              기본, 춤추기, 손 흔들기 모션을 랜덤으로 보여줍니다. <br /> 잠시만 기다려주세요.
+            </p>
+          </div>
+        ) : (
+          <Character glbUrl={glbUrl} gender={gender} />
+        )}
       </Suspense>
       <OrbitControls
         minPolarAngle={Math.PI / 2.3}
