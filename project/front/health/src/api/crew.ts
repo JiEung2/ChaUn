@@ -63,7 +63,7 @@ export const fetchCrewBattleStatus = async (crew_id: number) => {
 export const getUserCrewList = async (userId: number) => {
   // console.log('userId', userId);
   const response = await exportAxios.get(`${baseURL}/users/${userId}/crew-list`);
-  // console.log('가입된 크루 조회', response);
+  console.log('가입된 크루 조회', response);
   return response.data;
 };
 
