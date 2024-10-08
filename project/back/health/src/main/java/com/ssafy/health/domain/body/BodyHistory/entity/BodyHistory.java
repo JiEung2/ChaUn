@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id"),
+        @Index(name = "idx_created_At", columnList = "createdAt")
+})
 public class BodyHistory extends BaseEntity {
 
     @Id
