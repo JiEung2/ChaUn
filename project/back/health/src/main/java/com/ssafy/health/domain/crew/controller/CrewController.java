@@ -1,5 +1,6 @@
 package com.ssafy.health.domain.crew.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ssafy.health.common.ApiResponse;
 import com.ssafy.health.domain.account.dto.response.ValidateNameSuccessDto;
 import com.ssafy.health.domain.battle.dto.response.BattleMatchResponseDto;
@@ -8,6 +9,7 @@ import com.ssafy.health.domain.battle.service.BattleReadService;
 import com.ssafy.health.domain.battle.service.BattleWriteService;
 import com.ssafy.health.domain.crew.dto.request.CreateCrewRequestDto;
 import com.ssafy.health.domain.crew.dto.response.*;
+import com.ssafy.health.domain.crew.service.CrewAnalysisRequestService;
 import com.ssafy.health.domain.crew.service.CrewReadService;
 import com.ssafy.health.domain.crew.service.CrewValidator;
 import com.ssafy.health.domain.crew.service.CrewWriteService;
@@ -30,6 +32,7 @@ public class CrewController implements CrewControllerApi {
     private final CrewWriteService crewWriteService;
     private final BattleReadService battleReadService;
     private final BattleWriteService battleWriteService;
+    private final CrewAnalysisRequestService crewAnalysisRequestService;
 
     @PostMapping(value = "/crew", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<CreateCrewSuccessDto> createCrew(
@@ -102,7 +105,8 @@ public class CrewController implements CrewControllerApi {
     }
 
     @GetMapping("/crew/{crew_id}/exercise-time/daily")
-    public ApiResponse<CrewMemberDailyExerciseTimeListDto> getCrewMemberDailyExerciseTimeList(@PathVariable("crew_id") Long crewId) {
+    public ApiResponse<CrewMemberDailyExerciseTimeListDto> getCrewMemberDailyExerciseTimeList(
+            @PathVariable("crew_id") Long crewId) {
         return ApiResponse.success(crewReadService.getCrewMemberDailyExerciseTimeList(crewId));
     }
 
@@ -114,5 +118,10 @@ public class CrewController implements CrewControllerApi {
     @GetMapping("/crew/{crew_name}/validate")
     public ApiResponse<ValidateNameSuccessDto> validateCrewName(@PathVariable("crew_name") String crewName) {
         return ApiResponse.success(crewValidator.validateCrewName(crewName));
+    }
+
+    @PostMapping("/crew/recommendation/test")
+    public void requestAnalysis() throws JsonProcessingException {
+        crewAnalysisRequestService.requestAnalysis();
     }
 }
