@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getExerciseRecommendation } from '@/api/exercise';
 import queryKeys from '@/utils/querykeys'; // 제공된 쿼리 키를 가져옴
 import useUserStore from '@/store/userInfo';
+import { div } from 'three/webgpu';
 interface ExerciseRecommendation {
   id: number;
   exerciseName: string;
@@ -73,10 +74,15 @@ export default function ExerciseRecommendPage() {
 
       {/* 선택된 운동에 대한 설명 표시 */}
       {getSelectedExercise() && (
-        <div className="recommendSection">
-          <h4 className="sectionTitle">추천 운동</h4>
-          <p className="sectionContent">{getSelectedExercise()?.reason}</p>
-          <p className="sectionContent">{getSelectedExercise()?.description}</p>
+        <div>
+          <div className="recommendSection">
+            <h4 className="sectionTitle">운동 설명</h4>
+            <p className="sectionContent">{getSelectedExercise()?.description}</p>
+          </div>
+          <div className="recommendSection">
+            <h4 className="sectionTitle">추천 이유</h4>
+            <p className="sectionContent">{getSelectedExercise()?.reason}</p>
+          </div>
         </div>
       )}
     </div>
