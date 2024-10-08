@@ -26,7 +26,6 @@ export default function MypagePage() {
   const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
   const [bodyTypeId, setBodyTypeId] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
   interface snapshots {
     snapshotUrl: string;
