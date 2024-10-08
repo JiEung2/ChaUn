@@ -195,7 +195,6 @@ function Character({ glbUrl, gender }: CharacterProps) {
 
 export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   const [preserveDrawingBuffer, setPreserveDrawingBuffer] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -207,27 +206,6 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
 
     return () => clearTimeout(timer);
   }, []);
-
-  // 모델 로딩 중 감지
-  useEffect(() => {
-    const loader = new GLTFLoader();
-    loader.load(
-      glbUrl,
-      () => {
-        setIsLoading(false); // 다운로드 완료 시 로딩 상태 업데이트
-      },
-      (xhr) => {
-        // 다운로드 진행률을 계산
-        if (xhr.lengthComputable) {
-          const percentComplete = (xhr.loaded / xhr.total) * 100;
-          console.log(`Download progress: ${percentComplete}%`);
-        }
-      },
-      (error) => {
-        console.error('An error happened while loading the model:', error);
-      }
-    );
-  }, [glbUrl]);
 
   return (
     <Canvas camera={{ position: [0, 10, 30], fov: 35 }} gl={{ preserveDrawingBuffer }} dpr={[1, 2]}>
@@ -246,28 +224,11 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
             }}>
             <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
             <p>
-              캐릭터가 로드되는 중입니다. <br /> 새로 고침 또는 잠시만 기다려주세요.
-            </p>
-          </div>
-        }>
-        {isLoading ? (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100vh',
-              textAlign: 'center',
-            }}>
-            <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
-            <p>
               기본, 춤추기, 손 흔들기 모션을 랜덤으로 보여줍니다. <br /> 잠시만 기다려주세요.
             </p>
           </div>
-        ) : (
-          <Character glbUrl={glbUrl} gender={gender} />
-        )}
+        }>
+        <Character glbUrl={glbUrl} gender={gender} />
       </Suspense>
       <OrbitControls
         minPolarAngle={Math.PI / 2.3}
