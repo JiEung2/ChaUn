@@ -9,7 +9,8 @@ import Finish from '../../assets/svg/finish.svg';
 import './Exercise.scss';
 import { postExerciseRecord } from '../../api/exercise';
 import { useMutation } from '@tanstack/react-query';
-
+import useUserStore from '@/store/userInfo';
+import CharacterCanvas from '@/components/Character/CharacterCanvas';
 Modal.setAppElement('#root');
 
 function formatTime(timer: number) {
@@ -27,6 +28,7 @@ function formatTime(timer: number) {
 }
 
 export default function Exercise() {
+  const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
   const [showModal, setShowModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<{ id: number; name: string } | null>(null);
   const [timer, setTimer] = useState(0);
@@ -36,6 +38,10 @@ export default function Exercise() {
   const [isFinished, setIsFinished] = useState(false);
   const [calories, setCalories] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const { characterFileUrl, gender } = useUserStore();
+  // 캐릭터의 상태처리 1 - 기본, 2 - 운동중, 3 - 휴식, 4- 운동 완료
+  const [characterState, setCharacterState] = useState(1);
+
   //불필요해서 우선 주석처리
   // const [endTime, setEndTime] = useState<Date | null>(null);
   const navigate = useNavigate();
@@ -58,11 +64,13 @@ export default function Exercise() {
     const id = setInterval(() => {
       setTimer((prev) => prev + 10);
     }, 10);
+    setCharacterState(2); // 운동중 상태로 변경
     setIntervalId(id);
   };
 
   const handleStopTimer = () => {
     setIsRunning(false);
+    setCharacterState(3); // 휴식 상태로 변경
     if (intervalId) {
       clearInterval(intervalId);
       setIntervalId(null);
@@ -74,7 +82,7 @@ export default function Exercise() {
     handleStopTimer();
     const now = new Date();
     // setEndTime(now); // 운동 끝나는 시간 기록
-
+    setCharacterState(4); // 운동 완료 상태로 변경
     if (startTime) {
       mutation.mutate({
         startTime: startTime.toISOString(),
@@ -117,7 +125,38 @@ export default function Exercise() {
           운동 추천
         </GeneralButton>
       </div>
-      <div>{/* 이미지 자리 */}</div>
+      <div>
+        <CharacterCanvas
+          glbUrl={
+            characterState === 1 // 일반
+              ? gender === 'MAN'
+                ? characterFileUrl
+                : gender === 'FEMALE'
+                  ? characterFileUrl
+                  : characterFileUrl
+              : characterState === 2 // 운동중
+                ? gender === 'MAN'
+                  ? `${baseUrl}/B5running.glb`
+                  : gender === 'FEMALE'
+                    ? `${baseUrl}/G5running.glb`
+                    : characterFileUrl
+                : characterState === 3 // 휴식중
+                  ? gender === 'MAN'
+                    ? `${baseUrl}B5sitting.glb`
+                    : gender === 'FEMALE'
+                      ? `${baseUrl}G5sitting.glb`
+                      : characterFileUrl
+                  : characterState === 4 // 운동 종료
+                    ? gender === 'MAN'
+                      ? `${baseUrl}B5entry.glb`
+                      : gender === 'FEMALE'
+                        ? `${baseUrl}G5entry.glb`
+                        : characterFileUrl
+                    : characterFileUrl
+          }
+          gender={gender}
+        />
+      </div>
       <GeneralButton
         buttonStyle={{ style: 'primary', size: 'large' }}
         onClick={() => setShowModal(true)}

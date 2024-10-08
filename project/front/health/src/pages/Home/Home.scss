@@ -118,4 +118,8 @@
   width: 150px; /* Canvas 크기를 줄임 */
   height: 250px; /* Canvas 높이 설정 */
   transform: translateX(-20px); /* 왼쪽으로 약간 이동 */
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
 }
