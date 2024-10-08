@@ -136,9 +136,9 @@ export default function Exercise() {
                   : characterFileUrl
               : characterState === 2 // 운동중
                 ? gender === 'MAN'
-                  ? `${baseUrl}/B5running.glb`
+                  ? `${baseUrl}B5running.glb`
                   : gender === 'FEMALE'
-                    ? `${baseUrl}/G5running.glb`
+                    ? `${baseUrl}G5running.glb`
                     : characterFileUrl
                 : characterState === 3 // 휴식중
                   ? gender === 'MAN'
