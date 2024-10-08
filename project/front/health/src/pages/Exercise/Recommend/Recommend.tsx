@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getExerciseRecommendation } from '@/api/exercise';
 import queryKeys from '@/utils/querykeys'; // 제공된 쿼리 키를 가져옴
 import useUserStore from '@/store/userInfo';
-import { div } from 'three/webgpu';
+
 interface ExerciseRecommendation {
   id: number;
   exerciseName: string;
