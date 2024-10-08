@@ -9,7 +9,7 @@ const mockUser = ['닉네임'];
 // const mockDatabase = {
 //   users: [],
 // };
-const surveyCompleted = true;
+const surveyCompleted = false;
 export const surveyHandlers = [
   // get 테스트
   // http.get('https://example.com/test', () => {

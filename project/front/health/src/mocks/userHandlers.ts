@@ -8,6 +8,7 @@ const userDetailData = {
   coin: 120,
   characterImageUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/GBstanding.glb',
   characterFileUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_model/B5.glb',
+  // characterFileUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_model/G5.glb',
 };
 export const userHandlers = [
   // 회원 디테일
