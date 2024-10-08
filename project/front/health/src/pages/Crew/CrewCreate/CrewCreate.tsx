@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './CrewCreate.scss';
 import ExerciseModal from '@/components/Exercise/ExerciseModal';
 import { createCrew, checkCrewName } from '@/api/crew';
-import { redirect, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function CrewCreate() {
   const [crewName, setCrewName] = useState<string>('');
