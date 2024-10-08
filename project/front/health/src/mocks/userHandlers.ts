@@ -2,6 +2,13 @@ import { http, HttpResponse } from 'msw';
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
+const userDetailData = {
+  nickname: 'JiEung2',
+  gender: 'MAN',
+  coin: 120,
+  characterImageUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/GBstanding.glb',
+  characterFileUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_model/B5.glb',
+};
 export const userHandlers = [
   // 회원 디테일
   http.get(`${baseUrl}/users/:user_id`, ({ params }) => {
@@ -13,17 +20,7 @@ export const userHandlers = [
 
     console.log(user_id);
 
-    return HttpResponse.json({
-      status: 200,
-      message: '',
-      data: {
-        nickname: 'JiEung2',
-        gender: 'MAN',
-        coin: 120,
-        characterImageUrl: 'image.png',
-        characterFileUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_model/B5.glb',
-      },
-    });
+    return HttpResponse.json(userDetailData);
   }),
 
   // 회원 운동 시간
