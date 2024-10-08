@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ButtonState from './ButtonState';
 import { randomMatching } from '../../../api/crew';
 import querykeys from '../../../utils/querykeys';
-import { useState } from 'react';
+import useBattleDataStore from '@/store/battleInfo'; // zustand 전역 상태 스토어 임포트
 
 interface BattleBoardProps {
   crewId: number;
@@ -39,16 +39,9 @@ export default function BattleBoard({
   console.log(battleId);
 
   const queryClient = useQueryClient();
+  const { setBattleData } = useBattleDataStore(); // zustand의 setBattleData 가져오기
+
   // 배틀 랜덤 매칭
-  const [_, setBattleData] = useState({
-    myTeamName,
-    myTeamScore,
-    opponentTeamName,
-    opponentTeamScore,
-    exerciseName,
-    dDay,
-    battleStatus,
-  });
   const randomMatchingMutation = useMutation({
     mutationFn: () => randomMatching(crewId),
     onSuccess: (data) => {
@@ -56,7 +49,10 @@ export default function BattleBoard({
       queryClient.invalidateQueries({
         queryKey: [querykeys.BATTLE_STATUS, crewId],
       });
+      // 전역 상태에 배틀 데이터 업데이트
       setBattleData({
+        crewId,
+        battleId: data.battleId,
         myTeamName: data.myTeamName,
         myTeamScore: data.myTeamScore,
         opponentTeamName: data.opponentTeamName,
