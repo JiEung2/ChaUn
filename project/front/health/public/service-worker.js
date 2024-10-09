@@ -68,25 +68,6 @@ const FILES_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      // 개별 파일을 캐싱하여 실패한 파일을 확인
-      return Promise.all(
-        FILES_TO_CACHE.map((url) => {
-          return fetch(url)
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error(`Failed to fetch ${url}`);
-              }
-              return cache.put(url, response);
-            })
-            .catch((error) => {
-              console.error(`Failed to cache ${url}:`, error);
-            });
-        })
-      );
-    })
-  );
   self.skipWaiting(); // 서비스 워커 즉시 활성화
 });
 
@@ -142,4 +123,26 @@ self.addEventListener('fetch', (event) => {
         });
     })
   );
+});
+
+// 메시지를 받아서 캐싱을 실행하는 로직
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.action === 'cache-files') {
+    caches.open(CACHE_NAME).then((cache) => {
+      return Promise.all(
+        FILES_TO_CACHE.map((url) => {
+          return fetch(url)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(`Failed to fetch ${url}`);
+              }
+              return cache.put(url, response);
+            })
+            .catch((error) => {
+              console.error(`Failed to cache ${url}:`, error);
+            });
+        })
+      );
+    });
+  }
 });

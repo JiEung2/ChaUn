@@ -19,10 +19,14 @@ const OAuthCallback = () => {
 
       if (response.status === 200) {
         console.log('토큰 재발급 성공:', response.headers);
-        console.log('토큰 재발급 성공:', response.headers['userid']);
         setUserId(response.headers['userid']);
         const newAccessToken = response.headers['access'];
         setAccessToken(newAccessToken);
+
+        // 서비스 워커에 캐싱 요청
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ action: 'cache-files' });
+        }
       } else {
         // 실패 처리
         console.error('Failed to reissue access token:', response.statusText);
@@ -44,7 +48,6 @@ const OAuthCallback = () => {
           navigate('/survey');
         }
       });
-      navigate('/survey');
     });
   }, [navigate]);
 
