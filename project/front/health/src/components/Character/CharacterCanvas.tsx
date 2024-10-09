@@ -485,7 +485,7 @@
 // }
 import { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Html } from '@react-three/drei'; // Html 컴포넌트 추가
+import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import Lottie from 'lottie-react';
 import LoadingLottie from '@/assets/Lottie/loading.json';
@@ -502,18 +502,16 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   useEffect(() => {
     const worker = new Worker(new URL('./worker.js', import.meta.url));
 
-    // Web Worker로 메시지 보내기
     worker.postMessage({ glbUrl, gender });
 
-    // Web Worker에서 메시지 수신
     worker.onmessage = (event) => {
       const { type, model: loadedModel } = event.data;
 
       if (type === 'success') {
         const loader = new THREE.ObjectLoader();
-        const parsedModel = loader.parse(loadedModel); // 모델 로드
+        const parsedModel = loader.parse(loadedModel);
 
-        // 텍스처는 메인 스레드에서 다시 로드
+        // 텍스처 로딩과 적용
         const textureLoader = new THREE.TextureLoader();
         textureLoader.load('/path/to/your/texture.jpg', (texture) => {
           parsedModel.traverse((child) => {
@@ -521,8 +519,8 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
               const mesh = child as THREE.Mesh;
               const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
               materials.forEach((material) => {
-                if ((material as THREE.MeshStandardMaterial).map !== undefined) {
-                  const mat = material as THREE.MeshStandardMaterial; // 또는 MeshBasicMaterial로 캐스팅 가능
+                if ((material as THREE.MeshStandardMaterial).map === undefined) {
+                  const mat = material as THREE.MeshStandardMaterial;
                   mat.map = texture;
                   mat.needsUpdate = true;
                 }
