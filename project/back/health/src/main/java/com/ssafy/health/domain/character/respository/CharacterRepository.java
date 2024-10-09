@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface CharacterRepository extends JpaRepository<Character, Long> {
     Optional<Character> findByBodyTypeIdAndGender(Long bodyTypeId, Gender gender);
 
-    Character findByBodyTypeId(Long bodyTypeId);
+    Character findFirstByBodyTypeId(Long bodyTypeId);
 }
