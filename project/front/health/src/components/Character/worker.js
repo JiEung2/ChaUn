@@ -1,20 +1,18 @@
-// Three.js 라이브러리 먼저 로드
-importScripts('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
-importScripts('/GLTFLoader.js');
-importScripts('/DRACOLoader.js');
+// import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
+import { GLTFLoader } from '/GLTFLoader.js';
+import { DRACOLoader } from '/DRACOLoader.js';
 
 self.onmessage = async (event) => {
   const { glbUrl, gender } = event.data;
 
-  const loader = new THREE.GLTFLoader();
-  const dracoLoader = new THREE.DRACOLoader();
+  const loader = new GLTFLoader();
+  const dracoLoader = new DRACOLoader();
 
   // DRACO 디코더 경로 설정
   dracoLoader.setDecoderPath('/Darco');
   loader.setDRACOLoader(dracoLoader);
 
   try {
-    // GLB 파일을 로드
     const gltf = await loader.loadAsync(glbUrl);
     const model = gltf.scene;
 

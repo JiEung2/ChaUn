@@ -500,7 +500,7 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const worker = new Worker(new URL('./worker.js', import.meta.url));
+    const worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
 
     worker.postMessage({ glbUrl, gender });
 
@@ -529,7 +529,6 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
         <Html center>
           <div className="loadingScreen">
             <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
-            <p>캐릭터 로딩 중입니다...</p>
           </div>
         </Html>
       ) : (
