@@ -441,11 +441,11 @@ def create_sport_matrix(users, total_sports=30):
             sport_matrix[idx, sport - 1] = 1  # 스포츠 ID는 1부터 시작한다고 가정
     return sport_matrix
 
-# 4-2. 피어슨 유사도 계산 함수 - 협업 필터링
+# 4-2. 유클리드 유사도
 def euclidean_similarity(user, crew):
     # 사용자-크루간 4개 지표 상관관계수 유사도 (나이, 기본 점수, 활동 점수, 식습관 점수)
-    user = np.array([user.m_type, user.type, user.age, user.score_1, user.score_2, user.score_3])
-    crew = np.array([crew.m_type, crew.type, crew.age, crew.score_1, crew.score_2, crew.score_3])
+    user = np.array([user.m_type, user.type, user.age, user.basic_score, user.activity_score, user.intake_score])
+    crew = np.array([crew.m_type, crew.type, crew.age, crew.basic_score, crew.activity_score, crew.intake_score])
     distance = euclidean(user, crew)
     similarity = 1 / (1 + distance) # age, score_1~3
     
@@ -512,9 +512,9 @@ def crew_recommendation(request: TotalData):
         'm_type': u.score.m_type,
         'type': u.score.type,
         'age': u.score.age,
-        'score_1': u.score.score_1,
-        'score_2': u.score.score_2,
-        'score_3': u.score.score_3,
+        'score_1': u.score.basic_score,
+        'score_2': u.score.activity_score,
+        'score_3': u.score.intake_score,
         'favorite_sports': u.favorite_sports,
         'crew_list': u.crew_list
     } for u in request.total_users.users])
@@ -524,9 +524,9 @@ def crew_recommendation(request: TotalData):
         'm_type': c.score.m_type,
         'type': c.score.type,
         'age': c.score.age,
-        'score_1': c.score.score_1,
-        'score_2': c.score.score_2,
-        'score_3': c.score.score_3,
+        'score_1': c.score.basic_score,
+        'score_2': c.score.activity_score,
+        'score_3': c.score.intake_score,
         'crew_sports': c.crew_sports
     } for c in request.total_crews.crews])
 
