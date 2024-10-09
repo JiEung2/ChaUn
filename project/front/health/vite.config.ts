@@ -9,7 +9,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      external: ['GLTFLoader', 'DRACOLoader'],
+      external: ['/GLTFLoader', '/DRACOLoader'],
     },
   },
 });

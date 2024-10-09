@@ -1,6 +1,6 @@
-// import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
-import { GLTFLoader } from '/GLTFLoader.js';
-import { DRACOLoader } from '/DRACOLoader.js';
+import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
+import { GLTFLoader } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/loaders/DRACOLoader.js';
 
 self.onmessage = async (event) => {
   const { glbUrl, gender } = event.data;
@@ -9,7 +9,7 @@ self.onmessage = async (event) => {
   const dracoLoader = new DRACOLoader();
 
   // DRACO 디코더 경로 설정
-  dracoLoader.setDecoderPath('/Darco');
+  dracoLoader.setDecoderPath('/Draco');
   loader.setDRACOLoader(dracoLoader);
 
   try {
