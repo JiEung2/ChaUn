@@ -4,10 +4,12 @@ import ExerciseModal from '@/components/Exercise/ExerciseModal';
 import { createCrew, checkCrewName } from '@/api/crew';
 import { useNavigate } from 'react-router-dom';
 import useUserStore from '@/store/userInfo';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import queryKeys from '@/utils/querykeys';
 
 export default function CrewCreate() {
   const [crewName, setCrewName] = useState<string>('');
-  const [profileImage, setprofileImage] = useState<File | null>(null);
+  const [profileImage, setProfileImage] = useState<File | null>(null);
   const [description, setDescription] = useState<string>('');
   const [exerciseId, setExerciseId] = useState<number | null>(null);
   const [exerciseName, setExerciseName] = useState<string | null>(null);
@@ -15,11 +17,39 @@ export default function CrewCreate() {
   const [nameCheckMessage, setNameCheckMessage] = useState<string | null>(null); // 중복 체크 메시지 상태 추가
   const [isNameValid, setIsNameValid] = useState<boolean | null>(null); // 이름 유효 여부 상태 추가
   const { userId } = useUserStore();
-
   const navigate = useNavigate();
-  const sendCreatCrew = () => {
-    const formData = new FormData();
+  const queryClient = useQueryClient();
 
+  // 크루 생성 요청을 처리하는 mutation
+  const createCrewMutation = useMutation({
+    mutationFn: (formData: FormData) => createCrew(formData),
+    onSuccess: () => {
+      // 크루 생성 성공 시 크루 리스트 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: [queryKeys.USER_CREW_LIST] });
+      alert('크루가 성공적으로 생성되었습니다.');
+      navigate('/crew'); // 크루 메인 페이지로 이동
+    },
+    onError: (error) => {
+      console.error('크루 생성 실패:', error);
+      alert('크루 생성에 실패했습니다.');
+    },
+  });
+
+  // 크루명 중복 체크 mutation
+  const nameCheckMutation = useMutation({
+    mutationFn: (crewName: string) => checkCrewName(crewName),
+    onSuccess: () => {
+      setIsNameValid(true);
+      setNameCheckMessage('사용 가능한 이름입니다.');
+    },
+    onError: () => {
+      setIsNameValid(false);
+      setNameCheckMessage('중복된 이름입니다.');
+    },
+  });
+
+  const sendCreateCrew = () => {
+    const formData = new FormData();
     formData.append(
       'createCrewRequestDto',
       JSON.stringify({
@@ -29,23 +59,15 @@ export default function CrewCreate() {
         exerciseId: exerciseId,
       })
     );
-
     if (profileImage) {
       formData.append('profileImage', profileImage);
     }
-    createCrew(formData);
+    createCrewMutation.mutate(formData); // 크루 생성 요청
   };
 
-  const handleNameCheck = async () => {
-    try {
-      const response = await checkCrewName(crewName);
-      console.log('크루명 중복 체크 결과:', response);
-      setIsNameValid(true);
-      setNameCheckMessage('사용 가능한 이름입니다.');
-    } catch (error) {
-      console.error('크루명 중복 체크 실패', error);
-      setIsNameValid(false);
-      setNameCheckMessage('중복된 이름입니다.');
+  const handleNameCheck = () => {
+    if (crewName) {
+      nameCheckMutation.mutate(crewName); // 크루명 중복 체크 요청
     }
   };
 
@@ -57,7 +79,7 @@ export default function CrewCreate() {
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      setprofileImage(event.target.files[0]);
+      setProfileImage(event.target.files[0]);
     }
   };
 
@@ -65,22 +87,8 @@ export default function CrewCreate() {
     setDescription(event.target.value);
   };
 
-  const handleSubmit = async () => {
-    console.log('Crew 생성 정보:', {
-      crewName,
-      exerciseName,
-      profileImage,
-      description,
-    });
-
-    try {
-      await sendCreatCrew();
-      alert('크루가 성공적으로 생성되었습니다.');
-      navigate('/crew');
-    } catch (error) {
-      console.error('크루 생성 실패:', error);
-      alert('크루 생성에 실패했습니다.');
-    }
+  const handleSubmit = () => {
+    sendCreateCrew(); // 크루 생성 요청
   };
 
   const handleExerciseSelect = (selected: { id: number; name: string } | { id: number; name: string }[]) => {
@@ -103,7 +111,7 @@ export default function CrewCreate() {
                 id="crewName"
                 value={crewName}
                 onChange={handleNameChange}
-                placeholder="닉네임을 입력하세요."
+                placeholder="크루명을 입력하세요."
               />
               <button className="validationButton" onClick={handleNameCheck}>
                 중복 확인
@@ -111,21 +119,18 @@ export default function CrewCreate() {
             </div>
             {nameCheckMessage && <p className={`message ${isNameValid ? 'valid' : 'invalid'}`}>{nameCheckMessage}</p>}
           </div>
-
           <div className="crewCreate__form-group">
             <label>운동 종목</label>
             <button className="exerciseSelectButton" onClick={() => setShowExerciseModal(true)}>
               {exerciseName ? exerciseName : '선택'}
             </button>
           </div>
-
           <div className="crewCreate__form-group">
             <label>대표 이미지</label>
             <div className="crewCreate__image-input">
               <input type="file" onChange={handleImageChange} />
             </div>
           </div>
-
           <div className="crewCreate__form-group">
             <label htmlFor="description">한줄 소개</label>
             <div className="crewCreate__input-group">
@@ -143,7 +148,6 @@ export default function CrewCreate() {
           </button>
         </div>
       </div>
-
       {showExerciseModal && (
         <ExerciseModal
           onSelectExercise={handleExerciseSelect}
