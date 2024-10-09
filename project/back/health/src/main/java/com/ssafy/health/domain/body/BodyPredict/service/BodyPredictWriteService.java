@@ -19,6 +19,7 @@ import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryReadService;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryWriteService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -29,6 +30,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BodyPredictWriteService {
@@ -96,6 +98,8 @@ public class BodyPredictWriteService {
         } else if (predictionType.equals(PredictionType.BASIC) && exerciseBasicList.size() > 7) {
             exerciseBasicList = exerciseBasicList.subList(0, 7);
         }
+        log.info("{} analysis requested, sublist count: {}", predictionType, exerciseBasicList.size());
+        log.info("Exercise sublist: {}", exerciseBasicList);
 
         return AnalysisRequestDto.builder()
                 .exerciseDetail(
