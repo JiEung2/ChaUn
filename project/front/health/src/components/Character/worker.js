@@ -1,4 +1,8 @@
 // worker.js
+
+// Three.js 라이브러리 먼저 로드
+importScripts('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'); // CDN에서 Three.js 비모듈 방식 로드
+
 importScripts('/GLTFLoader.js');
 importScripts('/DRACOLoader.js');
 
