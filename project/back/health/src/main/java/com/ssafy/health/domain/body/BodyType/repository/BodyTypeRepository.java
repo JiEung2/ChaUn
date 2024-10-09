@@ -14,5 +14,5 @@ public interface BodyTypeRepository extends JpaRepository<BodyType, Long> {
             WHERE b.gender = :gender AND :bmi BETWEEN b.minFatRatio AND b.maxFatRatio
             ORDER BY b.id ASC LIMIT 1
             """)
-    Optional<BodyType> findByBmiAndGender(Float bmi, Gender gender);
+    Optional<BodyType> findByBmiAndGender(Integer bmi, Gender gender);
 }
