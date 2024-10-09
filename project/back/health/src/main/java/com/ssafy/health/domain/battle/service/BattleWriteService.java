@@ -83,6 +83,8 @@ public class BattleWriteService {
         sendNotification(notificationRequestDtoList);
 
         return BattleMatchResponseDto.builder()
+                .battleId(battle.getId())
+                .battleStatus(battle.getStatus())
                 .exerciseName(myCrew.getExercise().getName())
                 .myCrewName(myCrew.getName())
                 .myCrewScore(0F)
