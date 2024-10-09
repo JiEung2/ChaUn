@@ -35,12 +35,13 @@
 
 .finishMent {
   text-align: center;
+  margin-top: -5px;
   @include typo.subtitle;
 }
 .recordContainer {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   width: 327px;
   background-color: colors.$record;
@@ -48,19 +49,14 @@
   padding: 2px 0 20px 0;
   margin: 0 10px;
   position: relative;
-  .recordItem {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-  }
 }
 
 .exerciseModel {
-  width: 200px;
-  height: 390px;
-  transform: translateY(-20px);
+  width: 390px;
+  height: 500px;
+  transform: translateY(-30px);
   canvas {
-    width: 50% !important;
-    height: 50% !important;
+    width: 120% !important;
+    height: 120% !important;
   }
 }
