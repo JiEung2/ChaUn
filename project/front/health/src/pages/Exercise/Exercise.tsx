@@ -51,7 +51,7 @@ export default function Exercise() {
   const [characterState, setCharacterState] = useState(1);
 
   const navigate = useNavigate();
-
+  console.log('현재 캐릭터 url', characterFileUrl);
   const mutation = useMutation({
     mutationFn: ({ startTime, endTime }: { startTime: string; endTime: string }) =>
       postExerciseRecord(selectedExercise!.id, timer, startTime, endTime),
