@@ -60,23 +60,33 @@ public class BodyPredictWriteService {
             ExerciseDetailDto dto = ExerciseDetailDto.builder().build();
             AnalysisRequestDto requestDto = buildPredictionPayload(user.getId(), PredictionType.BASIC, dto);
 
-            try {
-                requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+            if (requestDto != null) {
+                try {
+                    requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
+                } catch (JsonProcessingException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                log.info("{} analysis not requested since exercise history is null", PredictionType.BASIC);
             }
         });
         return null;
     }
 
-    public AnalysisRequestDto requestExtraAnalysis(ExerciseDetailDto exerciseDetail) throws JsonProcessingException {
+    public ResponseEntity<String> requestExtraAnalysis(ExerciseDetailDto exerciseDetail)
+            throws JsonProcessingException {
 
         Long userId = SecurityUtil.getCurrentUserId();
         String apiUrl = apiBaseUrlBuilder(userId) + "/extra/fast-api";
 
-        AnalysisRequestDto dto = buildPredictionPayload(userId, PredictionType.EXTRA, exerciseDetail);
-        ResponseEntity<String> response = requestUtil.sendPostRequest(apiUrl, dto, String.class);
-        return dto;
+        AnalysisRequestDto requestDto = buildPredictionPayload(userId, PredictionType.EXTRA, exerciseDetail);
+
+        if (requestDto != null) {
+            return requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
+        } else {
+            log.info("{} analysis not requested exercise history is null", PredictionType.BASIC);
+            return null;
+        }
     }
 
     private AnalysisRequestDto buildPredictionPayload(
@@ -93,22 +103,26 @@ public class BodyPredictWriteService {
                 .map(exercise -> exerciseDataBuilder(user, bodyHistory, exercise.getBurnedCalories()))
                 .toList();
 
-        if (predictionType.equals(PredictionType.EXTRA) && exerciseBasicList.size() > 3) {
-            exerciseBasicList = exerciseBasicList.subList(0, 3);
-        } else if (predictionType.equals(PredictionType.BASIC) && exerciseBasicList.size() > 7) {
-            exerciseBasicList = exerciseBasicList.subList(0, 7);
-        }
-        log.info("{} analysis requested, sublist count: {}", predictionType, exerciseBasicList.size());
-        log.info("Exercise sublist: {}", exerciseBasicList);
+        if (!exerciseBasicList.isEmpty()) {
 
-        return AnalysisRequestDto.builder()
-                .exerciseDetail(
-                        (predictionType.equals(PredictionType.EXTRA)) ? exerciseDetail : null)
-                .exerciseData(exerciseBasicList)
-                .extraExerciseData(
-                        (predictionType.equals(PredictionType.EXTRA)) ?
-                                buildExtraPayload(user, bodyHistory, exerciseDetail) : null)
-                .build();
+            if (predictionType.equals(PredictionType.EXTRA) && exerciseBasicList.size() > 3) {
+                exerciseBasicList = exerciseBasicList.subList(0, 3);
+            } else if (predictionType.equals(PredictionType.BASIC) && exerciseBasicList.size() > 7) {
+                exerciseBasicList = exerciseBasicList.subList(0, 7);
+            }
+            log.info("{} analysis requested, sublist count: {}", predictionType, exerciseBasicList.size());
+            log.info("Exercise sublist: {}", exerciseBasicList);
+
+            return AnalysisRequestDto.builder()
+                    .exerciseDetail(
+                            (predictionType.equals(PredictionType.EXTRA)) ? exerciseDetail : null)
+                    .exerciseData(exerciseBasicList)
+                    .extraExerciseData(
+                            (predictionType.equals(PredictionType.EXTRA)) ?
+                                    buildExtraPayload(user, bodyHistory, exerciseDetail) : null)
+                    .build();
+        }
+        return null;
     }
 
     private List<AnalysisRequestDto.UserExerciseData> buildExtraPayload(
