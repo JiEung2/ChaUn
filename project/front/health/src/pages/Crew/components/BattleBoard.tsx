@@ -14,7 +14,7 @@ interface BattleBoardProps {
   opponentCrewName: string;
   opponentCrewScore: number;
   exerciseName: string;
-  dDay: number;
+  dday: number;
   battleStatus: string;
   buttonState: ButtonState;
 }
@@ -27,7 +27,7 @@ export default function BattleBoard({
   opponentCrewName,
   opponentCrewScore,
   exerciseName,
-  dDay,
+  dday,
   battleStatus,
   buttonState,
 }: BattleBoardProps) {
@@ -58,7 +58,7 @@ export default function BattleBoard({
         opponentCrewName: data.opponentCrewName,
         opponentCrewScore: data.opponentCrewScore,
         exerciseName: data.exerciseName,
-        dDay: data.dDay,
+        dday: data.dday,
         battleStatus: 'STARTED',
       });
       navigate(`/crew/battle/${crewId}`);
@@ -96,7 +96,7 @@ export default function BattleBoard({
                 <p>{myCrewScore}점</p>
               </div>
               <div className="vs-info">
-                <div className="d-day">대결 D-{dDay}</div>
+                <div className="d-day">대결 D-{dday}</div>
                 <span>VS</span>
               </div>
               <div className="opponent-Crew">

@@ -53,7 +53,7 @@ const crewBattleStatus = {
   // opponentCrewName: '크크크루',
   // opponentCrewScore: 1000,
   // exerciseName: '러닝',
-  // dDay: 2,
+  // dday: 2,
   // battleStatus: 'STARTED',
   // };
   // {
@@ -63,7 +63,7 @@ const crewBattleStatus = {
   //   opponentCrewName: '아이고머리야',
   //   opponentCrewScore: 1000,
   //   exerciseName: '러닝',
-  //   dDay: 2,
+  //   dday: 2,
   //   battleStatus: 'STARTED',
   // },
   // {
@@ -73,7 +73,7 @@ const crewBattleStatus = {
   opponentCrewName: 'No Opponent',
   opponentCrewScore: 0,
   exerciseName: 'N/A',
-  dDay: 2,
+  dday: 2,
   battleStatus: 'NONE',
 };
 
@@ -84,7 +84,7 @@ const crewRandomMatching = {
   opponentCrewName: '그래덤벼',
   opponentCrewScore: 1000,
   exerciseName: '러닝',
-  dDay: 2,
+  dday: 2,
   battleStatus: 'STARTED',
 };
 
@@ -139,7 +139,7 @@ const battleStatus = {
   opponentCrewScore: 500,
   exerciseName: '러닝',
   battleStatus: 'STARTED',
-  dDay: 2,
+  dday: 2,
 };
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [

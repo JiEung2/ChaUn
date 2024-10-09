@@ -146,7 +146,7 @@ export default function CrewPage() {
                   opponentCrewName={battleData.opponentCrewName || 'No Opponent'}
                   opponentCrewScore={battleData.opponentCrewScore || 0}
                   exerciseName={battleData.exerciseName || 'N/A'}
-                  dDay={battleData.dDay || 0}
+                  dday={battleData.dday || 0}
                   battleStatus={battleData.battleStatus}
                   buttonState={battleData.battleStatus === 'none' ? ButtonState.NONE : ButtonState.BATTLE_ENTRY}
                 />
@@ -162,7 +162,7 @@ export default function CrewPage() {
             opponentCrewName="No Opponent"
             opponentCrewScore={0}
             exerciseName="N/A"
-            dDay={0}
+            dday={0}
             battleStatus="NONE"
             buttonState={ButtonState.NONE}
           />

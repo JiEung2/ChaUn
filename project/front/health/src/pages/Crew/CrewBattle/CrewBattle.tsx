@@ -62,7 +62,7 @@ export default function CrewBattle() {
             crewId={Number(crewId)}
             battleId={battleToRender.battleId}
             battleStatus={battleToRender.battleStatus}
-            dDay={battleToRender.dDay}
+            dday={battleToRender.dday}
             exerciseName={battleToRender.exerciseName}
             myCrewName={battleToRender.myCrewName}
             myCrewScore={battleToRender.myCrewScore}
@@ -87,7 +87,7 @@ export default function CrewBattle() {
             crewId={Number(crewId)}
             battleId={battleToRender.battleId}
             battleStatus={battleToRender.battleStatus}
-            dDay={battleToRender.dDay}
+            dday={battleToRender.dday}
             exerciseName={battleToRender.exerciseName}
             myCrewName={battleToRender.myCrewName}
             myCrewScore={battleToRender.myCrewScore}
