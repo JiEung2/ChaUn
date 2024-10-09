@@ -71,7 +71,7 @@ public class PromptWriteService {
         prompt += "Please provide 2 strength exercises and 3 non-strength exercises. " +
                 "Only list them in the following format, without any additional comments or explanations:" +
                 "\nExercise: [exercise name]" +
-                "\nReason: [I would like you to provide a reason for each recommendation, explaining how it helps with the exercises I frequently enjoy.]" +
+                "\nReason: [Explain why the exercise is being recommended, considering its benefits related to the exercises I enjoy.]" +
                 "\nDescription: [brief exercise description or method]" +
                 "\n\nRepeat this format for each exercise. Answer in Korean.";
         System.out.println(prompt);
