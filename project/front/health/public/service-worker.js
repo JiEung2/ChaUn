@@ -56,8 +56,6 @@
 // }
 
 // requestPermission();
-
-// glb 파일 캐싱 코드
 const CACHE_NAME = 'app-cache-v1';
 const FILES_TO_CACHE = [
   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standingPants.glb',
@@ -66,10 +64,15 @@ const FILES_TO_CACHE = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache and caching files');
-      return cache.addAll(FILES_TO_CACHE);
-    })
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => {
+        console.log('Opened cache and caching files');
+        return cache.addAll(FILES_TO_CACHE);
+      })
+      .catch((error) => {
+        console.error('Failed to cache during install:', error);
+      })
   );
   self.skipWaiting(); // 서비스 워커 즉시 활성화
 });
@@ -99,28 +102,37 @@ self.addEventListener('fetch', (event) => {
     return; // 해당 요청은 캐시하지 않음
   }
 
-  // 쿼리 파라미터 제거 (필요한 경우)
-  requestUrl.search = '';
+  // PATCH, POST, PUT 등의 비-GET 요청은 캐시하지 않음
+  if (event.request.method !== 'GET') {
+    return; // GET 요청만 캐시에 저장 가능
+  }
 
   event.respondWith(
-    caches.match(requestUrl.toString()).then((cachedResponse) => {
-      if (cachedResponse) {
-        console.log('Serving cached file:', event.request.url);
-        return cachedResponse;
-      }
-
-      // 캐시에 없을 경우 네트워크에서 파일을 가져옴
-      return fetch(event.request).then((networkResponse) => {
-        // 응답을 캐시에 저장 (캐시가 가능할 때만)
-        if (!event.request.url.startsWith('chrome-extension')) {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, networkResponse.clone()); // 응답 복제 후 저장
-            return networkResponse;
-          });
-        } else {
-          return networkResponse; // chrome-extension 요청은 캐시하지 않음
+    caches
+      .match(event.request)
+      .then((cachedResponse) => {
+        if (cachedResponse) {
+          console.log('Serving cached file:', event.request.url);
+          return cachedResponse;
         }
-      });
-    })
+
+        // 캐시에 없을 경우 네트워크에서 파일을 가져옴
+        return fetch(event.request).then((networkResponse) => {
+          // 응답을 캐시에 저장 (캐시가 가능할 때만)
+          if (!event.request.url.startsWith('chrome-extension')) {
+            return caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, networkResponse.clone()).catch((error) => {
+                console.error('Failed to cache the network response:', error);
+              });
+              return networkResponse;
+            });
+          } else {
+            return networkResponse; // chrome-extension 요청은 캐시하지 않음
+          }
+        });
+      })
+      .catch((error) => {
+        console.error('Error during cache match or fetch:', error);
+      })
   );
 });
