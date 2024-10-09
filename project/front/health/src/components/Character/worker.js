@@ -25,9 +25,8 @@ self.onmessage = async (event) => {
       model.position.set(0, -8.5, 0);
     }
 
-    // 직렬화된 모델을 전송합니다.
-    const serializedModel = model.toJSON();
-    self.postMessage({ type: 'success', model: serializedModel });
+    // 모델 자체를 직렬화 없이 전송
+    self.postMessage({ type: 'success', model: model });
   } catch (error) {
     self.postMessage({ type: 'error', message: error.message });
   }

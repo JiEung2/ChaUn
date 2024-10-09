@@ -508,13 +508,12 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
       const { type, model: loadedModel } = event.data;
 
       if (type === 'success') {
-        const loader = new THREE.ObjectLoader();
-        const parsedModel = loader.parse(loadedModel); // 모델만 파싱
-
-        setModel(parsedModel); // 모델 설정
-        setLoading(false); // 로딩 완료
+        // 모델 자체를 그대로 렌더링
+        setModel(loadedModel);
+        setLoading(false);
       } else if (type === 'error') {
         console.error('Error loading model:', event.data.message);
+        setLoading(false);
       }
     };
 
