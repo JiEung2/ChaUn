@@ -1,6 +1,6 @@
 // worker.js
-importScripts('public/GLTFLoader.js');
-importScripts('public/DRACOLoader.js');
+importScripts('/GLTFLoader.js');
+importScripts('/DRACOLoader.js');
 
 self.onmessage = async (event) => {
   const { glbUrl, gender } = event.data;
