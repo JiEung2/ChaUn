@@ -53,9 +53,8 @@ export default function ExerciseRecommendPage() {
 
   return (
     <div className="exerciseRecommendContainer">
-      <h2 className="greeting">{nickname}님,</h2>
       <h3 className="recommendTitle">
-        이런 <span className="exerciseSpan">운동</span>을 추천드려요!
+        {nickname}님, 이런 <span className="exerciseSpan">운동</span>을 추천드려요!
       </h3>
 
       {/* 운동 카테고리 선택 버튼 */}
