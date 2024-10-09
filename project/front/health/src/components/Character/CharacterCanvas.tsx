@@ -500,7 +500,6 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Web Worker 생성
     const worker = new Worker(new URL('./worker.js', import.meta.url));
 
     // Web Worker로 메시지 보내기
@@ -512,8 +511,28 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
 
       if (type === 'success') {
         const loader = new THREE.ObjectLoader();
-        setModel(loader.parse(loadedModel)); // 모델 로드
-        setLoading(false); // 로딩 완료
+        const parsedModel = loader.parse(loadedModel); // 모델 로드
+
+        // 텍스처는 메인 스레드에서 다시 로드
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load('/path/to/your/texture.jpg', (texture) => {
+          parsedModel.traverse((child) => {
+            if ((child as THREE.Mesh).isMesh) {
+              const mesh = child as THREE.Mesh;
+              const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+              materials.forEach((material) => {
+                if ((material as THREE.MeshStandardMaterial).map !== undefined) {
+                  const mat = material as THREE.MeshStandardMaterial; // 또는 MeshBasicMaterial로 캐스팅 가능
+                  mat.map = texture;
+                  mat.needsUpdate = true;
+                }
+              });
+            }
+          });
+
+          setModel(parsedModel); // 텍스처 적용 후 모델 설정
+          setLoading(false); // 로딩 완료
+        });
       } else if (type === 'error') {
         console.error('Error loading model:', event.data.message);
       }
@@ -527,7 +546,6 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   return (
     <Canvas camera={{ position: [0, 10, 30], fov: 35 }} dpr={Math.min(window.devicePixelRatio, 2)}>
       {loading ? (
-        // Html 컴포넌트를 사용해 Three.js 씬 내부에서 HTML 요소를 렌더링
         <Html center>
           <div className="loadingScreen">
             <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
