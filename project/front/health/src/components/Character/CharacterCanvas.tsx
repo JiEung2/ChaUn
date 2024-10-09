@@ -500,17 +500,20 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Web Worker 생성
     const worker = new Worker(new URL('./worker.js', import.meta.url));
 
+    // Web Worker로 메시지 보내기
     worker.postMessage({ glbUrl, gender });
 
+    // Web Worker에서 메시지 수신
     worker.onmessage = (event) => {
       const { type, model: loadedModel } = event.data;
 
       if (type === 'success') {
         const loader = new THREE.ObjectLoader();
-        setModel(loader.parse(loadedModel));
-        setLoading(false);
+        setModel(loader.parse(loadedModel)); // 모델 로드
+        setLoading(false); // 로딩 완료
       } else if (type === 'error') {
         console.error('Error loading model:', event.data.message);
       }

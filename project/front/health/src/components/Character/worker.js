@@ -1,12 +1,15 @@
-importScripts('https://threejs.org/examples/js/loaders/GLTFLoader.js');
-importScripts('https://threejs.org/examples/js/libs/draco/draco_decoder.js');
+// worker.js
+importScripts('./Three/GLTFLoader.js');
+importScripts('./Three/DRACOLoader.js');
 
 self.onmessage = async (event) => {
   const { glbUrl, gender } = event.data;
 
   const loader = new THREE.GLTFLoader();
   const dracoLoader = new THREE.DRACOLoader();
-  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+
+  // DRACO 디코더 경로를 로컬 경로로 설정
+  dracoLoader.setDecoderPath('./Darco');
   loader.setDRACOLoader(dracoLoader);
 
   try {
@@ -30,4 +33,3 @@ self.onmessage = async (event) => {
     self.postMessage({ type: 'error', message: error.message });
   }
 };
-ㄹ;
