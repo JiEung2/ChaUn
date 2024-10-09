@@ -64,11 +64,11 @@ const FILES_TO_CACHE = [
   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5sitting.glb',
   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5entry.glb',
   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5entryPants.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/runningPants.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5sittingPants.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standing.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5waving.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5wavingPants.glb',
+  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/runningPants.glb',
+  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5sittingPants.glb',
+  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standing.glb',
+  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5waving.glb',
+  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5wavingPants.glb',
   // 필요한 파일들을 여기에 추가
 ];
 
