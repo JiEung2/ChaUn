@@ -35,6 +35,7 @@ export default function CustomCalendar({
   const updateCurrentWeek = useCallback((date: Date) => {
     const startOfWeek = getStartOfWeek(date);
     const week = Array.from({ length: 7 }, (_, i) => new Date(startOfWeek.getTime() + i * 86400000));
+    console.log(week);
     setCurrentMonth(date);
   }, []);
 
