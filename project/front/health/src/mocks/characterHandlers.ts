@@ -55,7 +55,7 @@ export const characterHandlers = [
       message: '',
       data: {
         characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_model/B5.glb',
-        gender: 'MAN',
+        gender: 'WOMAN',
         bodyTypeId: 7,
       },
     });
@@ -68,7 +68,7 @@ export const characterHandlers = [
       message: '',
       data: {
         characterUrl: 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_model/B5.glb',
-        gender: 'MAN',
+        gender: 'WOMAN',
         bodyTypeId: 7,
       },
     });

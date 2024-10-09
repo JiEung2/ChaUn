@@ -9,7 +9,7 @@ import LoadingLottie from '@/assets/Lottie/loading.json';
 
 interface CharacterProps {
   glbUrl: string;
-  gender: 'MAN' | 'FEMALE';
+  gender: 'MAN' | 'WOMAN';
   preserveDrawingBuffer?: boolean;
 }
 
@@ -65,8 +65,8 @@ function Character({ glbUrl, gender, setLoading }: CharacterProps & { setLoading
         if (gender === 'MAN') {
           model.scale.set(1.1, 1.1, 1.1);
           model.position.set(0, -8.5, 0);
-        } else if (gender === 'FEMALE') {
-          model.scale.set(15, 15, 15);
+        } else if (gender === 'WOMAN') {
+          model.scale.set(10, 10, 10);
           model.position.set(0, -8.5, 0);
         }
 
