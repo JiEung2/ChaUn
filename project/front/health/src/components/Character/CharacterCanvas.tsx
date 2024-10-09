@@ -485,7 +485,7 @@
 // }
 import { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Html } from '@react-three/drei'; // Html 컴포넌트 추가
+import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import Lottie from 'lottie-react';
 import LoadingLottie from '@/assets/Lottie/loading.json';
@@ -500,19 +500,18 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Web Worker 생성
     const worker = new Worker(new URL('./worker.js', import.meta.url));
 
-    // Web Worker로 메시지 보내기
     worker.postMessage({ glbUrl, gender });
 
-    // Web Worker에서 메시지 수신
     worker.onmessage = (event) => {
       const { type, model: loadedModel } = event.data;
 
       if (type === 'success') {
         const loader = new THREE.ObjectLoader();
-        setModel(loader.parse(loadedModel)); // 모델 로드
+        const parsedModel = loader.parse(loadedModel); // 모델만 파싱
+
+        setModel(parsedModel); // 모델 설정
         setLoading(false); // 로딩 완료
       } else if (type === 'error') {
         console.error('Error loading model:', event.data.message);
@@ -527,7 +526,6 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   return (
     <Canvas camera={{ position: [0, 10, 30], fov: 35 }} dpr={Math.min(window.devicePixelRatio, 2)}>
       {loading ? (
-        // Html 컴포넌트를 사용해 Three.js 씬 내부에서 HTML 요소를 렌더링
         <Html center>
           <div className="loadingScreen">
             <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
