@@ -63,8 +63,8 @@ function Character({ glbUrl, gender, setLoading }: CharacterProps & { setLoading
 
         // 캐릭터의 스케일과 위치 설정
         if (gender === 'MAN') {
-          model.scale.set(1.1, 1.1, 1.1);
-          model.position.set(0, -10, 0);
+          model.scale.set(1, 1, 1);
+          model.position.set(0, -9, 0);
         } else if (gender === 'WOMAN') {
           model.scale.set(10, 10, 10);
           model.position.set(0, -9, 0);

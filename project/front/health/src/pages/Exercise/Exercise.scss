@@ -35,7 +35,7 @@
 
 .finishMent {
   text-align: center;
-  margin-top: -15px !important;
+  margin: 0;
   @include typo.subtitle;
 }
 .recordContainer {
@@ -55,8 +55,8 @@
   width: 390px;
   height: 500px;
   transform: translateY(-30px);
-  //   canvas {
-  //     width: 120% !important;
-  //     height: 120% !important;
-  //   }
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
 }
