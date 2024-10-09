@@ -26,6 +26,7 @@ export default function MypagePage() {
   const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
   const [bodyTypeId, setBodyTypeId] = useState<number | null>(null);
+  const [preserveBuffer, setPreserveBuffer] = useState(false);
   const queryClient = useQueryClient();
   interface snapshots {
     snapshotUrl: string;
@@ -90,7 +91,7 @@ export default function MypagePage() {
   };
 
   const handleCaptureClick = async () => {
-    // setPreserveBuffer(true);
+    setPreserveBuffer(true);
 
     requestAnimationFrame(async () => {
       if (characterRef.current) {
@@ -114,7 +115,7 @@ export default function MypagePage() {
         }
       }
 
-      // setPreserveBuffer(false);
+      setPreserveBuffer(false);
     });
   };
 
@@ -262,7 +263,7 @@ export default function MypagePage() {
           <div className="characterAndSnapshot">
             <div className="character" ref={characterRef}>
               {characterGlbUrl ? (
-                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} />
+                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
               ) : (
                 <p>{nickname}님의 캐릭터를 불러오지 못했어요</p>
               )}
