@@ -47,7 +47,7 @@ export default function MyCrew() {
     enabled: !!crewId,
   });
 
-  const { data: crewInfo } = useQuery<CrewInfo>({
+  const { data: crewInfo, refetch: refetchCrewInfo } = useQuery<CrewInfo>({
     queryKey: [querykeys.CREW_DETAIL, crewId],
     queryFn: () => getCrewDetail(Number(crewId)),
     enabled: !!crewId,
@@ -70,6 +70,7 @@ export default function MyCrew() {
       collectCrewCoin({ crew_id: Number(crewId), coin_count: selectedCoins }),
     onSuccess: (data) => {
       console.log('코인 모금 성공', data);
+      refetchCrewInfo();
     },
     onError: (error) => {
       console.error('코인 모금 실패', error);
@@ -166,7 +167,7 @@ export default function MyCrew() {
   //   오늘의 퀘스트
   // const todayQuests = [{ title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기', completed: true }];
 
-  const [selectedCoins, setSelectedCoins] = useState(100); // 선택된 코인 수
+  const [selectedCoins, setSelectedCoins] = useState(50); // 선택된 코인 수
   const [_, setCrewCoins] = useState(300); // 크루 코인 수
 
   const incrementCoins = () => {
@@ -193,10 +194,9 @@ export default function MyCrew() {
   };
   useEffect(() => {
     if (crewInfo) {
-      setSelectedCoins(crewInfo.crewCoins);
+      setSelectedCoins(50);
       setIsCrewLeader(crewInfo.role === 'LEADER');
     }
-    // console.log('끄앙', crewInfo?.role);
   }, [crewInfo]);
 
   useEffect(() => {
