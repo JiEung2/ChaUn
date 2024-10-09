@@ -36,7 +36,7 @@ function getKSTDate() {
 }
 
 export default function Exercise() {
-  const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
+  const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation';
   const [showModal, setShowModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<{ id: number; name: string } | null>(null);
   const [timer, setTimer] = useState(0);

@@ -61,6 +61,7 @@ const FILES_TO_CACHE = [
   // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standingPants.glb',
   // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5dancingPants.glb',
   // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5entryPants.glb',
+  //마이페이지 관련 파일들
   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5dancing.glb',
   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5waving.glb',
 
