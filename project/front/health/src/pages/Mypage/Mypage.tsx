@@ -19,7 +19,7 @@ export default function MypagePage() {
   const { userId, nickname, coin, setHasCoin } = useUserStore();
   const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
-  const [setPreserveBuffer] = useState(false);
+  // const [setPreserveBuffer] = useState(false);
   const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가

@@ -489,7 +489,7 @@ import { Canvas } from '@react-three/fiber';
 import * as THREE from 'three';
 import Lottie from 'lottie-react';
 import LoadingLottie from '@/assets/Lottie/loading.json';
-import './CharacterCanvas.scss';
+// import './CharacterCanvas.scss';
 
 interface CharacterProps {
   glbUrl: string;
