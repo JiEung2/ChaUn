@@ -45,13 +45,12 @@ export default function MypagePage() {
     queryKey: [queryKeys.USER_DETAIL, userId],
     queryFn: () => getUserDetail(userId),
   });
-  console.log('myDetail.characterFileUrl', myDetail.characterFileUrl, userId);
 
   const { data: myCharacter } = useSuspenseQuery({
     queryKey: [queryKeys.CHARACTER],
     queryFn: () => getMyCharacter(),
   });
-
+  console.log('myCharacter.bodyTypeId', myCharacter.bodyTypeId);
   useEffect(() => {
     if (myDetail) {
       setGender(myDetail.gender === 'MAN' ? 'MAN' : 'WOMAN');
