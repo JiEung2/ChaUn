@@ -1,5 +1,5 @@
 import 'react-calendar/dist/Calendar.css';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar } from 'react-calendar';
 import './CustomCalendar.scss';
 
@@ -20,30 +20,13 @@ export default function CustomCalendar({
 }: CustomCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
 
+  useEffect(() => {
+    setCurrentMonth(new Date(selectedDate));
+  }, [selectedDate]);
+
   const normalizeDate = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
   };
-
-  const getStartOfWeek = (date: Date): Date => {
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    const startDate = new Date(date);
-    startDate.setDate(diff);
-    return new Date(startDate.setHours(0, 0, 0, 0));
-  };
-
-  const updateCurrentWeek = useCallback((date: Date) => {
-    const startOfWeek = getStartOfWeek(date);
-    const week = Array.from({ length: 7 }, (_, i) => new Date(startOfWeek.getTime() + i * 86400000));
-    console.log(week);
-    setCurrentMonth(date);
-  }, []);
-
-  useEffect(() => {
-    if (selectedDate) {
-      updateCurrentWeek(selectedDate);
-    }
-  }, [selectedDate, updateCurrentWeek]);
 
   const formatMonthYear = (_: string | undefined, date: Date) => {
     const year = date.getFullYear();
