@@ -23,7 +23,7 @@ public interface BattleControllerApi {
                                     "  \"status\": 200,\n" +
                                     "  \"message\": \"Success\",\n" +
                                     "  \"data\": {\n" +
-                                    "    \"homeCrewMembers\": [\n" +
+                                    "    \"myCrewMembers\": [\n" +
                                     "      {\n" +
                                     "        \"userId\": 1,\n" +
                                     "        \"nickname\": \"홍길동\",\n" +
@@ -31,7 +31,7 @@ public interface BattleControllerApi {
                                     "        \"exerciseTime\": 3600\n" +
                                     "      }\n" +
                                     "    ],\n" +
-                                    "    \"awayCrewMembers\": [\n" +
+                                    "    \"opponentCrewMembers\": [\n" +
                                     "      {\n" +
                                     "        \"userId\": 2,\n" +
                                     "        \"nickname\": \"김철수\",\n" +
@@ -44,6 +44,6 @@ public interface BattleControllerApi {
                             ))
             ),
     })
-    ApiResponse<BattleMemberRankingDto> getBattleMemberRanking(@PathVariable("crew_id") Long crewId);
+    ApiResponse<BattleMemberRankingDto> getBattleMemberRanking(@PathVariable("battle_id") Long battleId, @PathVariable("crew_id") Long crewId);
 
 }
