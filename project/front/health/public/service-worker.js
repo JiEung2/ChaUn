@@ -72,11 +72,35 @@ self.addEventListener('install', (event) => {
       return cache.addAll(FILES_TO_CACHE);
     })
   );
+  // 새로운 서비스 워커 바로 활성화
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!cacheWhitelist.includes(cacheName)) {
+            console.log('Old cache deleted:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  // 활성화되자마자 컨트롤을 바로 넘김
+  return self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
+  // 쿼리 파라미터가 다른 요청을 처리할 때 사용
+  const requestUrl = new URL(event.request.url);
+  requestUrl.search = ''; // 쿼리 파라미터 제거하여 캐시 일관성 유지
+
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(requestUrl.toString()).then((cachedResponse) => {
       if (cachedResponse) {
         console.log('Serving cached file:', event.request.url);
         return cachedResponse;
@@ -90,21 +114,6 @@ self.addEventListener('fetch', (event) => {
           return networkResponse;
         });
       });
-    })
-  );
-});
-
-self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
     })
   );
 });
