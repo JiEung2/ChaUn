@@ -53,8 +53,8 @@ export default function CrewRankingPage() {
         </GeneralButton>
       ) : (
         isSuccess &&
-        (exerciseCrewRanking?.data?.data?.crewList?.length > 0 ? (
-          <CrewAndMemberList type="crew" data={exerciseCrewRanking.data.data.crewList} />
+        (exerciseCrewRanking?.data?.crewList?.length > 0 ? (
+          <CrewAndMemberList type="crew" data={exerciseCrewRanking.data.crewList} />
         ) : (
           <p>선택한 운동의 크루 랭킹이 없습니다.</p>
         ))
