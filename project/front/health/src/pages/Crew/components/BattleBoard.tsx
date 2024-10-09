@@ -96,7 +96,7 @@ export default function BattleBoard({
                 <p>{myCrewScore}점</p>
               </div>
               <div className="vs-info">
-                <div className="d-day">대결 D-{dday}</div>
+                <div className="d-day">대결 {dday === 0 ? 'D-Day' : `D-${dday}`}</div>
                 <span>VS</span>
               </div>
               <div className="opponent-Crew">

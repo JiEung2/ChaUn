@@ -42,7 +42,7 @@ export default function CrewBattle() {
   const battleId = battleToRender ? battleToRender.battleId : 0;
   const { data: battleRankings, isLoading: isRankingsLoading } = useQuery({
     queryKey: [queryKeys.BATTLE_RANKING, battleId],
-    queryFn: () => getBattleRanking(Number(battleId)),
+    queryFn: () => getBattleRanking(Number(battleId), Number(crewId)),
   });
 
   if (isBattleDataLoading || isRankingsLoading) {
@@ -110,9 +110,9 @@ export default function CrewBattle() {
             </div>
             <div className="ranking__list">
               {selectedCrew === 'home' ? (
-                <CrewAndMemberList type="member" data={battleRankings?.homeCrewMembers} />
+                <CrewAndMemberList type="member" data={battleRankings?.myCrewMembers} />
               ) : (
-                <CrewAndMemberList type="member" data={battleRankings?.awayCrewMembers} />
+                <CrewAndMemberList type="member" data={battleRankings?.opponentCrewMembers} />
               )}
             </div>
           </div>
