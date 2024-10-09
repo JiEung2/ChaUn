@@ -647,7 +647,6 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)', // 배경을 살짝 투명하게
             zIndex: 10, // 캔버스보다 위에 표시되도록 설정
           }}>
           <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
