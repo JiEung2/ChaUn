@@ -444,8 +444,8 @@ def create_sport_matrix(users, total_sports=30):
 # 4-2. 유클리드 유사도
 def euclidean_similarity(user, crew):
     # 사용자-크루간 4개 지표 상관관계수 유사도 (나이, 기본 점수, 활동 점수, 식습관 점수)
-    user = np.array([user.m_type, user.type, user.age, user.basic_score, user.activity_score, user.intake_score])
-    crew = np.array([crew.m_type, crew.type, crew.age, crew.basic_score, crew.activity_score, crew.intake_score])
+    user = np.array([user.m_type, user.type, user.age, user.score_1, user.score_2, user.score_3])
+    crew = np.array([crew.m_type, crew.type, crew.age, crew.score_1, crew.score_2, crew.score_3])
     distance = euclidean(user, crew)
     similarity = 1 / (1 + distance) # age, score_1~3
     
