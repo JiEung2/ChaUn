@@ -81,7 +81,7 @@ export default function CrewAndMemberList({ type, data }: Props) {
                   style={{ cursor: 'pointer' }}
                 />
                 <span>{crew.crewName}</span>
-                <span className={styles.basicScore}>{crew.basicScore + crew.activityScore || 0}점</span>
+                <span className={styles.basicScore}>{Math.round(crew.basicScore + crew.activityScore || 0)}점</span>
               </div>
             </div>
           ))}
