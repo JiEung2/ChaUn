@@ -1,5 +1,5 @@
 import 'react-calendar/dist/Calendar.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Calendar } from 'react-calendar';
 import './CustomCalendar.scss';
 
@@ -19,10 +19,6 @@ export default function CustomCalendar({
   selectedDate,
 }: CustomCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-
-  useEffect(() => {
-    setCurrentMonth(new Date(selectedDate));
-  }, [selectedDate]);
 
   const normalizeDate = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
