@@ -12,14 +12,14 @@ import useBattleDataStore from '@/store/battleInfo';
 
 export default function CrewBattle() {
   const { crewId } = useParams<{ crewId: string }>();
-  const [selectedTeam, setSelectedTeam] = useState<'home' | 'away'>('home');
+  const [selectedCrew, setSelectedCrew] = useState<'home' | 'away'>('home');
 
   const { battles, setBattleData } = useBattleDataStore();
 
   const existingBattle = battles.find((battle) => battle.crewId === Number(crewId));
 
-  const handleTeamSwitch = (team: 'home' | 'away') => {
-    setSelectedTeam(team);
+  const handleCrewSwitch = (Crew: 'home' | 'away') => {
+    setSelectedCrew(Crew);
   };
 
   // 배틀 현황
@@ -64,10 +64,10 @@ export default function CrewBattle() {
             battleStatus={battleToRender.battleStatus}
             dDay={battleToRender.dDay}
             exerciseName={battleToRender.exerciseName}
-            myTeamName={battleToRender.myTeamName}
-            myTeamScore={battleToRender.myTeamScore}
-            opponentTeamName={battleToRender.opponentTeamName}
-            opponentTeamScore={battleToRender.opponentTeamScore}
+            myCrewName={battleToRender.myCrewName}
+            myCrewScore={battleToRender.myCrewScore}
+            opponentCrewName={battleToRender.opponentCrewName}
+            opponentCrewScore={battleToRender.opponentCrewScore}
             buttonState={ButtonState.RANDOM_MATCHING}
           />
           <div className="ranking__none">
@@ -89,27 +89,27 @@ export default function CrewBattle() {
             battleStatus={battleToRender.battleStatus}
             dDay={battleToRender.dDay}
             exerciseName={battleToRender.exerciseName}
-            myTeamName={battleToRender.myTeamName}
-            myTeamScore={battleToRender.myTeamScore}
-            opponentTeamName={battleToRender.opponentTeamName}
-            opponentTeamScore={battleToRender.opponentTeamScore}
+            myCrewName={battleToRender.myCrewName}
+            myCrewScore={battleToRender.myCrewScore}
+            opponentCrewName={battleToRender.opponentCrewName}
+            opponentCrewScore={battleToRender.opponentCrewScore}
             buttonState={ButtonState.NONE}
           />
           <div className="ranking__started">
-            <div className="team-toggle">
+            <div className="Crew-toggle">
               <button
-                onClick={() => handleTeamSwitch('home')}
-                className={`team-btn ${selectedTeam === 'home' ? 'active' : ''}`}>
-                {battleToRender.myTeamName}
+                onClick={() => handleCrewSwitch('home')}
+                className={`Crew-btn ${selectedCrew === 'home' ? 'active' : ''}`}>
+                {battleToRender.myCrewName}
               </button>
               <button
-                onClick={() => handleTeamSwitch('away')}
-                className={`team-btn ${selectedTeam === 'away' ? 'active' : ''}`}>
-                {battleToRender.opponentTeamName}
+                onClick={() => handleCrewSwitch('away')}
+                className={`Crew-btn ${selectedCrew === 'away' ? 'active' : ''}`}>
+                {battleToRender.opponentCrewName}
               </button>
             </div>
             <div className="ranking__list">
-              {selectedTeam === 'home' ? (
+              {selectedCrew === 'home' ? (
                 <CrewAndMemberList type="member" data={battleRankings?.homeCrewMembers} />
               ) : (
                 <CrewAndMemberList type="member" data={battleRankings?.awayCrewMembers} />

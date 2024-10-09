@@ -9,10 +9,10 @@ import useBattleDataStore from '@/store/battleInfo'; // zustand 전역 상태 �
 interface BattleBoardProps {
   crewId: number;
   battleId: number;
-  myTeamName: string;
-  myTeamScore: number;
-  opponentTeamName: string;
-  opponentTeamScore: number;
+  myCrewName: string;
+  myCrewScore: number;
+  opponentCrewName: string;
+  opponentCrewScore: number;
   exerciseName: string;
   dDay: number;
   battleStatus: string;
@@ -22,10 +22,10 @@ interface BattleBoardProps {
 export default function BattleBoard({
   crewId,
   battleId,
-  myTeamName,
-  myTeamScore,
-  opponentTeamName,
-  opponentTeamScore,
+  myCrewName,
+  myCrewScore,
+  opponentCrewName,
+  opponentCrewScore,
   exerciseName,
   dDay,
   battleStatus,
@@ -53,10 +53,10 @@ export default function BattleBoard({
       setBattleData({
         crewId,
         battleId: data.battleId,
-        myTeamName: data.myTeamName,
-        myTeamScore: data.myTeamScore,
-        opponentTeamName: data.opponentTeamName,
-        opponentTeamScore: data.opponentTeamScore,
+        myCrewName: data.myCrewName,
+        myCrewScore: data.myCrewScore,
+        opponentCrewName: data.opponentCrewName,
+        opponentCrewScore: data.opponentCrewScore,
         exerciseName: data.exerciseName,
         dDay: data.dDay,
         battleStatus: 'STARTED',
@@ -89,20 +89,20 @@ export default function BattleBoard({
       case 'STARTED':
         return (
           <div className="battle-board">
-            <div className="team-info">
-              <div className="our-team">
-                <p>{myTeamName}</p>
+            <div className="Crew-info">
+              <div className="our-Crew">
+                <p>{myCrewName}</p>
                 <p className="sport"># {exerciseName}</p>
-                <p>{myTeamScore}점</p>
+                <p>{myCrewScore}점</p>
               </div>
               <div className="vs-info">
                 <div className="d-day">대결 D-{dDay}</div>
                 <span>VS</span>
               </div>
-              <div className="opponent-team">
-                <p>{opponentTeamName}</p>
+              <div className="opponent-Crew">
+                <p>{opponentCrewName}</p>
                 <p className="sport"># {exerciseName}</p>
-                <p>{opponentTeamScore}점</p>
+                <p>{opponentCrewScore}점</p>
               </div>
             </div>
             <div className="score-bar" />

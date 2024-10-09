@@ -80,6 +80,8 @@ export default function CrewPage() {
 
   // Filter only the battles that have started
   const startedBattles = battles.filter((battle) => battle.battleStatus === 'STARTED');
+  console.log('Battles in global store:', battles);
+  console.log('Started Battles:', startedBattles);
 
   const handleCrewClick = (crewId: number) => {
     navigate(`/crew/mycrew/${crewId}`);
@@ -139,10 +141,10 @@ export default function CrewPage() {
                 <BattleBoard
                   crewId={battleData.crewId}
                   battleId={battleData.battleId || 0}
-                  myTeamName={battleData.myTeamName || 'No Battle'}
-                  myTeamScore={battleData.myTeamScore || 0}
-                  opponentTeamName={battleData.opponentTeamName || 'No Opponent'}
-                  opponentTeamScore={battleData.opponentTeamScore || 0}
+                  myCrewName={battleData.myCrewName || 'No Battle'}
+                  myCrewScore={battleData.myCrewScore || 0}
+                  opponentCrewName={battleData.opponentCrewName || 'No Opponent'}
+                  opponentCrewScore={battleData.opponentCrewScore || 0}
                   exerciseName={battleData.exerciseName || 'N/A'}
                   dDay={battleData.dDay || 0}
                   battleStatus={battleData.battleStatus}
@@ -155,10 +157,10 @@ export default function CrewPage() {
           <BattleBoard
             crewId={0}
             battleId={0}
-            myTeamName="No Battle"
-            myTeamScore={0}
-            opponentTeamName="No Opponent"
-            opponentTeamScore={0}
+            myCrewName="No Battle"
+            myCrewScore={0}
+            opponentCrewName="No Opponent"
+            opponentCrewScore={0}
             exerciseName="N/A"
             dDay={0}
             battleStatus="NONE"

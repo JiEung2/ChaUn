@@ -4,10 +4,10 @@ import { persist } from 'zustand/middleware';
 interface BattleData {
   crewId: number;
   battleId: number;
-  myTeamName: string;
-  myTeamScore: number;
-  opponentTeamName: string;
-  opponentTeamScore: number;
+  myCrewName: string;
+  myCrewScore: number;
+  opponentCrewName: string;
+  opponentCrewScore: number;
   exerciseName: string;
   dDay: number;
   battleStatus: string; // Status like "STARTED", "ENDED", etc.

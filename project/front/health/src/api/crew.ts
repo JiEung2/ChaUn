@@ -44,10 +44,10 @@ export const joinToCrew = async (crew_id: number) => {
 export interface CrewBattleStatusResponse {
   crewId: number;
   battleId: number;
-  myTeamName: string;
-  myTeamScore: number;
-  opponentTeamName: string;
-  opponentTeamScore: number;
+  myCrewName: string;
+  myCrewScore: number;
+  opponentCrewName: string;
+  opponentCrewScore: number;
   exerciseName: string;
   dDay: number;
   battleStatus: string;

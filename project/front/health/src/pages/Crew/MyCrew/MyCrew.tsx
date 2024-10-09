@@ -139,13 +139,13 @@ export default function MyCrew() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isCrewLeader, setIsCrewLeader] = useState(true); // 크루 대표 여부 상태
   const [isInBattle, setIsInBattle] = useState(true); // 배틀 참여 여부 상태
-  const [opponentTeam, setOpponentTeam] = useState('3대 500만원'); // 상대 팀 정보
+  const [opponentCrew, setOpponentCrew] = useState('3대 500만원'); // 상대 팀 정보
 
   // const [todayQuests, setTodayQuests] = useState<quest[]>([]);
 
   // console.log(setIsCrewLeader);
   // console.log(setIsInBattle);
-  // console.log(setOpponentTeam);
+  // console.log(setOpponentCrew);
 
   const toggleQuestModal = () => {
     setIsQuestModalOpen(!isQuestModalOpen);
@@ -202,7 +202,7 @@ export default function MyCrew() {
   useEffect(() => {
     if (battleStatus) {
       setIsInBattle(battleStatus.battleStatus === 'STARTED');
-      setOpponentTeam(battleStatus.opponentTeamName);
+      setOpponentCrew(battleStatus.opponentCrewName);
     }
   }, [battleStatus]);
   const navigate = useNavigate();
@@ -307,7 +307,7 @@ export default function MyCrew() {
               <div>
                 <div className="battleInfo">
                   <span className="vs">VS</span>
-                  <span className="opponentTeam">{opponentTeam}</span>
+                  <span className="opponentCrew">{opponentCrew}</span>
                 </div>
               </div>
             ) : (
