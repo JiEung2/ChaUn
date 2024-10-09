@@ -116,7 +116,7 @@
 .myProfileInfo {
   width: 150px; /* Canvas 크기를 줄임 */
   height: 250px; /* Canvas 높이 설정 */
-  transform: translateX(-10px) translateY(-12px);
+  transform: translateX(10px) translateY(-12px);
   canvas {
     width: 100% !important;
     height: 100% !important;
