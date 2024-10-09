@@ -41,7 +41,8 @@ try:
     # 테스트 용
     # client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     # 실제 서버 상태 확인
-    client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@mongodb:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
+    # client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@mongodb:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
+    client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     server_status = client.admin.command("ping")
     db = client['Health']
     predict_basic = db['predict_basic']
@@ -414,7 +415,7 @@ class UserData(BaseModel):
     user_id: int
     score: ScoreData
     favorite_sports: List[int]
-    crew_list: List[int] = []
+    crew_list: Optional[List[int]] = []
 
 class TotalUserData(BaseModel):
     users: List[UserData]
@@ -547,6 +548,7 @@ def crew_recommendation(request: TotalData):
 
     for user_idx in range(len(user_df)):
         now_user = user_df.loc[user_idx]
+
         recommended_crews = recommend_crews(now_user, user_df, crew_df)
 
         result = {
