@@ -9,6 +9,6 @@ import java.util.List;
 @Getter
 @Builder
 public class BattleMemberRankingDto {
-    private List<CrewMemberInfo> homeCrewMembers;
-    private List<CrewMemberInfo> awayCrewMembers;
+    private List<CrewMemberInfo> myCrewMembers;
+    private List<CrewMemberInfo> opponentCrewMembers;
 }
