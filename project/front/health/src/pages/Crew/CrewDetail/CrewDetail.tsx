@@ -129,8 +129,8 @@ const CrewDetail = () => {
             {crewInfo.totalBattleCount - crewInfo.winCount}패
           </p>
           <p>크루 평균 연령: {crewInfo.averageAge}대 후반</p>
-          <p>활동 점수: {crewInfo.activityScore}점</p>
-          <p>기본 점수: {crewInfo.basicScore}점</p>
+          <p>활동 점수: {Math.round(crewInfo.activityScore)}점</p>
+          <p>기본 점수: {Math.round(crewInfo.basicScore)}점</p>
         </div>
       </div>
       <div className={styles.crewRankingContainer}>

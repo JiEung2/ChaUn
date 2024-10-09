@@ -93,7 +93,7 @@ export default function BattleBoard({
               <div className="our-Crew">
                 <p>{myCrewName}</p>
                 <p className="sport"># {exerciseName}</p>
-                <p>{myCrewScore}점</p>
+                <p>{Math.round(myCrewScore)}점</p>
               </div>
               <div className="vs-info">
                 <div className="d-day">대결 {dday === 0 ? 'D-Day' : `D-${dday}`}</div>
@@ -102,7 +102,7 @@ export default function BattleBoard({
               <div className="opponent-Crew">
                 <p>{opponentCrewName}</p>
                 <p className="sport"># {exerciseName}</p>
-                <p>{opponentCrewScore}점</p>
+                <p>{Math.round(opponentCrewScore)}점</p>
               </div>
             </div>
             <div className="score-bar" />

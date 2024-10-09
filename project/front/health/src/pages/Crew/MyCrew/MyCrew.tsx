@@ -235,15 +235,15 @@ export default function MyCrew() {
         {isOpen && (
           <div className="crewInfoDetails">
             <p>
-              # {crewInfo?.exerciseName} 크루 랭킹: {crewInfo?.crewRanking}위
+              # {crewInfo?.exerciseName} 크루 랭킹: {Math.round(crewInfo?.crewRanking ?? 0)}위
             </p>
             <p>
-              배틀 현황: {crewInfo?.totalBattleCount}전 {crewInfo?.winCount}승{' '}
-              {crewInfo!.totalBattleCount - crewInfo!.winCount}패
+              배틀 현황: {Math.round(crewInfo?.totalBattleCount ?? 0)}전 {Math.round(crewInfo?.winCount ?? 0)}승{' '}
+              {Math.round((crewInfo?.totalBattleCount ?? 0) - (crewInfo?.winCount ?? 0))}패
             </p>
-            <p>크루 평균 연령: {crewInfo?.averageAge}세</p>
-            <p>활동 점수: {crewInfo?.activityScore}점</p>
-            <p>기본 점수: {crewInfo?.basicScore}점</p>
+            <p>크루 평균 연령: {Math.round(crewInfo?.averageAge ?? 0)}세</p>
+            <p>활동 점수: {Math.round(crewInfo?.activityScore ?? 0)}점</p>
+            <p>기본 점수: {Math.round(crewInfo?.basicScore ?? 0)}점</p>
           </div>
         )}
       </div>
