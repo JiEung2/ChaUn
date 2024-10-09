@@ -64,25 +64,28 @@ const FILES_TO_CACHE = [
   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5sitting.glb',
   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5entry.glb',
   'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5entryPants.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/runningPants.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5sittingPants.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standing.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5waving.glb',
-  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5wavingPants.glb',
   // 필요한 파일들을 여기에 추가
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache and caching files');
-        return cache.addAll(FILES_TO_CACHE);
-      })
-      .catch((error) => {
-        console.error('Failed to cache during install:', error);
-      })
+    caches.open(CACHE_NAME).then((cache) => {
+      // 개별 파일을 캐싱하여 실패한 파일을 확인
+      return Promise.all(
+        FILES_TO_CACHE.map((url) => {
+          return fetch(url)
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(`Failed to fetch ${url}`);
+              }
+              return cache.put(url, response);
+            })
+            .catch((error) => {
+              console.error(`Failed to cache ${url}:`, error);
+            });
+        })
+      );
+    })
   );
   self.skipWaiting(); // 서비스 워커 즉시 활성화
 });
@@ -118,31 +121,25 @@ self.addEventListener('fetch', (event) => {
   }
 
   event.respondWith(
-    caches
-      .match(event.request)
-      .then((cachedResponse) => {
-        if (cachedResponse) {
-          console.log('Serving cached file:', event.request.url);
-          return cachedResponse;
-        }
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        console.log('Serving cached file:', event.request.url);
+        return cachedResponse;
+      }
 
-        // 캐시에 없을 경우 네트워크에서 파일을 가져옴
-        return fetch(event.request).then((networkResponse) => {
-          // 응답을 캐시에 저장 (캐시가 가능할 때만)
-          if (!event.request.url.startsWith('chrome-extension')) {
-            return caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, networkResponse.clone()).catch((error) => {
-                console.error('Failed to cache the network response:', error);
-              });
-              return networkResponse;
+      // 캐시에 없을 경우 네트워크에서 파일을 가져옴
+      return fetch(event.request)
+        .then((networkResponse) => {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, networkResponse.clone()).catch((error) => {
+              console.error('Failed to cache the network response:', error);
             });
-          } else {
-            return networkResponse; // chrome-extension 요청은 캐시하지 않음
-          }
+            return networkResponse;
+          });
+        })
+        .catch((error) => {
+          console.error('Error during cache match or fetch:', error);
         });
-      })
-      .catch((error) => {
-        console.error('Error during cache match or fetch:', error);
-      })
+    })
   );
 });
