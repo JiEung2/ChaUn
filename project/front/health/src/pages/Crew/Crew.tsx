@@ -42,7 +42,7 @@ export default function CrewPage() {
   const { data: userCrewList = [] } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
     queryFn: () => getUserCrewList(Number(userId)),
-    select: (response) => response.data.crewList || [],
+    select: (response) => response.crewList || [],
   });
 
   console.log('userCrewList:', userCrewList);
