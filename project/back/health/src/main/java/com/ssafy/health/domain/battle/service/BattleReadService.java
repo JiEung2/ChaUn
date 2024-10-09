@@ -91,7 +91,7 @@ public class BattleReadService {
         LocalDate now = LocalDate.now();
         LocalDate lastDay = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
 
-        return (int) ChronoUnit.DAYS.between(now, lastDay);
+        return (int) ChronoUnit.DAYS.between(lastDay, now);
     }
 
 }
