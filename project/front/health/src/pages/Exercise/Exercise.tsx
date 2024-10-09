@@ -49,7 +49,8 @@ export default function Exercise() {
   const { characterFileUrl, gender } = useUserStore();
 
   const [characterState, setCharacterState] = useState(1);
-
+  //현재 캐릭터 파일
+  const [characterUrl, setCharacterUrl] = useState(characterFileUrl);
   const navigate = useNavigate();
   console.log('현재 캐릭터 url', characterFileUrl);
   const mutation = useMutation({
@@ -121,6 +122,26 @@ export default function Exercise() {
     };
   }, [intervalId]);
 
+  // TODO - 캐릭터 상태에 따라 캐릭터 모델 변경
+  useEffect(() => {
+    switch (characterState) {
+      case 1: // 평소
+        setCharacterUrl(`${baseUrl}/B5standing.glb`);
+        break;
+      case 2: // 운동중
+        setCharacterUrl(`${baseUrl}/B5running.glb`);
+        break;
+      case 3: // 휴식
+        setCharacterUrl(`${baseUrl}/B5sitting.glb`);
+        break;
+      case 4: // 운동 완료
+        setCharacterUrl(`${baseUrl}/B5entry.glb`);
+        break;
+      default:
+        setCharacterUrl(`${baseUrl}/B5standing.glb`);
+        break;
+    }
+  }, [characterState]);
   // console.log(startTime,endTime);
   return (
     <div className="exerciseContainer">
@@ -132,36 +153,7 @@ export default function Exercise() {
         </GeneralButton>
       </div>
       <div>
-        <CharacterCanvas
-          glbUrl={
-            characterState === 1 // 일반
-              ? gender === 'MAN'
-                ? characterFileUrl
-                : gender === 'WOMAN'
-                  ? characterFileUrl
-                  : characterFileUrl
-              : characterState === 2 // 운동중
-                ? gender === 'MAN'
-                  ? `${baseUrl}B5running.glb`
-                  : gender === 'WOMAN'
-                    ? `${baseUrl}G5running.glb`
-                    : characterFileUrl
-                : characterState === 3 // 휴식중
-                  ? gender === 'MAN'
-                    ? `${baseUrl}B5sitting.glb`
-                    : gender === 'WOMAN'
-                      ? `${baseUrl}G5sitting.glb`
-                      : characterFileUrl
-                  : characterState === 4 // 운동 종료
-                    ? gender === 'MAN'
-                      ? `${baseUrl}B5entry.glb`
-                      : gender === 'WOMAN'
-                        ? `${baseUrl}G5entry.glb`
-                        : characterFileUrl
-                    : characterFileUrl
-          }
-          gender={gender}
-        />
+        <CharacterCanvas glbUrl={characterUrl} gender={gender} />
       </div>
       <GeneralButton
         buttonStyle={{ style: 'primary', size: 'large' }}
