@@ -9,7 +9,7 @@ import LoadingLottie from '@/assets/Lottie/loading.json';
 
 interface CharacterProps {
   glbUrl: string;
-  gender: 'MAN' | 'FEMALE';
+  gender: 'MAN' | 'WOMAN';
   preserveDrawingBuffer?: boolean;
 }
 
@@ -64,8 +64,8 @@ function Character({ glbUrl, gender, setLoading }: CharacterProps & { setLoading
         // 캐릭터의 스케일과 위치 설정
         if (gender === 'MAN') {
           model.scale.set(1.1, 1.1, 1.1);
-          model.position.set(0, -8.5, 0);
-        } else if (gender === 'FEMALE') {
+          model.position.set(0, -9, 0);
+        } else if (gender === 'WOMAN') {
           model.scale.set(10, 10, 10);
           model.position.set(0, -8.5, 0);
         }
@@ -143,7 +143,7 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
         camera={{ position: [0, 10, 30], fov: 35 }}
         gl={{ preserveDrawingBuffer }} // 상태에 따라 preserveDrawingBuffer 값이 동적으로 변함
         dpr={Math.min(window.devicePixelRatio, 2)}>
-        {gender === 'MAN' ? <ambientLight intensity={6} /> : <ambientLight intensity={8} />}
+        {gender === 'MAN' ? <ambientLight intensity={5} /> : <ambientLight intensity={8} />}
         <directionalLight position={[5, 5, 5]} intensity={1} castShadow={false} />
         <Suspense fallback={null}>
           <Character glbUrl={glbUrl} gender={gender} setLoading={setLoading} />

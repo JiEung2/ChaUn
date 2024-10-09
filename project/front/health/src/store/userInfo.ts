@@ -5,14 +5,14 @@ interface UserState {
   userId: number;
   nickname: string;
   coin: number;
-  gender: 'MAN' | 'FEMALE';
+  gender: 'MAN' | 'WOMAN';
   characterImageUrl: string;
   characterFileUrl: string; // 단일 URL 유지
   cachedFiles: string[]; // 캐싱될 파일들의 배열
   setUserId: (id: number) => void;
   setNickname: (nickname: string) => void;
   setHasCoin: (hasCoin: number) => void;
-  setGender: (gender: 'MAN' | 'FEMALE') => void;
+  setGender: (gender: 'MAN' | 'WOMAN') => void;
   setCharacterImageUrl: (characterImageUrl: string) => void;
   setCharacterFileUrl: (characterFileUrl: string) => void; // 단일 캐릭터 파일 URL 설정
   addCachedFile: (fileUrl: string) => void; // 캐싱될 파일 추가
@@ -32,7 +32,7 @@ const useUserStore = create<UserState>()(
       setUserId: (id: number) => set({ userId: id }),
       setNickname: (nickname: string) => set({ nickname }),
       setHasCoin: (hasCoin: number) => set({ coin: hasCoin }),
-      setGender: (gender: 'MAN' | 'FEMALE') => set({ gender }),
+      setGender: (gender: 'MAN' | 'WOMAN') => set({ gender }),
       setCharacterImageUrl: (characterImageUrl: string) => set({ characterImageUrl }),
 
       setCharacterFileUrl: (fileUrl: string) => {

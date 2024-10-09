@@ -24,7 +24,7 @@ export default function MypagePage() {
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
   const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
-  const [gender, setGender] = useState<'MAN' | 'FEMALE'>('MAN'); // 성별 상태 추가
+  const [gender, setGender] = useState<'MAN' | 'WOMAN'>('MAN'); // 성별 상태 추가
   const [bodyTypeId, setBodyTypeId] = useState<number | null>(null);
   const [preserveBuffer, setPreserveBuffer] = useState(false);
   const queryClient = useQueryClient();
@@ -54,7 +54,7 @@ export default function MypagePage() {
 
   useEffect(() => {
     if (myDetail) {
-      setGender(myDetail.gender === 'MAN' ? 'MAN' : 'FEMALE');
+      setGender(myDetail.gender === 'MAN' ? 'MAN' : 'WOMAN');
       // setCharacterGlbUrl(myDetail.characterFileUrl);
       setHasCoin(myDetail.coins);
       setBodyTypeId(myCharacter.bodyTypeId);

@@ -15,7 +15,6 @@
     width: 100%;
     background-color: colors.$base;
     border-radius: 15px;
-    padding: 20px 0;
     margin: 0 10px;
     position: relative;
 
@@ -74,7 +73,7 @@
 
   .myInfo {
     display: flex;
-    // gap: 30px;
+    padding: 20px 0;
   }
 
   .chartSection {
@@ -117,7 +116,7 @@
 .myProfileInfo {
   width: 150px; /* Canvas 크기를 줄임 */
   height: 250px; /* Canvas 높이 설정 */
-  transform: translateX(-20px) translateY(19px);
+  transform: translateX(-15px) translateY(-16px);
   canvas {
     width: 100% !important;
     height: 100% !important;
