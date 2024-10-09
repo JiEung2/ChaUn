@@ -11,8 +11,10 @@ import { postExerciseRecord } from '../../api/exercise';
 import { useMutation } from '@tanstack/react-query';
 import useUserStore from '@/store/userInfo';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
+
 Modal.setAppElement('#root');
 
+// 타이머 포맷팅 함수는 그대로 사용
 function formatTime(timer: number) {
   const hours = Math.floor(timer / 3600000)
     .toString()
@@ -27,6 +29,12 @@ function formatTime(timer: number) {
   return `${hours}:${minutes}:${seconds}:${milliseconds}`;
 }
 
+// KST로 시간을 반환하는 함수
+function getKSTDate() {
+  const currentDate = new Date();
+  return new Date(currentDate.getTime() + 9 * 60 * 60 * 1000); // UTC+9로 시간 설정
+}
+
 export default function Exercise() {
   const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
   const [showModal, setShowModal] = useState(false);
@@ -39,17 +47,16 @@ export default function Exercise() {
   const [calories, setCalories] = useState(0);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const { characterFileUrl, gender } = useUserStore();
-  // 캐릭터의 상태처리 1 - 기본, 2 - 운동중, 3 - 휴식, 4- 운동 완료
+
   const [characterState, setCharacterState] = useState(1);
 
-  //불필요해서 우선 주석처리
-  // const [endTime, setEndTime] = useState<Date | null>(null);
   const navigate = useNavigate();
 
   const mutation = useMutation({
     mutationFn: ({ startTime, endTime }: { startTime: string; endTime: string }) =>
       postExerciseRecord(selectedExercise!.id, timer, startTime, endTime),
     onSuccess: (data) => {
+      console.log(startTime);
       console.log('운동기록 등록에 성공했습니다.', data);
       setCalories(data.burnedCalories);
     },
@@ -60,7 +67,7 @@ export default function Exercise() {
 
   const startTimer = () => {
     setIsRunning(true);
-    setStartTime(new Date()); // 운동 시작 시간 기록
+    setStartTime(getKSTDate()); // 운동 시작 시간을 KST로 설정
     const id = setInterval(() => {
       setTimer((prev) => prev + 10);
     }, 10);
@@ -80,8 +87,7 @@ export default function Exercise() {
 
   const handleFinish = () => {
     handleStopTimer();
-    const now = new Date();
-    // setEndTime(now); // 운동 끝나는 시간 기록
+    const now = getKSTDate(); // 운동 끝나는 시간을 KST로 설정
     setCharacterState(4); // 운동 완료 상태로 변경
     if (startTime) {
       mutation.mutate({
@@ -91,7 +97,6 @@ export default function Exercise() {
     } else {
       console.error('Start time is null');
     }
-
     setIsFinished(true);
   };
 
@@ -116,6 +121,7 @@ export default function Exercise() {
     };
   }, [intervalId]);
 
+  // console.log(startTime,endTime);
   return (
     <div className="exerciseContainer">
       <div className="exerciseRecommendButton">
@@ -164,7 +170,6 @@ export default function Exercise() {
         disabled={isRunning || isFinished || isStopped}>
         {selectedExercise?.name || '운동 선택'}
       </GeneralButton>
-
       <Modal
         isOpen={showModal}
         onRequestClose={handleCloseModal}
@@ -172,7 +177,6 @@ export default function Exercise() {
         overlayClassName="exercisingModalOverlay">
         <ExerciseModal onSelectExercise={handleSelectExercise} multiple={false} onClose={handleCloseModal} />
       </Modal>
-
       {!isFinished ? (
         <>
           <div className="timer">{formatTime(timer)}</div>
