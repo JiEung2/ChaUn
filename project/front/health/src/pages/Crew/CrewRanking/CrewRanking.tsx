@@ -48,16 +48,20 @@ export default function CrewRankingPage() {
         <GeneralButton
           buttonStyle={{ style: 'primary', size: 'large' }}
           onClick={() => setShowModal(true)}
-          className="selectExercise">
+          className="selectExercise"
+        >
           운동 종목 선택하기
         </GeneralButton>
       ) : (
-        isSuccess &&
-        (exerciseCrewRanking?.data?.crewList?.length > 0 ? (
-          <CrewAndMemberList type="crew" data={exerciseCrewRanking.data.crewList} />
+        isSuccess && exerciseCrewRanking ? (
+          exerciseCrewRanking.crewList.length > 0 ? (
+            <CrewAndMemberList type="crew" data={exerciseCrewRanking.crewList} />
+          ) : (
+            <p>선택한 운동의 크루 랭킹이 없습니다.</p>
+          )
         ) : (
-          <p>선택한 운동의 크루 랭킹이 없습니다.</p>
-        ))
+          <p>데이터를 불러오는 중 오류가 발생했습니다.</p>
+        )
       )}
       <img src={RankingImg} alt="realTimeRankingBackground" className="realTimeRankingBackground" />
     </div>
