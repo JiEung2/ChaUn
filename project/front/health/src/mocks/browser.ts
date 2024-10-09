@@ -6,7 +6,7 @@ import { exerciseHandlers } from './exerciseHandlers';
 import { userHandlers } from './userHandlers';
 import { alarmHandlers } from './alarmHandlers';
 import { characterHandlers } from './characterHandlers';
-// import { homeHandlers } from './homeHandlers';
+import { homeHandlers } from './homeHandlers';
 
 export const worker = setupWorker(
   ...recordHandlers,
@@ -15,6 +15,6 @@ export const worker = setupWorker(
   ...userHandlers,
   ...crewHandlers,
   ...alarmHandlers,
-  ...characterHandlers
-  // ...homeHandlers
+  ...characterHandlers,
+  ...homeHandlers
 );
