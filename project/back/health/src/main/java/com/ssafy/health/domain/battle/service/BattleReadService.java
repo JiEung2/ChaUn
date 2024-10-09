@@ -17,9 +17,11 @@ import java.util.Optional;
 
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -55,6 +57,9 @@ public class BattleReadService {
 
         List<CrewMemberInfo> homeCrewMemberRanking = exerciseHistoryRepository.findUserRankingsByCrewAndDateTime(battle.getHomeCrew().getId(), battle.getCreatedAt());
         List<CrewMemberInfo> awayCrewMemberRanking = exerciseHistoryRepository.findUserRankingsByCrewAndDateTime(battle.getAwayCrew().getId(), battle.getCreatedAt());
+
+        log.info("homeCrewMemberRanking = " + homeCrewMemberRanking);
+        log.info("awayCrewMemberRanking = " + awayCrewMemberRanking);
 
         return BattleMemberRankingDto.builder()
                 .homeCrewMembers(homeCrewMemberRanking)
