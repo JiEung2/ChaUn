@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import Lottie from 'lottie-react';
-import LoadingLottie from '@/assets/Lottie/loading.json'; // 오타 수정: LoadingLottile -> LoadingLottie
+import LoadingLottie from '@/assets/Lottie/loading.json';
 
 interface CharacterProps {
   glbUrl: string;
@@ -13,26 +13,57 @@ interface CharacterProps {
   preserveDrawingBuffer?: boolean;
 }
 
+function disposeModel(model: THREE.Object3D | null) {
+  if (model) {
+    model.traverse((child) => {
+      if ((child as THREE.Mesh).geometry) {
+        (child as THREE.Mesh).geometry.dispose();
+      }
+      const mesh = child as THREE.Mesh;
+      if (mesh.material) {
+        if (Array.isArray(mesh.material)) {
+          mesh.material.forEach((material) => {
+            if (material && typeof material.dispose === 'function') {
+              material.dispose();
+            }
+          });
+        } else {
+          if (mesh.material && typeof mesh.material.dispose === 'function') {
+            mesh.material.dispose();
+          }
+        }
+      }
+    });
+  }
+}
+
 function Character({ glbUrl, gender, setLoading }: CharacterProps & { setLoading: (loading: boolean) => void }) {
   const sceneRef = useRef<THREE.Group | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
+  const previousModelRef = useRef<THREE.Group | null>(null);
 
   useEffect(() => {
     const loader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
-
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
     loader.setDRACOLoader(dracoLoader);
 
     const loadModel = async () => {
       try {
+        // 기존 모델을 제거하고 메모리 해제
+        if (previousModelRef.current) {
+          disposeModel(previousModelRef.current);
+          previousModelRef.current = null;
+        }
+
         const gltf = await loader.loadAsync(glbUrl);
         const model = gltf.scene;
         sceneRef.current = model;
+        previousModelRef.current = model;
 
         // 캐릭터의 스케일과 위치 설정
         if (gender === 'MAN') {
-          model.scale.set(1, 1, 1);
+          model.scale.set(1.1, 1.1, 1.1);
           model.position.set(0, -8.5, 0);
         } else if (gender === 'FEMALE') {
           model.scale.set(10, 10, 10);
@@ -75,7 +106,7 @@ function Character({ glbUrl, gender, setLoading }: CharacterProps & { setLoading
 }
 
 export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
-  const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [loading, setLoading] = useState(true);
   const [preserveDrawingBuffer, setPreserveDrawingBuffer] = useState(true);
 
   useEffect(() => {
