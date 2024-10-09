@@ -1,6 +1,6 @@
 // import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
-import { GLTFLoader } from '/GLTFLoader.js';
-import { DRACOLoader } from '/DRACOLoader.js';
+import { GLTFLoader } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/loaders/DRACOLoader.js';
 
 self.onmessage = async (event) => {
   const { glbUrl, gender } = event.data;
@@ -13,7 +13,6 @@ self.onmessage = async (event) => {
   loader.setDRACOLoader(dracoLoader);
 
   try {
-    // GLB 파일을 로드
     const gltf = await loader.loadAsync(glbUrl);
     const model = gltf.scene;
 
