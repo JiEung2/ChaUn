@@ -66,7 +66,7 @@ function Character({ glbUrl, gender, setLoading }: CharacterProps & { setLoading
           model.scale.set(1.1, 1.1, 1.1);
           model.position.set(0, -8.5, 0);
         } else if (gender === 'WOMAN') {
-          model.scale.set(10, 10, 10);
+          model.scale.set(20, 20, 20);
           model.position.set(0, -8.5, 0);
         }
 
