@@ -1,5 +1,3 @@
-// worker.js
-
 // Three.js 라이브러리 먼저 로드
 importScripts('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js');
 importScripts('/GLTFLoader.js');
@@ -29,9 +27,8 @@ self.onmessage = async (event) => {
       model.position.set(0, -8.5, 0);
     }
 
-    // 모델 직렬화 (이미지 데이터 제외)
+    // 모델 직렬화 (텍스처 없이)
     const serializedModel = model.toJSON();
-    delete serializedModel.images; // 이미지 데이터는 제외
     self.postMessage({ type: 'success', model: serializedModel });
   } catch (error) {
     self.postMessage({ type: 'error', message: error.message });

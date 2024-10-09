@@ -509,28 +509,10 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
 
       if (type === 'success') {
         const loader = new THREE.ObjectLoader();
-        const parsedModel = loader.parse(loadedModel);
+        const parsedModel = loader.parse(loadedModel); // 모델만 파싱
 
-        // 텍스처 로딩과 적용
-        const textureLoader = new THREE.TextureLoader();
-        textureLoader.load('/path/to/your/texture.jpg', (texture) => {
-          parsedModel.traverse((child) => {
-            if ((child as THREE.Mesh).isMesh) {
-              const mesh = child as THREE.Mesh;
-              const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-              materials.forEach((material) => {
-                if ((material as THREE.MeshStandardMaterial).map === undefined) {
-                  const mat = material as THREE.MeshStandardMaterial;
-                  mat.map = texture;
-                  mat.needsUpdate = true;
-                }
-              });
-            }
-          });
-
-          setModel(parsedModel); // 텍스처 적용 후 모델 설정
-          setLoading(false); // 로딩 완료
-        });
+        setModel(parsedModel); // 모델 설정
+        setLoading(false); // 로딩 완료
       } else if (type === 'error') {
         console.error('Error loading model:', event.data.message);
       }
