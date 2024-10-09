@@ -33,7 +33,7 @@ export default function CrewRankingPage() {
   const { data: exerciseCrewRanking, isSuccess } = useQuery({
     queryKey: [querykeys.EXERCISE_RANKING, exerciseId],
     queryFn: () => getExerciseCrewRanking(Number(exerciseId)),
-    // enabled: !!exerciseId, // exerciseId가 있을 때만 실행
+    enabled: !!exerciseId, // exerciseId가 있을 때만 실행
   });
 
   return (
