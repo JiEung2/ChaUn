@@ -7,6 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class MaxScoresDto {
 
-    private float basicScore;
-    private float activityScore;
+    private Double basicScore;
+    private Double activityScore;
 }
