@@ -103,7 +103,7 @@ export default function CrewPage() {
   return (
     <>
       <div className="my-crew">
-        <p>{nickname}님의 크루</p>
+        <h3>{nickname}님의 크루</h3>
         <div className="crewList">
           {userCrewList && userCrewList.length > 0 ? (
             userCrewList.map((crew: any) => (
