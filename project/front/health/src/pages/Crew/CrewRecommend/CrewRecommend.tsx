@@ -45,7 +45,9 @@ export default function CrewRecommend() {
 
   return (
     <div>
-      <h3>{nickname}님, 이런 크루를 추천드려요!</h3>
+      <h3 className="recommendTitle">
+        {nickname}님, 이런 <span className="exerciseSpan">크루</span>를 추천드려요!
+      </h3>
       <div className="crew-recommend">
         <div className="crew-grid">
           {crews.map((crew) => (
