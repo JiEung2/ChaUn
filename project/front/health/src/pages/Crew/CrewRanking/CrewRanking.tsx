@@ -36,14 +36,14 @@ export default function CrewRankingPage() {
     enabled: !!exerciseId, // exerciseId가 있을 때만 실행
   });
 
+  console.log(exerciseCrewRanking);
+
   return (
     <div className="realTimeRankingContainer">
       <h2 className="realTimeRankingTitle">실시간 크루 랭킹</h2>
-
       {showModal && (
         <ExerciseModal onSelectExercise={handleSelectExercise} multiple={false} onClose={handleCloseModal} />
       )}
-
       {!exerciseId ? (
         <GeneralButton
           buttonStyle={{ style: 'primary', size: 'large' }}
@@ -53,13 +53,12 @@ export default function CrewRankingPage() {
         </GeneralButton>
       ) : (
         isSuccess &&
-        (exerciseCrewRanking?.crewList?.length > 0 ? (
-          <CrewAndMemberList type="crew" data={exerciseCrewRanking.crewList} />
+        (exerciseCrewRanking?.data?.crewList?.length > 0 ? (
+          <CrewAndMemberList type="crew" data={exerciseCrewRanking.data.crewList} />
         ) : (
           <p>선택한 운동의 크루 랭킹이 없습니다.</p>
         ))
       )}
-
       <img src={RankingImg} alt="realTimeRankingBackground" className="realTimeRankingBackground" />
     </div>
   );
