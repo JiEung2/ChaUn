@@ -46,16 +46,16 @@ public class BodyPredictReadService {
             return basicPrediction.map(bodyBasicPrediction -> BasicPredictionResponseDto.builder()
                     .userId(bodyBasicPrediction.getUserId())
                     .current(bodyHistory.get().getWeight())
-                    .currentImage(characterRepository.findByBodyTypeId(
+                    .currentImage(characterRepository.findFirstByBodyTypeId(
                             bodyHistory.get().getBodyType().getId()).getCharacterImage())
                     .p30(bodyBasicPrediction.getP30())
-                    .p30Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
+                    .p30Image(characterRepository.findFirstByBodyTypeId(findBodyTypeByBmi(
                                     bodyHistory.get().getHeight(),
                                     bodyBasicPrediction.getP30(),
                                     user.getGender()))
                             .getCharacterImage())
                     .p90(bodyBasicPrediction.getP90())
-                    .p90Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
+                    .p90Image(characterRepository.findFirstByBodyTypeId(findBodyTypeByBmi(
                                     bodyHistory.get().getHeight(),
                                     bodyBasicPrediction.getP90(),
                                     user.getGender()))
@@ -79,16 +79,16 @@ public class BodyPredictReadService {
             return extraPrediction.map(bodyExtraPrediction -> ExtraPredictionResponseDto.builder()
                     .userId(bodyExtraPrediction.getUserId())
                     .current(bodyHistory.get().getWeight())
-                    .currentImage(characterRepository.findByBodyTypeId(
+                    .currentImage(characterRepository.findFirstByBodyTypeId(
                             bodyHistory.get().getBodyType().getId()).getCharacterImage())
                     .p30(bodyExtraPrediction.getP30())
-                    .p30Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
+                    .p30Image(characterRepository.findFirstByBodyTypeId(findBodyTypeByBmi(
                                     bodyHistory.get().getHeight(),
                                     bodyExtraPrediction.getP30(),
                                     user.getGender()))
                             .getCharacterImage())
                     .p90(bodyExtraPrediction.getP90())
-                    .p90Image(characterRepository.findByBodyTypeId(findBodyTypeByBmi(
+                    .p90Image(characterRepository.findFirstByBodyTypeId(findBodyTypeByBmi(
                                     bodyHistory.get().getHeight(),
                                     bodyExtraPrediction.getP90(),
                                     user.getGender()))
