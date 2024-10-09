@@ -137,25 +137,25 @@ export default function Exercise() {
             characterState === 1 // 일반
               ? gender === 'MAN'
                 ? characterFileUrl
-                : gender === 'FEMALE'
+                : gender === 'WOMAN'
                   ? characterFileUrl
                   : characterFileUrl
               : characterState === 2 // 운동중
                 ? gender === 'MAN'
                   ? `${baseUrl}B5running.glb`
-                  : gender === 'FEMALE'
+                  : gender === 'WOMAN'
                     ? `${baseUrl}G5running.glb`
                     : characterFileUrl
                 : characterState === 3 // 휴식중
                   ? gender === 'MAN'
                     ? `${baseUrl}B5sitting.glb`
-                    : gender === 'FEMALE'
+                    : gender === 'WOMAN'
                       ? `${baseUrl}G5sitting.glb`
                       : characterFileUrl
                   : characterState === 4 // 운동 종료
                     ? gender === 'MAN'
                       ? `${baseUrl}B5entry.glb`
-                      : gender === 'FEMALE'
+                      : gender === 'WOMAN'
                         ? `${baseUrl}G5entry.glb`
                         : characterFileUrl
                     : characterFileUrl
