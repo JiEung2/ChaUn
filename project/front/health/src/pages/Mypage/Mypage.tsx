@@ -192,7 +192,7 @@ export default function MypagePage() {
 
   // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
   const handleShuffleClick = () => {
-    if (myCharacter.bodyTypeId == 5 || myCharacter.bodyTypeId == 17) {
+    if (myCharacter.bodyTypeId == 5 || myCharacter.bodyTypeId == 15) {
       const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
       const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
       handleButtonClick(randomAnimation);

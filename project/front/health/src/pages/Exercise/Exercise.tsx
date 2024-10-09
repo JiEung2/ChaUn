@@ -152,7 +152,7 @@ export default function Exercise() {
           운동 추천
         </GeneralButton>
       </div>
-      <div>
+      <div className="exerciseModel">
         <CharacterCanvas glbUrl={characterUrl} gender={gender} />
       </div>
       <GeneralButton
