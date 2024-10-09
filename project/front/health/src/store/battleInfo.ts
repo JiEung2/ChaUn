@@ -9,7 +9,7 @@ interface BattleData {
   opponentCrewName: string;
   opponentCrewScore: number;
   exerciseName: string;
-  dDay: number;
+  dday: number;
   battleStatus: string; // Status like "STARTED", "ENDED", etc.
 }
 

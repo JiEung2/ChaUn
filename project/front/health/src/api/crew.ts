@@ -49,7 +49,7 @@ export interface CrewBattleStatusResponse {
   opponentCrewName: string;
   opponentCrewScore: number;
   exerciseName: string;
-  dDay: number;
+  dday: number;
   battleStatus: string;
   buttonState: string;
 }
