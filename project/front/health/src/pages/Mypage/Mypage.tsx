@@ -16,11 +16,11 @@ import useUserStore from '@/store/userInfo';
 const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
 
 export default function MypagePage() {
-  const { userId, nickname, coin, setHasCoin } = useUserStore();
+  const { userId, nickname, coin, characterFileUrl, setHasCoin, setCharacterFileUrl } = useUserStore();
   const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
   // const [setPreserveBuffer] = useState(false);
-  const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
+  // const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
   const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
@@ -51,15 +51,15 @@ export default function MypagePage() {
     queryKey: [queryKeys.CHARACTER],
     queryFn: () => getMyCharacter(),
   });
-  console.log(myDetail.coins);
 
   useEffect(() => {
     if (myDetail) {
       setGender(myDetail.gender === 'MAN' ? 'MAN' : 'FEMALE');
-      setCharacterGlbUrl(myDetail.characterFileUrl);
+      // setCharacterGlbUrl(myDetail.characterFileUrl);
       setHasCoin(myDetail.coins);
       setBodyTypeId(myCharacter.bodyTypeId);
     }
+    setCharacterFileUrl(characterFileUrl);
   }, [myDetail]);
 
   const { data: partsList } = useSuspenseQuery({
@@ -82,7 +82,7 @@ export default function MypagePage() {
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (blob) {
-          resolve(blob); // Blob 객체가 생성되면 resolve
+          resolve(blob);
         } else {
           reject(new Error('Canvas to Blob conversion failed.')); // 에러 발생 시 reject
         }
@@ -142,7 +142,7 @@ export default function MypagePage() {
     mutationFn: (parts_id: number) => patchPartsOnOff(parts_id),
     onSuccess: (response) => {
       const newCharacterUrl = response.characterUrl;
-      setCharacterGlbUrl(newCharacterUrl); // 캐릭터 URL 업데이트
+      setCharacterFileUrl(newCharacterUrl); // 캐릭터 URL 업데이트
     },
     onError: (error) => {
       console.error('파츠 적용/해제 실패:', error);
@@ -205,7 +205,7 @@ export default function MypagePage() {
   // 버튼 클릭 핸들러 - 선택된 애니메이션 업데이트
   const handleButtonClick = (type: 'standing' | 'dancing' | 'waving') => {
     const url = generateAnimationUrl(type);
-    setCharacterGlbUrl(url); // 선택한 모델 URL로 업데이트
+    setCharacterFileUrl(url); // 선택한 모델 URL로 업데이트
     setActiveAnimation(type); // 현재 선택된 애니메이션 저장
   };
 
@@ -262,8 +262,8 @@ export default function MypagePage() {
 
           <div className="characterAndSnapshot">
             <div className="character" ref={characterRef}>
-              {characterGlbUrl ? (
-                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
+              {characterFileUrl ? (
+                <CharacterCanvas glbUrl={characterFileUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
               ) : (
                 <p>{nickname}님의 캐릭터를 불러오지 못했어요</p>
               )}
