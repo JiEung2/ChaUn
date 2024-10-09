@@ -1,6 +1,6 @@
 // worker.js
-importScripts('./Three/GLTFLoader.js');
-importScripts('./Three/DRACOLoader.js');
+importScripts('/src/components/Character/Three/GLTFLoader.js');
+importScripts('/src/components/Character/Three/DRACOLoader.js');
 
 self.onmessage = async (event) => {
   const { glbUrl, gender } = event.data;
@@ -9,7 +9,7 @@ self.onmessage = async (event) => {
   const dracoLoader = new THREE.DRACOLoader();
 
   // DRACO 디코더 경로를 로컬 경로로 설정
-  dracoLoader.setDecoderPath('./Darco');
+  dracoLoader.setDecoderPath('/src/components/Character/Darco/');
   loader.setDRACOLoader(dracoLoader);
 
   try {
