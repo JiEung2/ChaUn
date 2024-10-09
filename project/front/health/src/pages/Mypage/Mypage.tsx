@@ -262,7 +262,7 @@ export default function MypagePage() {
           <div className="characterAndSnapshot">
             <div className="character" ref={characterRef}>
               {characterGlbUrl ? (
-                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
+                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} />
               ) : (
                 <p>{nickname}님의 캐릭터를 불러오지 못했어요</p>
               )}
