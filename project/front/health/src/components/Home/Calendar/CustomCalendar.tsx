@@ -19,9 +19,12 @@ export default function CustomCalendar({
   selectedDate,
 }: CustomCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-
+  console.log(exerciseDates);
+  // const normalizeDate = (date: Date) => {
+  //   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  // };
   const normalizeDate = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
   };
 
   const getStartOfWeek = (date: Date): Date => {
@@ -36,7 +39,6 @@ export default function CustomCalendar({
     const startOfWeek = getStartOfWeek(date);
     const week = Array.from({ length: 7 }, (_, i) => new Date(startOfWeek.getTime() + i * 86400000));
     setCurrentMonth(date);
-    console.log(week)
   }, []);
 
   useEffect(() => {
@@ -75,10 +77,16 @@ export default function CustomCalendar({
       if (selectedDate && normalizeDate(date).getTime() === normalizeDate(selectedDate).getTime()) {
         classes.push('selected');
       }
-      if (exerciseDates.some(exerciseDate => normalizeDate(exerciseDate).getTime() === normalizeDate(date).getTime())) {
+      if (
+        exerciseDates.some((exerciseDate) => normalizeDate(exerciseDate).getTime() === normalizeDate(date).getTime())
+      ) {
         classes.push('highlight');
       }
-      if (attendanceDates.some(attendanceDate => normalizeDate(attendanceDate).getTime() === normalizeDate(date).getTime())) {
+      if (
+        attendanceDates.some(
+          (attendanceDate) => normalizeDate(attendanceDate).getTime() === normalizeDate(date).getTime()
+        )
+      ) {
         classes.push('attendance');
       }
     }
@@ -86,10 +94,10 @@ export default function CustomCalendar({
   };
 
   // 날짜가 exerciseDates에 포함된 경우 점을 찍도록 설정
-  const tileContent = ({ date, view }: { date: Date, view: string }) => {
+  const tileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view === 'month') {
       const isExerciseDate = exerciseDates.some(
-        (exerciseDate) => 
+        (exerciseDate) =>
           exerciseDate.getFullYear() === date.getFullYear() &&
           exerciseDate.getMonth() === date.getMonth() &&
           exerciseDate.getDate() === date.getDate()
@@ -103,7 +111,7 @@ export default function CustomCalendar({
   };
 
   return (
-    <div className='customCalendarContainer'>
+    <div className="customCalendarContainer">
       <Calendar
         activeStartDate={currentMonth}
         onActiveStartDateChange={({ activeStartDate }) => {

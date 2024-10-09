@@ -1,102 +1,208 @@
+// import { useState, useEffect } from 'react';
+// import GeneralButton from '../../../components/Button/GeneralButton';
+// import ExerciseItem from '@/components/Exercise/ExerciseItem';
+// import DailyRecord from '../../../components/Home/Calendar/DailyRecord';
+// import CustomCalendar from '../../../components/Home/Calendar/CustomCalendar';
+// import { useQuery } from '@tanstack/react-query';
+// import { getExerciseHistory } from '@/api/exercise';
+
+// import './Calendar.scss';
+// import querykeys from '@/utils/querykeys';
+
+// const formatDate = (dateString: string) => {
+//   const date = new Date(dateString);
+//   const month = date.getMonth() + 1;
+//   const day = date.getDate();
+//   return `${month}월 ${day}일`;
+// };
+
+// export default function CalendarPage() {
+//   const today = new Date();
+//   today.setHours(12, 0, 0, 0);
+//   const todayString = today.toISOString().split('T')[0];
+
+//   const [selectedDate, setSelectedDate] = useState<string>(todayString);
+//   const [activeTab, setActiveTab] = useState<string>('전체');
+//   const [attendanceDates, setAttendanceDates] = useState<Date[]>([]);
+//   const [isAttendance, setIsAttendance] = useState<boolean>(false);
+
+//   const year = today.getFullYear();
+//   const month = today.getMonth() + 1;
+//   const { data: exerciseRecords } = useQuery({
+//     queryKey: [querykeys.EXERCISE_HISTORY_MONTH, year, month],
+//     queryFn: () => getExerciseHistory(year, month),
+//   });
+
+//   useEffect(() => {
+//     const storedAttendance = JSON.parse(localStorage.getItem('attendanceDates') || '[]');
+//     const storedLastAttendance = localStorage.getItem('lastAttendanceDate');
+//     setAttendanceDates(storedAttendance.map((date: string) => new Date(date)));
+//     setIsAttendance(storedLastAttendance === todayString);
+//   }, [todayString]);
+
+//   const handleDateClick = (date: Date) => {
+//     date.setHours(12, 0, 0, 0);
+//     setSelectedDate(date.toISOString().split('T')[0]);
+//   };
+
+//   const handleAttendance = () => {
+//     if (!isAttendance) {
+//       const newAttendanceDates = [...attendanceDates, new Date(todayString)];
+//       setAttendanceDates(newAttendanceDates);
+//       localStorage.setItem(
+//         'attendanceDates',
+//         JSON.stringify(newAttendanceDates.map((date) => date.toISOString().split('T')[0]))
+//       );
+//       localStorage.setItem('lastAttendanceDate', todayString);
+//       setIsAttendance(true);
+//     }
+//   };
+
+//   return (
+//     <div className="calendarPage">
+//       <div className="calendar">
+//         <CustomCalendar
+//           onDateChange={handleDateClick}
+//           onMonthYearChange={(year, month) => console.log(`Year: ${year}, Month: ${month}`)}
+//           exerciseDates={Object.keys(exerciseRecords || {}).map((date) => new Date(date))}
+//           attendanceDates={attendanceDates}
+//           selectedDate={new Date(selectedDate)}
+//         />
+//       </div>
+//       <GeneralButton
+//         buttonStyle={{ style: 'semiPrimary', size: 'large' }}
+//         onClick={handleAttendance}
+//         disabled={isAttendance}
+//         className="attendance">
+//         출석하기
+//       </GeneralButton>
+//       <hr className="attendanceHr" />
+//       {selectedDate && (
+//         <>
+//           <div>{formatDate(selectedDate)}</div>
+//           <div className="recordTitle">일일 운동 기록</div>
+//           <div className="dailyRecordSection">
+//             <div className="tabButtons">
+//               {exerciseRecords &&
+//                 Object.keys(exerciseRecords).map((type) => (
+//                   <div>
+//                     <ExerciseItem
+//                       key={type.id}
+//                       label={type}
+//                       selected={activeTab === type}
+//                       onClick={() => setActiveTab(type)}
+//                     />
+//                   </div>
+//                 ))}
+//             </div>
+//             {record && record.types[activeTab] ? (
+//               <DailyRecord time={record.types[activeTab].time} calories={record.types[activeTab].calories} />
+//             ) : (
+//               <p>해당 날짜에 운동 기록이 없습니다.</p>
+//             )}
+//           </div>
+//         </>
+//       )}
+//     </div>
+//   );
+// }
 import { useState, useEffect } from 'react';
 import GeneralButton from '../../../components/Button/GeneralButton';
 import ExerciseItem from '@/components/Exercise/ExerciseItem';
 import DailyRecord from '../../../components/Home/Calendar/DailyRecord';
 import CustomCalendar from '../../../components/Home/Calendar/CustomCalendar';
-import { useQuery } from '@tanstack/react-query';
-import { getExerciseHistory } from '@/api/exercise';
-
 import './Calendar.scss';
-import querykeys from '@/utils/querykeys';
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return `${month}월 ${day}일`;
-};
 
 export default function CalendarPage() {
   const today = new Date();
-  today.setHours(12, 0, 0, 0);
+  today.setHours(12, 0, 0, 0); // 시간을 정오로 설정하여 UTC 변환 시 날짜 오류 방지
   const todayString = today.toISOString().split('T')[0];
+  const [selectedDate, setSelectedDate] = useState<string | null>(todayString);
 
-  const [selectedDate, setSelectedDate] = useState<string>(todayString);
-  const [activeTab, setActiveTab] = useState<string>('전체');
-  const [attendanceDates, setAttendanceDates] = useState<Date[]>([]);
-  const [isAttendance, setIsAttendance] = useState<boolean>(false);
-
-  const year = today.getFullYear();
-  const month = today.getMonth() + 1;
-  const { data, isLoading } = useQuery({
-    queryKey: [querykeys.EXERCISE_HISTORY_MONTH, year, month],
-    queryFn: () => getExerciseHistory(year, month),
+  const [records] = useState<
+    Record<
+      string,
+      {
+        types: { [key: string]: { time: string; calories: number } };
+      } | null
+    >
+  >({
+    '2024-09-10': {
+      types: {
+        전체: { time: '01:23:02', calories: 596 },
+        요가: { time: '00:30:00', calories: 150 },
+        필라테스: { time: '00:53:02', calories: 446 },
+      },
+    },
   });
 
-  const exerciseRecords = data?.exerciseRecords;
-  const records = exerciseRecords?.reduce(
-    (acc: Record<string, { types: { [key: string]: { time: string; calories: number } } }>, record: any) => {
-      const date = new Date(record.createdAt).toISOString().split('T')[0];
-      if (!acc[date]) {
-        acc[date] = { types: {} };
-      }
-      acc[date].types[record.exerciseName] = {
-        time: new Date(record.exerciseDuration * 1000).toISOString().substr(11, 8),
-        calories: record.burnedCalories,
-      };
-      return acc;
-    },
-    {}
-  );
+  const [exerciseDates] = useState<Date[]>([new Date('2024-09-10'), new Date('2024-09-09'), new Date('2024-09-07')]);
+
+  const [attendanceDates, setAttendanceDates] = useState<Date[]>([]);
+  const [isAttendance, setIsAttendance] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>('전체');
 
   useEffect(() => {
     const storedAttendance = JSON.parse(localStorage.getItem('attendanceDates') || '[]');
     const storedLastAttendance = localStorage.getItem('lastAttendanceDate');
     setAttendanceDates(storedAttendance.map((date: string) => new Date(date)));
-    setIsAttendance(storedLastAttendance === todayString);
-  }, [todayString]);
+
+    const todayDate = new Date();
+    todayDate.setHours(12, 0, 0, 0); // 시간을 정오로 설정하여 정확히 오늘 날짜가 되도록
+    const todayDateString = todayDate.toISOString().split('T')[0];
+    setIsAttendance(storedLastAttendance === todayDateString);
+
+    setSelectedDate(todayDateString); // 렌더링 시 오늘 날짜로 설정
+  }, []);
 
   const handleDateClick = (date: Date) => {
-    date.setHours(12, 0, 0, 0);
+    date.setHours(12, 0, 0, 0); // 선택된 날짜의 시간을 정오로 설정
     setSelectedDate(date.toISOString().split('T')[0]);
   };
 
   const handleAttendance = () => {
     if (!isAttendance) {
-      const newAttendanceDates = [...attendanceDates, new Date(todayString)];
+      const todayDate = new Date();
+      todayDate.setHours(12, 0, 0, 0); // 시간을 정오로 설정하여 정확한 날짜로 기록
+      const todayDateString = todayDate.toISOString().split('T')[0];
+      const newAttendanceDates = [...attendanceDates, todayDate];
       setAttendanceDates(newAttendanceDates);
       localStorage.setItem(
         'attendanceDates',
         JSON.stringify(newAttendanceDates.map((date) => date.toISOString().split('T')[0]))
       );
-      localStorage.setItem('lastAttendanceDate', todayString);
+      localStorage.setItem('lastAttendanceDate', todayDateString);
       setIsAttendance(true);
     }
   };
 
-  const record = records ? records[selectedDate] : null;
-  if (isLoading) {
-    return <div>로딩 중...</div>;
-  }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${month}월 ${day}일`;
+  };
+
+  const record = records[selectedDate || ''];
+
   return (
     <div className="calendarPage">
       <div className="calendar">
         <CustomCalendar
           onDateChange={handleDateClick}
           onMonthYearChange={(year, month) => console.log(`Year: ${year}, Month: ${month}`)}
-          exerciseDates={Object.keys(records || {}).map((date) => new Date(date))}
+          exerciseDates={exerciseDates}
           attendanceDates={attendanceDates}
-          selectedDate={new Date(selectedDate)}
+          selectedDate={new Date(selectedDate!)}
         />
       </div>
       <GeneralButton
         buttonStyle={{ style: 'semiPrimary', size: 'large' }}
         onClick={handleAttendance}
-        disabled={isAttendance}
-        className="attendance">
+        disabled={isAttendance}>
         출석하기
       </GeneralButton>
-      <hr className="attendanceHr" />
+      <hr />
       {selectedDate && (
         <>
           <div>{formatDate(selectedDate)}</div>
