@@ -25,5 +25,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "public/serviceWorkerRegistration.js"]
+  "include": ["src", "public/serviceWorkerRegistration.js", "public/GLTFLoader.js", "public/DRACOLoader.js"]
 }
