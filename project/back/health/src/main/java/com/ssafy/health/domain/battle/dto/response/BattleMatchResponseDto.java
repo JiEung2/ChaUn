@@ -8,6 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class BattleMatchResponseDto {
+    private Long battleId;
     private String myCrewName;
     private Float myCrewScore;
     private String opponentCrewName;

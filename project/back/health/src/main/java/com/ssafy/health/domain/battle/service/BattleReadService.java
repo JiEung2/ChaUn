@@ -39,6 +39,7 @@ public class BattleReadService {
         Crew opponentCrew = getOpponentCrew(battle.get(), crewId);
 
         return BattleMatchResponseDto.builder()
+                .battleId(battle.get().getId())
                 .myCrewName(myCrew.getName())
                 .myCrewScore(myCrew.getBasicScore() + myCrew.getActivityScore())
                 .opponentCrewName(opponentCrew.getName())
@@ -63,6 +64,7 @@ public class BattleReadService {
 
     private BattleMatchResponseDto createEmptyBattleResponse(){
         return BattleMatchResponseDto.builder()
+                .battleId(0L)
                 .myCrewName("No Battle")
                 .myCrewScore(0F)
                 .opponentCrewName("No Opponent")
