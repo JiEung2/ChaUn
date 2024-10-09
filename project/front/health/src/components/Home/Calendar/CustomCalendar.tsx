@@ -19,10 +19,7 @@ export default function CustomCalendar({
   selectedDate,
 }: CustomCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-  console.log(exerciseDates);
-  // const normalizeDate = (date: Date) => {
-  //   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  // };
+
   const normalizeDate = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
   };
@@ -38,7 +35,6 @@ export default function CustomCalendar({
   const updateCurrentWeek = useCallback((date: Date) => {
     const startOfWeek = getStartOfWeek(date);
     const week = Array.from({ length: 7 }, (_, i) => new Date(startOfWeek.getTime() + i * 86400000));
-    console.log(week);
     setCurrentMonth(date);
   }, []);
 
