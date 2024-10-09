@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 
 # Uvicorn 라이브러리
 import uvicorn
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from bson import ObjectId
 
@@ -25,6 +25,7 @@ import joblib
 from copy import deepcopy as dp
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Input, BatchNormalization
+from scipy.spatial.distance import euclidean
 from sklearn.metrics.pairwise import cosine_similarity
 from keras.models import load_model
 
@@ -40,7 +41,7 @@ try:
     # 테스트 용
     # client = MongoClient("mongodb://localhost:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     # 실제 서버 상태 확인
-    client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@j11c106.p.ssafy.io:31061", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
+    client = MongoClient(f"mongodb://{MONGO_USERNAME}:{MONGO_PASSWORD}@mongodb:27017", serverSelectionTimeoutMS = 5000) # EC2 주소 + 포트로 바꾸기
     server_status = client.admin.command("ping")
     db = client['Health']
     predict_basic = db['predict_basic']
@@ -64,9 +65,9 @@ class ExerciseDetail(BaseModel):
     count: int
 
 class UserExerciseRequest(BaseModel):
-    exercise_detail: ExerciseDetail = None # 객체 형태
+    exercise_detail: Optional[ExerciseDetail] = None # 객체 형태
     exercise_data: List[ExerciseData]  # 7일간의 운동 정보 리스트
-    extra_exercise_data: List[ExerciseData] = None
+    extra_exercise_data: Optional[List[ExerciseData]] = None
 
     def average_calories(self) -> float:
         if not self.exercise_data:
@@ -196,33 +197,40 @@ def make_confirmed_weight(days_30, days_90, data, p30, p90):
     last_weight = data[-1].weight
     cal_average = UserExerciseRequest(exercise_data=data).average_calories()
 
+    calculate_flag = 0
     # 기본적인 보정 가중치 정의
     if days_30 > 10 or days_90 > 15:  # 오차율이 크다면 큰 보정
         print('오차 큼')
         weight_adjustment_factor_30 = 0.1
         weight_adjustment_factor_90 = 0.15
+        calculate_flag = 1
     elif days_30 > 5 or days_90 > 10:  # 중간 정도의 오차율 보정
         print('오차 보통')
         weight_adjustment_factor_30 = 0.35
         weight_adjustment_factor_90 = 0.4
-    else:  # 오차가 작을 경우 보정률을 낮춤
+        calculate_flag = 1
+    else:  # 오차가 작을 경우 보정 없이
         print('오차 작음')
-        weight_adjustment_factor_30 = 0.7
-        weight_adjustment_factor_90 = 0.75
+        weight_adjustment_factor_30 = 1
+        weight_adjustment_factor_90 = 1
 
     # 칼로리 소모량에 따라 추가 가중치 적용
-    if cal_average >= 500:
-        print("운동량이 많음 - 체중 감소 가중치 적용")
-        pred_30_adjustment = np.random.uniform(-2, -1)  # 체중 감소 가중치
-        pred_90_adjustment = np.random.uniform(-3, -2)
-    elif cal_average >= 350:
-        print("운동량이 보통")
-        pred_30_adjustment = np.random.uniform(-1, 0)  # 체중 증가 가중치
-        pred_90_adjustment = np.random.uniform(-2, -1)
+    if calculate_flag:
+        if cal_average >= 500:
+            print("운동량이 많음 - 체중 감소 가중치 적용")
+            pred_30_adjustment = np.random.uniform(-2, -1)  # 체중 감소 가중치
+            pred_90_adjustment = np.random.uniform(-3, -2)
+        elif cal_average >= 350:
+            print("운동량이 보통")
+            pred_30_adjustment = np.random.uniform(-1, 0)  # 체중 증가 가중치
+            pred_90_adjustment = np.random.uniform(-2, -1)
+        else:
+            print("운동량이 적음 - 체중 증가 가중치 적용")
+            pred_30_adjustment = np.random.uniform(0, 1)  # 체중 증가 가중치
+            pred_90_adjustment = np.random.uniform(1, 2.5)
     else:
-        print("운동량이 적음 - 체중 증가 가중치 적용")
-        pred_30_adjustment = np.random.uniform(0, 1)  # 체중 증가 가중치
-        pred_90_adjustment = np.random.uniform(1, 2.5)
+        pred_30_adjustment = 0
+        pred_90_adjustment = 0
 
     # 예측 값 보정
     pred_30_corrected = last_weight * (1-weight_adjustment_factor_30) + (p30 * weight_adjustment_factor_30) + pred_30_adjustment
@@ -434,13 +442,13 @@ def create_sport_matrix(users, total_sports=30):
     return sport_matrix
 
 # 4-2. 피어슨 유사도 계산 함수 - 협업 필터링
-def pearson_similarity(user, crew):
+def euclidean_similarity(user, crew):
     # 사용자-크루간 4개 지표 상관관계수 유사도 (나이, 기본 점수, 활동 점수, 식습관 점수)
     user = np.array([user.m_type, user.type, user.age, user.score_1, user.score_2, user.score_3])
     crew = np.array([crew.m_type, crew.type, crew.age, crew.score_1, crew.score_2, crew.score_3])
-    similarity = np.nan_to_num(np.corrcoef(user[2:], crew[2:])[0, 1]) # age, score_1~3
-    similarity = similarity ** 2
-
+    distance = euclidean(user, crew)
+    similarity = 1 / (1 + distance) # age, score_1~3
+    
     if user[0]:
         # m_type
         body_similarity =  1 - abs(abs(user[0] - crew[0]) * 0.4 + abs(user[0] - crew[1]) * 0.6) # 근육질 아닌 곳에 대한 가중치 늘리기(멀리) 
@@ -475,9 +483,9 @@ def recommend_crews(now_user, user_df, crew_df, top_n=6):
                 content_similarity *= 0.3  # 가중치 0.3 적용
             else:
                 content_similarity = 0
-            pearson_sim = pearson_similarity(now_user, now_crew)
-            combined_similarity = (0.7 * pearson_sim) + content_similarity
-            similarities.append((now_crew['crew_id'], combined_similarity, pearson_sim, content_similarity))
+            collaborative_sim = euclidean_similarity(now_user, now_crew)
+            combined_similarity = (0.7 * collaborative_sim) + content_similarity
+            similarities.append((now_crew['crew_id'], combined_similarity, collaborative_sim, content_similarity))
 
     similarities.sort(key=lambda x: x[1], reverse=True)
     filtered_similarities = [item for item in similarities[:20] if item[1] >= 0.2]
