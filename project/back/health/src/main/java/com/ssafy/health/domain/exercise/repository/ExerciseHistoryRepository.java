@@ -42,7 +42,7 @@ public interface ExerciseHistoryRepository extends JpaRepository<ExerciseHistory
             "JOIN User u ON uc.user = u " +
             "JOIN ExerciseHistory eh ON eh.user = u " +
             "WHERE c.id = :crewId " +
-            "AND eh.exerciseStartTime < :dateTime " +
+            "AND eh.exerciseStartTime > :dateTime " +
             "GROUP BY u.id, u.nickname " +
             "ORDER BY SUM(eh.exerciseDuration) DESC")
     List<CrewMemberInfo> findUserRankingsByCrewAndDateTime(@Param("crewId") Long crewId,
