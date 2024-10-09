@@ -398,12 +398,12 @@ async def extra_predict(user_id: int, request: UserExerciseRequest):
 ### 크루 추천 기능 ###
 # 유저, 크루 모델 정의 부분 #
 class ScoreData(BaseModel):
-    m_type: float
+    mType: float
     type: float
     age: int
-    score_1: float
-    score_2: float
-    score_3: float
+    basicScore: float
+    activityScore: float
+    intakeScore: float
 
 class CrewData(BaseModel):
     crew_id: int
