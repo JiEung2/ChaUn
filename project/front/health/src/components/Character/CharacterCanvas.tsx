@@ -483,13 +483,12 @@
 //     </Canvas>
 //   );
 // }
-
 import { useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
+import { Html } from '@react-three/drei'; // Html 컴포넌트 추가
 import * as THREE from 'three';
 import Lottie from 'lottie-react';
 import LoadingLottie from '@/assets/Lottie/loading.json';
-// import './CharacterCanvas.scss';
 
 interface CharacterProps {
   glbUrl: string;
@@ -525,10 +524,13 @@ export default function CharacterCanvas({ glbUrl, gender }: CharacterProps) {
   return (
     <Canvas camera={{ position: [0, 10, 30], fov: 35 }} dpr={Math.min(window.devicePixelRatio, 2)}>
       {loading ? (
-        <div className="loadingScreen">
-          <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
-          <p>캐릭터 로딩 중입니다...</p>
-        </div>
+        // Html 컴포넌트를 사용해 Three.js 씬 내부에서 HTML 요소를 렌더링
+        <Html center>
+          <div className="loadingScreen">
+            <Lottie animationData={LoadingLottie} style={{ width: '200px', height: '200px' }} />
+            <p>캐릭터 로딩 중입니다...</p>
+          </div>
+        </Html>
       ) : (
         model && <primitive object={model} />
       )}

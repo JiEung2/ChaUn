@@ -10,6 +10,7 @@ self.onmessage = async (event) => {
   loader.setDRACOLoader(dracoLoader);
 
   try {
+    // GLB 파일을 비동기로 로드
     const gltf = await loader.loadAsync(glbUrl);
     const model = gltf.scene;
 
@@ -22,9 +23,11 @@ self.onmessage = async (event) => {
       model.position.set(0, -8.5, 0);
     }
 
+    // 모델을 직렬화하여 메인 스레드로 전송
     const serializedModel = model.toJSON();
     self.postMessage({ type: 'success', model: serializedModel });
   } catch (error) {
     self.postMessage({ type: 'error', message: error.message });
   }
 };
+ㄹ;
