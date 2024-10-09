@@ -80,6 +80,8 @@ export default function CrewPage() {
 
   // Filter only the battles that have started
   const startedBattles = battles.filter((battle) => battle.battleStatus === 'STARTED');
+  console.log('Battles in global store:', battles);
+  console.log('Started Battles:', startedBattles);
 
   const handleCrewClick = (crewId: number) => {
     navigate(`/crew/mycrew/${crewId}`);
