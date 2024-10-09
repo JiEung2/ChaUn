@@ -308,6 +308,7 @@ export default function HomePage() {
       registerServiceWorker();
     }
   }, [isTokenSent, userId, tokenMutation]);
+  console.log('성별확인:', gender);
 
   // 두 번째 useEffect: 유저 데이터 가져오기
   useEffect(() => {
@@ -318,13 +319,14 @@ export default function HomePage() {
         setHasCoin(response.coin);
         setGender(response.gender);
         setCharacterFileUrl(response.characterFileUrl);
+        console.log('성별확인2:', response.gender);
       } catch (e) {
         console.log('유저 정보를 가져오는 중 에러:', e);
       }
     }
 
     fetchUserData();
-  }, [userId, nickname, setNickname, setHasCoin, gender]);
+  }, [userId, nickname, setNickname, setHasCoin, gender, setGender, setCharacterFileUrl]);
 
   return <HomePageContent nickname={nickname} />;
 }
