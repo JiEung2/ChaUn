@@ -67,7 +67,8 @@ public class BodyPredictWriteService {
                     throw new RuntimeException(e);
                 }
             } else {
-                log.info("{} analysis not requested since exercise history is null", PredictionType.BASIC);
+                log.info("{} analysis for user {} is not requested since exercise history is null",
+                        user.getId(), PredictionType.BASIC);
             }
         });
         return null;
@@ -84,7 +85,8 @@ public class BodyPredictWriteService {
         if (requestDto != null) {
             return requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
         } else {
-            log.info("{} analysis not requested exercise history is null", PredictionType.BASIC);
+            log.info("{} analysis for user {} is not requested since exercise history is null",
+                    userId, PredictionType.BASIC);
             return null;
         }
     }
@@ -110,8 +112,6 @@ public class BodyPredictWriteService {
             } else if (predictionType.equals(PredictionType.BASIC) && exerciseBasicList.size() > 7) {
                 exerciseBasicList = exerciseBasicList.subList(0, 7);
             }
-            log.info("{} analysis requested, sublist count: {}", predictionType, exerciseBasicList.size());
-            log.info("Exercise sublist: {}", exerciseBasicList);
 
             return AnalysisRequestDto.builder()
                     .exerciseDetail(
@@ -132,7 +132,6 @@ public class BodyPredictWriteService {
                 bodyHistory.getWeight(), exerciseDetail.getExerciseId(), exerciseDetail.getDuration());
         List<AnalysisRequestDto.UserExerciseData> exerciseDataList = new ArrayList<>();
 
-        // TODO: Frontend에서 2개 개수 제한이 없을 경우에 대한 처리
         for (int i = 0; i < exerciseDetail.getCount(); i++) {
             exerciseDataList.add(exerciseDataBuilder(user, bodyHistory, burnedCalories));
         }
