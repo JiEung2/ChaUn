@@ -11,7 +11,9 @@ import com.ssafy.health.domain.account.service.UserReadService;
 import com.ssafy.health.domain.crew.dto.analysis.*;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
+import com.ssafy.health.domain.exercise.entity.Exercise;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -65,10 +68,17 @@ public class CrewAnalysisRequestService {
                                     .map(user -> userReadService.calculateUserScore(user.getId()))
                                     .toList();
 
+                            Long crewId = crew.getId();
+                            Exercise crewSports = crew.getExercise();
+                            ScoreData score = calculateCrewScore(userScoreList);
+                            log.info("crewId =" + crewId);
+                            log.info("운동 이름 =" + crewSports.getName());
+                            log.info("스코어 =" + score);
+
                             return CrewData.builder()
-                                    .crewId(crew.getId())
-                                    .crewSports(crew.getExercise().getId())
-                                    .score(calculateCrewScore(userScoreList))
+                                    .crewId(crewId)
+                                    .crewSports(crewSports.getId())
+                                    .score(score)
                                     .build();
 
                         })
