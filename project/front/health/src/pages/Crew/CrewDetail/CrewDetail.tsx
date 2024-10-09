@@ -137,9 +137,11 @@ const CrewDetail = () => {
         {members.map((member, index) => (
           <div key={member.userId} className={styles.rankingList}>
             <div className={styles.rankingItem}>
-              <span>{index + 1}</span>
-              <img className={styles.memberProfileImageSmall} src={member.userProfileImage} alt="member profile" />
-              <span>{member.nickname}</span>
+              <div className="rankAndImg">
+                <span>{index + 1}</span>
+                <img className={styles.memberProfileImageSmall} src={member.userProfileImage} alt="member profile" />
+              </div>
+              <span className="ranker">{member.nickname}</span>
               <span className={styles.time}>{formatExerciseTime(member.exerciseTime)}</span>
             </div>
           </div>
