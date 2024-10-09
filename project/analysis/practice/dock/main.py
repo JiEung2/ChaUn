@@ -448,6 +448,9 @@ def euclidean_similarity(user, crew):
     user = np.array([user.m_type, user.type, user.age, user.score_1, user.score_2, user.score_3])
     crew = np.array([crew.m_type, crew.type, crew.age, crew.score_1, crew.score_2, crew.score_3])
 
+    user = np.nan_to_num(user, nan=0.0, posinf=0.0, neginf=0.0)
+    crew = np.nan_to_num(crew, nan=0.0, posinf=0.0, neginf=0.0)
+
     # NaN 또는 inf 값 확인 후 처리
     if np.any(np.isnan(user)) or np.any(np.isnan(crew)) or np.any(np.isinf(user)) or np.any(np.isinf(crew)):
         raise ValueError(f"NaN or inf values detected in user or crew data: {user}, {crew}")
