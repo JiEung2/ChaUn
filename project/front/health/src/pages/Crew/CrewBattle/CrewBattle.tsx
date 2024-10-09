@@ -42,7 +42,7 @@ export default function CrewBattle() {
   const battleId = battleToRender ? battleToRender.battleId : 0;
   const { data: battleRankings, isLoading: isRankingsLoading } = useQuery({
     queryKey: [queryKeys.BATTLE_RANKING, battleId],
-    queryFn: () => getBattleRanking(Number(battleId)),
+    queryFn: () => getBattleRanking(Number(battleId),Number(crewId)),
   });
 
   if (isBattleDataLoading || isRankingsLoading) {

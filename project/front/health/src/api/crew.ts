@@ -98,8 +98,8 @@ export const randomMatching = async (crew_id: number) => {
 };
 
 // 실시간 크루 배틀 기여도 랭킹
-export const getBattleRanking = async (battle_id: number) => {
-  const response = await exportAxios.get(`${baseURL}/battle/${battle_id}`);
+export const getBattleRanking = async (battle_id: number, crew_id: number) => {
+  const response = await exportAxios.get(`${baseURL}/battle/${battle_id}/${crew_id}`);
   return response.data;
 };
 // 크루명 중복 체크
