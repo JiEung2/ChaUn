@@ -30,6 +30,6 @@
     "public/serviceWorkerRegistration.js",
     "public/GLTFLoader.js",
     "public/DRACOLoader.js",
-    "public/Darco"
+    "public/Draco"
   ]
 }

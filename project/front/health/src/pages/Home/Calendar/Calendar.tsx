@@ -33,7 +33,7 @@ export default function CalendarPage() {
     queryFn: () => getExerciseHistory(year, month),
   });
 
-  const exerciseRecords = data?.data?.exerciseRecords;
+  const exerciseRecords = data?.exerciseRecords;
   const records = exerciseRecords?.reduce(
     (acc: Record<string, { types: { [key: string]: { time: string; calories: number } } }>, record: any) => {
       const date = new Date(record.createdAt).toISOString().split('T')[0];
