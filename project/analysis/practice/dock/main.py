@@ -447,6 +447,11 @@ def euclidean_similarity(user, crew):
     # 사용자-크루간 4개 지표 상관관계수 유사도 (나이, 기본 점수, 활동 점수, 식습관 점수)
     user = np.array([user.m_type, user.type, user.age, user.score_1, user.score_2, user.score_3])
     crew = np.array([crew.m_type, crew.type, crew.age, crew.score_1, crew.score_2, crew.score_3])
+
+    # NaN 또는 inf 값 확인 후 처리
+    if np.any(np.isnan(user)) or np.any(np.isnan(crew)) or np.any(np.isinf(user)) or np.any(np.isinf(crew)):
+        raise ValueError(f"NaN or inf values detected in user or crew data: {user}, {crew}")
+
     distance = euclidean(user, crew)
     similarity = 1 / (1 + distance) # age, score_1~3
     
