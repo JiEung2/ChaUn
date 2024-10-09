@@ -62,18 +62,21 @@ const FILES_TO_CACHE = [
   // 필요한 파일들을 여기에 추가
 ];
 
-// 설치 시, 미리 지정된 파일을 캐싱
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('Opened cache and caching files');
-      return cache.addAll(FILES_TO_CACHE);
-    })
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => {
+        console.log('Opened cache and caching files');
+        return cache.addAll(FILES_TO_CACHE);
+      })
+      .catch((error) => {
+        console.error('Failed to cache during install:', error);
+      })
   );
   self.skipWaiting(); // 서비스 워커 즉시 활성화
 });
 
-// 활성화 시, 오래된 캐시를 삭제
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
@@ -91,42 +94,45 @@ self.addEventListener('activate', (event) => {
   return self.clients.claim(); // 활성화 후 즉시 컨트롤을 넘김
 });
 
-// fetch 이벤트 처리
 self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
 
-  // 'chrome-extension://' 스킴을 가진 요청은 캐시하지 않음
+  // 'chrome-extension://' 스킴을 가진 요청 필터링
   if (requestUrl.protocol === 'chrome-extension:') {
-    return; // 해당 요청 무시
+    return; // 해당 요청은 캐시하지 않음
   }
 
-  // GLB 파일이나 특정 파일만 캐시하도록 조건 추가
-  if (requestUrl.pathname.endsWith('.glb') || requestUrl.pathname.endsWith('.png')) {
-    event.respondWith(
-      caches.match(event.request).then((cachedResponse) => {
+  // PATCH, POST, PUT 등의 비-GET 요청은 캐시하지 않음
+  if (event.request.method !== 'GET') {
+    return; // GET 요청만 캐시에 저장 가능
+  }
+
+  event.respondWith(
+    caches
+      .match(event.request)
+      .then((cachedResponse) => {
         if (cachedResponse) {
           console.log('Serving cached file:', event.request.url);
           return cachedResponse;
         }
 
-        // 캐시에 없을 경우 네트워크에서 파일을 가져오고 캐시함
-        return fetch(event.request)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              return caches.open(CACHE_NAME).then((cache) => {
-                cache.put(event.request, networkResponse.clone()); // 응답을 캐시에 저장
-                return networkResponse; // 네트워크 응답 반환
+        // 캐시에 없을 경우 네트워크에서 파일을 가져옴
+        return fetch(event.request).then((networkResponse) => {
+          // 응답을 캐시에 저장 (캐시가 가능할 때만)
+          if (!event.request.url.startsWith('chrome-extension')) {
+            return caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, networkResponse.clone()).catch((error) => {
+                console.error('Failed to cache the network response:', error);
               });
-            } else {
-              return networkResponse; // 실패하면 네트워크 응답 그대로 반환
-            }
-          })
-          .catch(() => {
-            // 네트워크 오류가 발생한 경우에 대한 처리 (옵션)
-            console.error('Fetch failed, serving fallback content.');
-            return caches.match('/fallback.glb'); // fallback 파일 제공 가능
-          });
+              return networkResponse;
+            });
+          } else {
+            return networkResponse; // chrome-extension 요청은 캐시하지 않음
+          }
+        });
       })
-    );
-  }
+      .catch((error) => {
+        console.error('Error during cache match or fetch:', error);
+      })
+  );
 });
