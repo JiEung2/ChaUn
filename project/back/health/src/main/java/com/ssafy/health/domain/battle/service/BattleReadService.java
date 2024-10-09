@@ -5,6 +5,7 @@ import com.ssafy.health.domain.battle.dto.response.BattleMemberRankingDto;
 import com.ssafy.health.domain.battle.entity.Battle;
 import com.ssafy.health.domain.battle.entity.BattleStatus;
 import com.ssafy.health.domain.battle.exception.BattleNotFoundException;
+import com.ssafy.health.domain.battle.exception.CrewNotParticipantException;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
 import com.ssafy.health.domain.crew.dto.response.CrewMemberInfo;
 import com.ssafy.health.domain.crew.entity.Crew;
@@ -61,9 +62,11 @@ public class BattleReadService {
         if (battle.getHomeCrew().getId().equals(crewId)){
             mycrew = battle.getHomeCrew();
             oppponentCrew = battle.getAwayCrew();
-        }else{
+        }else if(battle.getAwayCrew().getId().equals(crewId)){
             mycrew = battle.getAwayCrew();
             oppponentCrew = battle.getHomeCrew();
+        }else{
+            throw new CrewNotParticipantException();
         }
 
         List<CrewMemberInfo> myCrewMemberRanking = exerciseHistoryRepository.findUserRankingsByCrewAndDateTime(mycrew.getId(), battle.getCreatedAt());
