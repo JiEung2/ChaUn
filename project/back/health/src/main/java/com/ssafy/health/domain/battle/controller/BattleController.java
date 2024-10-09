@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/battle")
 @RequiredArgsConstructor
-public class BattleController implements BattleControllerApi{
+public class BattleController implements BattleControllerApi {
 
     private final BattleReadService battleReadService;
 
-    @GetMapping("/{battle_id}")
-    public ApiResponse<BattleMemberRankingDto> getBattleMemberRanking(@PathVariable("battle_id") Long battleId) {
-        return ApiResponse.success(battleReadService.getBattleMemberRanking(battleId));
+    @GetMapping("/{battle_id}/{crew_id}")
+    public ApiResponse<BattleMemberRankingDto> getBattleMemberRanking(@PathVariable("battle_id") Long battleId, @PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(battleReadService.getBattleMemberRanking(battleId, crewId));
     }
 }

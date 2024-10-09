@@ -31,4 +31,7 @@ public interface BattleRepository extends JpaRepository<Battle, Long> {
 
     @Query("SELECT DISTINCT b FROM Battle b JOIN FETCH b.awayCrew ac JOIN FETCH b.homeCrew hc WHERE b.status = :status")
     List<Battle> findByStatus(BattleStatus status);
+
+    @Query("SELECT b FROM Battle b JOIN FETCH b.homeCrew JOIN FETCH b.awayCrew WHERE b.id = :id")
+    Optional<Battle> findByIdWithCrew(Long id);
 }

@@ -52,18 +52,29 @@ public class BattleReadService {
                 .build();
     }
 
-    public BattleMemberRankingDto getBattleMemberRanking(Long battleId) {
-        Battle battle = battleRepository.findById(battleId).orElseThrow(BattleNotFoundException::new);
+    public BattleMemberRankingDto getBattleMemberRanking(Long battleId, Long crewId) {
+        Battle battle = battleRepository.findByIdWithCrew(battleId).orElseThrow(BattleNotFoundException::new);
 
-        List<CrewMemberInfo> homeCrewMemberRanking = exerciseHistoryRepository.findUserRankingsByCrewAndDateTime(battle.getHomeCrew().getId(), battle.getCreatedAt());
-        List<CrewMemberInfo> awayCrewMemberRanking = exerciseHistoryRepository.findUserRankingsByCrewAndDateTime(battle.getAwayCrew().getId(), battle.getCreatedAt());
+        Crew mycrew = null;
+        Crew oppponentCrew = null;
 
-        log.info("homeCrewMemberRanking = " + homeCrewMemberRanking);
-        log.info("awayCrewMemberRanking = " + awayCrewMemberRanking);
+        if (battle.getHomeCrew().getId().equals(crewId)){
+            mycrew = battle.getHomeCrew();
+            oppponentCrew = battle.getAwayCrew();
+        }else{
+            mycrew = battle.getAwayCrew();
+            oppponentCrew = battle.getHomeCrew();
+        }
+
+        List<CrewMemberInfo> myCrewMemberRanking = exerciseHistoryRepository.findUserRankingsByCrewAndDateTime(mycrew.getId(), battle.getCreatedAt());
+        List<CrewMemberInfo> opponentCrewMemberRanking = exerciseHistoryRepository.findUserRankingsByCrewAndDateTime(oppponentCrew.getId(), battle.getCreatedAt());
+
+        log.info("myCrewMemberRanking = " + myCrewMemberRanking);
+        log.info("opponentCrewMemberRanking = " + opponentCrewMemberRanking);
 
         return BattleMemberRankingDto.builder()
-                .homeCrewMembers(homeCrewMemberRanking)
-                .awayCrewMembers(awayCrewMemberRanking)
+                .myCrewMembers(myCrewMemberRanking)
+                .opponentCrewMembers(opponentCrewMemberRanking)
                 .build();
     }
 
