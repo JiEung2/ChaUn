@@ -27,7 +27,6 @@ export default function CalendarPage() {
   const [isAttendance, setIsAttendance] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('전체');
 
-  // 선택된 날짜에 대한 운동 기록 가져오기
   useEffect(() => {
     const storedAttendance = JSON.parse(localStorage.getItem('attendanceDates') || '[]');
     const storedLastAttendance = localStorage.getItem('lastAttendanceDate');

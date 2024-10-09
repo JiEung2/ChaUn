@@ -1,5 +1,4 @@
 import 'react-calendar/dist/Calendar.css';
-import { useState } from 'react';
 import { Calendar } from 'react-calendar';
 import './CustomCalendar.scss';
 
@@ -18,8 +17,6 @@ export default function CustomCalendar({
   attendanceDates,
   selectedDate,
 }: CustomCalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-
   const normalizeDate = (date: Date) => {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
   };
@@ -90,12 +87,6 @@ export default function CustomCalendar({
   return (
     <div className="customCalendarContainer">
       <Calendar
-        activeStartDate={currentMonth}
-        onActiveStartDateChange={({ activeStartDate }) => {
-          const date = activeStartDate as Date;
-          setCurrentMonth(date);
-          onMonthYearChange(date.getFullYear(), date.getMonth() + 1);
-        }}
         locale="en-US"
         formatMonthYear={(_, date) => formatMonthYear(_, date)}
         tileClassName={getTileClassName}
@@ -106,6 +97,10 @@ export default function CustomCalendar({
         showNavigation={true}
         next2Label={null}
         prev2Label={null}
+        onActiveStartDateChange={({ activeStartDate }) => {
+          const date = activeStartDate as Date;
+          onMonthYearChange(date.getFullYear(), date.getMonth() + 1);
+        }}
       />
     </div>
   );
