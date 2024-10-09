@@ -12,7 +12,7 @@ self.onmessage = async (event) => {
   const dracoLoader = new THREE.DRACOLoader();
 
   // DRACO 디코더 경로 설정
-  dracoLoader.setDecoderPath('/src/components/Character/Darco/');
+  dracoLoader.setDecoderPath('/Darco');
   loader.setDRACOLoader(dracoLoader);
 
   try {
