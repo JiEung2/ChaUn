@@ -19,7 +19,7 @@ export default function MypagePage() {
   const { userId, nickname, coin, setHasCoin } = useUserStore();
   const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
-  const [preserveBuffer, setPreserveBuffer] = useState(false);
+  // const [setPreserveBuffer] = useState(false);
   const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
@@ -90,7 +90,7 @@ export default function MypagePage() {
   };
 
   const handleCaptureClick = async () => {
-    setPreserveBuffer(true);
+    // setPreserveBuffer(true);
 
     requestAnimationFrame(async () => {
       if (characterRef.current) {
@@ -114,7 +114,7 @@ export default function MypagePage() {
         }
       }
 
-      setPreserveBuffer(false);
+      // setPreserveBuffer(false);
     });
   };
 
@@ -262,7 +262,7 @@ export default function MypagePage() {
           <div className="characterAndSnapshot">
             <div className="character" ref={characterRef}>
               {characterGlbUrl ? (
-                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
+                <CharacterCanvas glbUrl={characterGlbUrl} gender={gender} />
               ) : (
                 <p>{nickname}님의 캐릭터를 불러오지 못했어요</p>
               )}
