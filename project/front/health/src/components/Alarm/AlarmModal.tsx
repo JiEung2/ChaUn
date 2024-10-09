@@ -46,12 +46,11 @@ export default function AlarmModal({ data, isOpen, onClose }: ModalProps) {
         <img src={CloseButton} alt="CloseButton" className="closeButton" onClick={handleModalClose} />
         <p className="battleResult">배틀 결과</p>
         <hr className="divider2" />
-
         <div className="teamInfo">
           <div className="ourTeam">
             <p>{data.ourTeamName}</p>
             <p className="sport"># {data.ourTeamSport}</p>
-            <p>{data.ourTeamScore}점</p>
+            <p>{Math.round(data.ourTeamScore)}점</p>
           </div>
           <div className="vsInfo">
             <span>VS</span>
@@ -60,7 +59,7 @@ export default function AlarmModal({ data, isOpen, onClose }: ModalProps) {
           <div className="opponentTeam">
             <p>{data.opponentTeamName}</p>
             <p className="sport"># {data.opponentTeamSport}</p>
-            <p>{data.opponentTeamScore}점</p>
+            <p>{Math.round(data.opponentTeamScore)}점</p>
           </div>
         </div>
         <div className="battleReward">
