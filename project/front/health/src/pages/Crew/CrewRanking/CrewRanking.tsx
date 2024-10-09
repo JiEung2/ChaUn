@@ -28,6 +28,8 @@ export default function CrewRankingPage() {
     setShowModal(false);
   };
 
+  console.log(exerciseId);
+
   const { data: exerciseCrewRanking, isSuccess } = useQuery({
     queryKey: [querykeys.EXERCISE_RANKING, exerciseId],
     queryFn: () => getExerciseCrewRanking(Number(exerciseId)),
