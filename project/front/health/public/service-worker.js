@@ -65,15 +65,13 @@ const FILES_TO_CACHE = [
 ];
 
 self.addEventListener('install', (event) => {
-  // 설치 중 서비스 워커가 캐시를 미리 로드
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       console.log('Opened cache and caching files');
       return cache.addAll(FILES_TO_CACHE);
     })
   );
-  // 새로운 서비스 워커 바로 활성화
-  self.skipWaiting();
+  self.skipWaiting(); // 서비스 워커 즉시 활성화
 });
 
 self.addEventListener('activate', (event) => {
@@ -90,14 +88,19 @@ self.addEventListener('activate', (event) => {
       );
     })
   );
-  // 활성화되자마자 컨트롤을 바로 넘김
-  return self.clients.claim();
+  return self.clients.claim(); // 활성화 후 즉시 컨트롤을 넘김
 });
 
 self.addEventListener('fetch', (event) => {
-  // 쿼리 파라미터가 다른 요청을 처리할 때 사용
   const requestUrl = new URL(event.request.url);
-  requestUrl.search = ''; // 쿼리 파라미터 제거하여 캐시 일관성 유지
+
+  // 'chrome-extension://' 스킴을 가진 요청 필터링
+  if (requestUrl.protocol === 'chrome-extension:') {
+    return; // 해당 요청은 캐시하지 않음
+  }
+
+  // 쿼리 파라미터 제거 (필요한 경우)
+  requestUrl.search = '';
 
   event.respondWith(
     caches.match(requestUrl.toString()).then((cachedResponse) => {
@@ -108,11 +111,15 @@ self.addEventListener('fetch', (event) => {
 
       // 캐시에 없을 경우 네트워크에서 파일을 가져옴
       return fetch(event.request).then((networkResponse) => {
-        // 응답을 캐시에 저장
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
-        });
+        // 응답을 캐시에 저장 (캐시가 가능할 때만)
+        if (!event.request.url.startsWith('chrome-extension')) {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, networkResponse.clone()); // 응답 복제 후 저장
+            return networkResponse;
+          });
+        } else {
+          return networkResponse; // chrome-extension 요청은 캐시하지 않음
+        }
       });
     })
   );
