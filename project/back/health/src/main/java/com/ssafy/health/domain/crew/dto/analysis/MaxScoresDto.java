@@ -1,12 +1,13 @@
 package com.ssafy.health.domain.crew.dto.analysis;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class MaxScoresDto {
-
-    private Double basicScore;
-    private Double activityScore;
+    private Float basicScore;
+    private Float activityScore;
 }
