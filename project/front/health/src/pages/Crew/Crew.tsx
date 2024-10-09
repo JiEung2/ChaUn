@@ -69,6 +69,8 @@ export default function CrewPage() {
     },
   });
 
+  console.log('BattleList', BattleList);
+
   useEffect(() => {
     // Once the battle list is fetched, store it globally
     if (BattleList.length > 0) {
