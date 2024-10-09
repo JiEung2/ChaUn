@@ -89,7 +89,7 @@ const crewRandomMatching = {
 };
 
 const crewBattleRanking = {
-  homeCrewMembers: [
+  myCrewMembers: [
     {
       userId: 1,
       nickname: 'JE',
@@ -103,7 +103,7 @@ const crewBattleRanking = {
       exerciseTime: 2400000,
     },
   ],
-  awayCrewMembers: [
+  opponentCrewMembers: [
     {
       userId: 1,
       nickname: 'HH',
