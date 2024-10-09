@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 
 import static com.ssafy.health.domain.coin.CoinCost.START_BATTLE;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -257,11 +259,14 @@ public class BattleWriteService {
     }
 
     private List<BattleAndCrewDto> findRecentBattlesForAvailableCrews(Long crewId) {
+        log.info("findRecentBattlesForAvailableCrews 진입");
         List<Crew> availableCrews = crewRepository.findBattleReadyCrews(crewId);
+        log.info("availableCrew 개수는 " + availableCrews.size());
         List<BattleAndCrewDto> battleAndCrewDtoList = new ArrayList<>();
 
         for (Crew crew : availableCrews) {
-            Optional<Battle> findBattle = battleRepository.findFirstByHomeCrewOrAwayCrewOrderByCreatedAtDesc(crew, crew);
+            Optional<Battle> findBattle = battleRepository.findFirstByHomeCrewOrAwayCrewOrderByCreatedAtDesc(crew,
+                    crew);
 
             findBattle.ifPresentOrElse(battle -> {
                 Crew currentCrew = battle.getAwayCrew().equals(crew) ? battle.getAwayCrew() : battle.getHomeCrew();
@@ -273,8 +278,10 @@ public class BattleWriteService {
         }
 
         for (BattleAndCrewDto dto : battleAndCrewDtoList) {
-            System.out.println(dto.getCrew().getId());
-            if (dto.getBattle() == null) continue;
+            log.info("크루 아이디는 " + dto.getCrew().getId().toString());
+            if (dto.getBattle() == null) {
+                continue;
+            }
             System.out.println(dto.getBattle().getCreatedAt());
         }
 
