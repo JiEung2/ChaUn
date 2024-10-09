@@ -8,6 +8,7 @@ import com.ssafy.health.domain.exercise.dto.response.WeeklyAndDailyExerciseTimeR
 import com.ssafy.health.domain.exercise.entity.ExerciseHistory;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.Locale;
 import static java.time.temporal.TemporalAdjusters.firstDayOfMonth;
 import static java.time.temporal.TemporalAdjusters.lastDayOfMonth;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -69,6 +71,7 @@ public class ExerciseHistoryReadService {
                 .atZone(ZoneId.of("Asia/Seoul"))
                 .toLocalDateTime();
         LocalDateTime endDateTime = startDateTime.plusWeeks(1).minusSeconds(1);
+        log.info("Getting exercise data from time window {} to {}", startDateTime, endDateTime);
         return getExerciseHistoryListResponseDto(userId, new LocalDateTime[]{startDateTime, endDateTime});
     }
 
