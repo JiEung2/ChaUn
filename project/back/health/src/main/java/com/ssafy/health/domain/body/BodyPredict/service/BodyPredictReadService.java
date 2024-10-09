@@ -107,8 +107,8 @@ public class BodyPredictReadService {
 
     private Long findBodyTypeByBmi(Float height, Float weight, Gender gender) {
 
-        Float bmi = weight / (height * height) * 10000;
-        Optional<BodyType> bodyType = bodyTypeRepository.findByBmiAndGender(bmi, gender);
+        float bmi = weight / (height * height) * 10000;
+        Optional<BodyType> bodyType = bodyTypeRepository.findByBmiAndGender((int) bmi, gender);
 
         if (bodyType.isPresent()) {
             return bodyType.get().getId();
