@@ -1,8 +1,7 @@
 // Three.js 및 로더들을 CDN에서 가져옵니다.
 import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
-import { GLTFLoader } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/loaders/DRACOLoader.js';
-
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 self.onmessage = async (event) => {
   const { glbUrl, gender } = event.data;
 
@@ -10,7 +9,7 @@ self.onmessage = async (event) => {
   const dracoLoader = new DRACOLoader();
 
   // DRACO 디코더 경로를 설정합니다.
-  dracoLoader.setDecoderPath('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/libs/draco/gltf/');
+  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
   loader.setDRACOLoader(dracoLoader);
 
   try {
