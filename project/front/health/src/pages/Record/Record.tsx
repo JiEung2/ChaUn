@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
 import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
 import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
-import { getWeeklyExerciseRecord } from '@/api/exercise';
+import { exerciseRecord } from '@/api/home';
 import queryKeys from '@/utils/querykeys';
 import useUserStore from '@/store/userInfo';
 
@@ -91,7 +91,7 @@ export default function RecordPage() {
   // 주간 운동 기록 데이터 요청
   const { data: weeklyExerciseTime } = useSuspenseQuery({
     queryKey: [queryKeys.EXERCISE_HISTORY_WEEK, year, month, week],
-    queryFn: () => getWeeklyExerciseRecord(year, month, week),
+    queryFn: () => exerciseRecord(year, month, week),
   });
 
   console.log(year, month, week);
