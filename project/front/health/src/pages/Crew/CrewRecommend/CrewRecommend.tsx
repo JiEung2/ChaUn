@@ -57,6 +57,7 @@ export default function CrewRecommend() {
 
   // Crew 클릭 시 모달을 여는 함수
   const handleCrewClick = (crewId: number) => {
+    console.log('모달이벤트 crewId', crewId);
     setSelectedCrewId(crewId);
     setIsModalOpen(true);
   };
