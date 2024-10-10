@@ -101,8 +101,8 @@ self.addEventListener('fetch', (event) => {
 
   // 소셜 로그인 요청은 캐시하지 않고 네트워크에서 직접 처리
   if (
-    requestUrl.href.includes(`${import.meta.env.VITE_APP_BASE_URL_NO_ENDPOINT}/oauth2/authorization/google`) ||
-    requestUrl.href.includes(`${import.meta.env.VITE_APP_BASE_URL_NO_ENDPOINT}/oauth2/authorization/kakao`)
+    requestUrl.href.includes(`https://j11c106.p.ssafy.io/api/v1/oauth2/authorization/google`) ||
+    requestUrl.href.includes(`https://j11c106.p.ssafy.io/api/v1/oauth2/authorization/kakao`)
   ) {
     return fetch(event.request); // 네트워크 요청만 수행하고 캐싱하지 않음
   }
