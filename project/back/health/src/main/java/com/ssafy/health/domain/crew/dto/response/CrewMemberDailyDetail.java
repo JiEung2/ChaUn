@@ -5,8 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class CrewMemberDailyExerciseTime {
+public class CrewMemberDailyDetail {
     private Long userId;
     private String nickname;
     private Long exerciseTime;
+    private String characterImageUrl;
 }
