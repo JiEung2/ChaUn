@@ -1,0 +1,110 @@
+pipeline {
+    agent any
+
+    environment {
+        GITLAB_PROJECT = 's11-bigdata-recom-sub1'
+        GITLAB_REPO = 'S11P21C106'
+        GITLAB_BRANCH = 'develop/Analysis'
+        GITLAB_CREDENTIAL = 'S11P21C106-Access-Token'
+        DOCKER_IMAGE_NAME = 's11p21c106_analysis'
+        DOCKER_REPOSITORY = 'thenoface'
+        DOCKER_CREDENTIAL = 'Dockerhub_Access_Token'
+        MM_CHANNEL = 'c106-jenkins'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${GITLAB_BRANCH}",
+                    url: "https://lab.ssafy.com/${GITLAB_PROJECT}/${GITLAB_REPO}.git",
+                    credentialsId: "${GITLAB_CREDENTIAL}"    
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dir('project/analysis/practice/dock') {
+                        docker.build("${DOCKER_REPOSITORY}/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}", "-f BaseDockerfile .")
+                    }
+                }
+            }
+        }
+
+        stage('Push Image to Dockerhub') {
+            steps {
+                script {
+                    withCredentials([
+                        usernamePassword(credentialsId: "${DOCKER_CREDENTIAL}",
+                                         passwordVariable: 'DOCKER_PASSWORD',
+                                         usernameVariable: 'DOCKER_USERNAME')]) {
+                            sh 'echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin'
+                        }
+                    docker.image("${DOCKER_REPOSITORY}/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").push()
+                    docker.image("${DOCKER_REPOSITORY}/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").push('latest')
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+        	script {
+                def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                mattermostSend (color: 'good', 
+                message: "**Jenkins 빌드 성공 (FastAPI Base)**\n${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID} (${Author_Name})\n**<${env.BUILD_URL}|빌드 상세 정보>**",
+                channel: "${MM_CHANNEL}"
+                )
+            }
+        }
+        failure {
+        	script {
+                def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                mattermostSend (color: 'danger', 
+                message: "**Jenkins 빌드 실패 (FastAPI Base)**\n${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID} (${Author_Name})\n**<${env.BUILD_URL}|빌드 상세 정보>**",
+                channel: "${MM_CHANNEL}"
+                )
+            }
+        }
+        always {
+            script {
+                def imageName = "${DOCKER_REPOSITORY}/${DOCKER_IMAGE_NAME}"
+
+                echo "Getting lastest image ID for ${imageName}"
+                def latestImage = sh(script:
+                    "docker images --filter=reference='${imageName}:latest' --format '{{.ID}}'",
+                    returnStdout: true).trim()
+                echo "Latest Image ID: ${latestImage}"
+
+                echo "Getting previous image(s) ID for ${imageName}"
+                def previousImages = sh(script:
+                    "docker images --filter=reference='${imageName}' --format '{{.ID}}' | grep -v '${latestImage}' || true",
+                    returnStdout: true).trim().replaceAll('\n', ' ')
+
+                if (previousImages) {
+                    echo "Previously built image(s): ${previousImages}"
+                    sh "docker rmi ${previousImages} || echo 'Failed to remove one or more images'"
+                } else {
+                    echo 'Previous built images not found'
+                }
+
+                echo "Getting duplicated image(s) with latest tag (ID: ${latestImage})"
+                def duplicateImages = sh(script:
+                    """
+                    docker images --filter=reference='${imageName}' --format '{{.Repository}}:{{.Tag}} {{.ID}}' \
+                    | grep '${latestImage}' | grep -v ':latest' | awk '{print \$1}' || true
+                    """, returnStdout: true).trim().replaceAll('\n', ' ')
+
+                if (duplicateImages) {
+                    echo "Duplicated image(s) with latest tag: ${duplicateImages}"
+                    sh "docker rmi ${duplicateImages} || echo 'Failed to remove one or more images'"
+                } else {
+                    echo 'Duplicate images not found'
+                }
+            }
+            // cleanWs()
+        }
+    }
+}
