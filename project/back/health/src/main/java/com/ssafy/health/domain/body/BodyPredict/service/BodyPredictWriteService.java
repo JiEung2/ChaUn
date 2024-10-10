@@ -80,7 +80,7 @@ public class BodyPredictWriteService {
             throws JsonProcessingException {
 
         Long userId = SecurityUtil.getCurrentUserId();
-        String apiUrl = apiBaseUrlBuilder(3L) + "/extra/fast-api";
+        String apiUrl = apiBaseUrlBuilder(userId) + "/extra/fast-api";
 
         AnalysisRequestDto requestDto = buildPredictionPayload(userId, PredictionType.EXTRA, exerciseDetail);
 
