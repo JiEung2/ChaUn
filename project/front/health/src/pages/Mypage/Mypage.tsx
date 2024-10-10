@@ -160,6 +160,9 @@ export default function MypagePage() {
       setHasCoin(coin - item.price);
       return updatedParts;
     });
+
+    // 구매 후 캐릭터 URL 업데이트
+    partsOnoffMutation.mutate(item.id);
   };
 
   const generateAnimationUrl = (type: 'standing' | 'dancing' | 'waving') => {
@@ -225,7 +228,7 @@ export default function MypagePage() {
         price: part.cost,
         image: part.partsImage,
         isLocked: !purchasedParts[part.id],
-        isApplied: appliedParts[part.id] || false,
+        isApplied: !appliedParts[part.id] || false,
       };
     }) || [];
 
