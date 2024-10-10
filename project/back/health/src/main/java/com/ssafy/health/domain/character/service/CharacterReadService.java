@@ -47,7 +47,7 @@ public class CharacterReadService {
             id = characterSet.getCharacter().getId();
         }
         else{
-            id = characterSet.getCharacter().getId() + characterSet.getParts().getId();
+            id = characterSet.getCharacter().getId() + (characterSet.getParts().getId() * 10);
         }
         Character character = characterRepository.findById(id).orElseThrow(CharacterNotFoundException::new);
 
