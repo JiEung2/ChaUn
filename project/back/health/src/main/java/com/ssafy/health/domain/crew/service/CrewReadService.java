@@ -4,12 +4,20 @@ import com.ssafy.health.common.security.SecurityUtil;
 import com.ssafy.health.domain.account.dto.response.UserExerciseTimeDto;
 import com.ssafy.health.domain.account.entity.User;
 import com.ssafy.health.domain.account.entity.UserCrew;
+import com.ssafy.health.domain.account.exception.UserNotFoundException;
 import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.battle.dto.response.BattleStatsDto;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
+import com.ssafy.health.domain.body.BodyHistory.entity.BodyHistory;
+import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
+import com.ssafy.health.domain.body.BodyPredict.service.BodyPredictWriteService;
+import com.ssafy.health.domain.body.BodyType.service.BodyTypeReadService;
 import com.ssafy.health.domain.character.entity.Character;
 import com.ssafy.health.domain.character.respository.CharacterSetRepository;
+import com.ssafy.health.domain.crew.dto.analysis.CrewData;
+import com.ssafy.health.domain.crew.dto.analysis.MaxScoresDto;
+import com.ssafy.health.domain.crew.dto.analysis.ScoreData;
 import com.ssafy.health.domain.crew.dto.response.*;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto.CrewInfo;
 import com.ssafy.health.domain.crew.entity.Crew;
@@ -20,6 +28,7 @@ import com.ssafy.health.domain.exercise.entity.Exercise;
 import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
+import com.ssafy.health.domain.recommendation.dto.response.RecommendedCrewResponseDto;
 import com.ssafy.health.domain.recommendation.dto.response.ScoreDataDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,6 +54,9 @@ public class CrewReadService {
     private final UserCrewRepository userCrewRepository;
     private final CharacterSetRepository characterSetRepository;
     private final ExerciseHistoryRepository exerciseHistoryRepository;
+    private final BodyHistoryRepository bodyHistoryRepository;
+    private final BodyPredictWriteService bodyPredictWriteService;
+    private final BodyTypeReadService bodyTypeReadService;
 
     public CrewListResponseDto getJoinedCrewList(Long userId) {
         List<UserCrew> userCrewList = userCrewRepository.findByUserIdWithCrew(userId);
@@ -88,6 +100,95 @@ public class CrewReadService {
                 .totalBattlesCount(totalBattlesCount)
                 .winCount(winCount)
                 .role(crewRole)
+                .build();
+    }
+
+    public RecommendedCrewResponseDto getRecommendCrewDetail(Long crewId) {
+        Crew crew = crewRepository.findCrewWithExerciseById(crewId).orElseThrow(CrewNotFoundException::new);
+        Long crewRanking = getCrewRanking(crew.getActivityScore() + crew.getBasicScore());
+        CrewData crewData = buildCrewData(crew);
+
+        return RecommendedCrewResponseDto.builder()
+                .crewId(crewId)
+                .crewName(crew.getName())
+                .exerciseName(crew.getExercise().getName())
+                .description(crew.getDescription())
+                .crewProfileImage(crew.getProfileImage())
+                .crewCoins(crew.getCrewCoin())
+                .crewRanking(crewRanking)
+                .averageAge(crewData.getScore().getAge())
+                .averageBodyType(
+                        (crewData.getScore().getMType() + crewData.getScore().getType()) / 2)
+                .activityScore(crewData.getScore().getActivityScore())
+                .basicScore(crewData.getScore().getBasicScore())
+                .intakeScore(crewData.getScore().getIntakeScore())
+                .build();
+    }
+
+    private CrewData buildCrewData(Crew crew) {
+
+        List<User> userList = userRepository.findUserByCrewId(crew.getId());
+        List<ScoreData> userScoreList = userList.stream()
+                .map(user -> calculateUserScore(user.getId()))
+                .toList();
+
+        Long crewId = crew.getId();
+        Exercise crewSports = crew.getExercise();
+        ScoreData score = calculateCrewScore(userScoreList);
+
+        return CrewData.builder()
+                .crewId(crewId)
+                .crewSports(crewSports.getId())
+                .score(score)
+                .build();
+    }
+
+    private ScoreData calculateUserScore(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        BodyHistory bodyHistory = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
+                .orElse(null);
+        int age = bodyPredictWriteService.calculateAge(user.getBirthday());
+        float bodyType = bodyTypeReadService.bodyTypeCoverter(bodyHistory.getBodyType());
+
+        MaxScoresDto scoresDto = userCrewRepository.findMaxScoresByUserId(userId);
+
+        return ScoreData.builder()
+                .mType(bodyType > 6 ? bodyType : 0)
+                .type(bodyType > 6 ? 0 : bodyType)
+                .age(age)
+                .basicScore(scoresDto.getBasicScore())
+                .activityScore(scoresDto.getActivityScore())
+                .intakeScore((float) user.getDailyCaloricIntake())
+                .build();
+    }
+
+    private ScoreData calculateCrewScore(List<ScoreData> scoreDataList) {
+
+        int userCount = scoreDataList.size();
+
+        float totalMType = 0;
+        float totalType = 0;
+        int totalAge = 0;
+        float totalBasicScore = 0;
+        float totalActivityScore = 0;
+        float totalIntakeScore = 0;
+
+        for (ScoreData scoreData : scoreDataList) {
+            totalMType += scoreData.getMType();
+            totalType += scoreData.getType();
+            totalAge += scoreData.getAge();
+            totalBasicScore += scoreData.getBasicScore();
+            totalActivityScore += scoreData.getActivityScore();
+            totalIntakeScore += scoreData.getIntakeScore();
+        }
+
+        return ScoreData.builder()
+                .mType(totalMType / userCount)
+                .type(totalType / userCount)
+                .age(Math.round((float) totalAge / userCount))
+                .basicScore(totalBasicScore / userCount)
+                .activityScore(totalActivityScore / userCount)
+                .intakeScore(totalIntakeScore / userCount)
                 .build();
     }
 

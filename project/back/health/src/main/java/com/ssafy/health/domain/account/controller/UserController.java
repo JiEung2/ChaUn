@@ -11,12 +11,14 @@ import com.ssafy.health.domain.account.service.UserReadService;
 import com.ssafy.health.domain.account.service.UserValidator;
 import com.ssafy.health.domain.account.service.UserWriteService;
 import com.ssafy.health.domain.crew.dto.response.CrewListWithUserScoreResponseDto;
+import com.ssafy.health.domain.crew.service.CrewReadService;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.WeeklyAndDailyExerciseTimeResponseDto;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryReadService;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryWriteService;
+import com.ssafy.health.domain.recommendation.dto.response.RecommendedCrewResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +34,7 @@ public class UserController implements UserControllerApi {
     private final UserWriteService userWriteService;
     private final ExerciseHistoryReadService exerciseHistoryReadService;
     private final ExerciseHistoryWriteService exerciseHistoryWriteService;
+    private final CrewReadService crewReadService;
 
     @GetMapping("/validate-nickname/{nickname}")
     public ApiResponse<ValidateNameSuccessDto> validateNickname(@PathVariable("nickname") String nickname) {
@@ -97,5 +100,10 @@ public class UserController implements UserControllerApi {
     @GetMapping("/recommend-crew")
     public ApiResponse<CrewListWithUserScoreResponseDto> getRecommendedCrew() {
         return ApiResponse.success(userReadService.getRecommendedCrew());
+    }
+
+    @GetMapping("/crew-recommendation/{crew_id}")
+    public ApiResponse<RecommendedCrewResponseDto> getRecommendedCrewDetail(@PathVariable("crew_id") Long crewId) {
+        return ApiResponse.success(crewReadService.getRecommendCrewDetail(crewId));
     }
 }
