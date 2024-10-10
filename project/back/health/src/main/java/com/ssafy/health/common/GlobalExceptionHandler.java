@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.ResourceAccessException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -147,6 +148,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InsufficientCoinsException.class)
     public ResponseEntity<ApiResponse<Void>> handleInsufficientCoinsException(final InsufficientCoinsException e) {
         ApiResponse<Void> response = ApiResponse.error(e.getStatus(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(ResourceAccessException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceAccessException(final ResourceAccessException e) {
+        ApiResponse<Void> response = ApiResponse.error(400, e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 

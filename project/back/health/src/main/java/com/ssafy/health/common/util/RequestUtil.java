@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -23,6 +24,10 @@ public class RequestUtil {
         String jsonBody = objectMapper.writeValueAsString(requestDto);
         HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
 
-        return restTemplate.exchange(url, HttpMethod.POST, request, responseType);
+        try {
+            return restTemplate.exchange(url, HttpMethod.POST, request, responseType);
+        } catch (ResourceAccessException e) {
+            throw new ResourceAccessException(e.getMessage());
+        }
     }
 }
