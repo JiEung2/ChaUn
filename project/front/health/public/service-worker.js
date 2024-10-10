@@ -59,17 +59,18 @@
 
 const CACHE_NAME = 'app-cache-v1';
 const FILES_TO_CACHE = [
-  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standingPants.glb',
-  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5dancingPants.glb',
-  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5entryPants.glb',
-  //마이페이지 관련 파일들
-  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5dancing.glb',
-  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5waving.glb',
-  // //운동 관련 파일들
-  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standing.glb',
-  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5entry.glb',
-  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5sitting.glb',
-  // 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5running.glb',
+  // 바지 포함 전체
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standingPants.glb',
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5dancingPants.glb',
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5entryPants.glb',
+  // 마이페이지 관련 파일들
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5dancing.glb',
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5waving.glb',
+  //운동 관련 파일들
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5standing.glb',
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5entry.glb',
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5sitting.glb',
+  'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/B5running.glb',
   // 필요한 파일들을 여기에 추가
 ];
 
