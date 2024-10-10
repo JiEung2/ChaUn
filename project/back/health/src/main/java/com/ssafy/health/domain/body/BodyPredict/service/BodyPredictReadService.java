@@ -39,7 +39,7 @@ public class BodyPredictReadService {
         Long userId = SecurityUtil.getCurrentUserId();
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Optional<BodyBasicPrediction> basicPrediction = basicRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
+        Optional<BodyBasicPrediction> basicPrediction = basicRepository.findFirstByUserId(userId);
         Optional<BodyHistory> bodyHistory = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
 
         if (basicPrediction.isPresent() && bodyHistory.isPresent()) {
@@ -72,7 +72,7 @@ public class BodyPredictReadService {
         Long userId = SecurityUtil.getCurrentUserId();
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        Optional<BodyExtraPrediction> extraPrediction = extraRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
+        Optional<BodyExtraPrediction> extraPrediction = extraRepository.findFirstByUserId(userId);
         Optional<BodyHistory> bodyHistory = bodyHistoryRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
 
         if (extraPrediction.isPresent() && bodyHistory.isPresent()) {
