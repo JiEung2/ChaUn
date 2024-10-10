@@ -17,7 +17,7 @@ import {
 } from '@/api/crew';
 // import querykeys from '@/utils/querykeys';
 import CloseButton from '@/assets/svg/xCircle.svg';
-import CrewAndMemberList from '@/components/Crew/CrewAndMemberList';
+// import CrewAndMemberList from '@/components/Crew/CrewAndMemberList';
 
 export default function MyCrew() {
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
@@ -333,9 +333,7 @@ export default function MyCrew() {
       )}
 
       {/* 크루 랭킹 */}
-      <div className="crewRankingContainer">
-        <CrewAndMemberList type="member" data={rankingMembers} />
-      </div>
+      <div className="crewRankingContainer">{/* <CrewAndMemberList type="member" data={rankingMembers} /> */}</div>
 
       {/* 퀘스트 모달 */}
       {isQuestModalOpen && (
