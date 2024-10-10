@@ -17,7 +17,7 @@ export default function MyCrew() {
   interface CrewInfo {
     crewId: number;
     crewName: string;
-    crewProfileImage: string;
+    profileImage: string;
     exerciseName: string;
     description: string;
     crewCoins: number;
@@ -211,7 +211,7 @@ export default function MyCrew() {
       <div className="title">내 크루</div>
       <div className="crewInfoContainer">
         <div className="crewInfoHeader">
-          <img className="crewProfileImage" src={crewInfo?.crewProfileImage} alt="crew profile" />
+          <img className="crewProfileImage" src={crewInfo?.profileImage} alt="crew profile" />
           <div className="crewInfo">
             <div className="crewInfoTitle">
               <h3>{crewInfo?.crewName}</h3>

@@ -6,14 +6,14 @@ interface ExerciseTimeResponse {
   weeklyAccumulatedExerciseTime: number;
 }
 
-interface ExerciseRecord {
-  id: number;
-  exerciseDuration: number;
-  burnedCalories: number;
-  exerciseName: string;
-  createdAt: string;
-  data?: ExerciseRecord;
-}
+// interface ExerciseRecord {
+//   id: number;
+//   exerciseDuration: number;
+//   burnedCalories: number;
+//   exerciseName: string;
+//   createdAt: string;
+//   data?: ExerciseRecord;
+// }
 
 // 본인의 이번주, 오늘 운동시간 조회
 export const exerciseTime = async (): Promise<ExerciseTimeResponse> => {
@@ -23,8 +23,9 @@ export const exerciseTime = async (): Promise<ExerciseTimeResponse> => {
 };
 
 // 자신의 특정 주의 운동 기록 조회
-export const exerciseRecord = async (year: number, month: number, week: number): Promise<ExerciseRecord> => {
-  const response = await exportAxios.get<ExerciseRecord>(`${baseUrl}/users/exercise-history/week`, {
+export const exerciseRecord = async (year: number, month: number, week: number) => {
+  console.log('운동기록 조회 날짜 확인', year, month, week);
+  const response = await exportAxios.get(`${baseUrl}/users/exercise-history/week`, {
     params: {
       year,
       month,
