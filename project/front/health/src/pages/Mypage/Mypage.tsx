@@ -13,26 +13,25 @@ import './Mypage.scss';
 import { getUserDetail } from '@/api/user';
 import { getMyCharacter, getPartsList, patchPartsOnOff, getSnapshotList, postSnapshot } from '@/api/character';
 import useUserStore from '@/store/userInfo';
+
 const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation/';
 
 export default function MypagePage() {
   const { userId, nickname, coin, characterFileUrl, setHasCoin, setCharacterFileUrl } = useUserStore();
   const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
-  // const [setPreserveBuffer] = useState(false);
   const [mypageCharacterUrl, setMypageCharacterUrl] = useState(characterFileUrl); // 캐릭터 URL 상태 추가
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
   const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'WOMAN'>('MAN'); // 성별 상태 추가
-
   const [preserveBuffer, setPreserveBuffer] = useState(false);
   const queryClient = useQueryClient();
   interface snapshots {
     snapshotUrl: string;
     createdAt: string;
   }
-  // 로컬 스토리지에서 구매한 파츠 정보 불러오기
+
   useEffect(() => {
     const storedPurchasedParts = localStorage.getItem('purchasedParts');
     if (storedPurchasedParts) {
@@ -40,7 +39,6 @@ export default function MypagePage() {
     }
   }, []);
 
-  // 캐릭터 및 파츠 리스트 조회
   const { data: myDetail } = useSuspenseQuery({
     queryKey: [queryKeys.USER_DETAIL, userId],
     queryFn: () => getUserDetail(userId),
@@ -50,14 +48,13 @@ export default function MypagePage() {
     queryKey: [queryKeys.CHARACTER],
     queryFn: () => getMyCharacter(),
   });
-  console.log('myCharacter.bodyTypeId', myCharacter.bodyTypeId);
+
   useEffect(() => {
     if (myDetail) {
       setGender(myDetail.gender === 'MAN' ? 'MAN' : 'WOMAN');
-      // setCharacterGlbUrl(myDetail.characterFileUrl);
       setHasCoin(myDetail.coins);
     }
-    setMypageCharacterUrl(characterFileUrl);
+    // setMypageCharacterUrl(characterFileUrl);
   }, [myDetail]);
 
   const { data: partsList } = useSuspenseQuery({
@@ -75,14 +72,13 @@ export default function MypagePage() {
     },
   });
 
-  // 캔버스 캡처 핸들러
   const canvasToBlob = (canvas: HTMLCanvasElement): Promise<Blob> => {
     return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (blob) {
           resolve(blob);
         } else {
-          reject(new Error('Canvas to Blob conversion failed.')); // 에러 발생 시 reject
+          reject(new Error('Canvas to Blob conversion failed.'));
         }
       }, 'image/png');
     });
@@ -94,16 +90,13 @@ export default function MypagePage() {
     requestAnimationFrame(async () => {
       if (characterRef.current) {
         try {
-          // 캔버스를 캡처하고 base64로 변환
           const canvas = await html2canvas(characterRef.current as HTMLElement, {
             backgroundColor: '#98e4ff',
           });
 
-          // PNG 파일로 변환
           const blob = await canvasToBlob(canvas);
           const file = new File([blob], 'character_snapshot.png', { type: 'image/png' });
 
-          // FormData 생성 및 'snapshot' 키로 파일 추가
           const formData = new FormData();
           formData.append('snapshot', file);
 
@@ -135,39 +128,32 @@ export default function MypagePage() {
         }))
       : [];
 
-  // 파츠 적용/해제를 위한 mutation
   const partsOnoffMutation = useMutation({
     mutationFn: (parts_id: number) => patchPartsOnOff(parts_id),
-    onSuccess: (response) => {
-      console.log('파츠 적용/해제 성공:', response);
+    onSuccess: (response, parts_id) => {
       const newCharacterUrl = response.characterUrl;
-      console.log('newCharacterUrl', newCharacterUrl);
-      setCharacterFileUrl(newCharacterUrl); // 캐릭터 URL 업데이트
+      setCharacterFileUrl(newCharacterUrl);
       setMypageCharacterUrl(newCharacterUrl);
+      setAppliedParts((prev) => ({ ...prev, [parts_id]: !prev[parts_id] })); // 파츠 적용 상태 토글
     },
     onError: (error) => {
       console.error('파츠 적용/해제 실패:', error);
     },
   });
 
-  // 파츠 적용/해제 핸들러
   const handleApply = (item: any) => {
-    const isApplied = appliedParts[item.id];
-    setAppliedParts((prev) => ({ ...prev, [item.id]: !isApplied })); // 적용/해제 토글
-    partsOnoffMutation.mutate(item.id); // partsOnOff 호출
+    partsOnoffMutation.mutate(item.id);
   };
 
-  // 아이템 구매 후 `isLocked` 해제 로직 추가 및 로컬 스토리지 저장
   const handlePurchase = (item: any) => {
     setPurchasedParts((prev) => {
       const updatedParts = { ...prev, [item.id]: true };
-      localStorage.setItem('purchasedParts', JSON.stringify(updatedParts)); // 구매한 파츠 로컬 스토리지에 저장
+      localStorage.setItem('purchasedParts', JSON.stringify(updatedParts));
       setHasCoin(coin - item.price);
       return updatedParts;
     });
   };
 
-  // 애니메이션 URL 생성 로직 (남성/여성 및 파츠 적용 여부에 따라 다름)
   const generateAnimationUrl = (type: 'standing' | 'dancing' | 'waving') => {
     const hasPartsApplied = Object.values(appliedParts).some((applied) => applied);
 
@@ -192,9 +178,8 @@ export default function MypagePage() {
     }
   };
 
-  // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
   const handleShuffleClick = () => {
-    if (myCharacter.bodyTypeId == 5 || myCharacter.bodyTypeId == 15) {
+    if (myCharacter.bodyTypeId === 5 || myCharacter.bodyTypeId === 15) {
       const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
       const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
       handleButtonClick(randomAnimation);
@@ -203,11 +188,10 @@ export default function MypagePage() {
     }
   };
 
-  // 버튼 클릭 핸들러 - 선택된 애니메이션 업데이트
   const handleButtonClick = (type: 'standing' | 'dancing' | 'waving') => {
     const url = generateAnimationUrl(type);
-    setMypageCharacterUrl(url); // 선택한 모델 URL로 업데이트
-    setActiveAnimation(type); // 현재 선택된 애니메이션 저장
+    setMypageCharacterUrl(url);
+    setActiveAnimation(type);
   };
 
   const mappedItems =
@@ -232,8 +216,8 @@ export default function MypagePage() {
         category,
         price: part.cost,
         image: part.partsImage,
-        isLocked: !purchasedParts[part.id], // 구매 여부에 따라 블러 처리
-        isApplied: appliedParts[part.id] || false, // 적용 상태 추가
+        isLocked: !purchasedParts[part.id],
+        isApplied: appliedParts[part.id] || false,
       };
     }) || [];
 

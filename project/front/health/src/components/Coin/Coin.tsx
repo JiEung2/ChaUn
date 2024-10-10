@@ -1,4 +1,4 @@
-import coinIcon from '@/assets/svg/coin.svg';
+import coinIcon from '@/assets/svg/coin.png';
 import './Coin.scss';
 
 interface CoinProps {
