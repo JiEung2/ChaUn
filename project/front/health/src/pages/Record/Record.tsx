@@ -4,7 +4,7 @@ import BodyWeightRecord from '@/components/Record/BodyWeightRecord';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
-import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
 import { exerciseRecord } from '@/api/home';
 import queryKeys from '@/utils/querykeys';
@@ -19,6 +19,7 @@ export default function RecordPage() {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
+  const [isPredictRequested, setIsPredictRequested] = useState(false);
 
   // 날짜 상태 추가
   const [year, setYear] = useState(new Date().getFullYear());
@@ -89,16 +90,18 @@ export default function RecordPage() {
   });
 
   // 주간 운동 기록 데이터 요청
-  const { data: weeklyExerciseTime } = useSuspenseQuery({
+  const { data: weeklyExerciseTime } = useQuery({
     queryKey: [queryKeys.EXERCISE_HISTORY_WEEK, year, month, week],
     queryFn: () => exerciseRecord(year, month, week),
   });
 
   console.log(year, month, week);
+
   // 예측 데이터
-  const { data: predictionData } = useSuspenseQuery({
-    queryKey: [queryKeys.MY_BODY_PREDICT],
-    queryFn: getPredictBasic,
+  const { data: predictionExtraData, refetch: refetchPrediction } = useQuery({
+    queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
+    queryFn: getPredictExtra,
+    enabled: isPredictRequested, // 예측 요청이 있을 때만 실행
     select: (response) => {
       const { current, p30, p90, current_image, p30_image, p90_image } = response;
       return {
@@ -111,29 +114,14 @@ export default function RecordPage() {
         p30_image,
         p90_image,
       };
+    },
+    onSuccess: () => {
+      setIsPredictRequested(false); // 요청 후 초기화
     },
   });
 
-  const { data: predictionExtraData } = useSuspenseQuery({
-    queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
-    queryFn: getPredictExtra,
-    select: (response) => {
-      const { current, p30, p90, current_image, p30_image, p90_image } = response;
-      return {
-        predictions: [
-          { time: '현재', weight: current },
-          { time: '1달 후', weight: p30 },
-          { time: '3달 후', weight: p90 },
-        ],
-        current_image,
-        p30_image,
-        p90_image,
-      };
-    },
-  });
-  console.log('predictionExtraData', predictionExtraData);
   useEffect(() => {
-    const weeklyExerciseCount = weeklyExerciseTime.exerciseHistoryList?.length || 0;
+    const weeklyExerciseCount = weeklyExerciseTime?.exerciseHistoryList?.length || 0;
     setExerciseDays(weeklyExerciseCount);
   }, [weeklyExerciseTime]);
 
@@ -148,6 +136,8 @@ export default function RecordPage() {
   const handleShowBodyWeightRecord = (exerciseId: number, day: string, duration: string) => {
     setShowBodyWeightRecord(true);
     mutation.mutate({ exerciseId, day, duration });
+    setIsPredictRequested(true); // 예측 요청 트리거
+    refetchPrediction(); // 버튼 클릭 시 데이터 다시 요청
   };
 
   const handleResetInput = () => {
@@ -156,6 +146,7 @@ export default function RecordPage() {
     setDuration('');
     setDay('');
   };
+
   return (
     <div className="recordsContainer">
       <GeneralButton
@@ -170,7 +161,7 @@ export default function RecordPage() {
           <strong>{nickname}님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
         </p>
         {predictionExtraData !== undefined ? (
-          <BodyWeightRecord data={predictionData} />
+          <BodyWeightRecord data={predictionExtraData} />
         ) : (
           <p>
             체형 예측 정보가 없습니다. <br /> 운동을 시작하면 예측을 받아볼 수 있습니다.
