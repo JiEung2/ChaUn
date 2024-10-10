@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import createIcon from '../../assets/svg/crewCreate.svg';
 import recommendIcon from '../../assets/svg/crewRecommend.svg';
 import rankingIcon from '../../assets/svg/crewRanking.svg';
-import leftArrowIcon from '../../assets/svg/leftArrow.svg';
-import rightArrowIcon from '../../assets/svg/rightArrow.svg';
+// import leftArrowIcon from '../../assets/svg/leftArrow.svg';
+// import rightArrowIcon from '../../assets/svg/rightArrow.svg';
 import '../Crew/Crew.scss';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
@@ -33,8 +33,8 @@ interface CrewData {
 export default function CrewPage() {
   const navigate = useNavigate();
   const swiperRef = useRef<any>(null);
-  const [showPrevButton, setShowPrevButton] = useState(false);
-  const [showNextButton, setShowNextButton] = useState(false);
+  // const [showPrevButton, setShowPrevButton] = useState(false);
+  // const [showNextButton, setShowNextButton] = useState(false);
   const { userId, nickname } = useUserStore();
   const { setMultipleBattles, battles } = useBattleDataStore(); // Use the global store to manage battle data
 
