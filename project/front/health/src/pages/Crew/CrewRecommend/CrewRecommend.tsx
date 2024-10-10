@@ -24,7 +24,13 @@ export default function CrewRecommend() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCrewId, setSelectedCrewId] = useState<number | null>(null);
   const [crews, setCrews] = useState<CrewDetail[]>([]); // CrewDetail[]로 타입 지정
-  const [userScore, setUserScore] = useState<userScore>();
+  const [userScore, setUserScore] = useState<userScore>({
+    age: 0,
+    bodyType: 0,
+    basicScore: 0,
+    activityScore: 0,
+    intakeScore: 0,
+  });
   const getCrewRecommendListData = async () => {
     try {
       const response = await getCrewRecommendList();
@@ -77,8 +83,7 @@ export default function CrewRecommend() {
             />
           ))}
         </div>
-
-        {isModalOpen && selectedCrewId !== null && userScore && (
+        {isModalOpen && selectedCrewId !== null && (
           <CrewModal crewId={selectedCrewId} onClose={closeModal} userScore={userScore} />
         )}
       </div>
