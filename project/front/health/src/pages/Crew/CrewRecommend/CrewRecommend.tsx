@@ -41,7 +41,7 @@ export default function CrewRecommend() {
       const mappedCrews = response.crewList.map((crew: CrewDetail) => ({
         crewId: crew.crewId,
         crewProfileImage: crew.crewProfileImage,
-        name: crew.crewName,
+        crewName: crew.crewName,
         exerciseName: crew.exerciseName,
       }));
 
@@ -73,11 +73,11 @@ export default function CrewRecommend() {
       </h3>
       <div className="crew-recommend">
         <div className="crew-grid">
-          {crews?.map((crew) => (
+          {crews.map((crew) => (
             <Crew
               key={crew.crewId} // crewId로 key 설정
               imageUrl={crew.crewProfileImage}
-              name={crew.crewName}
+              crewName={crew.crewName}
               tag={crew.exerciseName}
               onClick={() => handleCrewClick(crew.crewId)}
             />
