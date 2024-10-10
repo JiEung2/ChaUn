@@ -77,6 +77,8 @@ function ExerciseRecordChart() {
   useEffect(() => {
     const fetchAggregatedData = async () => {
       const data = await getAggregatedExerciseData(currentYear, currentMonth, currentWeek);
+
+      console.log('날짜 정리한 데이터', data);
       setAggregatedData(data);
     };
 
@@ -88,8 +90,8 @@ function ExerciseRecordChart() {
 
   const chartData = aggregatedData.map((item) => ({
     day: item.day,
-    time: item.totalTime > 0 ? item.totalTime : null,
-    calories: item.totalCalories > 0 ? item.totalCalories : null,
+    time: item.totalTime || 0, // totalTime이 0이어도 차트에 표시될 수 있도록 수정
+    calories: item.totalCalories || 0, // totalCalories이 0이어도 표시될 수 있도록 수정
   }));
 
   const handleChartClick = (_: any, elements: any) => {
@@ -128,8 +130,8 @@ function ExerciseRecordChart() {
                 {
                   type: 'label' as const,
                   xValue: chartData[clickedIndex].day,
-                  yValue: chartData[clickedIndex].time || 0,
-                  content: [`${formatTime(chartData[clickedIndex].time!) || 0} 분`, `${selectedCalories || 0} kcal`],
+                  yValue: '',
+                  content: [`${formatTime(chartData[clickedIndex].time!) || 0}`, `${selectedCalories || 0} kcal`],
                   enabled: true,
                   font: {
                     size: 10,
@@ -155,6 +157,7 @@ function ExerciseRecordChart() {
           display: false,
         },
       },
+
       time: {
         type: 'linear' as const,
         axis: 'y' as const,
@@ -167,7 +170,7 @@ function ExerciseRecordChart() {
           },
         },
         min: 0,
-        max: 160,
+        max: Math.max(...chartData.map((data) => data.time), 160), // 데이터의 최대 값에 맞춰 max 값 조정
       },
     },
   };
@@ -189,7 +192,7 @@ function ExerciseRecordChart() {
     ],
   };
 
-  if (!chartData || chartData.length === 0) {
+  if (!aggregatedData || aggregatedData.length === 0) {
     return (
       <div className="noChartDataContainer">
         <div className={`noChartData blurred`}>

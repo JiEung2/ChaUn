@@ -23,7 +23,7 @@ export const aggregateExerciseDataByDay = (exerciseRecords: ExerciseRecord[]): A
     totalTime: 0,
     totalCalories: 0,
   }));
-
+  console.log('exerciseRecords', exerciseRecords);
   // 운동 기록 데이터를 요일별로 합산
   exerciseRecords.forEach((record) => {
     const date = new Date(record.createdAt);
