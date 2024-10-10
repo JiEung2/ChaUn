@@ -189,7 +189,6 @@ export default function Exercise() {
         </>
       ) : (
         <div>
-          <p className="finishMent">운동이 종료되었습니다!</p>
           <div className="recordContainer">
             <div className="recordItem">
               <p>⏱ 운동 시간</p>

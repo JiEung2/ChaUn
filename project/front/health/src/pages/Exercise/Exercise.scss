@@ -33,11 +33,6 @@
   }
 }
 
-.finishMent {
-  text-align: center;
-  margin: 0;
-  @include typo.subtitle;
-}
 .recordContainer {
   display: flex;
   flex-direction: column;
