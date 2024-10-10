@@ -347,25 +347,48 @@ public interface UserControllerApi {
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = """
                                     {
-                                       "status": 200,
-                                       "message": "",
-                                       "data": {
-                                         "crewList": [
-                                           {
-                                             "crewId": 1,
-                                             "crewName": "달리자",
-                                             "exerciseName": "러닝",
-                                             "crewProfileImage": "https://c106-chaun.s3.ap-northeast-2.amazonaws.com/file_uuid.jpeg"
-                                           },
-                                           {
-                                             "crewId": 2,
-                                             "crewName": "달리자",
-                                             "exerciseName": "러닝",
-                                             "crewProfileImage": "https://c106-chaun.s3.ap-northeast-2.amazonaws.com/file_uuid.jpeg"
-                                           }
-                                         ]
-                                       }
-                                     }"""
+                                      "status": 200,
+                                      "message": "Success",
+                                      "data": {
+                                        "userId": 3,
+                                        "userScore": {
+                                          "basicScore": 200,
+                                          "activityScore": 300,
+                                          "intakeScore": 2583
+                                        },
+                                        "crewRecommend": [
+                                          {
+                                            "crewId": 1,
+                                            "crewDetail": {
+                                              "name": "zxcvzxcvbnm",
+                                              "description": "무릎아파 관절아파",
+                                              "exerciseName": "걷기",
+                                              "profileImage": "https://picsum.photos/id/1/300"
+                                            },
+                                            "crewScore": {
+                                              "basicScore": 3.8745,
+                                              "activityScore": 0,
+                                              "intakeScore": 1500
+                                            }
+                                          },
+                                          {
+                                            "crewId": 18,
+                                            "crewDetail": {
+                                              "name": "크크크루",
+                                              "description": "ㅋㅋ",
+                                              "exerciseName": "복싱",
+                                              "profileImage": "https://picsum.photos/id/18/300"
+                                            },
+                                            "crewScore": {
+                                              "basicScore": 400,
+                                              "activityScore": 500,
+                                              "intakeScore": 1700
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                    """
                             ))
             )
     })
