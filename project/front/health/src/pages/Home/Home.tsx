@@ -16,6 +16,7 @@ import { patchDeviceToken } from '@/api/user';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import useUserStore from '@/store/userInfo';
 import { getAggregatedExerciseData } from '@/utils/exerciseUtils';
+import { string } from 'three/webgpu';
 
 Chart.register(annotationPlugin);
 
@@ -171,7 +172,7 @@ function ExerciseRecordChart() {
         //   },
         // },
         min: 0,
-        max: Math.max(...chartData.map((data) => data.time), 160), // 데이터의 최대 값에 맞춰 max 값 조정
+        max: Math.max(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / (1000 * 60)), 160), // 데이터의 최대 값에 맞춰 max 값 조정
       },
     },
   };
