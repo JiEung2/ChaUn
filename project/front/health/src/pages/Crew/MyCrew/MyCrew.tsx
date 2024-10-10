@@ -80,7 +80,7 @@ export default function MyCrew() {
     enabled: !!crewId,
   });
 
-  console.log('dailyCrewExercise', dailyCrewExercise);
+  console.log('dailyCrewExercise', dailyCrewExercise.crewMemberDailyDetailList);
 
   const mutation = useMutation({
     mutationFn: () =>
