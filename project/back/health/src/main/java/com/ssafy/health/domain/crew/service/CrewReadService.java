@@ -253,39 +253,49 @@ public class CrewReadService {
                 .orElse(CrewRole.NOT_REGISTERED);
     }
 
-    public RecommendedCrewResponseDto createCrewListResponseDto(RecommendedCrew recommendedCrew) {
-
-        ScoreDataDto userScore = ScoreDataDto.builder()
-                .basicScore(recommendedCrew.getUserScore().getBasicScore())
-                .activityScore(recommendedCrew.getUserScore().getActivityScore())
-                .intakeScore(recommendedCrew.getUserScore().getIntakeScore())
-                .build();
-
-        List<RecommendedCrewInfoDto> recommendedCrewList = recommendedCrew.getCrewRecommend().stream().map(crewInfo -> {
-                    Crew crew = crewRepository.findById(crewInfo.getCrewId()).orElseThrow(CrewNotFoundException::new);
-                    return RecommendedCrewInfoDto.builder()
-                            .crewId(crew.getId())
-                            .crewDetail(RecommendedCrewInfoDto.CrewDetail.builder()
-                                    .name(crew.getName())
-                                    .description(crew.getDescription())
-                                    .profileImage(crew.getProfileImage())
-                                    .exerciseName(crew.getExercise().getName())
-                                    .build())
-                            .crewScore(ScoreDataDto.builder()
-                                    .basicScore(crewInfo.getCrewScore().getBasicScore())
-                                    .activityScore(crewInfo.getCrewScore().getActivityScore())
-                                    .intakeScore(crewInfo.getCrewScore().getIntakeScore())
-                                    .build())
-                            .build();
-                })
+    public CrewListResponseDto createCrewListResponseDto(List<Crew> crewList) {
+        List<CrewInfo> crewInfoList = crewList.stream()
+                .map(this::createCrewInfo)
                 .toList();
 
-        return RecommendedCrewResponseDto.builder()
-                .userId(recommendedCrew.getUserId())
-                .userScore(userScore)
-                .crewRecommend(recommendedCrewList)
+        return CrewListResponseDto.builder()
+                .crewList(crewInfoList)
                 .build();
     }
+
+//    public RecommendedCrewResponseDto createCrewListResponseDto(RecommendedCrew recommendedCrew) {
+//
+//        ScoreDataDto userScore = ScoreDataDto.builder()
+//                .basicScore(recommendedCrew.getUserScore().getBasicScore())
+//                .activityScore(recommendedCrew.getUserScore().getActivityScore())
+//                .intakeScore(recommendedCrew.getUserScore().getIntakeScore())
+//                .build();
+//
+//        List<RecommendedCrewInfoDto> recommendedCrewList = recommendedCrew.getCrewRecommend().stream().map(crewInfo -> {
+//                    Crew crew = crewRepository.findById(crewInfo.getCrewId()).orElseThrow(CrewNotFoundException::new);
+//                    return RecommendedCrewInfoDto.builder()
+//                            .crewId(crew.getId())
+//                            .crewDetail(RecommendedCrewInfoDto.CrewDetail.builder()
+//                                    .name(crew.getName())
+//                                    .description(crew.getDescription())
+//                                    .profileImage(crew.getProfileImage())
+//                                    .exerciseName(crew.getExercise().getName())
+//                                    .build())
+//                            .crewScore(ScoreDataDto.builder()
+//                                    .basicScore(crewInfo.getCrewScore().getBasicScore())
+//                                    .activityScore(crewInfo.getCrewScore().getActivityScore())
+//                                    .intakeScore(crewInfo.getCrewScore().getIntakeScore())
+//                                    .build())
+//                            .build();
+//                })
+//                .toList();
+//
+//        return RecommendedCrewResponseDto.builder()
+//                .userId(recommendedCrew.getUserId())
+//                .userScore(userScore)
+//                .crewRecommend(recommendedCrewList)
+//                .build();
+//    }
 
     public CrewListResponseDto createCrewListResponseDto(List<Crew> crewList, Exercise exercise) {
         List<CrewInfo> crewInfoList = crewList.stream()

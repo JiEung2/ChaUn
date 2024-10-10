@@ -7,11 +7,11 @@ import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.FavoredExercisesRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
+import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.WeeklyAndDailyExerciseTimeResponseDto;
-import com.ssafy.health.domain.recommendation.dto.response.RecommendedCrewResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -392,5 +392,5 @@ public interface UserControllerApi {
                             ))
             )
     })
-    ApiResponse<RecommendedCrewResponseDto> getRecommendedCrew();
+    ApiResponse<CrewListResponseDto> getRecommendedCrew();
 }

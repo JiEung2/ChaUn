@@ -10,13 +10,13 @@ import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.account.service.UserReadService;
 import com.ssafy.health.domain.account.service.UserValidator;
 import com.ssafy.health.domain.account.service.UserWriteService;
+import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.WeeklyAndDailyExerciseTimeResponseDto;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryReadService;
 import com.ssafy.health.domain.exercise.service.ExerciseHistoryWriteService;
-import com.ssafy.health.domain.recommendation.dto.response.RecommendedCrewResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,7 +95,7 @@ public class UserController implements UserControllerApi {
     }
 
     @GetMapping("/recommend-crew")
-    public ApiResponse<RecommendedCrewResponseDto> getRecommendedCrew() {
+    public ApiResponse<CrewListResponseDto> getRecommendedCrew() {
         return ApiResponse.success(userReadService.getRecommendedCrew());
     }
 }
