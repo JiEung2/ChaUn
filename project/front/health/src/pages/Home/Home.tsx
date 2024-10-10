@@ -16,7 +16,6 @@ import { patchDeviceToken } from '@/api/user';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import useUserStore from '@/store/userInfo';
 import { getAggregatedExerciseData } from '@/utils/exerciseUtils';
-import { string } from 'three/webgpu';
 
 Chart.register(annotationPlugin);
 
