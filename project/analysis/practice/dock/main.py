@@ -229,7 +229,7 @@ def make_confirmed_weight(days_30, days_90, data, p30, p90, extra):
 
     calculate_flag = 0
     # 기본적인 보정 가중치 정의
-    if days_30 > 0.03 or days_90 > 0.05:  # 오차율이 크다면 큰 보정
+    if days_30 > 0.03 or days_90 > 0.08:  # 오차율이 크다면 큰 보정
         # if days_30 > 10:
         #     print('30일 예측 - 10kg 이상 차이남, 오차 큼')
         # if days_90 > 15:
@@ -237,7 +237,7 @@ def make_confirmed_weight(days_30, days_90, data, p30, p90, extra):
         weight_adjustment_factor_30 = 0.1
         weight_adjustment_factor_90 = 0.15
         calculate_flag = 1
-    elif days_30 > 0.02 or days_90 > 0.03:  # 중간 정도의 오차율 보정
+    elif days_30 > 0.02 or days_90 > 0.05:  # 중간 정도의 오차율 보정
         # if days_30 > 5:
         #     print('30일 예측 - 5kg 이상 차이남, 오차 보통')
         # if days_90 > 10:
