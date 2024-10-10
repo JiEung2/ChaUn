@@ -600,10 +600,16 @@ def crew_recommendation(request: TotalData):
         now_user = user_df.loc[user_idx]
 
         recommended_crews = recommend_crews(now_user, user_df, crew_df)
-
         result = {
             'user_id': int(now_user['user_id']),
-            'crew_recommended': [{'crew_id': int(crew[0]), 'similarity': round(crew[1], 3)} for crew in recommended_crews],
+            "user": {'basic_score': user_data.iloc[user_idx]['score_1'],
+                     'activity_score': user_data.iloc[user_idx]['score_2'],
+                     'intake_score': user_data.iloc[user_idx]['score_3']},
+            'crew_recommended': [{'crew_id': int(crew[0]), 'similarity': round(crew[1], 3),
+                                  'score': {'basic_score': crew_data.loc[crew_data['crew_id'] == crew[0], 'score_1'].values[0],
+                                            'activity_score': crew_data.loc[crew_data['crew_id'] == crew[0], 'score_2'].values[0],
+                                            'intake_score': crew_data.loc[crew_data['crew_id'] == crew[0], 'score_3'].values[0],
+                                            }} for crew in recommended_crews],
             "created_at": datetime.utcnow()
         }
 
