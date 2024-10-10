@@ -8,6 +8,8 @@ import com.ssafy.health.domain.account.repository.UserCrewRepository;
 import com.ssafy.health.domain.account.repository.UserRepository;
 import com.ssafy.health.domain.battle.dto.response.BattleStatsDto;
 import com.ssafy.health.domain.battle.repository.BattleRepository;
+import com.ssafy.health.domain.character.entity.Character;
+import com.ssafy.health.domain.character.respository.CharacterSetRepository;
 import com.ssafy.health.domain.crew.dto.response.*;
 import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto.CrewInfo;
 import com.ssafy.health.domain.crew.entity.Crew;
@@ -44,6 +46,7 @@ public class CrewReadService {
     private final BattleRepository battleRepository;
     private final ExerciseRepository exerciseRepository;
     private final UserCrewRepository userCrewRepository;
+    private final CharacterSetRepository characterSetRepository;
     private final ExerciseHistoryRepository exerciseHistoryRepository;
 
     public CrewListResponseDto getJoinedCrewList(Long userId) {
@@ -149,17 +152,18 @@ public class CrewReadService {
         return createCrewListResponseDto(crewList, exercise);
     }
 
-    public CrewMemberDailyExerciseTimeListDto getCrewMemberDailyExerciseTimeList(Long crewId) {
+    public CrewMemberDailyDetailListDto getCrewMemberDailyDetailList(Long crewId) {
         List<User> crewMemberList = userRepository.findUserByCrewId(crewId);
         List<Long> crewMemberIdList = crewMemberList.stream()
                 .map(User::getId).toList();
 
         Map<Long, Long> userExerciseTimeMap = getMembersTodayExerciseTime(crewMemberIdList);
+        Map<Long, Character> memberCharacter = getMembersCharacter(crewMemberIdList);
 
-        List<CrewMemberDailyExerciseTime> exerciseTimeList = createCrewDailyExerciseTimeDto(crewMemberList, userExerciseTimeMap);
+        List<CrewMemberDailyDetail> crewMemberDailyDetailList = createCrewDailyDetailDto(crewMemberList, userExerciseTimeMap, memberCharacter);
 
-        return CrewMemberDailyExerciseTimeListDto.builder()
-                .exerciseTimeList(exerciseTimeList)
+        return CrewMemberDailyDetailListDto.builder()
+                .crewMemberDailyDetailList(crewMemberDailyDetailList)
                 .build();
     }
 
@@ -206,6 +210,15 @@ public class CrewReadService {
         LocalDateTime endTime = LocalDateTime.now();
 
         return exerciseHistoryRepository.findUserExerciseTimes(userIdList, startTime, endTime);
+    }
+
+    private Map<Long, Character> getMembersCharacter(List<Long> crewMemberIdList) {
+        List<Object[]> results = characterSetRepository.findCharacterByUserIdIn(crewMemberIdList);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (Long) result[0],
+                        result -> (Character) result[1]
+                ));
     }
 
     private LocalDateTime getStartOfWeek() {
@@ -315,15 +328,17 @@ public class CrewReadService {
                 .build();
     }
 
-    private static List<CrewMemberDailyExerciseTime> createCrewDailyExerciseTimeDto(List<User> crewMemberList, Map<Long, Long> userExerciseTimeMap) {
+    private static List<CrewMemberDailyDetail> createCrewDailyDetailDto(List<User> crewMemberList, Map<Long, Long> userExerciseTimeMap, Map<Long, Character> memberCharacter) {
         return crewMemberList.stream()
                 .map(user -> {
                     Long exerciseTime = userExerciseTimeMap.getOrDefault(user.getId(), 0L);
+                    Character character = memberCharacter.get(user.getId());
 
-                    return CrewMemberDailyExerciseTime.builder()
+                    return CrewMemberDailyDetail.builder()
                             .userId(user.getId())
                             .nickname(user.getNickname())
                             .exerciseTime(exerciseTime)
+                            .characterImageUrl(character.getCharacterImage())
                             .build();
                 })
                 .collect(Collectors.toList());
