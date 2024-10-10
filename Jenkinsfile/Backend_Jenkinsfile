@@ -1,0 +1,173 @@
+pipeline {
+    agent any
+
+    tools {
+        gradle 'gradle_8.10'
+    }
+
+    environment {
+        GITLAB_PROJECT = 's11-bigdata-recom-sub1'
+        GITLAB_REPO = 'S11P21C106'
+        GITLAB_BRANCH = 'develop/BE'
+        GITLAB_CREDENTIAL = 'S11P21C106-Access-Token'
+        DOCKER_IMAGE_NAME = 's11p21c106_backend'
+        DOCKER_REPOSITORY = 'thenoface'
+        DOCKER_CREDENTIAL = 'Dockerhub_Access_Token'
+        MM_CHANNEL = 'c106-jenkins'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${GITLAB_BRANCH}",
+                    url: "https://lab.ssafy.com/${GITLAB_PROJECT}/${GITLAB_REPO}.git",
+                    credentialsId: "${GITLAB_CREDENTIAL}"    
+            }
+        }
+
+        stage('Build Springboot Project') {
+            steps {
+                withCredentials([file(credentialsId: 'Spring_Properties', variable: 'PROPERTIES'),
+                                 file(credentialsId: 'Firebase_credential', variable: 'FIREBASE')])
+                {
+                    dir('project/back/health') {
+                        script {
+                            sh 'rm -rf ./src/main/resources || true'
+                            sh 'mkdir -p ./src/main/resources'
+                            sh 'find ./src/main/resources -type f -exec chmod 0660 {} \\;'
+                            sh '''
+                                cp ${PROPERTIES} ./src/main/resources/application.properties \
+                                || (echo 'Unable to copy properties file'; exit 1)
+                            '''
+                            sh '''
+                                cp ${FIREBASE} ./src/main/resources/firebase-adminsdk.json \
+                                || (echo 'Unable to copy firebase file'; exit 1)
+                            '''
+                            sh 'chmod a+x ./gradlew'
+                            sh './gradlew build'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir('project/back/health') {
+                    withSonarQubeEnv(installationName: 'SSAFY', credentialsId: 'Sonarqube-Token') {
+                        script {
+                            sh './gradlew sonar'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dir('project/back/health') {
+                        docker.build("${DOCKER_REPOSITORY}/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
+
+        stage('Push Image to Dockerhub') {
+            steps {
+                script {
+                    withCredentials([
+                        usernamePassword(credentialsId: "${DOCKER_CREDENTIAL}",
+                                         passwordVariable: 'DOCKER_PASSWORD',
+                                         usernameVariable: 'DOCKER_USERNAME')]) {
+                            sh 'echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin'
+                        }
+                    docker.image("${DOCKER_REPOSITORY}/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").push()
+                    docker.image("${DOCKER_REPOSITORY}/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}").push('latest')
+                }
+            }
+        }
+
+        stage('Backend Deploy') {
+            steps {
+                sh 'docker stop health_backend || true'
+                sh 'docker rm health_backend --force || true'
+                sh '''
+                    docker run --name health_backend \
+                        -d --net caddy --expose 8080 \
+                        -l caddy=j11c106.p.ssafy.io \
+                        -l caddy.0_handle=/api* \
+                        -l caddy.1_handle=/swagger-ui* \
+                        -l caddy.2_handle=/oauth2* \
+                        -l caddy.0_handle.reverse_proxy="{{upstreams 8080}}" \
+                        -l caddy.1_handle.reverse_proxy="{{upstreams 8080}}" \
+                        -l caddy.2_handle.reverse_proxy="{{upstreams 8080}}" \
+                        -v /etc/localtime:/etc/localtime:ro \
+                        --restart=unless-stopped \
+                        --pull never thenoface/s11p21c106_backend:latest
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+        	script {
+                def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                mattermostSend (color: 'good', 
+                message: "**Jenkins 빌드 성공 (BE)**\n${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID} (${Author_Name})\n**<${env.BUILD_URL}|빌드 상세 정보>**",
+                channel: "${MM_CHANNEL}"
+                )
+            }
+        }
+        failure {
+        	script {
+                def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                mattermostSend (color: 'danger', 
+                message: "**Jenkins 빌드 실패 (BE)**\n${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID} (${Author_Name})\n**<${env.BUILD_URL}|빌드 상세 정보>**",
+                channel: "${MM_CHANNEL}"
+                )
+            }
+        }
+        always {
+            script {
+                def imageName = "${DOCKER_REPOSITORY}/${DOCKER_IMAGE_NAME}"
+
+                echo "Getting lastest image ID for ${imageName}"
+                def latestImage = sh(script:
+                    "docker images --filter=reference='${imageName}:latest' --format '{{.ID}}'",
+                    returnStdout: true).trim()
+                echo "Latest Image ID: ${latestImage}"
+
+                echo "Getting previous image(s) ID for ${imageName}"
+                def previousImages = sh(script:
+                    "docker images --filter=reference='${imageName}' --format '{{.ID}}' | grep -v '${latestImage}' || true",
+                    returnStdout: true).trim().replaceAll('\n', ' ')
+
+                if (previousImages) {
+                    echo "Previously built image(s): ${previousImages}"
+                    sh "docker rmi ${previousImages} || echo 'Failed to remove one or more images'"
+                } else {
+                    echo 'Previous built images not found'
+                }
+
+                echo "Getting duplicated image(s) with latest tag (ID: ${latestImage})"
+                def duplicateImages = sh(script:
+                    """
+                    docker images --filter=reference='${imageName}' --format '{{.Repository}}:{{.Tag}} {{.ID}}' \
+                    | grep '${latestImage}' | grep -v ':latest' | awk '{print \$1}' || true
+                    """, returnStdout: true).trim().replaceAll('\n', ' ')
+
+                if (duplicateImages) {
+                    echo "Duplicated image(s) with latest tag: ${duplicateImages}"
+                    sh "docker rmi ${duplicateImages} || echo 'Failed to remove one or more images'"
+                } else {
+                    echo 'Duplicate images not found'
+                }
+            }
+            // cleanWs()
+        }
+    }
+}
