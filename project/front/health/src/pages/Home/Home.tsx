@@ -90,8 +90,8 @@ function ExerciseRecordChart() {
 
   const chartData = aggregatedData.map((item) => ({
     day: item.day,
-    time: item.totalTime > 0 ? item.totalTime : null,
-    calories: item.totalCalories > 0 ? item.totalCalories : null,
+    time: item.totalTime || 0, // totalTime이 0이어도 차트에 표시될 수 있도록 수정
+    calories: item.totalCalories || 0, // totalCalories이 0이어도 표시될 수 있도록 수정
   }));
 
   const handleChartClick = (_: any, elements: any) => {
@@ -191,7 +191,7 @@ function ExerciseRecordChart() {
     ],
   };
 
-  if (!chartData || chartData.length === 0) {
+  if (!aggregatedData || aggregatedData.length === 0) {
     return (
       <div className="noChartDataContainer">
         <div className={`noChartData blurred`}>
