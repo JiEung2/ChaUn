@@ -12,7 +12,7 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
 import { exerciseTime, exerciseRecord } from '@/api/home';
 import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
-import { getUserDetail, patchDeviceToken } from '@/api/user';
+import { patchDeviceToken } from '@/api/user';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import useUserStore from '@/store/userInfo';
 Chart.register(annotationPlugin);
@@ -22,11 +22,11 @@ interface ExerciseTimeResponse {
   weeklyAccumulatedExerciseTime: number;
 }
 
-interface ChartData {
-  day: string;
-  time: number;
-  calories: number;
-}
+// interface ChartData {
+//   day: string;
+//   time: number;
+//   calories: number;
+// }
 
 interface ExerciseRecord {
   createdAt: string;
