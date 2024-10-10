@@ -134,7 +134,8 @@ async def load_model_startup(app: FastAPI):
     input_shape = (timesteps, features)
 
     model = build_model(input_shape, forecast_steps)
-    model = load_model_weights(model, "./models/modelv12.weights.h5")
+    # model = load_model_weights(model, "./models/modelv12.weights.h5")
+    model = load_model_weights(model, "./models/modelv12_v1.weights.h5")
     model.summary()
 
     # Load the saved MinMaxScaler and OneHotEncoder
@@ -252,10 +253,14 @@ def make_confirmed_weight(days_30, days_90, data, p30, p90, extra):
 
     # 칼로리 소모량에 따라 추가 가중치 적용
     if calculate_flag:
-        if cal_average >= 500:
+        if cal_average >= 1000:
+            print("운동량이 굉장히 많음 - 체중 감소 가중치 적용")
+            pred_30_adjustment = np.random.uniform(-3, -1.5)  # 체중 감소 가중치
+            pred_90_adjustment = np.random.uniform(-10, -9)
+        elif cal_average >= 500:
             print("운동량이 많음 - 체중 감소 가중치 적용")
             pred_30_adjustment = np.random.uniform(-1.5, -0.5)  # 체중 감소 가중치
-            pred_90_adjustment = np.random.uniform(-0.5, 0)
+            pred_90_adjustment = np.random.uniform(-4, -3)
         elif cal_average >= 350:
             print("운동량이 보통")
             pred_30_adjustment = np.random.uniform(-0.5, 0.5)  # 체중 증가 가중치
@@ -266,9 +271,8 @@ def make_confirmed_weight(days_30, days_90, data, p30, p90, extra):
             pred_90_adjustment = np.random.uniform(1, 2.5)
         
         if extra:
-            extra_variable = np.random.uniform(0, 0.5)
-            pred_30_adjustment -= extra_variable
-            pred_90_adjustment -= extra_variable
+            pred_30_adjustment -= np.random.uniform(0, 0.5)
+            pred_90_adjustment -= np.random.uniform(0.5, 1)
 
     else:
         pred_30_adjustment = 0
