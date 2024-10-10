@@ -29,7 +29,7 @@ export default function MyCrew() {
   const [opponentCrew, setOpponentCrew] = useState('3대 500만원'); // 상대 팀 정보
 
   const [crewInfo, setCrewInfo] = useState<CrewInfo>(); // 크루 상세 조회
-  const [rankingMembers, setRankingMembers] = useState<RankingMember[]>(); // 크루 내 랭킹 조회
+  const [setRankingMembers] = useState<RankingMember[]>(); // 크루 내 랭킹 조회
   const [_, setTodayQuests] = useState<todayQuest[]>(); // 크루 퀘스트
   const [battleStatus, setBattleStatus] = useState<battleStatus>();
 
@@ -100,7 +100,7 @@ export default function MyCrew() {
     try {
       const response = await getCrewRanking(crewId);
       console.log('크루 내 랭킹 조회', setRankingMembers);
-      setRankingMembers(response);
+      // setRankingMembers(response);
       return response;
     } catch (error) {
       console.error('Error fetching crew ranking:', error);
