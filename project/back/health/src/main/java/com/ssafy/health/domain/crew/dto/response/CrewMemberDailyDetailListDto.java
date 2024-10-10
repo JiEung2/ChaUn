@@ -7,6 +7,6 @@ import java.util.List;
 
 @Getter
 @Builder
-public class CrewMemberDailyExerciseTimeListDto {
-    List<CrewMemberDailyExerciseTime> exerciseTimeList;
+public class CrewMemberDailyDetailListDto {
+    List<CrewMemberDailyDetail> crewMemberDailyDetailList;
 }
