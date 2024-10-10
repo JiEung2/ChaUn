@@ -561,7 +561,8 @@ def crew_recommendation(request: TotalData):
 
         result = {
             'user_id': int(now_user['user_id']),
-            'crew_recommended': [{'crew_id': int(crew[0]), 'similarity': round(crew[1], 3)} for crew in recommended_crews]
+            'crew_recommended': [{'crew_id': int(crew[0]), 'similarity': round(crew[1], 3)} for crew in recommended_crews],
+            "created_at": datetime.utcnow()
         }
 
         crew_recommend.insert_one(result)
