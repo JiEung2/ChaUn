@@ -22,7 +22,6 @@ import CrewRanking from './pages/Crew/CrewRanking/CrewRanking';
 import CrewDetail from './pages/Crew/CrewDetail/CrewDetail';
 import OAuth from './pages/OAuth/OAuth';
 import CrewBattle from './pages/Crew/CrewBattle/CrewBattle';
-// import CrewCreate from './pages/Crew/CrewCreate/CrewCreate';
 import { Toaster } from 'react-hot-toast';
 import Lottie from 'lottie-react';
 import LoadingLottile from '@/assets/Lottie/loading.json';

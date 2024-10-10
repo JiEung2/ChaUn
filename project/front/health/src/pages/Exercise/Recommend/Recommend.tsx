@@ -6,7 +6,8 @@ import { getExerciseRecommendation } from '@/api/exercise';
 import queryKeys from '@/utils/querykeys'; // 제공된 쿼리 키를 가져옴
 import useUserStore from '@/store/userInfo';
 import ExerciseRecommendImage from '@/assets/image/exerciseRecommendImage.png';
-
+import Lottie from 'lottie-react';
+import LoadingLottile from '@/assets/Lottie/loading.json';
 interface ExerciseRecommendation {
   id: number;
   exerciseName: string;
@@ -31,7 +32,22 @@ export default function ExerciseRecommendPage() {
   console.log('recommendations:', recommendations);
   // 데이터가 로딩 중일 때
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          textAlign: 'center',
+        }}>
+        <Lottie animationData={LoadingLottile} style={{ width: '200px', height: '200px' }} />
+        <p>
+          페이지 로딩 중 입니다. <br /> 잠시만 기다려주세요.
+        </p>
+      </div>
+    );
   }
 
   // 에러 발생 시
