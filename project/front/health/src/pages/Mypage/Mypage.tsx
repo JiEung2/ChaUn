@@ -140,7 +140,7 @@ export default function MypagePage() {
     mutationFn: (parts_id: number) => patchPartsOnOff(parts_id),
     onSuccess: (response, parts_id) => {
       const newCharacterUrl = response.characterUrl;
-      setCharacterFileUrl(newCharacterUrl);
+      setCharacterFileUrl(newCharacterUrl); // 주스탄드에 새로운 URL 저장
       setMypageCharacterUrl(newCharacterUrl);
       setAppliedParts((prev) => ({ ...prev, [parts_id]: !prev[parts_id] }));
     },

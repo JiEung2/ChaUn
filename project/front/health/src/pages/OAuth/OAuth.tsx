@@ -4,10 +4,11 @@ import { useEffect } from 'react'; // 특정 작업을 수행하기 위해 사�
 import axios from 'axios';
 import useUserStore from '@/store/userInfo';
 import { checkSurvey } from '@/api/survey';
+import { getUserDetail } from '@/api/user'; // 유저 정보를 가져오는 API
 
 const OAuthCallback = () => {
   const navigate = useNavigate(); // useNavigate 훅을 사용하여 페이지를 이동합니다.
-  const { setUserId } = useUserStore(); // 훅을 컴포넌트 내부로 이동
+  const { setUserId, setNickname, setHasCoin, setGender, setCharacterFileUrl } = useUserStore(); // 훅을 컴포넌트 내부로 이동
 
   const reissueAccessToken = async () => {
     try {
@@ -22,6 +23,13 @@ const OAuthCallback = () => {
         setUserId(response.headers['userid']);
         const newAccessToken = response.headers['access'];
         setAccessToken(newAccessToken);
+
+        // 유저 상세 정보 가져오기
+        const userDetailResponse = await getUserDetail(response.headers['userid']);
+        setNickname(userDetailResponse.nickname);
+        setHasCoin(userDetailResponse.coin);
+        setGender(userDetailResponse.gender);
+        setCharacterFileUrl(userDetailResponse.characterFileUrl);
 
         // 서비스 워커에 캐싱 요청
         if (navigator.serviceWorker.controller) {
