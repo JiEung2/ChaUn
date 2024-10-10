@@ -40,7 +40,7 @@ export default function MyCrew() {
   interface Member {
     nickname: string;
     userId: number;
-    // characterImage: string;
+    // characterImageUrl: string;
     userProfileImage: string;
     exerciseTime: number;
   }
@@ -254,7 +254,7 @@ export default function MyCrew() {
           </button>
           <img
             className="memberProfileImage"
-            src={dailyCrewExercise[currentMemberIndex].characterImage}
+            src={dailyCrewExercise[currentMemberIndex].characterImageUrl}
             alt="member profile"
           />
           <div className="memberInfo">
