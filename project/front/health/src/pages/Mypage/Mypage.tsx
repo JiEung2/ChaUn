@@ -54,7 +54,7 @@ export default function MypagePage() {
       setGender(myDetail.gender === 'MAN' ? 'MAN' : 'WOMAN');
       setHasCoin(myDetail.coins);
     }
-    setMypageCharacterUrl(characterFileUrl);
+    // setMypageCharacterUrl(characterFileUrl);
   }, [myDetail]);
 
   const { data: partsList } = useSuspenseQuery({
