@@ -139,6 +139,7 @@ export default function MypagePage() {
   const partsOnoffMutation = useMutation({
     mutationFn: (parts_id: number) => patchPartsOnOff(parts_id),
     onSuccess: (response) => {
+      console.log('파츠 적용/해제 성공:', response);
       const newCharacterUrl = response.characterUrl;
       console.log('newCharacterUrl', newCharacterUrl);
       setCharacterFileUrl(newCharacterUrl); // 캐릭터 URL 업데이트
