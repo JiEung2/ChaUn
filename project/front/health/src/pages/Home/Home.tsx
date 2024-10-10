@@ -163,13 +163,13 @@ function ExerciseRecordChart() {
         type: 'linear' as const,
         axis: 'y' as const,
         beginAtZero: true,
-        display: false,
-        // ticks: {
-        //   stepSize: 10,
-        //   callback: function (value: string | number) {
-        //     return `${value}`;
-        //   },
-        // },
+        display: true,
+        ticks: {
+          stepSize: 10,
+          callback: function (value: string | number) {
+            return `${value}`;
+          },
+        },
         min: 0,
         max: Math.max(...chartData.map((data) => (data.time % (1000 * 60)) / 60), 160), // 데이터의 최대 값에 맞춰 max 값 조정
       },
