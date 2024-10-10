@@ -74,7 +74,7 @@ public class UserReadService {
 
     public CrewListResponseDto getRecommendedCrew() {
         Long userId = SecurityUtil.getCurrentUserId();
-        Optional<RecommendedCrew> recommendedCrew = recommendedCrewRepository.findByUserId(userId);
+        Optional<RecommendedCrew> recommendedCrew = recommendedCrewRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
 
         if (recommendedCrew.isPresent()) {
             List<Crew> crewList = recommendedCrew.get().getCrewRecommend().stream()
