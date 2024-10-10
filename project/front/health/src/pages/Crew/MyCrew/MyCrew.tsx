@@ -40,7 +40,7 @@ export default function MyCrew() {
   interface Member {
     nickname: string;
     userId: number;
-    // characterImageUrl: string;
+    characterImageUrl: string;
     userProfileImage: string;
     exerciseTime: number;
   }
@@ -80,7 +80,7 @@ export default function MyCrew() {
     enabled: !!crewId,
   });
 
-  console.log(dailyCrewExercise);
+  console.log('dailyCrewExercise', dailyCrewExercise);
 
   const mutation = useMutation({
     mutationFn: () =>
