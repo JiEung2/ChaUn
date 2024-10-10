@@ -90,14 +90,14 @@ function ExerciseRecordChart() {
   const currentMonth = currentDate.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줌
   const currentWeek = Math.ceil(currentDate.getDate() / 7); // 날짜를 7로 나누어 몇 번째 주인지 계산
 
-  const { data: exerciseHistoryList } = useExerciseRecord(currentYear, currentMonth, currentWeek);
-  console.log(' 이번 주 운동 기록', exerciseHistoryList);
+  const { data } = useExerciseRecord(currentYear, currentMonth, currentWeek);
+  console.log(' 이번 주 운동 기록', data);
   // const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 4);
   const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
-  const chartData = Array.isArray(exerciseHistoryList)
-    ? exerciseHistoryList.map((record: ExerciseRecord) => ({
+  const chartData = Array.isArray(data.exerciseHistoryList)
+    ? data.exerciseHistoryList.map((record: ExerciseRecord) => ({
         day: new Date(record.createdAt).toLocaleDateString('ko-KR', { weekday: 'short' }),
         time: record.exerciseDuration / 60, // 초 단위를 분으로 변환
         calories: record.burnedCalories,
