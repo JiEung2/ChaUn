@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import styles from '@/pages/Crew/CrewDetail/CrewDetail.module.scss';
-import UserImg from '../../../assets/image/userImg.png';
+import UserImg from '@/assets/image/userImg.png';
 
 interface Member {
   userId: number;
