@@ -90,9 +90,9 @@ export default function CrewBattle() {
             dday={battleToRender.dday}
             exerciseName={battleToRender.exerciseName}
             myCrewName={battleToRender.myCrewName}
-            myCrewScore={battleToRender.myCrewScore}
+            myCrewScore={Math.floor(battleToRender.myCrewScore)}
             opponentCrewName={battleToRender.opponentCrewName}
-            opponentCrewScore={battleToRender.opponentCrewScore}
+            opponentCrewScore={Math.floor(battleToRender.opponentCrewScore)}
             buttonState={ButtonState.NONE}
           />
           <div className="ranking__started">
