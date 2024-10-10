@@ -169,7 +169,7 @@ function ExerciseRecordChart() {
           },
         },
         min: 0,
-        max: 160,
+        max: Math.max(...chartData.map((data) => data.time), 160), // 데이터의 최대 값에 맞춰 max 값 조정
       },
     },
   };
