@@ -116,8 +116,8 @@ public class QuestWriteService {
 
     private void endQuests(QuestPeriod period) {
 
-        userQuestRepository.updateAllStatusByPeriod(period, QuestStatus.FINISHED);
-        crewQuestRepository.updateAllStatusByPeriod(period, QuestStatus.FINISHED);
+        userQuestRepository.updateAllStatusByPeriod(period, QuestStatus.CREATED, QuestStatus.FINISHED);
+        crewQuestRepository.updateAllStatusByPeriod(period, QuestStatus.CREATED, QuestStatus.FINISHED);
     }
 
     private Quest questBuilder(QuestType type, String title, QuestPeriod period, Integer coins) {

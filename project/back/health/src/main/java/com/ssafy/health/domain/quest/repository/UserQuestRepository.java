@@ -16,8 +16,8 @@ public interface UserQuestRepository extends JpaRepository<UserQuest, Long> {
     List<UserQuest> findAllByUserAndStatus(User user, List<QuestStatus> status);
 
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE UserQuest uq SET uq.status = :status WHERE uq.quest.period = :period")
-    void updateAllStatusByPeriod(QuestPeriod period, QuestStatus status);
+    @Query("UPDATE UserQuest uq SET uq.status = :after WHERE uq.quest.period = :period AND uq.status = :before")
+    void updateAllStatusByPeriod(QuestPeriod period, QuestStatus before, QuestStatus after);
 
     @Query("""
             SELECT DISTINCT uq FROM UserQuest uq JOIN FETCH uq.quest q
