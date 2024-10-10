@@ -9,7 +9,6 @@ import { getPredictBasic, postPredictExerciseDetail } from '@/api/record';
 import { exerciseRecord } from '@/api/home';
 import queryKeys from '@/utils/querykeys';
 import useUserStore from '@/store/userInfo';
-// import { div } from 'three/webgpu';
 
 export default function RecordPage() {
   const { nickname } = useUserStore();
@@ -20,13 +19,12 @@ export default function RecordPage() {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
+  const [exercisePredictionData, setExercisePredictionData] = useState(null); // 운동 예측 데이터를 위한 상태 추가
 
-  // 날짜 상태 추가
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [week, setWeek] = useState(1);
 
-  // 저번 주 계산
   useEffect(() => {
     const getMondayOfWeek = (date: Date) => {
       const day = date.getDay();
@@ -75,16 +73,16 @@ export default function RecordPage() {
   const mutation = useMutation({
     mutationFn: ({ exerciseId, day, duration }: { exerciseId: number; day: string; duration: string }) =>
       postPredictExerciseDetail(exerciseId, Number(day), Number(duration)),
-    onSuccess: (data) => {
+    onSuccess: (response) => {
+      const { data } = response;
       console.log('운동 예측 요청 성공', data);
+      setExercisePredictionData(data); // 운동 예측 데이터를 상태로 저장
       setShowBodyWeightRecord(true);
     },
     onError: (error) => {
       console.error(`운동 예측 요청 중 에러 발생: ${error}`);
     },
   });
-
-  console.log('mutation', mutation);
 
   // 주간 운동 기록 데이터 요청
   const { data: weeklyExerciseTime } = useSuspenseQuery({
@@ -134,6 +132,7 @@ export default function RecordPage() {
     setExerciseId(null);
     setDuration('');
     setDay('');
+    setExercisePredictionData(null); // 운동 예측 데이터 초기화
   };
 
   return (
@@ -182,9 +181,8 @@ export default function RecordPage() {
               <strong>총 {day}일</strong> 추가로 진행했을 때 <br />
               예측되는 체형을 알려드릴게요!
             </p>
-            {mutation.isSuccess && mutation.data ? (
-              // <BodyWeightRecord data={mutation.data} />
-              <div>테스트</div>
+            {mutation.isSuccess && exercisePredictionData ? (
+              <BodyWeightRecord data={exercisePredictionData} />
             ) : (
               <p>운동에 따른 체형 예측 정보가 없습니다.</p>
             )}
