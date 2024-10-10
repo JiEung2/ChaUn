@@ -75,7 +75,7 @@ export default function BodyType({ onBodyDataChange }: BodyTypeProps) {
       <div className={styles['inputWrapper']}>
         <h2>골격근량</h2>
         <Input
-          placeholder="숫자만 입력해주세요."
+          placeholder="(선택 사항)"
           size="medium"
           onChange={handleSkeletalMuscleMassChange}
           value={skeletalMuscleMass}
@@ -83,7 +83,7 @@ export default function BodyType({ onBodyDataChange }: BodyTypeProps) {
       </div>
       <div className={styles['inputWrapper']}>
         <h2>체지방률</h2>
-        <Input placeholder="숫자만 입력해주세요." size="medium" onChange={handleBodyFatChange} value={bodyFat} />
+        <Input placeholder="(선택 사항)" size="medium" onChange={handleBodyFatChange} value={bodyFat} />
       </div>
       <h2>근육 여부</h2>
       <div className={styles['selectButtonWrapper']}>
