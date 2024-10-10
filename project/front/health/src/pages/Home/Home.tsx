@@ -16,6 +16,7 @@ import { patchDeviceToken } from '@/api/user';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import useUserStore from '@/store/userInfo';
 import { getAggregatedExerciseData } from '@/utils/exerciseUtils';
+import { string } from 'three/webgpu';
 
 Chart.register(annotationPlugin);
 
@@ -143,7 +144,8 @@ function ExerciseRecordChart() {
                     left: 5,
                     right: 5,
                   },
-                  yAdjust: chartData[clickedIndex].time && chartData[clickedIndex].time <= 100 ? -20 : 20,
+
+                  yAdjust: chartData[clickedIndex].time && chartData[clickedIndex].time <= 100 ? -40 : 20,
                   xAdjust: clickedIndex === 0 ? 20 : clickedIndex === chartData.length - 1 ? -20 : 0,
                 },
               ]
@@ -162,15 +164,15 @@ function ExerciseRecordChart() {
         type: 'linear' as const,
         axis: 'y' as const,
         beginAtZero: true,
-        display: false,
-        ticks: {
-          stepSize: 10,
-          callback: function (value: string | number) {
-            return `${value}`;
-          },
-        },
+        display: true,
+        // ticks: {
+        //   stepSize: 10,
+        //   callback: function (value: string | number) {
+        //     return `${value}`;
+        //   },
+        // },
         min: 0,
-        max: Math.max(...chartData.map((data) => data.time), 160), // 데이터의 최대 값에 맞춰 max 값 조정
+        max: Math.max(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / (1000 * 60)), 160), // 데이터의 최대 값에 맞춰 max 값 조정
       },
     },
   };
