@@ -24,10 +24,9 @@ import numpy as np
 import joblib
 from copy import deepcopy as dp
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Input, BatchNormalization
+from tensorflow.keras.layers import LSTM, Dense, Input, BatchNormalization, LayerNormalization
 from scipy.spatial.distance import euclidean
 from sklearn.metrics.pairwise import cosine_similarity
-from keras.models import load_model
 
 # .env 파일의 환경 변수를 로드
 load_dotenv()
@@ -78,16 +77,27 @@ class UserExerciseRequest(BaseModel):
 
 ### AI 회귀 모델 처리 ###
 # 모델 구조 정의 - 기존과 똑같은 구조를 불러오기
-# v7
+# v12
 def build_model(input_shape, forecast_steps):
     model = Sequential()
     model.add(Input(shape=input_shape))
     model.add(LSTM(units=32, dropout=0.5, return_sequences=True))
     model.add(LSTM(units=32, dropout=0.5))
     model.add(Dense(32, activation='tanh'))
-    model.add(BatchNormalization())
+    model.add(LayerNormalization())
     model.add(Dense(units=forecast_steps, activation='sigmoid'))  # 90일 예측
     return model
+
+# # v7
+# def build_model(input_shape, forecast_steps):
+#     model = Sequential()
+#     model.add(Input(shape=input_shape))
+#     model.add(LSTM(units=32, dropout=0.5, return_sequences=True))
+#     model.add(LSTM(units=32, dropout=0.5))
+#     model.add(Dense(32, activation='tanh'))
+#     model.add(BatchNormalization())
+#     model.add(Dense(units=forecast_steps, activation='sigmoid'))  # 90일 예측
+#     return model
 
 # model v2
 # def build_model(input_shape, forecast_steps):
@@ -116,7 +126,7 @@ def make_predictions(model, X_test):
 # 모델 로드 함수
 @asynccontextmanager
 async def load_model_startup(app: FastAPI):
-    global model, scaler, encoder
+    global model, encoder, scaler_bmi, scaler_weight, scaler_calories 
 
     timesteps = 7
     features = 6 # [sex_1, sex_2, age, BMI, weight, comsumed_cal] = 6 features
@@ -124,11 +134,16 @@ async def load_model_startup(app: FastAPI):
     input_shape = (timesteps, features)
 
     model = build_model(input_shape, forecast_steps)
-    model = load_model_weights(model, "./models/modelv6.weights.h5")
+    model = load_model_weights(model, "./models/modelv12.weights.h5")
     model.summary()
 
     # Load the saved MinMaxScaler and OneHotEncoder
-    scaler = joblib.load('./models/minmax_scaler_v2.pkl')
+    encoder = joblib.load('./models/onehot_encoder_v2.pkl')
+
+    # Load the saved MinMaxScaler and OneHotEncoder
+    scaler_bmi = joblib.load('./models/minmax_scaler_bmi.pkl')
+    scaler_weight = joblib.load('./models/minmax_scaler_weight.pkl')
+    scaler_calories = joblib.load('./models/minmax_scaler_calories.pkl')
     encoder = joblib.load('./models/onehot_encoder_v2.pkl')
 
     yield
@@ -137,11 +152,11 @@ async def load_model_startup(app: FastAPI):
 
 # 모델 수행 이후 처리 함수
 def model_predict(data_test):
-    global scaler
+    global scaler_weight
 
     predictions = make_predictions(model, data_test)  # 7일 입력 X -> 그 다음 1일 부터 ~ 90일 앞까지 값을 Y
     # 체중 값을 역변환 (age, BMI, calories는 0으로 두고, weight 값만 역변환)
-    inverse_weight_predictions = scaler.inverse_transform(
+    inverse_weight_predictions = scaler_weight.inverse_transform(
         np.hstack([np.zeros((predictions.shape[1], 2)),  # 나이, BMI 0
                    predictions.reshape(-1, 1),           # weight 예측값 (역변환 대상)
                    np.zeros((predictions.shape[1], 1))])  # 칼로리 0
@@ -165,20 +180,17 @@ def convert_objectid(data):
 
 # 데이터 전처리 함수
 def preprocess_data(exercise_data):
-    global encoder, scaler
-
-    ### Ver 2
-    exercise_data = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data])
-    # 역 연산처리
-    # 성별 피처 - 인코더 적용
-    sex_encoded = encoder.transform(pd.DataFrame(exercise_data[:, [0]], columns=['sex']))
-    # 수치형 데이터 - 스케일러 적용
-    numerical_data = scaler.transform(pd.DataFrame(exercise_data[:, 1:], columns=['age', 'BMI', 'weight', 'calories']))  # remaining columns: 나이, BMI, 몸무게, 칼로리
-    # 성별 + 수치형 데이터
-    processed_data = np.hstack([sex_encoded, numerical_data])
-
-    return processed_data
-
+    # ### Ver 2
+    # global encoder, scaler
+    # exercise_data = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data])
+    # # 역 연산처리
+    # # 성별 피처 - 인코더 적용
+    # sex_encoded = encoder.transform(pd.DataFrame(exercise_data[:, [0]], columns=['sex']))
+    # # 수치형 데이터 - 스케일러 적용
+    # numerical_data = scaler.transform(pd.DataFrame(exercise_data[:, 1:], columns=['age', 'BMI', 'weight', 'calories']))  # remaining columns: 나이, BMI, 몸무게, 칼로리
+    # # 성별 + 수치형 데이터
+    # processed_data = np.hstack([sex_encoded, numerical_data])
+    # return processed_data
 
     ### Ver 7 이후 (Encoder 적용)
     # df = [exercise.dict() for exercise in exercise_data]
@@ -193,6 +205,23 @@ def preprocess_data(exercise_data):
     # # 수치형 피처 스케일링
     # df[['age', 'BMI', 'weight', 'calories']] = scaler.transform(df[['age', 'BMI', 'weight', 'calories']])
 
+    # v12
+    global encoder, scaler_bmi, scaler_weight, scaler_calories
+
+    # 입력으로 받은 데이터를 어레이로 저장
+    exercise_data = np.array([[data.sex, data.age, data.bmi, data.weight, data.calories] for data in exercise_data])
+    # 역 연산처리
+    # 성별 피처 - 인코더 적용
+    sex_encoded = encoder.transform(exercise_data[:, [0]])
+    # 수치형 데이터 - 스케일러 적용
+    bmi_scaled = scaler_bmi.transform(exercise_data[:, [2]])  # remaining columns: 나이, BMI, 몸무게, 칼로리
+    weight_scaled = scaler_bmi.transform(exercise_data[:, [3]])  # remaining columns: 나이, BMI, 몸무게, 칼로리
+    calories_scaled = scaler_bmi.transform(exercise_data[:, [4]])  # remaining columns: 나이, BMI, 몸무게, 칼로리
+    # 성별 + 수치형 데이터
+    processed_data = np.hstack([sex_encoded, exercise_data[:, [1]], bmi_scaled, weight_scaled, calories_scaled])
+
+    return processed_data
+
 # 보정 함수
 def make_confirmed_weight(days_30, days_90, data, p30, p90):
     last_weight = data[-1].weight
@@ -201,30 +230,36 @@ def make_confirmed_weight(days_30, days_90, data, p30, p90):
     calculate_flag = 0
     # 기본적인 보정 가중치 정의
     if days_30 > 10 or days_90 > 15:  # 오차율이 크다면 큰 보정
-        print('오차 큼')
+        # if days_30 > 10:
+        #     print('30일 예측 - 10kg 이상 차이남, 오차 큼')
+        # if days_90 > 15:
+        #     print('90일 예측 - 15kg 이상 차이남, 오차 큼')
         weight_adjustment_factor_30 = 0.1
         weight_adjustment_factor_90 = 0.15
         calculate_flag = 1
     elif days_30 > 5 or days_90 > 10:  # 중간 정도의 오차율 보정
-        print('오차 보통')
+        # if days_30 > 5:
+        #     print('30일 예측 - 5kg 이상 차이남, 오차 보통')
+        # if days_90 > 10:
+        #     print('90일 예측 - 10kg 이상 차이남, 오차 보통')
         weight_adjustment_factor_30 = 0.35
         weight_adjustment_factor_90 = 0.4
         calculate_flag = 1
     else:  # 오차가 작을 경우 보정 없이
-        print('오차 작음')
-        weight_adjustment_factor_30 = 1
-        weight_adjustment_factor_90 = 1
+        # print('30일 예측, 90일 예측, 오차 작음')
+        weight_adjustment_factor_30 = 0.8
+        weight_adjustment_factor_90 = 0.8
 
     # 칼로리 소모량에 따라 추가 가중치 적용
     if calculate_flag:
         if cal_average >= 500:
             print("운동량이 많음 - 체중 감소 가중치 적용")
-            pred_30_adjustment = np.random.uniform(-2, -1)  # 체중 감소 가중치
-            pred_90_adjustment = np.random.uniform(-3, -2)
+            pred_30_adjustment = np.random.uniform(-1.5, -0.5)  # 체중 감소 가중치
+            pred_90_adjustment = np.random.uniform(-0.5, 0)
         elif cal_average >= 350:
             print("운동량이 보통")
-            pred_30_adjustment = np.random.uniform(-1, 0)  # 체중 증가 가중치
-            pred_90_adjustment = np.random.uniform(-2, -1)
+            pred_30_adjustment = np.random.uniform(-0.5, 0.5)  # 체중 증가 가중치
+            pred_90_adjustment = np.random.uniform(-1, -0.5)
         else:
             print("운동량이 적음 - 체중 증가 가중치 적용")
             pred_30_adjustment = np.random.uniform(0, 1)  # 체중 증가 가중치
@@ -299,6 +334,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
         #     pred_90_d = round((cal_weight + pred_30_d + pred_90_d) / 3 + np.random.normal(-1, 1), 2)
         p30_diff = abs(last_weight - pred_30_d)
         p90_diff = abs(last_weight - pred_90_d)
+        print(pred_30_d, pred_90_d)
         pred_30_d, pred_90_d = make_confirmed_weight(p30_diff, p90_diff, exercise_data, pred_30_d, pred_90_d)
 
 
