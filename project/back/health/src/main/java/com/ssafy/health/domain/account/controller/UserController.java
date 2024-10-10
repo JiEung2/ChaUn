@@ -86,8 +86,8 @@ public class UserController implements UserControllerApi {
     }
 
     @GetMapping("/exercise-history/week")
-    public ApiResponse<ExerciseHistoryListResponseDto> getWeeklyExerciseHistory(WeeklyRequestDto requestDto) {
-        return ApiResponse.success(exerciseHistoryReadService.getWeeklyExerciseHistory(requestDto));
+    public ApiResponse<ExerciseHistoryListResponseDto> getWeeklyExerciseHistory() {
+        return ApiResponse.success(exerciseHistoryReadService.getWeeklyExerciseHistory());
     }
 
     @GetMapping("/exercise-history/month")

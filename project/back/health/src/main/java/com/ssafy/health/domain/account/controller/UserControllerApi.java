@@ -301,7 +301,7 @@ public interface UserControllerApi {
                             ))
             )
     })
-    ApiResponse<ExerciseHistoryListResponseDto> getWeeklyExerciseHistory(WeeklyRequestDto requestDto);
+    ApiResponse<ExerciseHistoryListResponseDto> getWeeklyExerciseHistory();
 
     @Operation(
             summary = "자신의 특정 달의 운동 기록 조회",

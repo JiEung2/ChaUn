@@ -51,8 +51,8 @@ public class ExerciseHistoryReadService {
                 .build();
     }
 
-    public ExerciseHistoryListResponseDto getWeeklyExerciseHistory(WeeklyRequestDto requestDto) {
-        LocalDateTime[] dateTimes = calculateWeekDateTimeRange(requestDto.getYear(), requestDto.getMonth(), requestDto.getWeek());
+    public ExerciseHistoryListResponseDto getWeeklyExerciseHistory() {
+        LocalDateTime[] dateTimes = calculateWeekDateTimeRange();
         return getExerciseHistoryListResponseDto(dateTimes);
     }
 
@@ -146,19 +146,12 @@ public class ExerciseHistoryReadService {
                 .sum();
     }
 
-    private LocalDateTime[] calculateWeekDateTimeRange(int year, int month, int week) {
-        LocalDate firstDayOfWeek = LocalDate.of(year, month, 1);
-        LocalDate firstMondayOfMonth = firstDayOfWeek.with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY));
-        LocalDate startOfWeek = firstMondayOfMonth.plusWeeks(week - 1);
+    private LocalDateTime[] calculateWeekDateTimeRange() {
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime startTime = today.with(DayOfWeek.MONDAY).toLocalDate().atStartOfDay();
+        LocalDateTime endTime = today.with(DayOfWeek.SUNDAY).toLocalDate().atTime(23, 59, 59);
 
-        if(startOfWeek.getDayOfMonth() > 1 && startOfWeek.getDayOfMonth() < 8){
-            startOfWeek = firstMondayOfMonth.plusWeeks(week - 2);
-        }
-
-        LocalDateTime startDateTime = startOfWeek.atStartOfDay();
-        LocalDateTime endDateTime = startOfWeek.with(TemporalAdjusters.next(DayOfWeek.SUNDAY)).atTime(23, 59, 59);
-
-        return new LocalDateTime[]{startDateTime, endDateTime};
+        return new LocalDateTime[]{startTime, endTime};
     }
 
     private LocalDateTime[] calculateMonthDateTimeRange(int year, int month) {
