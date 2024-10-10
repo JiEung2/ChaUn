@@ -175,7 +175,7 @@ export default function ProfilePage() {
               <Crew
                 key={crew.crewId}
                 imageUrl={crew.crewProfileImage}
-                name={crew.crewName}
+                crewName={crew.crewName}
                 tag={crew.exerciseName}
                 onClick={() => handleCrewClick(crew.crewId)}
               />

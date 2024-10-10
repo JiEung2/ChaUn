@@ -2,16 +2,16 @@ import './Crew.scss';
 
 interface CrewProps {
   imageUrl: string;
-  name: string;
+  crewName: string;
   tag: string;
   onClick: () => void;
 }
 
-export default function Crew({ imageUrl, name, tag, onClick }: CrewProps) {
+export default function Crew({ imageUrl, crewName, tag, onClick }: CrewProps) {
   return (
     <div className="crewProfileCard" onClick={onClick}>
-      <img src={imageUrl} alt={name} className="crewProfileImage" />
-      <p className="crewProfileName">{name}</p>
+      <img src={imageUrl} alt={crewName} className="crewProfileImage" />
+      <p className="crewProfileName">{crewName}</p>
       <div className="crewProfileTag">{`# ${tag}`}</div>
     </div>
   );

@@ -4,11 +4,12 @@ import './CrewRecommend.scss';
 import CrewModal from '../../../components/Crew/CrewModal';
 import { getCrewRecommendList } from '@/api/crew';
 import useUserStore from '@/store/userInfo';
+// import { div } from 'three/webgpu';
 
 interface CrewDetail {
   crewId: number;
   crewProfileImage: string;
-  name: string;
+  crewName: string;
   exerciseName: string;
 }
 interface userScore {
@@ -24,7 +25,13 @@ export default function CrewRecommend() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCrewId, setSelectedCrewId] = useState<number | null>(null);
   const [crews, setCrews] = useState<CrewDetail[]>([]); // CrewDetail[]로 타입 지정
-  const [userScore, setUserScore] = useState<userScore>();
+  const [userScore, setUserScore] = useState<userScore>({
+    age: 0,
+    bodyType: 0,
+    basicScore: 0,
+    activityScore: 0,
+    intakeScore: 0,
+  });
   const getCrewRecommendListData = async () => {
     try {
       const response = await getCrewRecommendList();
@@ -35,7 +42,7 @@ export default function CrewRecommend() {
       const mappedCrews = response.crewList.map((crew: CrewDetail) => ({
         crewId: crew.crewId,
         crewProfileImage: crew.crewProfileImage,
-        name: crew.name,
+        crewName: crew.crewName,
         exerciseName: crew.exerciseName,
       }));
 
@@ -51,6 +58,7 @@ export default function CrewRecommend() {
 
   // Crew 클릭 시 모달을 여는 함수
   const handleCrewClick = (crewId: number) => {
+    console.log('모달이벤트 crewId', crewId);
     setSelectedCrewId(crewId);
     setIsModalOpen(true);
   };
@@ -67,18 +75,17 @@ export default function CrewRecommend() {
       </h3>
       <div className="crew-recommend">
         <div className="crew-grid">
-          {crews?.map((crew) => (
+          {crews.map((crew) => (
             <Crew
               key={crew.crewId} // crewId로 key 설정
               imageUrl={crew.crewProfileImage}
-              name={crew.name}
+              crewName={crew.crewName}
               tag={crew.exerciseName}
-              onClick={() => handleCrewClick(crew.crewId)}
+              onClick={() => handleCrewClick(crew.crewId!)} // crewId를 인자로 전달
             />
           ))}
         </div>
-
-        {isModalOpen && selectedCrewId !== null && userScore && (
+        {isModalOpen && selectedCrewId !== null && (
           <CrewModal crewId={selectedCrewId} onClose={closeModal} userScore={userScore} />
         )}
       </div>
