@@ -83,6 +83,35 @@ function ExerciseTimeDisplay({ nickname }: { nickname: string }) {
   );
 }
 
+// // 운동 기록 차트 컴포넌트
+// function ExerciseRecordChart() {
+//   const currentDate = new Date();
+//   const currentYear = currentDate.getFullYear();
+//   const currentMonth = currentDate.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줌
+//   const currentWeek = Math.ceil(currentDate.getDate() / 7); // 날짜를 7로 나누어 몇 번째 주인지 계산
+
+//   const { data } = useExerciseRecord(currentYear, currentMonth, currentWeek);
+//   console.log(' 이번 주 운동 기록', data);
+//   // const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 4);
+//   const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
+//   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
+
+//   const chartData = Array.isArray(data.exerciseHistoryList)
+//     ? data.exerciseHistoryList.map((record: ExerciseRecord) => ({
+//         day: new Date(record.createdAt).toLocaleDateString('ko-KR', { weekday: 'short' }),
+//         time: formatTime(record.exerciseDuration),
+//         calories: record.burnedCalories,
+//       }))
+//     : [];
+//   // console.log('운동 기록', exerciseRecordData);
+//   const handleChartClick = (_: any, elements: any) => {
+//     if (elements.length > 0) {
+//       const clickedElementIndex = elements[0].index;
+//       const clickedData = chartData[clickedElementIndex];
+//       setSelectedCalories(clickedData.calories || 0);
+//       setClickedIndex(clickedElementIndex);
+//     }
+//   };
 // 운동 기록 차트 컴포넌트
 function ExerciseRecordChart() {
   const currentDate = new Date();
@@ -91,19 +120,35 @@ function ExerciseRecordChart() {
   const currentWeek = Math.ceil(currentDate.getDate() / 7); // 날짜를 7로 나누어 몇 번째 주인지 계산
 
   const { data } = useExerciseRecord(currentYear, currentMonth, currentWeek);
-  console.log(' 이번 주 운동 기록', data);
-  // const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 4);
   const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
-  const chartData = Array.isArray(data.exerciseHistoryList)
-    ? data.exerciseHistoryList.map((record: ExerciseRecord) => ({
-        day: new Date(record.createdAt).toLocaleDateString('ko-KR', { weekday: 'short' }),
-        time: record.exerciseDuration / 60, // 초 단위를 분으로 변환
-        calories: record.burnedCalories,
-      }))
-    : [];
-  // console.log('운동 기록', exerciseRecordData);
+  // 요일 배열 정의
+  const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
+
+  // 요일별 데이터 합산
+  const aggregatedData = daysOfWeek.map((day) => ({
+    day,
+    totalTime: 0,
+    totalCalories: 0,
+  }));
+
+  if (Array.isArray(data.exerciseHistoryList)) {
+    data.exerciseHistoryList.forEach((record: ExerciseRecord) => {
+      const date = new Date(record.createdAt);
+      const dayIndex = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
+
+      aggregatedData[dayIndex].totalTime += record.exerciseDuration / 60; // 초를 분으로 변환
+      aggregatedData[dayIndex].totalCalories += record.burnedCalories;
+    });
+  }
+
+  const chartData = aggregatedData.map((item) => ({
+    day: item.day,
+    time: item.totalTime > 0 ? item.totalTime : null,
+    calories: item.totalCalories > 0 ? item.totalCalories : null,
+  }));
+
   const handleChartClick = (_: any, elements: any) => {
     if (elements.length > 0) {
       const clickedElementIndex = elements[0].index;
@@ -153,7 +198,7 @@ function ExerciseRecordChart() {
                     left: 5,
                     right: 5,
                   },
-                  yAdjust: chartData[clickedIndex].time <= 100 ? -20 : 20,
+                  yAdjust: chartData[clickedIndex].time && chartData[clickedIndex].time <= 100 ? -20 : 20,
                   xAdjust: clickedIndex === 0 ? 20 : clickedIndex === chartData.length - 1 ? -20 : 0,
                 },
               ]
@@ -185,11 +230,11 @@ function ExerciseRecordChart() {
   };
 
   const dataConfig = {
-    labels: chartData.map((data: ChartData) => data.day),
+    labels: chartData.map((data) => data.day),
     datasets: [
       {
         label: '운동 시간 (분)',
-        data: chartData.map((data: ChartData) => data.time),
+        data: chartData.map((data) => data.time),
         borderColor: '#FF6384',
         backgroundColor: '#FF6384',
         fill: false,
