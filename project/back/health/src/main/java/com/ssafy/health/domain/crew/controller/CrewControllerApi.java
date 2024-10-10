@@ -394,11 +394,11 @@ public interface CrewControllerApi {
 
 
     @Operation(
-            summary = "특정 크루의 크루원들의 오늘 운동시간 조회",
-            description = "특정 크루의 모든 크루원들의 오늘 운동 시간을 반환합니다."
+            summary = "특정 크루의 크루원들의 오늘 운동시간과 캐릭터 조회",
+            description = "특정 크루의 모든 크루원들의 오늘 운동 시간과 케릭터를 반환합니다."
     )
     @ApiResponses(value = {
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "운동 시간 조회 성공",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "운동 시간 및 캐릭터 조회 성공",
                     content = @Content(mediaType = "application/json",
                             examples = @ExampleObject(value = """
                     {
@@ -409,12 +409,14 @@ public interface CrewControllerApi {
                           {
                             "userId": 1,
                             "nickname": "JiEung",
-                            "exerciseTime": 0
+                            "exerciseTime": 0,
+                            "characterImageUrl": image.png"
                           },
                           {
                             "userId": 2,
                             "nickname": "JiEung2",
-                            "exerciseTime": 0
+                            "exerciseTime": 0,
+                            "characterImageUrl": image.png"
                           }
                         ]
                       }
@@ -436,7 +438,7 @@ public interface CrewControllerApi {
                     )
             )
     })
-    ApiResponse<CrewMemberDailyExerciseTimeListDto> getCrewMemberDailyExerciseTimeList(@PathVariable("crew_id") Long crewId);
+    ApiResponse<CrewMemberDailyDetailListDto> getCrewMemberDailyDetailList(@PathVariable("crew_id") Long crewId);
 
     @Operation(
             summary = "크루 세팅 상태 조회",
