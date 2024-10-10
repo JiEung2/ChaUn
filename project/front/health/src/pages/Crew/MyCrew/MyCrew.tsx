@@ -52,7 +52,8 @@ export default function MyCrew() {
     queryFn: () => getCrewDetail(Number(crewId)),
     enabled: !!crewId,
   });
-  const { data: members } = useQuery<Member[]>({
+
+  const { data: members, isLoading: isMembersLoading } = useQuery<Member[]>({
     queryKey: [querykeys.CREW_MEMBER_RANKING, crewId],
     queryFn: () => getCrewRanking(Number(crewId)),
     enabled: !!crewId,
@@ -278,7 +279,13 @@ export default function MyCrew() {
 
       {/* 크루 랭킹 */}
       <div className="crewRankingContainer">
-        {members && members.length > 0 ? <CrewAndMemberList type="member" data={members} /> : <p>랭킹이 없습니다.</p>}
+        {isMembersLoading ? (
+          <p>로딩 중...</p>
+        ) : members && members.length > 0 ? (
+          <CrewAndMemberList type="member" data={members} />
+        ) : (
+          <p>랭킹이 없습니다.</p>
+        )}
       </div>
 
       {/* 퀘스트 모달 */}

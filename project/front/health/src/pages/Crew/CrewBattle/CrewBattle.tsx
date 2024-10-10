@@ -125,9 +125,15 @@ export default function CrewBattle() {
             </div>
             <div className="ranking__list">
               {selectedCrew === 'home' ? (
-                <CrewAndMemberList type="member" data={battleRankings?.myCrewMembers} />
+                battleRankings?.myCrewMembers ? (
+                  <CrewAndMemberList type="member" data={battleRankings.myCrewMembers} />
+                ) : (
+                  <div>No home crew members found.</div>
+                )
+              ) : battleRankings?.opponentCrewMembers ? (
+                <CrewAndMemberList type="member" data={battleRankings.opponentCrewMembers} />
               ) : (
-                <CrewAndMemberList type="member" data={battleRankings?.opponentCrewMembers} />
+                <div>No away crew members found.</div>
               )}
             </div>
           </div>

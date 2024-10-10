@@ -142,7 +142,7 @@ export default function CrewPage() {
                   crewId={battleData.crewId}
                   battleId={battleData.battleId || 0}
                   myCrewName={battleData.myCrewName || 'No Battle'}
-                  myCrewScore={battleData.myCrewScore || 0}
+                  myCrewScore={Math.floor(battleData.myCrewScore) || 0}
                   opponentCrewName={battleData.opponentCrewName || 'No Opponent'}
                   opponentCrewScore={battleData.opponentCrewScore || 0}
                   exerciseName={battleData.exerciseName || 'N/A'}
