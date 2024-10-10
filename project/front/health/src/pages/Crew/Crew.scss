@@ -3,31 +3,31 @@
 .battleBoardList {
   margin: 10px 0;
 
-  .swiper-button-prev,
-  .swiper-button-next {
-    img {
-      position: absolute;
-      transform: translateY(-50%);
-      z-index: 10;
-      width: 40px; // 버튼 크기 설정
-      height: 40px; // 버튼 크기 설정
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    &::after {
-      display: none; // 기본 화살표 스타일 숨기기
-    }
-  }
+  // .swiper-button-prev,
+  // .swiper-button-next {
+  //   img {
+  //     position: absolute;
+  //     transform: translateY(-50%);
+  //     z-index: 10;
+  //     width: 40px; // 버튼 크기 설정
+  //     height: 40px; // 버튼 크기 설정
+  //     border-radius: 50%;
+  //     display: flex;
+  //     align-items: center;
+  //     justify-content: center;
+  //   }
+  //   &::after {
+  //     display: none; // 기본 화살표 스타일 숨기기
+  //   }
+  // }
 
-  .swiper-button-prev {
-    left: 5px; // 왼쪽 버튼 위치 설정 (슬라이더의 바깥쪽으로 배치)
-  }
+  // .swiper-button-prev {
+  //   left: 5px; // 왼쪽 버튼 위치 설정 (슬라이더의 바깥쪽으로 배치)
+  // }
 
-  .swiper-button-next {
-    right: 5px; // 오른쪽 버튼 위치 설정 (슬라이더의 바깥쪽으로 배치)
-  }
+  // .swiper-button-next {
+  //   right: 5px; // 오른쪽 버튼 위치 설정 (슬라이더의 바깥쪽으로 배치)
+  // }
 }
 
 .buttonSection {
