@@ -50,7 +50,7 @@ export default function CrewRecommend() {
       </h3>
       <div className="crew-recommend">
         <div className="crew-grid">
-          {crews.map((crew) => (
+          {crews?.map((crew) => (
             <Crew
               key={crew.crewId}
               imageUrl={crew.crewProfileImage}
