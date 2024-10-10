@@ -16,5 +16,7 @@ export const getCrewQuest = async (crew_id: number) => {
       crew_id,
     },
   });
+
+  console.log('퀘스트 response', response);
   return response.data;
 };
