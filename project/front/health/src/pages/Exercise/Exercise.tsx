@@ -126,19 +126,33 @@ export default function Exercise() {
   useEffect(() => {
     switch (characterState) {
       case 1: // 평소
-        setCharacterUrl(`${baseUrl}/B5standing.glb`);
+        // setCharacterUrl(`${baseUrl}/B5standing.glb`);
+        setCharacterUrl(characterFileUrl);
         break;
       case 2: // 운동중
-        setCharacterUrl(`${baseUrl}/B5running.glb`);
+        // setCharacterUrl(`${baseUrl}/B5running.glb`);
+        const appliedParts = JSON.parse(localStorage.getItem('appliedParts') || '{}');
+        if (appliedParts['2']) {
+          // 바지 파츠를 장착
+          setCharacterUrl(`${baseUrl}/B5runningPants.glb`);
+        } else {
+          setCharacterUrl(`${baseUrl}/B5running.glb`);
+        }
         break;
       case 3: // 휴식
-        setCharacterUrl(`${baseUrl}/B5sitting.glb`);
+        // setCharacterUrl(`${baseUrl}/B5sitting.glb`);
+        setCharacterUrl(characterFileUrl);
+
         break;
       case 4: // 운동 완료
-        setCharacterUrl(`${baseUrl}/B5entry.glb`);
+        // setCharacterUrl(`${baseUrl}/B5entry.glb`);
+        setCharacterUrl(characterFileUrl);
+
         break;
       default:
-        setCharacterUrl(`${baseUrl}/B5standing.glb`);
+        // setCharacterUrl(`${baseUrl}/B5standing.glb`);
+        setCharacterUrl(characterFileUrl);
+
         break;
     }
   }, [characterState]);
