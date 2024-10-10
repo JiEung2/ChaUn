@@ -18,6 +18,10 @@ import com.ssafy.health.domain.exercise.entity.Exercise;
 import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
+import com.ssafy.health.domain.recommendation.dto.response.RecommendedCrewInfoDto;
+import com.ssafy.health.domain.recommendation.dto.response.RecommendedCrewResponseDto;
+import com.ssafy.health.domain.recommendation.dto.response.ScoreDataDto;
+import com.ssafy.health.domain.recommendation.entity.RecommendedCrew;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -159,7 +163,7 @@ public class CrewReadService {
                 .build();
     }
 
-    public CrewSettingResponseDto getCrewSetting(Long crewId){
+    public CrewSettingResponseDto getCrewSetting(Long crewId) {
         crewValidator.validateCrewLeader(crewId);
         Crew crew = crewRepository.findById(crewId).orElseThrow(CrewNotFoundException::new);
         return CrewSettingResponseDto.builder().battleStatus(crew.getBattleStatus()).build();
@@ -249,13 +253,37 @@ public class CrewReadService {
                 .orElse(CrewRole.NOT_REGISTERED);
     }
 
-    public CrewListResponseDto createCrewListResponseDto(List<Crew> crewList) {
-        List<CrewInfo> crewInfoList = crewList.stream()
-                .map(this::createCrewInfo)
+    public RecommendedCrewResponseDto createCrewListResponseDto(RecommendedCrew recommendedCrew) {
+
+        ScoreDataDto userScore = ScoreDataDto.builder()
+                .basicScore(recommendedCrew.getUserScore().getBasicScore())
+                .activityScore(recommendedCrew.getUserScore().getActivityScore())
+                .intakeScore(recommendedCrew.getUserScore().getIntakeScore())
+                .build();
+
+        List<RecommendedCrewInfoDto> recommendedCrewList = recommendedCrew.getCrewRecommend().stream().map(crewInfo -> {
+                    Crew crew = crewRepository.findById(crewInfo.getCrewId()).orElseThrow(CrewNotFoundException::new);
+                    return RecommendedCrewInfoDto.builder()
+                            .crewId(crew.getId())
+                            .crewDetail(RecommendedCrewInfoDto.CrewDetail.builder()
+                                    .name(crew.getName())
+                                    .description(crew.getDescription())
+                                    .profileImage(crew.getProfileImage())
+                                    .exerciseName(crew.getExercise().getName())
+                                    .build())
+                            .crewScore(ScoreDataDto.builder()
+                                    .basicScore(crewInfo.getCrewScore().getBasicScore())
+                                    .activityScore(crewInfo.getCrewScore().getActivityScore())
+                                    .intakeScore(crewInfo.getCrewScore().getIntakeScore())
+                                    .build())
+                            .build();
+                })
                 .toList();
 
-        return CrewListResponseDto.builder()
-                .crewList(crewInfoList)
+        return RecommendedCrewResponseDto.builder()
+                .userId(recommendedCrew.getUserId())
+                .userScore(userScore)
+                .crewRecommend(recommendedCrewList)
                 .build();
     }
 
