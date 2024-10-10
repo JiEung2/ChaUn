@@ -33,15 +33,10 @@
   }
 }
 
-.finishMent {
-  text-align: center;
-  margin: 0;
-  @include typo.subtitle;
-}
 .recordContainer {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   width: 327px;
   background-color: colors.$record;
@@ -49,11 +44,14 @@
   padding: 2px 0 20px 0;
   margin: 0 10px;
   position: relative;
+  p {
+    text-align: center;
+  }
 }
 
 .exerciseModel {
   width: 390px;
-  height: 500px;
+  height: 350px;
   transform: translateY(-30px);
   canvas {
     width: 100% !important;
