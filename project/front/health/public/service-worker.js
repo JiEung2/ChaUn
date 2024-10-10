@@ -99,8 +99,8 @@ self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
 
   if (
-    url.origin === `https://j11c106.p.ssafy.io/oauth2/authorization/google` ||
-    url.origin === `https://j11c106.p.ssafy.io/oauth2/authorization/kakao`
+    requestUrl.origin === `https://j11c106.p.ssafy.io/oauth2/authorization/google` ||
+    requestUrl.origin === `https://j11c106.p.ssafy.io/oauth2/authorization/kakao`
   ) {
     // 소셜 로그인과 관련된 요청은 캐싱하지 않고 네트워크로만 처리
     // return fetch(event.request);
