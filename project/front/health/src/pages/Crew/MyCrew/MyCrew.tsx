@@ -50,35 +50,30 @@ export default function MyCrew() {
 
   console.log('crewId', crewId);
   const { data: todayQuests } = useQuery<quest[]>({
-    queryKey: [querykeys.CREW_QUEST, crewId],
+    queryKey: [querykeys.CREW_QUEST],
     queryFn: () => getCrewQuest(Number(crewId)),
-    enabled: !!crewId,
   });
   console.log('todayQuests', todayQuests);
   const { data: crewInfo, refetch: refetchCrewInfo } = useQuery<CrewInfo>({
-    queryKey: [querykeys.CREW_DETAIL, crewId],
+    queryKey: [querykeys.CREW_DETAIL],
     queryFn: () => getCrewDetail(Number(crewId)),
-    enabled: !!crewId,
   });
   console.log('crewInfo', crewInfo);
   const { data: members, isLoading: isMembersLoading } = useQuery<Member[]>({
-    queryKey: [querykeys.CREW_MEMBER_RANKING, crewId],
+    queryKey: [querykeys.CREW_MEMBER_RANKING],
     queryFn: () => getCrewRanking(Number(crewId)),
-    enabled: !!crewId,
   });
 
   console.log('members', members);
 
   const { data: battleStatus } = useQuery({
-    queryKey: [querykeys.BATTLE_STATUS, crewId],
+    queryKey: [querykeys.BATTLE_STATUS],
     queryFn: () => crewBattleStatus(Number(crewId)),
-    enabled: !!crewId,
   });
   console.log('battleStatus', battleStatus);
   const { data: dailyCrewExercise } = useQuery({
-    queryKey: [querykeys.CREW_MEMBER_EXERCISE_TIME, crewId],
+    queryKey: [querykeys.CREW_MEMBER_EXERCISE_TIME],
     queryFn: () => crewMemberDailyExerciseTime(Number(crewId)),
-    enabled: !!crewId,
   });
 
   console.log('dailyCrewExercise', dailyCrewExercise.crewMemberDailyDetailList);
