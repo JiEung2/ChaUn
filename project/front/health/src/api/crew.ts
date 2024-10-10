@@ -5,7 +5,7 @@ const baseURL = import.meta.env.VITE_APP_BASE_URL;
 //추천 크루 리스트 및 유저 점수
 export const getCrewRecommendList = async () => {
   const response = await exportAxios.get(`${baseURL}/users/recommend-crew`);
-  // console.log('크루 추천 리스트', response);
+  console.log('크루 추천 리스트', response);
   return response.data;
 };
 
