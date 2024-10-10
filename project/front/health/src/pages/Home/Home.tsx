@@ -140,6 +140,10 @@ function ExerciseRecordChart() {
 
       aggregatedData[dayIndex].totalTime += record.exerciseDuration; // 초를 분으로 변환
       aggregatedData[dayIndex].totalCalories += record.burnedCalories;
+      console.log(
+        `Day: ${daysOfWeek[dayIndex]}, Total Calories: ${aggregatedData[dayIndex].totalCalories}, Total Time: ${aggregatedData[dayIndex].totalTime}`
+      );
+      console.log('aggregatedData', aggregatedData);
     });
   }
 
