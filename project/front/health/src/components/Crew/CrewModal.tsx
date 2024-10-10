@@ -10,6 +10,13 @@ import { useNavigate } from 'react-router-dom';
 interface CrewModalProps {
   crewId: number;
   onClose: () => void;
+  userScore: {
+    age: number;
+    bodyType: number;
+    basicScore: number;
+    activityScore: number;
+    intakeScore: number;
+  };
 }
 
 interface Crew {
@@ -37,7 +44,7 @@ interface RadarData {
   }[];
 }
 
-export default function CrewModal({ onClose, crewId }: CrewModalProps) {
+export default function CrewModal({ onClose, crewId, userScore }: CrewModalProps) {
   const [crewData, setCrewData] = useState<Crew | null>(null);
   const [radarData, setRadarData] = useState<RadarData | null>(null);
   const navigate = useNavigate();
