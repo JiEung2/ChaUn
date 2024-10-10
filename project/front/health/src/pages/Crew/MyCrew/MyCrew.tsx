@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './MyCrew.scss';
 import Coin from '@/components/Coin/Coin';
-import QuestItem from '../../../components/Home/Quest/QuestItem';
+// import QuestItem from '../../../components/Home/Quest/QuestItem';
 import Plus from '../../../assets/svg/plus.svg';
 import Minus from '../../../assets/svg/minus.svg';
 import Settings from '../../../assets/svg/setting.svg';
@@ -30,7 +30,7 @@ export default function MyCrew() {
 
   const [crewInfo, setCrewInfo] = useState<CrewInfo>(); // 크루 상세 조회
   const [rankingMembers, setRankingMembers] = useState<RankingMember[]>(); // 크루 내 랭킹 조회
-  const [todayQuests, setTodayQuests] = useState<todayQuest[]>(); // 크루 퀘스트
+  const [_, setTodayQuests] = useState<todayQuest[]>(); // 크루 퀘스트
   const [battleStatus, setBattleStatus] = useState<battleStatus>();
 
   const [members, setMembers] = useState<member[]>();
