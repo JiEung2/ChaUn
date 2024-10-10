@@ -7,7 +7,14 @@ import Minus from '../../../assets/svg/minus.svg';
 import Settings from '../../../assets/svg/setting.svg';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCrewQuest } from '@/api/quest';
-import { getCrewDetail, getCrewRanking, agreeRandomMatching, collectCrewCoin, crewBattleStatus } from '@/api/crew';
+import {
+  getCrewDetail,
+  getCrewRanking,
+  agreeRandomMatching,
+  collectCrewCoin,
+  crewBattleStatus,
+  crewMemberDailyExerciseTime,
+} from '@/api/crew';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import querykeys from '@/utils/querykeys';
 import CloseButton from '@/assets/svg/xCircle.svg';
@@ -33,7 +40,7 @@ export default function MyCrew() {
   interface Member {
     nickname: string;
     userId: number;
-    characterImage: string;
+    // characterImage: string;
     userProfileImage: string;
     exerciseTime: number;
   }
@@ -67,6 +74,14 @@ export default function MyCrew() {
     enabled: !!crewId,
   });
 
+  const { data: dailyCrewExercise } = useQuery({
+    queryKey: [querykeys.CREW_MEMBER_EXERCISE_TIME, crewId],
+    queryFn: () => crewMemberDailyExerciseTime(Number(crewId)),
+    enabled: !!crewId,
+  });
+
+  console.log(dailyCrewExercise);
+
   const mutation = useMutation({
     mutationFn: () =>
       //TODO - 운동 시작시간, 끝나는 시간 수정 예정
@@ -84,36 +99,6 @@ export default function MyCrew() {
     setIsOpen(!isOpen);
   };
 
-  // const crewInfo: CrewInfo = {
-  //   crewName: '달리는 번개',
-  //   crewProfileImage: 'crew-profile-image.png',
-  //   exerciseName: '런닝',
-  //   description: '번개맨보다 빠른 러너들의 모임',
-  //   crewCoins: 300,
-  //   crewRanking: 3,
-  //   totalBattleCount: 10,
-  //   winCount: 7,
-  //   averageAge: 20,
-  //   activityScore: 1200,
-  //   basicScore: 850,
-  // };
-
-  // const members: Member[] = [
-  //   {
-  //     nickname: '달리기 왕자',
-  //     userId: 20,
-  //     characterImage: 'character01.jpg',
-  //     userProfileImage: 'crew-profile-image.jpg',
-  //     thisWeekExerciseTime: 27900000, // ms -> 7h 45m
-  //   },
-  //   {
-  //     nickname: '달리기 공주',
-  //     userId: 21,
-  //     characterImage: 'character01.jpg',
-  //     userProfileImage: 'crew-profile-image.jpg',
-  //     thisWeekExerciseTime: 18000000, // ms -> 5h 0m
-  //   },
-  // ];
   interface quest {
     questId: number;
     title: string;
@@ -267,7 +252,7 @@ export default function MyCrew() {
           <button className="prevButton" onClick={prevMember}>
             ←
           </button>
-          <img className="memberProfileImage" src={members![currentMemberIndex].characterImage} alt="member profile" />
+          <img className="memberProfileImage" src={dailyCrewExercise.characterImage} alt="member profile" />
           <div className="memberInfo">
             <h3>{members![currentMemberIndex].nickname}</h3>
             <p>크루 운동 시간</p>
