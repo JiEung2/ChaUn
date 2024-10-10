@@ -32,7 +32,7 @@ function registerServiceWorker() {
   if (import.meta.env.VITE_APP_STATE === 'production' && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-        .register('/service-worker.js')
+        .register('/service-worker.js', { type: 'module' })
         .then((registration) => {
           console.log('서비스 워커가 다음과 같은 scope에서 등록되었습니다: ', registration.scope);
         })
