@@ -89,8 +89,8 @@ export default function BattleBoard({
       case 'STARTED':
         return (
           <div className="battle-board">
-            <div className="team-info">
-              <div className="our-team">
+            <div className="Crew-info">
+              <div className="our-Crew">
                 <p>{myCrewName}</p>
                 <p className="sport"># {exerciseName}</p>
                 <p>{myCrewScore}점</p>
@@ -99,7 +99,7 @@ export default function BattleBoard({
                 <div className="d-day">대결 D-{dday}</div>
                 <span>VS</span>
               </div>
-              <div className="opponent-team">
+              <div className="opponent-Crew">
                 <p>{opponentCrewName}</p>
                 <p className="sport"># {exerciseName}</p>
                 <p>{opponentCrewScore}점</p>
