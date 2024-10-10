@@ -168,7 +168,7 @@ export default function CrewPage() {
           />
         )}
 
-        {showPrevButton && (
+        {/* {showPrevButton && (
           <div className="swiper-button-prev" onClick={() => swiperRef.current && swiperRef.current.slidePrev()}>
             <img src={leftArrowIcon} alt="Previous" />
           </div>
@@ -177,7 +177,7 @@ export default function CrewPage() {
           <div className="swiper-button-next" onClick={() => swiperRef.current && swiperRef.current.slideNext()}>
             <img src={rightArrowIcon} alt="Next" />
           </div>
-        )}
+        )} */}
       </div>
 
       <div className="buttonSection">
