@@ -48,6 +48,7 @@ export default function MyCrew() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
 
+  console.log('crewId', crewId);
   const { data: todayQuests } = useQuery<quest[]>({
     queryKey: [querykeys.CREW_QUEST, crewId],
     queryFn: () => getCrewQuest(Number(crewId)),
@@ -66,7 +67,7 @@ export default function MyCrew() {
     enabled: !!crewId,
   });
 
-  console.log(members);
+  console.log('members', members);
 
   const { data: battleStatus } = useQuery({
     queryKey: [querykeys.BATTLE_STATUS, crewId],
