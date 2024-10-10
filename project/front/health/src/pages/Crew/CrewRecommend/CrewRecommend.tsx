@@ -4,7 +4,7 @@ import './CrewRecommend.scss';
 import CrewModal from '../../../components/Crew/CrewModal';
 import { getCrewRecommendList } from '@/api/crew';
 import useUserStore from '@/store/userInfo';
-import { div } from 'three/webgpu';
+// import { div } from 'three/webgpu';
 
 interface CrewDetail {
   crewId: number;
