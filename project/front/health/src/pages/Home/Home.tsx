@@ -130,7 +130,7 @@ function ExerciseRecordChart() {
                 {
                   type: 'label' as const,
                   xValue: chartData[clickedIndex].day,
-                  yValue: chartData[clickedIndex].time,
+                  yValue: chartData[clickedIndex].time || 0,
                   content: [`${formatTime(chartData[clickedIndex].time!) || 0}`, `${selectedCalories || 0} kcal`],
                   enabled: true,
                   font: {
@@ -170,7 +170,7 @@ function ExerciseRecordChart() {
             return `${value}`;
           },
         },
-        min: 0,
+        min: Math.min(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / 24), 0),
         max: Math.max(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / 24), 160), // 데이터의 최대 값에 맞춰 max 값 조정
       },
     },
