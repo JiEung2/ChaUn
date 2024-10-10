@@ -58,7 +58,7 @@ export default function BattleBoard({
         opponentCrewName: data.opponentCrewName,
         opponentCrewScore: data.opponentCrewScore,
         exerciseName: data.exerciseName,
-        dDay: data.dDay,
+        dday: data.dday,
         battleStatus: 'STARTED',
       });
       navigate(`/crew/battle/${crewId}`);
