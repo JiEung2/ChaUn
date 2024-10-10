@@ -52,15 +52,14 @@
 
     .crewCoins {
       display: flex;
+      margin: 0;
       button {
         border-radius: 20px;
         border: 1px solid colors.$darkGray;
         width: 70px;
         height: 30px;
         margin-top: 5px;
-        margin-left: -20px;
-        // font-weight: bold;
-        // padding: 5px;
+        margin-left: 10px;
       }
     }
   }

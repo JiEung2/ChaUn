@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import styles from '@/pages/Crew/CrewDetail/CrewDetail.module.scss';
+import UserImg from '../../../assets/image/userImg.png';
 
 interface Member {
   userId: number;
-  userProfileImage: string;
+  userProfileImage: string | null;
   nickname: string;
   exerciseTime: number;
 }
@@ -48,7 +49,7 @@ export default function CrewAndMemberList({ type, data }: Props) {
               <span>{index + 1}</span>
               <img
                 className={styles.memberProfileImageSmall}
-                src={member.userProfileImage}
+                src={member.userProfileImage || UserImg}
                 alt="memberProfile"
                 onClick={() => handleMemberClick(member.userId)}
                 style={{ cursor: 'pointer' }}
