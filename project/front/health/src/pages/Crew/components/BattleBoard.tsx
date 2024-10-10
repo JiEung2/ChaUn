@@ -14,7 +14,7 @@ interface BattleBoardProps {
   opponentCrewName: string;
   opponentCrewScore: number;
   exerciseName: string;
-  dday: number;
+  dDay: number;
   battleStatus: string;
   buttonState: ButtonState;
 }
@@ -27,7 +27,7 @@ export default function BattleBoard({
   opponentCrewName,
   opponentCrewScore,
   exerciseName,
-  dday,
+  dDay,
   battleStatus,
   buttonState,
 }: BattleBoardProps) {
@@ -58,7 +58,7 @@ export default function BattleBoard({
         opponentCrewName: data.opponentCrewName,
         opponentCrewScore: data.opponentCrewScore,
         exerciseName: data.exerciseName,
-        dday: data.dday,
+        dDay: data.dDay,
         battleStatus: 'STARTED',
       });
       navigate(`/crew/battle/${crewId}`);
@@ -89,20 +89,20 @@ export default function BattleBoard({
       case 'STARTED':
         return (
           <div className="battle-board">
-            <div className="Crew-info">
-              <div className="our-Crew">
+            <div className="team-info">
+              <div className="our-team">
                 <p>{myCrewName}</p>
                 <p className="sport"># {exerciseName}</p>
-                <p>{Math.round(myCrewScore)}점</p>
+                <p>{myCrewScore}점</p>
               </div>
               <div className="vs-info">
-                <div className="d-day">대결 {dday === 0 ? 'D-Day' : `D-${dday}`}</div>
+                <div className="d-day">대결 D-{dDay}</div>
                 <span>VS</span>
               </div>
-              <div className="opponent-Crew">
+              <div className="opponent-team">
                 <p>{opponentCrewName}</p>
                 <p className="sport"># {exerciseName}</p>
-                <p>{Math.round(opponentCrewScore)}점</p>
+                <p>{opponentCrewScore}점</p>
               </div>
             </div>
             <div className="score-bar" />
