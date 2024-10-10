@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -16,6 +17,8 @@ public class RecommendedCrew {
     private Long userId;
     @Field("crew_recommend")
     private List<CrewRecommendList> crewRecommend;
+    @Field("created_at")
+    private LocalDateTime createdAt;
 
     @Getter
     @AllArgsConstructor
