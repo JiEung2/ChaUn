@@ -262,7 +262,7 @@ export default function MyCrew() {
       </div>
 
       {/* 크루원 캐러셀 */}
-      {members && members.length > 0 && (
+      {members && (
         <div className="crewCharacterContainer">
           <button className="prevButton" onClick={prevMember}>
             ←
