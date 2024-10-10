@@ -144,7 +144,7 @@ function ExerciseRecordChart() {
                     right: 5,
                   },
 
-                  yAdjust: chartData[clickedIndex].time && chartData[clickedIndex].time <= 100 ? 20 : -60,
+                  yAdjust: chartData[clickedIndex].time && chartData[clickedIndex].time <= 100 ? -100 : -100,
                   xAdjust: clickedIndex === 0 ? 20 : clickedIndex === chartData.length - 1 ? -20 : 0,
                 },
               ]
