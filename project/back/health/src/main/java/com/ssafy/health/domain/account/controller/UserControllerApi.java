@@ -7,7 +7,7 @@ import com.ssafy.health.domain.account.dto.request.DeviceRegisterRequestDto;
 import com.ssafy.health.domain.account.dto.request.FavoredExercisesRequestDto;
 import com.ssafy.health.domain.account.dto.request.InfoSurveyRequestDto;
 import com.ssafy.health.domain.account.dto.response.*;
-import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
+import com.ssafy.health.domain.crew.dto.response.CrewListWithUserScoreResponseDto;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
@@ -350,40 +350,25 @@ public interface UserControllerApi {
                                       "status": 200,
                                       "message": "Success",
                                       "data": {
-                                        "userId": 3,
                                         "userScore": {
+                                          "age": 25,
+                                          "bodyType": 5,
                                           "basicScore": 200,
                                           "activityScore": 300,
-                                          "intakeScore": 2583
+                                          "intakeScore": 1733
                                         },
-                                        "crewRecommend": [
+                                        "crewList": [
                                           {
                                             "crewId": 1,
-                                            "crewDetail": {
-                                              "name": "zxcvzxcvbnm",
-                                              "description": "무릎아파 관절아파",
-                                              "exerciseName": "걷기",
-                                              "profileImage": "https://picsum.photos/id/1/300"
-                                            },
-                                            "crewScore": {
-                                              "basicScore": 3.8745,
-                                              "activityScore": 0,
-                                              "intakeScore": 1500
-                                            }
+                                            "crewName": "zxcvzxcvbnm",
+                                            "exerciseName": "걷기",
+                                            "crewProfileImage": "https://c106-chaun.s3.ap-northeast-2.amazonaws.com/crew_image/1.jpg"
                                           },
                                           {
                                             "crewId": 18,
-                                            "crewDetail": {
-                                              "name": "크크크루",
-                                              "description": "ㅋㅋ",
-                                              "exerciseName": "복싱",
-                                              "profileImage": "https://picsum.photos/id/18/300"
-                                            },
-                                            "crewScore": {
-                                              "basicScore": 400,
-                                              "activityScore": 500,
-                                              "intakeScore": 1700
-                                            }
+                                            "crewName": "크크크루",
+                                            "exerciseName": "복싱",
+                                            "crewProfileImage": "https://c106-chaun.s3.ap-northeast-2.amazonaws.com/crew_image/18.jpg"
                                           }
                                         ]
                                       }
@@ -392,5 +377,5 @@ public interface UserControllerApi {
                             ))
             )
     })
-    ApiResponse<CrewListResponseDto> getRecommendedCrew();
+    ApiResponse<CrewListWithUserScoreResponseDto> getRecommendedCrew();
 }

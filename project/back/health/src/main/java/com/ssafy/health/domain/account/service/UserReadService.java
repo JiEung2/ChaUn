@@ -18,11 +18,12 @@ import com.ssafy.health.domain.character.exception.CharacterSetNotFoundException
 import com.ssafy.health.domain.character.respository.CharacterSetRepository;
 import com.ssafy.health.domain.crew.dto.analysis.MaxScoresDto;
 import com.ssafy.health.domain.crew.dto.analysis.ScoreData;
-import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
+import com.ssafy.health.domain.crew.dto.response.CrewListWithUserScoreResponseDto;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.exception.CrewNotFoundException;
 import com.ssafy.health.domain.crew.repository.CrewRepository;
 import com.ssafy.health.domain.crew.service.CrewReadService;
+import com.ssafy.health.domain.recommendation.dto.response.ScoreDataDto;
 import com.ssafy.health.domain.recommendation.entity.RecommendedCrew;
 import com.ssafy.health.domain.recommendation.repository.mongodb.RecommendedCrewRepository;
 import lombok.RequiredArgsConstructor;
@@ -72,16 +73,24 @@ public class UserReadService {
                 .build();
     }
 
-    public CrewListResponseDto getRecommendedCrew() {
+    public CrewListWithUserScoreResponseDto getRecommendedCrew() {
         Long userId = SecurityUtil.getCurrentUserId();
         Optional<RecommendedCrew> recommendedCrew = recommendedCrewRepository.findFirstByUserIdOrderByCreatedAtDesc(userId);
 
         if (recommendedCrew.isPresent()) {
+            ScoreData userScore = calculateUserScore(userId);
+            ScoreDataDto userScoreDto = ScoreDataDto.builder()
+                    .age(userScore.getAge())
+                    .bodyType(userScore.getType() != 0 ? userScore.getType() : userScore.getMType())
+                    .basicScore(userScore.getBasicScore())
+                    .activityScore(userScore.getActivityScore())
+                    .intakeScore(userScore.getIntakeScore())
+                    .build();
             List<Crew> crewList = recommendedCrew.get().getCrewRecommend().stream()
                     .map(recommendList ->
                             crewRepository.findById(recommendList.getCrewId()).orElseThrow(CrewNotFoundException::new))
                     .toList();
-            return crewReadService.createCrewListResponseDto(crewList);
+            return crewReadService.createCrewListResponseDto(userScoreDto, crewList);
 
         } else {
             throw new RecommendCrewListNotFoundException();

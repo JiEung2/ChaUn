@@ -20,10 +20,7 @@ import com.ssafy.health.domain.exercise.entity.Exercise;
 import com.ssafy.health.domain.exercise.exception.ExerciseNotFoundException;
 import com.ssafy.health.domain.exercise.repository.ExerciseHistoryRepository;
 import com.ssafy.health.domain.exercise.repository.ExerciseRepository;
-import com.ssafy.health.domain.recommendation.dto.response.RecommendedCrewInfoDto;
-import com.ssafy.health.domain.recommendation.dto.response.RecommendedCrewResponseDto;
 import com.ssafy.health.domain.recommendation.dto.response.ScoreDataDto;
-import com.ssafy.health.domain.recommendation.entity.RecommendedCrew;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,8 +64,13 @@ public class CrewReadService {
 
         Optional<BattleStatsDto> battleStats = battleRepository.countTotalAndWonBattles(crewId);
 
-        Long totalBattlesCount = battleStats.get().totalBattles();
-        Long winCount = battleStats.get().wonBattles();
+        Long totalBattlesCount = 0L;
+        Long winCount = 0L;
+
+        if (battleStats.isPresent()) {
+            totalBattlesCount = battleStats.get().totalBattles();
+            winCount = battleStats.get().wonBattles();
+        }
 
         CrewRole crewRole = getCrewRole(crewId);
 
@@ -266,13 +268,16 @@ public class CrewReadService {
                 .orElse(CrewRole.NOT_REGISTERED);
     }
 
-    public CrewListResponseDto createCrewListResponseDto(List<Crew> crewList) {
-        List<CrewInfo> crewInfoList = crewList.stream()
-                .map(this::createCrewInfo)
+    public CrewListWithUserScoreResponseDto createCrewListResponseDto(
+            ScoreDataDto userScore, List<Crew> crewList) {
+
+        List<CrewListWithUserScoreResponseDto.CrewRecommendInfo> crewRecommendInfoList = crewList.stream()
+                .map(this::createCrewRecommendInfo)
                 .toList();
 
-        return CrewListResponseDto.builder()
-                .crewList(crewInfoList)
+        return CrewListWithUserScoreResponseDto.builder()
+                .userScore(userScore)
+                .crewList(crewRecommendInfoList)
                 .build();
     }
 
@@ -324,6 +329,15 @@ public class CrewReadService {
 
         return CrewListResponseDto.builder()
                 .crewList(crewInfoList)
+                .build();
+    }
+
+    public CrewListWithUserScoreResponseDto.CrewRecommendInfo createCrewRecommendInfo(Crew crew) {
+        return CrewListWithUserScoreResponseDto.CrewRecommendInfo.builder()
+                .crewId(crew.getId())
+                .crewName(crew.getName())
+                .crewProfileImage(crew.getProfileImage())
+                .exerciseName(crew.getExercise().getName())
                 .build();
     }
 

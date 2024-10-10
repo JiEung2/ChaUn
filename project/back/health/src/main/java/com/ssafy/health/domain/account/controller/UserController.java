@@ -10,7 +10,7 @@ import com.ssafy.health.domain.account.dto.response.*;
 import com.ssafy.health.domain.account.service.UserReadService;
 import com.ssafy.health.domain.account.service.UserValidator;
 import com.ssafy.health.domain.account.service.UserWriteService;
-import com.ssafy.health.domain.crew.dto.response.CrewListResponseDto;
+import com.ssafy.health.domain.crew.dto.response.CrewListWithUserScoreResponseDto;
 import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
@@ -95,7 +95,7 @@ public class UserController implements UserControllerApi {
     }
 
     @GetMapping("/recommend-crew")
-    public ApiResponse<CrewListResponseDto> getRecommendedCrew() {
+    public ApiResponse<CrewListWithUserScoreResponseDto> getRecommendedCrew() {
         return ApiResponse.success(userReadService.getRecommendedCrew());
     }
 }
