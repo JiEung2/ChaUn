@@ -3,7 +3,7 @@ import { Calendar } from 'react-calendar';
 import './CustomCalendar.scss';
 
 interface CustomCalendarProps {
-  onDateChange: (date: Date) => void;
+  onDateChange?: (date: Date) => void;
   onMonthYearChange: (year: number, month: number) => void;
   exerciseDates: Date[]; // 운동 기록 날짜
   attendanceDates: Date[]; // 출석 체크 날짜
@@ -33,7 +33,9 @@ export default function CustomCalendar({
   };
 
   const onClickDay = (date: Date) => {
-    onDateChange(date);
+    if (onDateChange) {
+      onDateChange(date);
+    }
   };
 
   const getTileClassName = ({ date, view }: { date: Date; view: string }) => {
@@ -67,7 +69,7 @@ export default function CustomCalendar({
     return classes.join(' ');
   };
 
-  // 날짜가 exerciseDates에 포함된 경우 점을 찍도록 설정
+  // 날짜가 exerciseDates에 포함된 경우 점을 찍러도록 설정
   const tileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view === 'month') {
       const isExerciseDate = exerciseDates.some(
@@ -78,7 +80,7 @@ export default function CustomCalendar({
       );
 
       if (isExerciseDate) {
-        return <div className="highlight-dot" />; // 점을 찍기 위한 요소
+        return <div className="highlight-dot" />; // 점을 찍기 위한 용소
       }
     }
     return null;

@@ -38,7 +38,7 @@ export default function CalendarPage() {
     setIsAttendance(storedLastAttendance === todayDateString);
 
     setSelectedDate(todayDateString); // 렌더링 시 오늘 날짜로 설정
-    fetchExerciseHistory;
+    fetchExerciseHistory(todayDate.getFullYear(), todayDate.getMonth() + 1);
   }, []);
 
   // 특정 연도, 월의 운동 기록을 가져옴
