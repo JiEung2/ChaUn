@@ -61,11 +61,11 @@ export default function CrewModal({ onClose, crewId, userScore }: CrewModalProps
           {
             label: '크루 점수',
             data: [
-              response.data.averageBodyType,
-              response.data.basicScore,
-              response.data.activityScore,
-              response.data.intakeScore,
-              response.data.averageAge,
+              response.averageBodyType,
+              response.basicScore,
+              response.activityScore,
+              response.intakeScore,
+              response.averageAge,
             ],
             backgroundColor: 'rgba(255, 99, 132, 0.2)',
             borderColor: 'rgba(255, 99, 132, 1)',

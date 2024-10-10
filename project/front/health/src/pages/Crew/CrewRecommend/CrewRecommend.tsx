@@ -4,6 +4,7 @@ import './CrewRecommend.scss';
 import CrewModal from '../../../components/Crew/CrewModal';
 import { getCrewRecommendList } from '@/api/crew';
 import useUserStore from '@/store/userInfo';
+import { div } from 'three/webgpu';
 
 interface CrewDetail {
   crewId: number;
@@ -80,7 +81,7 @@ export default function CrewRecommend() {
               imageUrl={crew.crewProfileImage}
               crewName={crew.crewName}
               tag={crew.exerciseName}
-              onClick={() => handleCrewClick(crew.crewId)}
+              onClick={() => handleCrewClick(crew.crewId!)} // crewId를 인자로 전달
             />
           ))}
         </div>

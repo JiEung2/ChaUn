@@ -7,7 +7,7 @@
   align-items: center;
   text-align: center;
   width: 70px;
-  pointer-events: auto; /* 클릭 가능하도록 설정 */
+  cursor: pointer;
 
   .crewProfileImage {
     width: 50px;
