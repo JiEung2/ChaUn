@@ -9,6 +9,8 @@ import BattleNoneImg from '../../../assets/svg/battlenoneImg.svg';
 import CrewAndMemberList from '../../../components/Crew/CrewAndMemberList';
 import { useState, useEffect } from 'react';
 import useBattleDataStore from '@/store/battleInfo';
+import Lottie from 'lottie-react';
+import LoadingLottile from '@/assets/Lottie/loading.json';
 
 export default function CrewBattle() {
   const { crewId } = useParams<{ crewId: string }>();
@@ -46,7 +48,20 @@ export default function CrewBattle() {
   });
 
   if (isBattleDataLoading || isRankingsLoading) {
-    return <div>Loading...</div>;
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '70vh',
+        textAlign: 'center',
+      }}>
+      <Lottie animationData={LoadingLottile} style={{ width: '200px', height: '200px' }} />
+      <p>
+        페이지 로딩 중 입니다. <br /> 잠시만 기다려주세요.
+      </p>
+    </div>;
   }
 
   if (!battleToRender) {

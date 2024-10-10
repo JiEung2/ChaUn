@@ -132,7 +132,12 @@
   border-radius: 50%;
   background-color: colors.$darkGray;
 }
-
+.memberNickname {
+  width: 100px;
+  max-width: 100px;
+  word-break: break-word;
+  word-wrap: break-word;
+}
 span {
   margin: 0 10px;
 }
