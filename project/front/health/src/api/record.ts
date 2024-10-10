@@ -22,7 +22,7 @@ export const getPredictBasic = async () => {
 };
 
 export const getPredictExtra = async () => {
-  const response = await exportAxios.get(`${baseUrl}/users/predict/extra`);
+  const response = await exportAxios.get(`${baseUrl}/users/predict/request-extra`);
   return response.data;
 };
 
