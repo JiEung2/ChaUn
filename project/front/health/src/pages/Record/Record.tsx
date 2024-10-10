@@ -19,7 +19,19 @@ export default function RecordPage() {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
-  const [exercisePredictionData, setExercisePredictionData] = useState(null); // 운동 예측 데이터를 위한 상태 추가
+  interface Prediction {
+    time: string;
+    weight: number; // weight를 숫자로 정의
+  }
+
+  interface PredictionData {
+    predictions: Prediction[];
+    current_image: string; // 이미지 경로는 문자열로 정의
+    p30_image: string;
+    p90_image: string;
+  }
+
+  const [exercisePredictionData, setExercisePredictionData] = useState<PredictionData | null>(null);
 
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -75,15 +87,27 @@ export default function RecordPage() {
       postPredictExerciseDetail(exerciseId, Number(day), Number(duration)),
     onSuccess: (response) => {
       const { data } = response;
-      console.log('운동 예측 요청 성공', data);
-      setExercisePredictionData(data); // 운동 예측 데이터를 상태로 저장
+
+      // 데이터를 가공하여 predictions 배열과 이미지를 포함한 객체로 변환
+      const formattedData = {
+        predictions: [
+          { time: '현재', weight: data.current },
+          { time: '1달 후', weight: data.p30 },
+          { time: '3달 후', weight: data.p90 },
+        ],
+        current_image: data.current_image,
+        p30_image: data.p30_image,
+        p90_image: data.p90_image,
+      };
+
+      console.log('운동 예측 요청 성공', formattedData);
+      setExercisePredictionData(formattedData); // 가공한 데이터를 상태로 저장
       setShowBodyWeightRecord(true);
     },
     onError: (error) => {
       console.error(`운동 예측 요청 중 에러 발생: ${error}`);
     },
   });
-
   // 주간 운동 기록 데이터 요청
   const { data: weeklyExerciseTime } = useSuspenseQuery({
     queryKey: [queryKeys.EXERCISE_HISTORY_WEEK, year, month, week],
