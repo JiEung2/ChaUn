@@ -105,7 +105,7 @@ export default function One({ handleNext }: { handleNext: () => void }) {
       <div className={styles['inputWrapper']}>
         <Input placeholder="" size="large" onChange={handleNincknameChange} value={nickname} />
         <GeneralButton buttonStyle={{ style: 'check', size: 'small' }} onClick={handleNincknameCheck}>
-          중봉 확인
+          중복 확인
         </GeneralButton>
       </div>
       {isNicknameError && <p className={styles['errorText']}>닉네임을 올바른기 입력해주세요</p>}
