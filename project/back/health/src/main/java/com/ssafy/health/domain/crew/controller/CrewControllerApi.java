@@ -410,13 +410,13 @@ public interface CrewControllerApi {
                             "userId": 1,
                             "nickname": "JiEung",
                             "exerciseTime": 0,
-                            "characterImageUrl": image.png"
+                            "characterImageUrl": "image.png"
                           },
                           {
                             "userId": 2,
                             "nickname": "JiEung2",
                             "exerciseTime": 0,
-                            "characterImageUrl": image.png"
+                            "characterImageUrl": "image.png"
                           }
                         ]
                       }
