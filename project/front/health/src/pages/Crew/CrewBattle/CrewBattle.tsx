@@ -48,7 +48,6 @@ export default function CrewBattle() {
   });
 
   if (isBattleDataLoading || isRankingsLoading) {
-    return;
     <div
       style={{
         display: 'flex',
