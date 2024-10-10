@@ -172,7 +172,9 @@ export default function RecordPage() {
         {predictionExtraData !== undefined ? (
           <BodyWeightRecord data={predictionData} />
         ) : (
-          <p>체형 예측 정보가 없습니다.</p>
+          <p>
+            체형 예측 정보가 없습니다. <br /> 운동을 시작하면 예측을 받아볼 수 있습니다.
+          </p>
         )}
       </div>
 
@@ -216,7 +218,7 @@ export default function RecordPage() {
           <div className="exerciseAdvice">
             <p className="adviceText">
               <strong>{nickname}님</strong>, <br />
-              저번 주 운동을 <strong>{day}일</strong> 진행하셨군요!
+              저번 주 운동을 <strong>{exerciseDays}일</strong> 진행하셨군요!
               <p>
                 꾸준한 건강 관리 및 부상 방지를 위해 <br />
                 주 2~3일 운동을 권장하고 있습니다. <br />

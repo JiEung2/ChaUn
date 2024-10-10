@@ -221,7 +221,7 @@ function HomePageContent({ nickname }: { nickname: string }) {
 
   return (
     <div className="homeContainer">
-      <p className="character">{nickname}</p>
+      <p className="character">{nickname}님, 오늘 운동도 파이팅!</p>
       <div className="characterContainer">
         <div className="title">
           <div className="iconWrapper">
