@@ -16,7 +16,7 @@ public class BodyExtraPrediction {
     private Long userId;
     private Float p30;
     private Float p90;
-    @Field("create_at")
+    @Field("created_at")
     private LocalDateTime createdAt;
     private ExerciseDetail exercise;
 

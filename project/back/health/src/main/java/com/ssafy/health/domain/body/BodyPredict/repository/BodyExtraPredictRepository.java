@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface BodyExtraPredictRepository extends MongoRepository<BodyExtraPrediction, Long> {
 
-    @Query(sort = "{ create_at: -1 }")
+    @Query(sort = "{ created_at: -1 }")
     Optional<BodyExtraPrediction> findFirstByUserId(Long userId);
 }
