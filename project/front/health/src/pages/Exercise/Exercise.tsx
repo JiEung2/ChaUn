@@ -152,7 +152,7 @@ export default function Exercise() {
           운동 추천
         </GeneralButton>
       </div>
-      <div>
+      <div className="exerciseModel">
         <CharacterCanvas glbUrl={characterUrl} gender={gender} />
       </div>
       <GeneralButton
@@ -189,7 +189,6 @@ export default function Exercise() {
         </>
       ) : (
         <div>
-          <p className="finishMent">운동이 종료되었습니다!</p>
           <div className="recordContainer">
             <div className="recordItem">
               <p>⏱ 운동 시간</p>

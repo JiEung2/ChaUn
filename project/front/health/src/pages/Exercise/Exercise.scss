@@ -2,50 +2,56 @@
 @use '@/styles/constants/typographies' as typo;
 
 .exerciseContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 
-    .exerciseRecommendButton {
-        margin-left: auto;
-    }
+  .exerciseRecommendButton {
+    margin-left: auto;
+  }
 
-    .selectExercise {
-        @include typo.sub;
-    }
+  .selectExercise {
+    @include typo.sub;
+  }
 }
 
 .timer {
-    @include typo.timer;
+  @include typo.timer;
 }
 
 .timerButton {
-    display: flex;
-    gap: 20px;
+  display: flex;
+  gap: 20px;
 
-    button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        outline: none;
-    }
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
 }
 
-.finishMent {
-    text-align: center;
-    @include typo.title;
-}
 .recordContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 327px;
-    background-color: colors.$record;
-    border-radius: 15px;
-    padding: 2px 0 20px 0;
-    margin: 0 10px;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 327px;
+  background-color: colors.$record;
+  border-radius: 15px;
+  padding: 2px 0 20px 0;
+  margin: 0 10px;
+  position: relative;
+}
+
+.exerciseModel {
+  width: 390px;
+  height: 350px;
+  transform: translateY(-30px);
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
 }

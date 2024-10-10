@@ -67,7 +67,7 @@ function Character({ glbUrl, gender, setLoading }: CharacterProps & { setLoading
           model.position.set(0, -9, 0);
         } else if (gender === 'WOMAN') {
           model.scale.set(10, 10, 10);
-          model.position.set(0, -8.5, 0);
+          model.position.set(0, -9, 0);
         }
 
         // 애니메이션 처리

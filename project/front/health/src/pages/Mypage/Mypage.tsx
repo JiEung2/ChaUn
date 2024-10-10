@@ -20,12 +20,12 @@ export default function MypagePage() {
   const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
   // const [setPreserveBuffer] = useState(false);
-  // const [characterGlbUrl, setCharacterGlbUrl] = useState<string | null>(null); // 캐릭터 URL 상태 추가
+  const [mypageCharacterUrl, setMypageCharacterUrl] = useState(characterFileUrl); // 캐릭터 URL 상태 추가
   const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
   const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
   const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
   const [gender, setGender] = useState<'MAN' | 'WOMAN'>('MAN'); // 성별 상태 추가
-  const [bodyTypeId, setBodyTypeId] = useState<number | null>(null);
+
   const [preserveBuffer, setPreserveBuffer] = useState(false);
   const queryClient = useQueryClient();
   interface snapshots {
@@ -45,21 +45,19 @@ export default function MypagePage() {
     queryKey: [queryKeys.USER_DETAIL, userId],
     queryFn: () => getUserDetail(userId),
   });
-  console.log('myDetail.characterFileUrl', myDetail.characterFileUrl, userId);
 
   const { data: myCharacter } = useSuspenseQuery({
     queryKey: [queryKeys.CHARACTER],
     queryFn: () => getMyCharacter(),
   });
-
+  console.log('myCharacter.bodyTypeId', myCharacter.bodyTypeId);
   useEffect(() => {
     if (myDetail) {
       setGender(myDetail.gender === 'MAN' ? 'MAN' : 'WOMAN');
       // setCharacterGlbUrl(myDetail.characterFileUrl);
       setHasCoin(myDetail.coins);
-      setBodyTypeId(myCharacter.bodyTypeId);
     }
-    setCharacterFileUrl(characterFileUrl);
+    setMypageCharacterUrl(characterFileUrl);
   }, [myDetail]);
 
   const { data: partsList } = useSuspenseQuery({
@@ -143,6 +141,7 @@ export default function MypagePage() {
     onSuccess: (response) => {
       const newCharacterUrl = response.characterUrl;
       setCharacterFileUrl(newCharacterUrl); // 캐릭터 URL 업데이트
+      setMypageCharacterUrl(newCharacterUrl);
     },
     onError: (error) => {
       console.error('파츠 적용/해제 실패:', error);
@@ -193,7 +192,7 @@ export default function MypagePage() {
 
   // 셔플 아이콘 클릭 시 랜덤 애니메이션 선택
   const handleShuffleClick = () => {
-    if (bodyTypeId === 5) {
+    if (myCharacter.bodyTypeId == 5 || myCharacter.bodyTypeId == 15) {
       const animations: Array<'standing' | 'dancing' | 'waving'> = ['standing', 'dancing', 'waving'];
       const randomAnimation = animations[Math.floor(Math.random() * animations.length)];
       handleButtonClick(randomAnimation);
@@ -205,7 +204,7 @@ export default function MypagePage() {
   // 버튼 클릭 핸들러 - 선택된 애니메이션 업데이트
   const handleButtonClick = (type: 'standing' | 'dancing' | 'waving') => {
     const url = generateAnimationUrl(type);
-    setCharacterFileUrl(url); // 선택한 모델 URL로 업데이트
+    setMypageCharacterUrl(url); // 선택한 모델 URL로 업데이트
     setActiveAnimation(type); // 현재 선택된 애니메이션 저장
   };
 
@@ -262,8 +261,8 @@ export default function MypagePage() {
 
           <div className="characterAndSnapshot">
             <div className="character" ref={characterRef}>
-              {characterFileUrl ? (
-                <CharacterCanvas glbUrl={characterFileUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
+              {mypageCharacterUrl ? (
+                <CharacterCanvas glbUrl={mypageCharacterUrl} gender={gender} preserveDrawingBuffer={preserveBuffer} />
               ) : (
                 <p>{nickname}님의 캐릭터를 불러오지 못했어요</p>
               )}
