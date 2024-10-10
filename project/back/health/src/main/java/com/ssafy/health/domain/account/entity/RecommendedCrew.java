@@ -15,7 +15,7 @@ public class RecommendedCrew {
 
     @Field("user_id")
     private Long userId;
-    @Field("crew_recommend")
+    @Field("crew_recommended")
     private List<CrewRecommendList> crewRecommend;
     @Field("created_at")
     private LocalDateTime createdAt;
