@@ -7,7 +7,14 @@ import Minus from '../../../assets/svg/minus.svg';
 import Settings from '../../../assets/svg/setting.svg';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCrewQuest } from '@/api/quest';
-import { getCrewDetail, getCrewRanking, agreeRandomMatching, collectCrewCoin, crewBattleStatus } from '@/api/crew';
+import {
+  getCrewDetail,
+  getCrewRanking,
+  agreeRandomMatching,
+  collectCrewCoin,
+  crewBattleStatus,
+  crewMemberDailyExerciseTime,
+} from '@/api/crew';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import querykeys from '@/utils/querykeys';
 import CloseButton from '@/assets/svg/xCircle.svg';
@@ -33,7 +40,7 @@ export default function MyCrew() {
   interface Member {
     nickname: string;
     userId: number;
-    characterImage: string;
+    characterImageUrl: string;
     userProfileImage: string;
     exerciseTime: number;
   }
@@ -41,31 +48,43 @@ export default function MyCrew() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
 
+  console.log('crewId', crewId);
   const { data: todayQuests } = useQuery<quest[]>({
     queryKey: [querykeys.CREW_QUEST, crewId],
     queryFn: () => getCrewQuest(Number(crewId)),
     enabled: !!crewId,
   });
-
+  console.log('todayQuests', todayQuests);
   const { data: crewInfo, refetch: refetchCrewInfo } = useQuery<CrewInfo>({
     queryKey: [querykeys.CREW_DETAIL, crewId],
     queryFn: () => getCrewDetail(Number(crewId)),
     enabled: !!crewId,
   });
-
+  console.log('crewInfo', crewInfo);
   const { data: members, isLoading: isMembersLoading } = useQuery<Member[]>({
     queryKey: [querykeys.CREW_MEMBER_RANKING, crewId],
     queryFn: () => getCrewRanking(Number(crewId)),
     enabled: !!crewId,
   });
 
-  console.log(members);
+  console.log('members', members);
 
   const { data: battleStatus } = useQuery({
     queryKey: [querykeys.BATTLE_STATUS, crewId],
     queryFn: () => crewBattleStatus(Number(crewId)),
     enabled: !!crewId,
   });
+  console.log('battleStatus', battleStatus);
+  const { data: dailyCrewExercise } = useQuery({
+    queryKey: [querykeys.CREW_MEMBER_EXERCISE_TIME, crewId],
+    queryFn: () => crewMemberDailyExerciseTime(Number(crewId)),
+    enabled: !!crewId,
+  });
+
+  console.log('dailyCrewExercise', dailyCrewExercise.crewMemberDailyDetailList);
+
+  // dailyCrewExercise가 존재하고, 그 안의 crewMemberDailyDetailList가 유효할 때만 접근
+  const dailyDetails = dailyCrewExercise?.crewMemberDailyDetailList ?? [];
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -84,36 +103,6 @@ export default function MyCrew() {
     setIsOpen(!isOpen);
   };
 
-  // const crewInfo: CrewInfo = {
-  //   crewName: '달리는 번개',
-  //   crewProfileImage: 'crew-profile-image.png',
-  //   exerciseName: '런닝',
-  //   description: '번개맨보다 빠른 러너들의 모임',
-  //   crewCoins: 300,
-  //   crewRanking: 3,
-  //   totalBattleCount: 10,
-  //   winCount: 7,
-  //   averageAge: 20,
-  //   activityScore: 1200,
-  //   basicScore: 850,
-  // };
-
-  // const members: Member[] = [
-  //   {
-  //     nickname: '달리기 왕자',
-  //     userId: 20,
-  //     characterImage: 'character01.jpg',
-  //     userProfileImage: 'crew-profile-image.jpg',
-  //     thisWeekExerciseTime: 27900000, // ms -> 7h 45m
-  //   },
-  //   {
-  //     nickname: '달리기 공주',
-  //     userId: 21,
-  //     characterImage: 'character01.jpg',
-  //     userProfileImage: 'crew-profile-image.jpg',
-  //     thisWeekExerciseTime: 18000000, // ms -> 5h 0m
-  //   },
-  // ];
   interface quest {
     questId: number;
     title: string;
@@ -129,12 +118,12 @@ export default function MyCrew() {
 
   const nextMember = () => {
     if (!members) return;
-    setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % members!.length);
+    setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % dailyDetails.length);
   };
 
   const prevMember = () => {
     if (!members) return;
-    setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + members!.length) % members!.length);
+    setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + dailyDetails.length) % dailyDetails.length);
   };
 
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
@@ -262,12 +251,16 @@ export default function MyCrew() {
       </div>
 
       {/* 크루원 캐러셀 */}
-      {members && (
+      {members && dailyDetails.length > 0 && (
         <div className="crewCharacterContainer">
           <button className="prevButton" onClick={prevMember}>
             ←
           </button>
-          <img className="memberProfileImage" src={members![currentMemberIndex].characterImage} alt="member profile" />
+          <img
+            className="memberProfileImage"
+            src={dailyDetails[currentMemberIndex].characterImageUrl}
+            alt="member profile"
+          />
           <div className="memberInfo">
             <h3>{members![currentMemberIndex].nickname}</h3>
             <p>크루 운동 시간</p>
