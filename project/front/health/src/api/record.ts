@@ -21,10 +21,10 @@ export const getPredictBasic = async () => {
   return response.data;
 };
 
-export const getPredictExtra = async () => {
-  const response = await exportAxios.post(`${baseUrl}/users/predict/request-extra`);
-  return response.data;
-};
+// export const getPredictExtra = async () => {
+//   const response = await exportAxios.post(`${baseUrl}/users/predict/request-extra`);
+//   return response.data;
+// };
 
 export const postPredictExerciseDetail = async (exercise_id: number, count: number, duration: number) => {
   const response = await exportAxios.post(`${baseUrl}/users/predict/request-extra`, { exercise_id, count, duration });
