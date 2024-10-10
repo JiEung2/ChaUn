@@ -6,14 +6,14 @@ interface ExerciseTimeResponse {
   weeklyAccumulatedExerciseTime: number;
 }
 
-interface ExerciseRecord {
-  id: number;
-  exerciseDuration: number;
-  burnedCalories: number;
-  exerciseName: string;
-  createdAt: string;
-  data?: ExerciseRecord;
-}
+// interface ExerciseRecord {
+//   id: number;
+//   exerciseDuration: number;
+//   burnedCalories: number;
+//   exerciseName: string;
+//   createdAt: string;
+//   data?: ExerciseRecord;
+// }
 
 // 본인의 이번주, 오늘 운동시간 조회
 export const exerciseTime = async (): Promise<ExerciseTimeResponse> => {
