@@ -45,7 +45,7 @@ function useExerciseTime() {
 }
 
 function useExerciseRecord(year: number, month: number, week: number) {
-  return useSuspenseQuery<ExerciseRecord>({
+  return useSuspenseQuery({
     queryKey: ['exerciseRecord', year, month, week],
     queryFn: () => exerciseRecord(year, month, week),
   });
@@ -90,13 +90,14 @@ function ExerciseRecordChart() {
   const currentMonth = currentDate.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줌
   const currentWeek = Math.ceil(currentDate.getDate() / 7); // 날짜를 7로 나누어 몇 번째 주인지 계산
 
-  const { data: exerciseRecordData } = useExerciseRecord(currentYear, currentMonth, currentWeek);
+  const { data: exerciseHistoryList } = useExerciseRecord(currentYear, currentMonth, currentWeek);
+  console.log(' 이번 주 운동 기록', exerciseHistoryList);
   // const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 4);
   const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
-  const chartData = Array.isArray(exerciseRecordData)
-    ? exerciseRecordData.map((record: ExerciseRecord) => ({
+  const chartData = Array.isArray(exerciseHistoryList)
+    ? exerciseHistoryList.map((record: ExerciseRecord) => ({
         day: new Date(record.createdAt).toLocaleDateString('ko-KR', { weekday: 'short' }),
         time: record.exerciseDuration / 60, // 초 단위를 분으로 변환
         calories: record.burnedCalories,
