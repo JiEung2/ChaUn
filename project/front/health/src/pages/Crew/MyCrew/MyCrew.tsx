@@ -82,6 +82,9 @@ export default function MyCrew() {
 
   console.log('dailyCrewExercise', dailyCrewExercise.crewMemberDailyDetailList);
 
+  // dailyCrewExercise가 존재하고, 그 안의 crewMemberDailyDetailList가 유효할 때만 접근
+  const dailyDetails = dailyCrewExercise?.crewMemberDailyDetailList ?? [];
+
   const mutation = useMutation({
     mutationFn: () =>
       //TODO - 운동 시작시간, 끝나는 시간 수정 예정
@@ -114,12 +117,12 @@ export default function MyCrew() {
 
   const nextMember = () => {
     if (!members) return;
-    setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % members!.length);
+    setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % dailyDetails.length);
   };
 
   const prevMember = () => {
     if (!members) return;
-    setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + members!.length) % members!.length);
+    setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + dailyDetails.length) % dailyDetails.length);
   };
 
   const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
@@ -247,14 +250,14 @@ export default function MyCrew() {
       </div>
 
       {/* 크루원 캐러셀 */}
-      {members && (
+      {members && dailyDetails.length > 0 && (
         <div className="crewCharacterContainer">
           <button className="prevButton" onClick={prevMember}>
             ←
           </button>
           <img
             className="memberProfileImage"
-            src={dailyCrewExercise[currentMemberIndex].characterImageUrl}
+            src={dailyDetails[currentMemberIndex].characterImageUrl}
             alt="member profile"
           />
           <div className="memberInfo">
