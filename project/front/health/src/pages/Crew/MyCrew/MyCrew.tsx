@@ -252,7 +252,11 @@ export default function MyCrew() {
           <button className="prevButton" onClick={prevMember}>
             ←
           </button>
-          <img className="memberProfileImage" src={dailyCrewExercise.characterImage} alt="member profile" />
+          <img
+            className="memberProfileImage"
+            src={dailyCrewExercise[currentMemberIndex].characterImage}
+            alt="member profile"
+          />
           <div className="memberInfo">
             <h3>{members![currentMemberIndex].nickname}</h3>
             <p>크루 운동 시간</p>
