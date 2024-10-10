@@ -21,10 +21,10 @@ export default function MypagePage() {
   const characterRef = useRef<HTMLDivElement | null>(null);
   const [selectedTab, setSelectedTab] = useState('헤어');
   const [mypageCharacterUrl, setMypageCharacterUrl] = useState(characterFileUrl); // 캐릭터 URL 상태 추가
-  const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({}); // 파츠 적용 상태
-  const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({}); // 구매된 파츠 상태 추가
-  const [_, setActiveAnimation] = useState<string>('standing'); // 기본값으로 'standing' 애니메이션 설정
-  const [gender, setGender] = useState<'MAN' | 'WOMAN'>('MAN'); // 성별 상태 추가
+  const [appliedParts, setAppliedParts] = useState<{ [key: number]: boolean }>({});
+  const [purchasedParts, setPurchasedParts] = useState<{ [key: number]: boolean }>({});
+  const [_, setActiveAnimation] = useState<string>('standing');
+  const [gender, setGender] = useState<'MAN' | 'WOMAN'>('MAN');
   const [preserveBuffer, setPreserveBuffer] = useState(false);
   const queryClient = useQueryClient();
   interface snapshots {
@@ -34,10 +34,19 @@ export default function MypagePage() {
 
   useEffect(() => {
     const storedPurchasedParts = localStorage.getItem('purchasedParts');
+    const storedAppliedParts = localStorage.getItem('appliedParts');
     if (storedPurchasedParts) {
       setPurchasedParts(JSON.parse(storedPurchasedParts));
     }
+    if (storedAppliedParts) {
+      setAppliedParts(JSON.parse(storedAppliedParts));
+    }
   }, []);
+
+  useEffect(() => {
+    // appliedParts 상태가 변경될 때마다 로컬 스토리지에 저장
+    localStorage.setItem('appliedParts', JSON.stringify(appliedParts));
+  }, [appliedParts]);
 
   const { data: myDetail } = useSuspenseQuery({
     queryKey: [queryKeys.USER_DETAIL, userId],
@@ -54,7 +63,6 @@ export default function MypagePage() {
       setGender(myDetail.gender === 'MAN' ? 'MAN' : 'WOMAN');
       setHasCoin(myDetail.coins);
     }
-    // setMypageCharacterUrl(characterFileUrl);
   }, [myDetail]);
 
   const { data: partsList } = useSuspenseQuery({
@@ -134,7 +142,7 @@ export default function MypagePage() {
       const newCharacterUrl = response.characterUrl;
       setCharacterFileUrl(newCharacterUrl);
       setMypageCharacterUrl(newCharacterUrl);
-      setAppliedParts((prev) => ({ ...prev, [parts_id]: !prev[parts_id] })); // 파츠 적용 상태 토글
+      setAppliedParts((prev) => ({ ...prev, [parts_id]: !prev[parts_id] }));
     },
     onError: (error) => {
       console.error('파츠 적용/해제 실패:', error);
@@ -156,7 +164,7 @@ export default function MypagePage() {
 
   const generateAnimationUrl = (type: 'standing' | 'dancing' | 'waving') => {
     const hasPartsApplied = Object.values(appliedParts).some((applied) => applied);
-
+    console.log(hasPartsApplied);
     if (gender === 'MAN') {
       switch (type) {
         case 'standing':
