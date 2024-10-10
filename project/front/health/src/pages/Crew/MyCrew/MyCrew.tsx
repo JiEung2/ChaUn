@@ -15,12 +15,25 @@ import {
   crewBattleStatus,
   crewMemberDailyExerciseTime,
 } from '@/api/crew';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import querykeys from '@/utils/querykeys';
+// import querykeys from '@/utils/querykeys';
 import CloseButton from '@/assets/svg/xCircle.svg';
 import CrewAndMemberList from '@/components/Crew/CrewAndMemberList';
 
 export default function MyCrew() {
+  const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
+  const [isBattleModalOpen, setIsBattleModalOpen] = useState(false);
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isCrewLeader, setIsCrewLeader] = useState(true); // 크루 대표 여부 상태
+  const [isInBattle, setIsInBattle] = useState(true); // 배틀 참여 여부 상태
+  const [opponentCrew, setOpponentCrew] = useState('3대 500만원'); // 상대 팀 정보
+
+  const [crewInfo, setCrewInfo] = useState<CrewInfo>(); // 크루 상세 조회
+  const [rankingMembers, setRankingMembers] = useState<RankingMember[]>(); // 크루 내 랭킹 조회
+  const [todayQuests, setTodayQuests] = useState<todayQuest[]>(); // 크루 퀘스트
+  const [battleStatus, setBattleStatus] = useState<battleStatus>();
+
+  const [members, setMembers] = useState<member[]>();
   interface CrewInfo {
     crewId: number;
     crewName: string;
@@ -37,73 +50,132 @@ export default function MyCrew() {
     role: string;
   }
 
-  interface Member {
+  interface RankingMember {
     nickname: string;
     userId: number;
-    characterImageUrl: string;
+    // characterImageUrl: string;
     userProfileImage: string;
     exerciseTime: number;
   }
-  const { crewId } = useParams();
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
 
-  console.log('crewId', crewId);
-  const { data: todayQuests } = useQuery<quest[]>({
-    queryKey: [querykeys.CREW_QUEST],
-    queryFn: () => getCrewQuest(Number(crewId)),
-  });
-  console.log('todayQuests', todayQuests);
-  const { data: crewInfo, refetch: refetchCrewInfo } = useQuery<CrewInfo>({
-    queryKey: [querykeys.CREW_DETAIL],
-    queryFn: () => getCrewDetail(Number(crewId)),
-  });
-  console.log('crewInfo', crewInfo);
-  const { data: members, isLoading: isMembersLoading } = useQuery<Member[]>({
-    queryKey: [querykeys.CREW_MEMBER_RANKING],
-    queryFn: () => getCrewRanking(Number(crewId)),
-  });
-
-  console.log('members', members);
-
-  const { data: battleStatus } = useQuery({
-    queryKey: [querykeys.BATTLE_STATUS],
-    queryFn: () => crewBattleStatus(Number(crewId)),
-  });
-  console.log('battleStatus', battleStatus);
-  const { data: dailyCrewExercise } = useQuery({
-    queryKey: [querykeys.CREW_MEMBER_EXERCISE_TIME],
-    queryFn: () => crewMemberDailyExerciseTime(Number(crewId)),
-  });
-
-  console.log('dailyCrewExercise', dailyCrewExercise.crewMemberDailyDetailList);
-
-  // dailyCrewExercise가 존재하고, 그 안의 crewMemberDailyDetailList가 유효할 때만 접근
-  const dailyDetails = dailyCrewExercise?.crewMemberDailyDetailList ?? [];
-
-  const mutation = useMutation({
-    mutationFn: () =>
-      //TODO - 운동 시작시간, 끝나는 시간 수정 예정
-      collectCrewCoin({ crew_id: Number(crewId), coin_count: selectedCoins }),
-    onSuccess: (data) => {
-      console.log('코인 모금 성공', data);
-      refetchCrewInfo();
-    },
-    onError: (error) => {
-      console.error('코인 모금 실패', error);
-    },
-  });
-
-  const toggleDetails = () => {
-    setIsOpen(!isOpen);
-  };
-
-  interface quest {
+  interface todayQuest {
     questId: number;
     title: string;
     questPeriod: string;
     isCompleted: boolean;
   }
+
+  interface battleStatus {
+    myTeamName: string;
+    myTeamScore: number;
+    opponentTeamName: string;
+    opponentTeamScore: number;
+    exerciseName: string;
+    battleStatus: string;
+    dDay: number;
+  }
+
+  interface member {
+    userId: number;
+    nickname: string;
+    exerciseTime: number;
+    characterImageUrl: string;
+  }
+  const { crewId } = useParams();
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
+
+  const fetchCrewDetail = async (crewId: number) => {
+    try {
+      const response = await getCrewDetail(crewId);
+      console.log('crew 상세보기', response);
+      setCrewInfo(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew detail:', error);
+      throw error;
+    }
+  };
+  const fetchCrewRanking = async (crewId: number) => {
+    try {
+      const response = await getCrewRanking(crewId);
+      console.log('크루 내 랭킹 조회', setRankingMembers);
+      setRankingMembers(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew ranking:', error);
+      throw error;
+    }
+  };
+  const fetchCrewQuest = async (crewId: number) => {
+    try {
+      const response = await getCrewQuest(crewId);
+      console.log('오늘의 퀘스트 조회', response);
+      setTodayQuests(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew quest:', error);
+      throw error;
+    }
+  };
+  // 코인 모금
+  const collectCrewCoins = async (crewId: number, coinCount: number) => {
+    try {
+      const response = await collectCrewCoin({ crew_id: crewId, coin_count: coinCount });
+      console.log('코인 모금 성공 여부', response);
+      return response;
+    } catch (error) {
+      console.error('Error collecting crew coins:', error);
+      throw error;
+    }
+  };
+  const fetchCrewBattleStatus = async (crewId: number) => {
+    try {
+      const response = await crewBattleStatus(crewId);
+      console.log('크루 BattleStatus', response);
+      setBattleStatus(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew battle status:', error);
+      throw error;
+    }
+  };
+  const fetchCrewMemberDailyExerciseTime = async (crewId: number) => {
+    try {
+      const response = await crewMemberDailyExerciseTime(crewId);
+      console.log('크루 멤버들 조회', response);
+      setMembers(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew member daily exercise time:', error);
+      throw error;
+    }
+  };
+  const toggleRandomMatchingAgreement = async (crewId: number) => {
+    try {
+      const response = await agreeRandomMatching(crewId);
+      return response;
+    } catch (error) {
+      console.error('Error toggling random matching agreement:', error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const num_crewId = Number(crewId);
+    //초기 렌더링시 필요한 데이터들 모두 렌더링
+    fetchCrewDetail(num_crewId);
+    fetchCrewRanking(num_crewId);
+    fetchCrewQuest(num_crewId);
+
+    fetchCrewBattleStatus(num_crewId);
+    fetchCrewMemberDailyExerciseTime(num_crewId);
+    toggleRandomMatchingAgreement(num_crewId);
+  }, []);
+  const toggleDetails = () => {
+    setIsOpen(!isOpen);
+  };
+
   const formatExerciseTime = (timeInMs: number) => {
     // console.log('크루 운동 시간', timeInMs);
     const hours = Math.floor(timeInMs / (1000 * 60 * 60));
@@ -113,21 +185,13 @@ export default function MyCrew() {
 
   const nextMember = () => {
     if (!members) return;
-    setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % dailyDetails.length);
+    setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % members.length);
   };
 
   const prevMember = () => {
     if (!members) return;
-    setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + dailyDetails.length) % dailyDetails.length);
+    setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + members.length) % members.length);
   };
-
-  const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
-  const [isBattleModalOpen, setIsBattleModalOpen] = useState(false);
-  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [isCrewLeader, setIsCrewLeader] = useState(true); // 크루 대표 여부 상태
-  const [isInBattle, setIsInBattle] = useState(true); // 배틀 참여 여부 상태
-  const [opponentCrew, setOpponentCrew] = useState('3대 500만원'); // 상대 팀 정보
 
   // const [todayQuests, setTodayQuests] = useState<quest[]>([]);
 
@@ -155,7 +219,7 @@ export default function MyCrew() {
   // const todayQuests = [{ title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기', completed: true }];
 
   const [selectedCoins, setSelectedCoins] = useState(50); // 선택된 코인 수
-  const [_, setCrewCoins] = useState(300); // 크루 코인 수
+  const [crewCoiins, setCrewCoins] = useState(300); // 크루 코인 수
 
   const incrementCoins = () => {
     setSelectedCoins((prev) => prev + 50);
@@ -169,7 +233,8 @@ export default function MyCrew() {
 
   const handleDeposit = () => {
     setCrewCoins((prev) => prev + selectedCoins);
-    mutation.mutate();
+    // mutation.mutate();
+    collectCrewCoins(Number(crewId), crewCoiins);
     setIsDepositModalOpen(false); // 모금 후 모달 닫기
   };
 
@@ -189,7 +254,7 @@ export default function MyCrew() {
   useEffect(() => {
     if (battleStatus) {
       setIsInBattle(battleStatus.battleStatus === 'STARTED');
-      setOpponentCrew(battleStatus.opponentCrewName);
+      setOpponentCrew(battleStatus.opponentTeamName);
     }
   }, [battleStatus]);
   const navigate = useNavigate();
@@ -246,14 +311,14 @@ export default function MyCrew() {
       </div>
 
       {/* 크루원 캐러셀 */}
-      {members && dailyDetails.length > 0 && (
+      {members && members.length > 0 && (
         <div className="crewCharacterContainer">
           <button className="prevButton" onClick={prevMember}>
             ←
           </button>
           <img
             className="memberProfileImage"
-            src={dailyDetails[currentMemberIndex].characterImageUrl}
+            src={members[currentMemberIndex].characterImageUrl}
             alt="member profile"
           />
           <div className="memberInfo">
@@ -269,13 +334,7 @@ export default function MyCrew() {
 
       {/* 크루 랭킹 */}
       <div className="crewRankingContainer">
-        {isMembersLoading ? (
-          <p>로딩 중...</p>
-        ) : members && members.length > 0 ? (
-          <CrewAndMemberList type="member" data={members} />
-        ) : (
-          <p>랭킹이 없습니다.</p>
-        )}
+        <CrewAndMemberList type="member" data={rankingMembers} />
       </div>
 
       {/* 퀘스트 모달 */}

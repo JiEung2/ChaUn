@@ -18,12 +18,7 @@ interface Crew {
   activityScore: number;
 }
 
-interface Props {
-  type: 'member' | 'crew';
-  data: Member[] | Crew[];
-}
-
-export default function CrewAndMemberList({ type, data }: Props) {
+export default function CrewAndMemberList({ type, data }: any) {
   const navigate = useNavigate();
 
   const formatExerciseTime = (timeInMs: number | undefined) => {
