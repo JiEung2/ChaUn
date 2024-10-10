@@ -99,12 +99,12 @@ self.addEventListener('fetch', (event) => {
   const requestUrl = new URL(event.request.url);
 
   if (
-    requestUrl.origin === `https://j11c106.p.ssafy.io/oauth2/authorization/google` ||
-    requestUrl.origin === `https://j11c106.p.ssafy.io/oauth2/authorization/kakao`
+    url.origin === `${import.meta.env.VITE_APP_BASE_URL_NO_ENDPOINT}/oauth2/authorization/google` ||
+    url.origin === `${import.meta.env.VITE_APP_BASE_URL_NO_ENDPOINT}/oauth2/authorization/kakao`
   ) {
     // 소셜 로그인과 관련된 요청은 캐싱하지 않고 네트워크로만 처리
-    return fetch(event.request);
-    // return;
+    // return fetch(event.request);
+    return;
   }
   // 'chrome-extension://' 스킴을 가진 요청 필터링
   if (requestUrl.protocol === 'chrome-extension:') {
