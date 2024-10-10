@@ -23,11 +23,6 @@ public class BodyPredictController implements BodyPredictControllerApi {
         return ApiResponse.success(bodyPredictReadService.getBasicPrediction());
     }
 
-    @GetMapping("/extra")
-    public ApiResponse<ExtraPredictionResponseDto> getExtraPrediction() {
-        return ApiResponse.success(bodyPredictReadService.getExtraPrediction());
-    }
-
     @PostMapping("/request-extra")
     public ApiResponse<ExtraPredictionResponseDto> requestExtraAnalysis(@RequestBody ExerciseDetailDto dto)
             throws JsonProcessingException {
