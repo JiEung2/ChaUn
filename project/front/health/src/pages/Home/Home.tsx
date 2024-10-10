@@ -138,8 +138,12 @@ function ExerciseRecordChart() {
       const date = new Date(record.createdAt);
       const dayIndex = date.getDay(); // 0: 일요일, 1: 월요일, ..., 6: 토요일
 
-      aggregatedData[dayIndex].totalTime += record.exerciseDuration / 60; // 초를 분으로 변환
+      aggregatedData[dayIndex].totalTime += record.exerciseDuration; // 초를 분으로 변환
       aggregatedData[dayIndex].totalCalories += record.burnedCalories;
+      console.log(
+        `Day: ${daysOfWeek[dayIndex]}, Total Calories: ${aggregatedData[dayIndex].totalCalories}, Total Time: ${aggregatedData[dayIndex].totalTime}`
+      );
+      console.log('aggregatedData', aggregatedData);
     });
   }
 
@@ -186,7 +190,7 @@ function ExerciseRecordChart() {
                   type: 'label' as const,
                   xValue: chartData[clickedIndex].day,
                   yValue: chartData[clickedIndex].time || 0,
-                  content: [`${chartData[clickedIndex].time || 0} 분`, `${selectedCalories || 0} kcal`],
+                  content: [`${formatTime(chartData[clickedIndex].time!) || 0} 분`, `${selectedCalories || 0} kcal`],
                   enabled: true,
                   font: {
                     size: 10,
