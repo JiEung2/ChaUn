@@ -223,7 +223,7 @@ def preprocess_data(exercise_data):
     return processed_data
 
 # 보정 함수
-def make_confirmed_weight(days_30, days_90, data, p30, p90):
+def make_confirmed_weight(days_30, days_90, data, p30, p90, extra):
     last_weight = data[-1].weight
     cal_average = UserExerciseRequest(exercise_data=data).average_calories()
 
@@ -264,6 +264,12 @@ def make_confirmed_weight(days_30, days_90, data, p30, p90):
             print("운동량이 적음 - 체중 증가 가중치 적용")
             pred_30_adjustment = np.random.uniform(0, 1)  # 체중 증가 가중치
             pred_90_adjustment = np.random.uniform(1, 2.5)
+        
+        if extra:
+            extra_variable = np.random.uniform(0, 0.5)
+            pred_30_adjustment -= extra_variable
+            pred_90_adjustment -= extra_variable
+
     else:
         pred_30_adjustment = 0
         pred_90_adjustment = 0
@@ -335,7 +341,7 @@ async def predict(user_id: int, request: UserExerciseRequest):
         p30_diff = abs(last_weight - pred_30_d)
         p90_diff = abs(last_weight - pred_90_d)
         print(pred_30_d, pred_90_d)
-        pred_30_d, pred_90_d = make_confirmed_weight(p30_diff, p90_diff, exercise_data, pred_30_d, pred_90_d)
+        pred_30_d, pred_90_d = make_confirmed_weight(p30_diff, p90_diff, exercise_data, pred_30_d, pred_90_d, False)
 
 
         # 5. 예측 DB 변수 정의
@@ -405,7 +411,7 @@ async def extra_predict(user_id: int, request: UserExerciseRequest):
         #     pred_90_d = round((((cal_weight + pred_30_d + pred_90_d) / 3) + np.random.uniform(-2, -1)), 2)
         p30_diff = abs(last_weight - pred_30_d)
         p90_diff = abs(last_weight - pred_90_d)
-        pred_30_d, pred_90_d = make_confirmed_weight(p30_diff, p90_diff, exercise_data, pred_30_d, pred_90_d)
+        pred_30_d, pred_90_d = make_confirmed_weight(p30_diff, p90_diff, exercise_data, pred_30_d, pred_90_d, True)
 
 
         # 5. 예측 DB 변수 정의
