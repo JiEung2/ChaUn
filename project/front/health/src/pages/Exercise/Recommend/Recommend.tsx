@@ -39,7 +39,7 @@ export default function ExerciseRecommendPage() {
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          height: '50vh',
+          height: '70vh',
           textAlign: 'center',
         }}>
         <Lottie animationData={LoadingLottile} style={{ width: '200px', height: '200px' }} />
