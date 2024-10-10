@@ -59,6 +59,8 @@ export default function MyCrew() {
     enabled: !!crewId,
   });
 
+  console.log(members);
+
   const { data: battleStatus } = useQuery({
     queryKey: [querykeys.BATTLE_STATUS, crewId],
     queryFn: () => crewBattleStatus(Number(crewId)),
