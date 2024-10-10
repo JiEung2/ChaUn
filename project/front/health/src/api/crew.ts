@@ -119,6 +119,6 @@ export const createCrew = async (formData: FormData) => {
 
 // 크루원들의 오늘 운동 시간과 캐릭터 조회
 export const crewMemberDailyExerciseTime = async (crew_id: number) => {
-  const response = await exportAxios.post(`${baseURL}/crew/${crew_id}/exercise-time/daily`);
+  const response = await exportAxios.get(`${baseURL}/crew/${crew_id}/exercise-time/daily`);
   return response.data;
 };
