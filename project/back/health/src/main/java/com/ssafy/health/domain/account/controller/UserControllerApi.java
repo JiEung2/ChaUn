@@ -12,6 +12,7 @@ import com.ssafy.health.domain.exercise.dto.request.ExerciseHistorySaveRequestDt
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistorySaveResponseDto;
 import com.ssafy.health.domain.exercise.dto.response.WeeklyAndDailyExerciseTimeResponseDto;
+import com.ssafy.health.domain.recommendation.dto.response.RecommendedCrewResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -378,4 +379,36 @@ public interface UserControllerApi {
             )
     })
     ApiResponse<CrewListWithUserScoreResponseDto> getRecommendedCrew();
+
+    @Operation(
+            summary = "자신의 추천 크루 목록 조회",
+            description = "자신의 추천 크루와 유사도 목록을 조회합니다."
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "추천 크루 목록 조회 완료",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "Success",
+                                      "data": {
+                                        "crewId": 4,
+                                        "crewName": "노는게 제일 좋아",
+                                        "exerciseName": "농구",
+                                        "description": "캬캬캬캬 드루와",
+                                        "crewProfileImage": "https://c106-chaun.s3.ap-northeast-2.amazonaws.com/crew_image/4.jpg",
+                                        "crewCoins": 900,
+                                        "crewRanking": 16,
+                                        "averageAge": 24,
+                                        "averageBodyType": 2.5,
+                                        "basicScore": 200,
+                                        "activityScore": 100,
+                                        "intakeScore": 1950
+                                      }
+                                    }
+                                    """
+                            ))
+            )
+    })
+    ApiResponse<RecommendedCrewResponseDto> getRecommendedCrewDetail(@PathVariable("crew_id") Long crewId);
 }
