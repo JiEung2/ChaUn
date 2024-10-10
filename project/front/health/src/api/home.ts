@@ -24,6 +24,7 @@ export const exerciseTime = async (): Promise<ExerciseTimeResponse> => {
 
 // 자신의 특정 주의 운동 기록 조회
 export const exerciseRecord = async (year: number, month: number, week: number) => {
+  console.log('운동기록 조회 날짜 확인', year, month, week);
   const response = await exportAxios.get(`${baseUrl}/users/exercise-history/week`, {
     params: {
       year,
