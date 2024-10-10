@@ -12,6 +12,7 @@ import com.ssafy.health.domain.body.BodyHistory.exception.BodyHistoryNotFoundExc
 import com.ssafy.health.domain.body.BodyHistory.repository.BodyHistoryRepository;
 import com.ssafy.health.domain.body.BodyPredict.dto.ExerciseDetailDto;
 import com.ssafy.health.domain.body.BodyPredict.dto.request.AnalysisRequestDto;
+import com.ssafy.health.domain.body.BodyPredict.dto.response.ExtraPredictionResponseDto;
 import com.ssafy.health.domain.body.BodyPredict.entity.PredictionType;
 import com.ssafy.health.domain.exercise.dto.response.ExerciseHistoryListResponseDto;
 import com.ssafy.health.domain.exercise.entity.Exercise;
@@ -35,6 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BodyPredictWriteService {
 
+    private final BodyPredictReadService bodyPredictReadService;
     @Value("${health.analysis.api.url}")
     private String fastApiUrl;
 
@@ -74,16 +76,21 @@ public class BodyPredictWriteService {
         return null;
     }
 
-    public ResponseEntity<String> requestExtraAnalysis(ExerciseDetailDto exerciseDetail)
+    public ExtraPredictionResponseDto requestExtraAnalysis(ExerciseDetailDto exerciseDetail)
             throws JsonProcessingException {
 
         Long userId = SecurityUtil.getCurrentUserId();
-        String apiUrl = apiBaseUrlBuilder(userId) + "/extra/fast-api";
+        String apiUrl = apiBaseUrlBuilder(3L) + "/extra/fast-api";
 
         AnalysisRequestDto requestDto = buildPredictionPayload(userId, PredictionType.EXTRA, exerciseDetail);
 
         if (requestDto != null) {
-            return requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
+            ResponseEntity<?> response = requestUtil.sendPostRequest(apiUrl, requestDto, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return bodyPredictReadService.getExtraPrediction();
+            } else {
+                return null;
+            }
         } else {
             log.info("{} analysis for user {} is not requested since exercise history is null",
                     userId, PredictionType.BASIC);

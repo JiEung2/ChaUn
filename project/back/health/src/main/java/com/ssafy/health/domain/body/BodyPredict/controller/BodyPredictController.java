@@ -8,7 +8,6 @@ import com.ssafy.health.domain.body.BodyPredict.dto.response.ExtraPredictionResp
 import com.ssafy.health.domain.body.BodyPredict.service.BodyPredictReadService;
 import com.ssafy.health.domain.body.BodyPredict.service.BodyPredictWriteService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,10 +29,14 @@ public class BodyPredictController implements BodyPredictControllerApi {
     }
 
     @PostMapping("/request-extra")
-    public ApiResponse<ResponseEntity<String>> requestExtraAnalysis(@RequestBody ExerciseDetailDto dto)
+    public ApiResponse<ExtraPredictionResponseDto> requestExtraAnalysis(@RequestBody ExerciseDetailDto dto)
             throws JsonProcessingException {
-        return ApiResponse.success(
-                bodyPredictWriteService.requestExtraAnalysis(dto), "추가 체형 예측을 요청하였습니다.");
+        ExtraPredictionResponseDto responseDto = bodyPredictWriteService.requestExtraAnalysis(dto);
+        if (responseDto == null) {
+            return ApiResponse.error(204, "추가 체형 정보가 없음");
+        } else {
+            return ApiResponse.success(responseDto, "추가 체형 예측 완료");
+        }
     }
 
     @PostMapping("/request-analysis")
