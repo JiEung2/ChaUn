@@ -163,7 +163,7 @@ function ExerciseRecordChart() {
         type: 'linear' as const,
         axis: 'y' as const,
         beginAtZero: true,
-        display: false,
+        display: true,
         ticks: {
           stepSize: 10,
           callback: function (value: string | number) {
