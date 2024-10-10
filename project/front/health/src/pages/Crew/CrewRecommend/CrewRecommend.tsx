@@ -8,7 +8,7 @@ import useUserStore from '@/store/userInfo';
 interface CrewDetail {
   crewId: number;
   crewProfileImage: string;
-  name: string;
+  crewName: string;
   exerciseName: string;
 }
 interface userScore {
@@ -41,7 +41,7 @@ export default function CrewRecommend() {
       const mappedCrews = response.crewList.map((crew: CrewDetail) => ({
         crewId: crew.crewId,
         crewProfileImage: crew.crewProfileImage,
-        name: crew.name,
+        name: crew.crewName,
         exerciseName: crew.exerciseName,
       }));
 
@@ -77,7 +77,7 @@ export default function CrewRecommend() {
             <Crew
               key={crew.crewId} // crewId로 key 설정
               imageUrl={crew.crewProfileImage}
-              name={crew.name}
+              name={crew.crewName}
               tag={crew.exerciseName}
               onClick={() => handleCrewClick(crew.crewId)}
             />
