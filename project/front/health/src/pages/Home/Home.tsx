@@ -163,15 +163,15 @@ function ExerciseRecordChart() {
         type: 'linear' as const,
         axis: 'y' as const,
         beginAtZero: true,
-        display: true,
-        ticks: {
-          stepSize: 10,
-          callback: function (value: string | number) {
-            return `${value}`;
-          },
-        },
-        min: Math.min(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / 24), 0),
-        max: Math.max(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / 24), 160), // 데이터의 최대 값에 맞춰 max 값 조정
+        display: false,
+        // ticks: {
+        //   stepSize: 10,
+        //   callback: function (value: string | number) {
+        //     return `${value}`;
+        //   },
+        // },
+        // min: Math.min(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / 24), 0),
+        // max: Math.max(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / 24), 160), // 데이터의 최대 값에 맞춰 max 값 조정
       },
     },
   };
