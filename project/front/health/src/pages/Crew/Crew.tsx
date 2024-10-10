@@ -1,12 +1,12 @@
-import { useRef, useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import BattleBoard from './components/BattleBoard';
 import StyledButton from '../../components/Button/StyledButton';
 import { useNavigate } from 'react-router-dom';
 import createIcon from '../../assets/svg/crewCreate.svg';
 import recommendIcon from '../../assets/svg/crewRecommend.svg';
 import rankingIcon from '../../assets/svg/crewRanking.svg';
-import leftArrowIcon from '../../assets/svg/leftArrow.svg';
-import rightArrowIcon from '../../assets/svg/rightArrow.svg';
+// import leftArrowIcon from '../../assets/svg/leftArrow.svg';
+// import rightArrowIcon from '../../assets/svg/rightArrow.svg';
 import '../Crew/Crew.scss';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { fetchCrewBattleStatus, CrewBattleStatusResponse } from '../../api/crew';
@@ -32,9 +32,9 @@ interface CrewData {
 
 export default function CrewPage() {
   const navigate = useNavigate();
-  const swiperRef = useRef<any>(null);
-  const [showPrevButton, setShowPrevButton] = useState(false);
-  const [showNextButton, setShowNextButton] = useState(false);
+  // const swiperRef = useRef<any>(null);
+  // const [showPrevButton, setShowPrevButton] = useState(false);
+  // const [showNextButton, setShowNextButton] = useState(false);
   const { userId, nickname } = useUserStore();
   const { setMultipleBattles, battles } = useBattleDataStore(); // Use the global store to manage battle data
 
@@ -87,10 +87,10 @@ export default function CrewPage() {
     navigate(`/crew/mycrew/${crewId}`);
   };
 
-  const handleSwiperChange = (swiper: any) => {
-    setShowPrevButton(!swiper.isBeginning);
-    setShowNextButton(!swiper.isEnd);
-  };
+  // const handleSwiperChange = (swiper: any) => {
+  //   setShowPrevButton(!swiper.isBeginning);
+  //   setShowNextButton(!swiper.isEnd);
+  // };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -126,11 +126,11 @@ export default function CrewPage() {
           <Swiper
             spaceBetween={50}
             slidesPerView={1}
-            onSlideChange={handleSwiperChange}
-            onInit={(swiper) => {
-              handleSwiperChange(swiper);
-              swiperRef.current = swiper;
-            }}
+            // onSlideChange={handleSwiperChange}
+            // onInit={(swiper) => {
+            //   handleSwiperChange(swiper);
+            //   swiperRef.current = swiper;
+            // }}
             navigation={{
               nextEl: '.swiper-button-next',
               prevEl: '.swiper-button-prev',
@@ -168,7 +168,7 @@ export default function CrewPage() {
           />
         )}
 
-        {showPrevButton && (
+        {/* {showPrevButton && (
           <div className="swiper-button-prev" onClick={() => swiperRef.current && swiperRef.current.slidePrev()}>
             <img src={leftArrowIcon} alt="Previous" />
           </div>
@@ -177,7 +177,7 @@ export default function CrewPage() {
           <div className="swiper-button-next" onClick={() => swiperRef.current && swiperRef.current.slideNext()}>
             <img src={rightArrowIcon} alt="Next" />
           </div>
-        )}
+        )} */}
       </div>
 
       <div className="buttonSection">

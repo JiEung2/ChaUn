@@ -101,6 +101,12 @@ export default function CalendarPage() {
 
   const record = records[selectedDate || ''];
 
+  useEffect(() => {
+    if (record && Object.keys(record.types).length > 0) {
+      setActiveTab(Object.keys(record.types)[0]); // 첫 번째 운동 기록을 기본 선택
+    }
+  }, [record]);
+
   return (
     <div className="calendarPage">
       <div className="calendar">
