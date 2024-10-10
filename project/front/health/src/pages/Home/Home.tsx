@@ -130,7 +130,7 @@ function ExerciseRecordChart() {
                 {
                   type: 'label' as const,
                   xValue: chartData[clickedIndex].day,
-                  yValue: chartData[clickedIndex].time || 0,
+                  yValue: '',
                   content: [`${formatTime(chartData[clickedIndex].time!) || 0}`, `${selectedCalories || 0} kcal`],
                   enabled: true,
                   font: {
@@ -162,7 +162,7 @@ function ExerciseRecordChart() {
         type: 'linear' as const,
         axis: 'y' as const,
         beginAtZero: true,
-        display: false,
+        display: true,
         ticks: {
           stepSize: 10,
           callback: function (value: string | number) {
