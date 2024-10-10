@@ -77,6 +77,8 @@ function ExerciseRecordChart() {
   useEffect(() => {
     const fetchAggregatedData = async () => {
       const data = await getAggregatedExerciseData(currentYear, currentMonth, currentWeek);
+
+      console.log('날짜 정리한 데이터', data);
       setAggregatedData(data);
     };
 
