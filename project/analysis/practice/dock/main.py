@@ -229,7 +229,7 @@ def make_confirmed_weight(days_30, days_90, data, p30, p90, extra):
 
     calculate_flag = 0
     # 기본적인 보정 가중치 정의
-    if days_30 > 10 or days_90 > 15:  # 오차율이 크다면 큰 보정
+    if days_30 > 0.03 or days_90 > 0.05:  # 오차율이 크다면 큰 보정
         # if days_30 > 10:
         #     print('30일 예측 - 10kg 이상 차이남, 오차 큼')
         # if days_90 > 15:
@@ -237,7 +237,7 @@ def make_confirmed_weight(days_30, days_90, data, p30, p90, extra):
         weight_adjustment_factor_30 = 0.1
         weight_adjustment_factor_90 = 0.15
         calculate_flag = 1
-    elif days_30 > 5 or days_90 > 10:  # 중간 정도의 오차율 보정
+    elif days_30 > 0.02 or days_90 > 0.03:  # 중간 정도의 오차율 보정
         # if days_30 > 5:
         #     print('30일 예측 - 5kg 이상 차이남, 오차 보통')
         # if days_90 > 10:
@@ -338,8 +338,8 @@ async def predict(user_id: int, request: UserExerciseRequest):
         #             cal_weight = last_weight + np.random.normal(0, 1)
         #     pred_30_d = round((last_weight + cal_weight + pred_30_d) / 3, 2)
         #     pred_90_d = round((cal_weight + pred_30_d + pred_90_d) / 3 + np.random.normal(-1, 1), 2)
-        p30_diff = abs(last_weight - pred_30_d)
-        p90_diff = abs(last_weight - pred_90_d)
+        p30_diff = abs(last_weight - pred_30_d) / last_weight
+        p90_diff = abs(last_weight - pred_90_d) / last_weight
         print(pred_30_d, pred_90_d)
         pred_30_d, pred_90_d = make_confirmed_weight(p30_diff, p90_diff, exercise_data, pred_30_d, pred_90_d, False)
 
@@ -409,8 +409,8 @@ async def extra_predict(user_id: int, request: UserExerciseRequest):
         #             cal_weight = last_weight + np.random.uniform(-1.5, 0)
         #     pred_30_d = round((last_weight + cal_weight + pred_30_d) / 3, 2)
         #     pred_90_d = round((((cal_weight + pred_30_d + pred_90_d) / 3) + np.random.uniform(-2, -1)), 2)
-        p30_diff = abs(last_weight - pred_30_d)
-        p90_diff = abs(last_weight - pred_90_d)
+        p30_diff = abs(last_weight - pred_30_d) / last_weight
+        p90_diff = abs(last_weight - pred_90_d) / last_weight
         pred_30_d, pred_90_d = make_confirmed_weight(p30_diff, p90_diff, exercise_data, pred_30_d, pred_90_d, True)
 
 
