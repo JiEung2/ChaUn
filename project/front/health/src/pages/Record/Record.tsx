@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
+import { getPredictExtra, postPredictExerciseDetail } from '@/api/record';
 import { exerciseRecord } from '@/api/home';
 import queryKeys from '@/utils/querykeys';
 import useUserStore from '@/store/userInfo';
@@ -96,7 +96,6 @@ export default function RecordPage() {
   });
 
   console.log(year, month, week);
-
   // 예측 데이터
   const { data: predictionExtraData, refetch: refetchPrediction } = useQuery({
     queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
@@ -115,10 +114,15 @@ export default function RecordPage() {
         p90_image,
       };
     },
-    onSuccess: () => {
-      setIsPredictRequested(false); // 요청 후 초기화
-    },
+    // onSuccess 제거
   });
+
+  // useEffect로 데이터 감지 및 상태 업데이트
+  useEffect(() => {
+    if (predictionExtraData) {
+      setIsPredictRequested(false); // 예측 데이터가 있으면 상태를 업데이트
+    }
+  }, [predictionExtraData]);
 
   useEffect(() => {
     const weeklyExerciseCount = weeklyExerciseTime?.exerciseHistoryList?.length || 0;
