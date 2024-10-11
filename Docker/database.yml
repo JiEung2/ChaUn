@@ -1,30 +1,38 @@
 services:
-  mongodb-ce:
+  mongodb:
     container_name: mongodb
-    expose:
-      - 27017
-    image: mongodb/mongodb-community-server:7.0-ubuntu2204
+    environment:
+      MONGO_INITDB_ROOT_PASSWORD: 
+      MONGO_INITDB_ROOT_USERNAME: 
+    image: mongodb/mongodb-community-server:7.0.12-ubuntu2204
+    labels:
+      caddy: localhost:31061
+      caddy.reverse_proxy: "{{ upstreams 27017 }}"
     networks:
       - caddy
+    ports:
+      - 31061:27017
     pull_policy: always
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
   mysql:
     container_name: mysql
     environment:
       MYSQL_DATABASE: health
+      MYSQL_PASSWORD: 
       MYSQL_ROOT_PASSWORD: 
       MYSQL_USER: 
-      MYSQL_PASSWORD: 
-    ports:
-      - 31060:3306
+    image: mysql:8.0
     labels:
       caddy: localhost:31060
       caddy.reverse_proxy: "{{ upstreams 3306 }}"
-    image: mysql:8.0
     networks:
       - caddy
+    ports:
+      - 31060:3306
     pull_policy: always
     restart: always
     volumes:
@@ -34,8 +42,12 @@ services:
 volumes:
   mysql_data:
     name: mysql_data
+  mongodb_data:
+    name: mongodb_data
+  mongodb_config:
+    name: mongodb_config
 
 networks:
   caddy:
-    name: caddy
     external: true
+    name: caddy
