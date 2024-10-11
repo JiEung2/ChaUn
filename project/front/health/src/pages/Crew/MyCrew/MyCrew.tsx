@@ -1,21 +1,43 @@
 import { useEffect, useState } from 'react';
 import './MyCrew.scss';
 import Coin from '@/components/Coin/Coin';
-import QuestItem from '../../../components/Home/Quest/QuestItem';
+// import QuestItem from '../../../components/Home/Quest/QuestItem';
 import Plus from '../../../assets/svg/plus.svg';
 import Minus from '../../../assets/svg/minus.svg';
 import Settings from '../../../assets/svg/setting.svg';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getCrewQuest } from '@/api/quest';
-import { getCrewDetail, getCrewRanking, agreeRandomMatching, collectCrewCoin, crewBattleStatus } from '@/api/crew';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import querykeys from '@/utils/querykeys';
+import {
+  getCrewDetail,
+  getCrewRanking,
+  agreeRandomMatching,
+  collectCrewCoin,
+  crewBattleStatus,
+  crewMemberDailyExerciseTime,
+} from '@/api/crew';
+// import querykeys from '@/utils/querykeys';
+import CloseButton from '@/assets/svg/xCircle.svg';
+// import CrewAndMemberList from '@/components/Crew/CrewAndMemberList';
 
 export default function MyCrew() {
+  const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
+  const [isBattleModalOpen, setIsBattleModalOpen] = useState(false);
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isCrewLeader, setIsCrewLeader] = useState(true); // 크루 대표 여부 상태
+  const [isInBattle, setIsInBattle] = useState(true); // 배틀 참여 여부 상태
+  const [opponentCrew, setOpponentCrew] = useState('3대 500만원'); // 상대 팀 정보
+
+  const [crewInfo, setCrewInfo] = useState<CrewInfo>(); // 크루 상세 조회
+  const [setRankingMembers] = useState<RankingMember[]>(); // 크루 내 랭킹 조회
+  const [_, setTodayQuests] = useState<todayQuest[]>(); // 크루 퀘스트
+  const [battleStatus, setBattleStatus] = useState<battleStatus>();
+
+  const [members, setMembers] = useState<member[]>();
   interface CrewInfo {
     crewId: number;
     crewName: string;
-    crewProfileImage: string;
+    profileImage: string;
     exerciseName: string;
     description: string;
     crewCoins: number;
@@ -28,92 +50,132 @@ export default function MyCrew() {
     role: string;
   }
 
-  interface Member {
+  interface RankingMember {
     nickname: string;
     userId: number;
-    characterImage: string;
+    // characterImageUrl: string;
     userProfileImage: string;
     exerciseTime: number;
   }
-  const { crewId } = useParams();
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
 
-  const { data: todayQuests } = useQuery<quest[]>({
-    queryKey: [querykeys.CREW_QUEST, crewId],
-    queryFn: () => getCrewQuest(Number(crewId)),
-    enabled: !!crewId,
-  });
-
-  const { data: crewInfo } = useQuery<CrewInfo>({
-    queryKey: [querykeys.CREW_DETAIL, crewId],
-    queryFn: () => getCrewDetail(Number(crewId)),
-    enabled: !!crewId,
-  });
-  const { data: members } = useQuery<Member[]>({
-    queryKey: [querykeys.CREW_MEMBER_RANKING, crewId],
-    queryFn: () => getCrewRanking(Number(crewId)),
-    enabled: !!crewId,
-  });
-
-  const { data: battleStatus } = useQuery({
-    queryKey: [querykeys.BATTLE_STATUS, crewId],
-    queryFn: () => crewBattleStatus(Number(crewId)),
-    enabled: !!crewId,
-  });
-
-  const mutation = useMutation({
-    mutationFn: () =>
-      //TODO - 운동 시작시간, 끝나는 시간 수정 예정
-      collectCrewCoin({ crew_id: Number(crewId), coin_count: selectedCoins }),
-    onSuccess: (data) => {
-      console.log('코인 모금 성공', data);
-    },
-    onError: (error) => {
-      console.error('코인 모금 실패', error);
-    },
-  });
-
-  const toggleDetails = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // const crewInfo: CrewInfo = {
-  //   crewName: '달리는 번개',
-  //   crewProfileImage: 'crew-profile-image.png',
-  //   exerciseName: '런닝',
-  //   description: '번개맨보다 빠른 러너들의 모임',
-  //   crewCoins: 300,
-  //   crewRanking: 3,
-  //   totalBattleCount: 10,
-  //   winCount: 7,
-  //   averageAge: 20,
-  //   activityScore: 1200,
-  //   basicScore: 850,
-  // };
-
-  // const members: Member[] = [
-  //   {
-  //     nickname: '달리기 왕자',
-  //     userId: 20,
-  //     characterImage: 'character01.jpg',
-  //     userProfileImage: 'crew-profile-image.jpg',
-  //     thisWeekExerciseTime: 27900000, // ms -> 7h 45m
-  //   },
-  //   {
-  //     nickname: '달리기 공주',
-  //     userId: 21,
-  //     characterImage: 'character01.jpg',
-  //     userProfileImage: 'crew-profile-image.jpg',
-  //     thisWeekExerciseTime: 18000000, // ms -> 5h 0m
-  //   },
-  // ];
-  interface quest {
+  interface todayQuest {
     questId: number;
     title: string;
     questPeriod: string;
     isCompleted: boolean;
   }
+
+  interface battleStatus {
+    myTeamName: string;
+    myTeamScore: number;
+    opponentTeamName: string;
+    opponentTeamScore: number;
+    exerciseName: string;
+    battleStatus: string;
+    dDay: number;
+  }
+
+  interface member {
+    userId: number;
+    nickname: string;
+    exerciseTime: number;
+    characterImageUrl: string;
+  }
+  const { crewId } = useParams();
+  const [isOpen, setIsOpen] = useState(false);
+  const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
+
+  const fetchCrewDetail = async (crewId: number) => {
+    try {
+      const response = await getCrewDetail(crewId);
+      console.log('crew 상세보기', response);
+      setCrewInfo(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew detail:', error);
+      throw error;
+    }
+  };
+  const fetchCrewRanking = async (crewId: number) => {
+    try {
+      const response = await getCrewRanking(crewId);
+      console.log('크루 내 랭킹 조회', setRankingMembers);
+      // setRankingMembers(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew ranking:', error);
+      throw error;
+    }
+  };
+  const fetchCrewQuest = async (crewId: number) => {
+    try {
+      const response = await getCrewQuest(crewId);
+      console.log('오늘의 퀘스트 조회', response);
+      setTodayQuests(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew quest:', error);
+      throw error;
+    }
+  };
+  // 코인 모금
+  const collectCrewCoins = async (crewId: number, coinCount: number) => {
+    try {
+      const response = await collectCrewCoin({ crew_id: crewId, coin_count: coinCount });
+      console.log('코인 모금 성공 여부', response);
+      return response;
+    } catch (error) {
+      console.error('Error collecting crew coins:', error);
+      throw error;
+    }
+  };
+  const fetchCrewBattleStatus = async (crewId: number) => {
+    try {
+      const response = await crewBattleStatus(crewId);
+      console.log('크루 BattleStatus', response);
+      setBattleStatus(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew battle status:', error);
+      throw error;
+    }
+  };
+  const fetchCrewMemberDailyExerciseTime = async (crewId: number) => {
+    try {
+      const response = await crewMemberDailyExerciseTime(crewId);
+      console.log('크루 멤버들 조회', response);
+      setMembers(response);
+      return response;
+    } catch (error) {
+      console.error('Error fetching crew member daily exercise time:', error);
+      throw error;
+    }
+  };
+  const toggleRandomMatchingAgreement = async (crewId: number) => {
+    try {
+      const response = await agreeRandomMatching(crewId);
+      return response;
+    } catch (error) {
+      console.error('Error toggling random matching agreement:', error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    const num_crewId = Number(crewId);
+    //초기 렌더링시 필요한 데이터들 모두 렌더링
+    fetchCrewDetail(num_crewId);
+    fetchCrewRanking(num_crewId);
+    fetchCrewQuest(num_crewId);
+
+    fetchCrewBattleStatus(num_crewId);
+    fetchCrewMemberDailyExerciseTime(num_crewId);
+    toggleRandomMatchingAgreement(num_crewId);
+  }, []);
+  const toggleDetails = () => {
+    setIsOpen(!isOpen);
+  };
+
   const formatExerciseTime = (timeInMs: number) => {
     // console.log('크루 운동 시간', timeInMs);
     const hours = Math.floor(timeInMs / (1000 * 60 * 60));
@@ -123,27 +185,19 @@ export default function MyCrew() {
 
   const nextMember = () => {
     if (!members) return;
-    setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % members!.length);
+    setCurrentMemberIndex((prevIndex) => (prevIndex + 1) % members.length);
   };
 
   const prevMember = () => {
     if (!members) return;
-    setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + members!.length) % members!.length);
+    setCurrentMemberIndex((prevIndex) => (prevIndex - 1 + members.length) % members.length);
   };
-
-  const [isQuestModalOpen, setIsQuestModalOpen] = useState(false);
-  const [isBattleModalOpen, setIsBattleModalOpen] = useState(false);
-  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [isCrewLeader, setIsCrewLeader] = useState(true); // 크루 대표 여부 상태
-  const [isInBattle, setIsInBattle] = useState(true); // 배틀 참여 여부 상태
-  const [opponentTeam, setOpponentTeam] = useState('3대 500만원'); // 상대 팀 정보
 
   // const [todayQuests, setTodayQuests] = useState<quest[]>([]);
 
   // console.log(setIsCrewLeader);
   // console.log(setIsInBattle);
-  // console.log(setOpponentTeam);
+  // console.log(setOpponentCrew);
 
   const toggleQuestModal = () => {
     setIsQuestModalOpen(!isQuestModalOpen);
@@ -164,8 +218,8 @@ export default function MyCrew() {
   //   오늘의 퀘스트
   // const todayQuests = [{ title: '크루 내 2명 이상의 팀원 하루에 합산 1시간 이상 운동하기', completed: true }];
 
-  const [selectedCoins, setSelectedCoins] = useState(100); // 선택된 코인 수
-  const [_, setCrewCoins] = useState(300); // 크루 코인 수
+  const [selectedCoins, setSelectedCoins] = useState(50); // 선택된 코인 수
+  const [crewCoiins, setCrewCoins] = useState(300); // 크루 코인 수
 
   const incrementCoins = () => {
     setSelectedCoins((prev) => prev + 50);
@@ -179,7 +233,8 @@ export default function MyCrew() {
 
   const handleDeposit = () => {
     setCrewCoins((prev) => prev + selectedCoins);
-    mutation.mutate();
+    // mutation.mutate();
+    collectCrewCoins(Number(crewId), crewCoiins);
     setIsDepositModalOpen(false); // 모금 후 모달 닫기
   };
 
@@ -191,16 +246,15 @@ export default function MyCrew() {
   };
   useEffect(() => {
     if (crewInfo) {
-      setSelectedCoins(crewInfo.crewCoins);
+      setSelectedCoins(50);
       setIsCrewLeader(crewInfo.role === 'LEADER');
     }
-    // console.log('끄앙', crewInfo?.role);
   }, [crewInfo]);
 
   useEffect(() => {
     if (battleStatus) {
       setIsInBattle(battleStatus.battleStatus === 'STARTED');
-      setOpponentTeam(battleStatus.opponentTeamName);
+      setOpponentCrew(battleStatus.opponentTeamName);
     }
   }, [battleStatus]);
   const navigate = useNavigate();
@@ -209,7 +263,7 @@ export default function MyCrew() {
       <div className="title">내 크루</div>
       <div className="crewInfoContainer">
         <div className="crewInfoHeader">
-          <img className="crewProfileImage" src={crewInfo?.crewProfileImage} alt="crew profile" />
+          <img className="crewProfileImage" src={crewInfo?.profileImage} alt="crew profile" />
           <div className="crewInfo">
             <div className="crewInfoTitle">
               <h3>{crewInfo?.crewName}</h3>
@@ -233,15 +287,15 @@ export default function MyCrew() {
         {isOpen && (
           <div className="crewInfoDetails">
             <p>
-              # {crewInfo?.exerciseName} 크루 랭킹: {crewInfo?.crewRanking}위
+              # {crewInfo?.exerciseName} 크루 랭킹: {Math.round(crewInfo?.crewRanking ?? 0)}위
             </p>
             <p>
-              배틀 현황: {crewInfo?.totalBattleCount}전 {crewInfo?.winCount}승{' '}
-              {crewInfo!.totalBattleCount - crewInfo!.winCount}패
+              배틀 현황: {Math.round(crewInfo?.totalBattleCount ?? 0)}전 {Math.round(crewInfo?.winCount ?? 0)}승{' '}
+              {Math.round((crewInfo?.totalBattleCount ?? 0) - (crewInfo?.winCount ?? 0))}패
             </p>
-            <p>크루 평균 연령: {crewInfo?.averageAge}대 후반</p>
-            <p>활동 점수: {crewInfo?.activityScore}점</p>
-            <p>기본 점수: {crewInfo?.basicScore}점</p>
+            <p>크루 평균 연령: {Math.round(crewInfo?.averageAge ?? 0)}세</p>
+            <p>활동 점수: {Math.round(crewInfo?.activityScore ?? 0)}점</p>
+            <p>기본 점수: {Math.round(crewInfo?.basicScore ?? 0)}점</p>
           </div>
         )}
       </div>
@@ -262,7 +316,11 @@ export default function MyCrew() {
           <button className="prevButton" onClick={prevMember}>
             ←
           </button>
-          <img className="memberProfileImage" src={members![currentMemberIndex].characterImage} alt="member profile" />
+          <img
+            className="memberProfileImage"
+            src={members[currentMemberIndex].characterImageUrl}
+            alt="member profile"
+          />
           <div className="memberInfo">
             <h3>{members![currentMemberIndex].nickname}</h3>
             <p>크루 운동 시간</p>
@@ -273,34 +331,21 @@ export default function MyCrew() {
           </button>
         </div>
       )}
+
       {/* 크루 랭킹 */}
-      <div className="crewRankingContainer">
-        {members &&
-          members!.map((member, index) => (
-            <div key={member.userId} className="rankingList">
-              <div className="rankingItem">
-                <span>{index + 1}</span>
-                <img className="memberProfileImageSmall" src={member.userProfileImage} alt="member profile" />
-                <span>{member.nickname}</span>
-                <span className="time">{formatExerciseTime(member.exerciseTime)}</span>
-              </div>
-            </div>
-          ))}
-      </div>
+      <div className="crewRankingContainer">{/* <CrewAndMemberList type="member" data={rankingMembers} /> */}</div>
 
       {/* 퀘스트 모달 */}
       {isQuestModalOpen && (
         <div className="modalOverlay">
           <div className="modalContent">
             <span className="modalTitle">오늘의 퀘스트</span>
-            <button className="closeButton" onClick={toggleQuestModal}>
-              &times;
-            </button>
+            <img src={CloseButton} className="closeButton" onClick={toggleQuestModal}></img>
             <div className="questLayout">
-              {todayQuests &&
+              {/* {todayQuests &&
                 todayQuests.map((questData, index) => (
                   <QuestItem key={index} title={questData.title} completed={questData.isCompleted} />
-                ))}
+                ))} */}
             </div>
           </div>
         </div>
@@ -311,14 +356,12 @@ export default function MyCrew() {
         <div className="modalOverlay">
           <div className="modalContent">
             <span>크루 배틀 현황</span>
-            <button className="closeButton" onClick={toggleBattleModal}>
-              &times;
-            </button>
+            <img src={CloseButton} className="closeButton" onClick={toggleBattleModal}></img>
             {isInBattle ? (
               <div>
                 <div className="battleInfo">
                   <span className="vs">VS</span>
-                  <span className="opponentTeam">{opponentTeam}</span>
+                  <span className="opponentCrew">{opponentCrew}</span>
                 </div>
               </div>
             ) : (
@@ -326,7 +369,7 @@ export default function MyCrew() {
             )}
 
             {isCrewLeader ? (
-              <button className="battleButton" onClick={() => navigate('/crew/battle')}>
+              <button className="battleButton" onClick={() => navigate(`/crew/battle/${crewId}`)}>
                 {isInBattle ? '입장하기' : '참여하기'}
               </button>
             ) : (
@@ -342,9 +385,7 @@ export default function MyCrew() {
           <div className="modalContent">
             <div className="modalHeader">
               <h3>{crewInfo?.crewName}</h3>
-              <button className="closeButton" onClick={toggleDepositModal}>
-                &times;
-              </button>
+              <img src={CloseButton} className="closeButton" onClick={toggleDepositModal}></img>
             </div>
             <div className="modalBody">
               <div className="coinSelector">
@@ -364,12 +405,10 @@ export default function MyCrew() {
 
       {/*크루 설정 모달 */}
       {isSettingsModalOpen && (
-        <div className="modalOverlay">
+        <div className="modal">
           <div className="modalContent">
             <span>내 크루 설정</span>
-            <button className="closeButton" onClick={toggleSettingsModal}>
-              &times;
-            </button>
+            <img src={CloseButton} className="closeButton" onClick={toggleSettingsModal}></img>
             <div className="crewSettings">
               <div>
                 <p className="settingTitle">크루 배틀 랜덤 매칭 동의</p>

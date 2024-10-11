@@ -129,17 +129,19 @@ const CrewDetail = () => {
             {crewInfo.totalBattleCount - crewInfo.winCount}패
           </p>
           <p>크루 평균 연령: {crewInfo.averageAge}대 후반</p>
-          <p>활동 점수: {crewInfo.activityScore}점</p>
-          <p>기본 점수: {crewInfo.basicScore}점</p>
+          <p>활동 점수: {Math.round(crewInfo.activityScore)}점</p>
+          <p>기본 점수: {Math.round(crewInfo.basicScore)}점</p>
         </div>
       </div>
       <div className={styles.crewRankingContainer}>
         {members.map((member, index) => (
           <div key={member.userId} className={styles.rankingList}>
             <div className={styles.rankingItem}>
-              <span>{index + 1}</span>
-              <img className={styles.memberProfileImageSmall} src={member.userProfileImage} alt="member profile" />
-              <span>{member.nickname}</span>
+              <div className="rankAndImg">
+                <span>{index + 1}</span>
+                <img className={styles.memberProfileImageSmall} src={member.userProfileImage} alt="member profile" />
+              </div>
+              <span className="ranker">{member.nickname}</span>
               <span className={styles.time}>{formatExerciseTime(member.exerciseTime)}</span>
             </div>
           </div>

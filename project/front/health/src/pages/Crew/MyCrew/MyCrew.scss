@@ -14,20 +14,23 @@
     display: flex;
     margin-bottom: 20px;
 
+    .crewProfileImage {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 10px;
+      margin-top: 16px;
+    }
     .crewInfoTitle {
       display: flex;
       align-items: center;
 
-      img.crewProfileImage {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        margin-right: 10px;
-      }
-
       h3 {
-        font-size: 20px;
+        font-size: 18px;
         margin-right: 10px;
+        max-width: 95px; // 너비 제한 설정
+        word-break: break-word; // 너비 초과 시 줄바꿈
+        overflow-wrap: break-word;
       }
 
       .exerciseTag {
@@ -49,15 +52,14 @@
 
     .crewCoins {
       display: flex;
+      margin: 0;
       button {
         border-radius: 20px;
         border: 1px solid colors.$darkGray;
         width: 70px;
         height: 30px;
         margin-top: 5px;
-        margin-left: -20px;
-        // font-weight: bold;
-        // padding: 5px;
+        margin-left: 10px;
       }
     }
   }
@@ -191,6 +193,9 @@
   span {
     margin: 0 10px;
   }
+  p {
+    margin-left: 40px;
+  }
 }
 .time {
   color: colors.$blue;
@@ -205,6 +210,7 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 999;
@@ -221,6 +227,9 @@
   height: 300px;
   position: relative;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
   span {
     @include typo.subtitle;
@@ -232,8 +241,8 @@
   border: none;
   font-size: 24px;
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 20px;
+  right: 20px;
   cursor: pointer;
 }
 
@@ -318,7 +327,7 @@
 .crewSettings {
   display: flex;
   align-items: center;
-  margin: 20px;
+  margin: 20px 5px;
   .settingTitle {
     font-weight: bold;
     font-size: 16px;
@@ -333,9 +342,10 @@
 .toggleSwitch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
-  transform: scale(0.65);
+  width: 80px;
+  height: 31px;
+  transform: scale(0.8);
+  margin-left: -20px;
 }
 
 .toggleSwitch input {

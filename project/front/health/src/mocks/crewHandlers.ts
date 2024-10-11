@@ -47,14 +47,76 @@ const memberList = [
 ];
 
 const crewBattleStatus = {
-  battleId: 1,
-  myTeamName: '달리자크루',
-  myTeamScore: 1200,
-  opponentTeamName: '크크크루',
-  opponentTeamScore: 1000,
+  // battleId: 1,
+  // myCrewName: '달리자크루',
+  // myCrewScore: 1200,
+  // opponentCrewName: '크크크루',
+  // opponentCrewScore: 1000,
+  // exerciseName: '러닝',
+  // dday: 2,
+  // battleStatus: 'STARTED',
+  // };
+  // {
+  //   battleId: 2,
+  //   myCrewName: '강아지는야옹',
+  //   myCrewScore: 3000,
+  //   opponentCrewName: '아이고머리야',
+  //   opponentCrewScore: 1000,
+  //   exerciseName: '러닝',
+  //   dday: 2,
+  //   battleStatus: 'STARTED',
+  // },
+  // {
+  battleId: 0,
+  myCrewName: 'No Battle',
+  myCrewScore: 0,
+  opponentCrewName: 'No Opponent',
+  opponentCrewScore: 0,
+  exerciseName: 'N/A',
+  dday: 2,
+  battleStatus: 'NONE',
+};
+
+const crewRandomMatching = {
+  battleId: 3,
+  myCrewName: '배틀해보자고',
+  myCrewScore: 1200,
+  opponentCrewName: '그래덤벼',
+  opponentCrewScore: 1000,
   exerciseName: '러닝',
-  dDay: 2,
+  dday: 2,
   battleStatus: 'STARTED',
+};
+
+const crewBattleRanking = {
+  myCrewMembers: [
+    {
+      userId: 1,
+      nickname: 'JE',
+      userProfileImage: null,
+      exerciseTime: 3600000,
+    },
+    {
+      userId: 1,
+      nickname: 'MY',
+      userProfileImage: null,
+      exerciseTime: 2400000,
+    },
+  ],
+  opponentCrewMembers: [
+    {
+      userId: 1,
+      nickname: 'HH',
+      userProfileImage: null,
+      exerciseTime: 4000000,
+    },
+    {
+      userId: 2,
+      nickname: 'MJ',
+      userProfileImage: null,
+      exerciseTime: 1800000,
+    },
+  ],
 };
 
 const sendCoin = {
@@ -71,13 +133,13 @@ const CrewQuest = [
   },
 ];
 const battleStatus = {
-  myTeamName: '달리자크루',
-  myTeamScore: 400,
-  opponentTeamName: '크크크루',
-  opponentTeamScore: 500,
+  myCrewName: '달리자크루',
+  myCrewScore: 400,
+  opponentCrewName: '크크크루',
+  opponentCrewScore: 500,
   exerciseName: '러닝',
   battleStatus: 'STARTED',
-  dDay: 2,
+  dday: 2,
 };
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 export const crewHandlers = [
@@ -103,12 +165,14 @@ export const crewHandlers = [
       coin: 300,
     });
   }),
+
   //상세보기
   http.get(`${baseUrl}/crew/:crew_id/detail`, ({ params }) => {
     const { crew_id } = params;
     console.log('크루 상세보기의 크루 id', crew_id);
     return HttpResponse.json(crewDetail, { status: 200 });
   }),
+
   // 크루 내 랭킹 조회
   http.get(`${baseUrl}/crew/:crew_id/ranking`, ({ params }) => {
     const { crew_id } = params;
@@ -213,6 +277,7 @@ export const crewHandlers = [
     console.log('크루 가입 신청의 크루 id', crew_id);
     return HttpResponse.json({ status: 200, message: '크루 가입 신청 성공' });
   }),
+
   //가입된 크루 조회
   http.get(`${baseUrl}/users/:userId/crew-list`, ({ params }) => {
     const { userId } = params;
@@ -247,6 +312,21 @@ export const crewHandlers = [
     return HttpResponse.json(crewBattleStatus, { status: 200 });
   }),
 
+  // 크루 랜덤 매칭
+  http.post(`${baseUrl}/crew/:crew_id/battle`, ({ params }) => {
+    const { crew_id } = params;
+    console.log('랜덤 배틀 신청크루 id', crew_id);
+    return HttpResponse.json(crewRandomMatching, { status: 200 });
+  }),
+
+  // 실시간 크루 배틀 기여도 랭킹
+  http.get(`${baseUrl}/battle/:battle_id`, ({ params }) => {
+    const { battle_id } = params;
+    console.log('배틀id', battle_id);
+    return HttpResponse.json(crewBattleRanking, { status: 200 });
+  }),
+
+  // 퀘스트 조회
   http.get(`${baseUrl}/quest/get/crew`, ({ params }) => {
     const { crew_id } = params;
     console.log('quest get crew', crew_id);
@@ -272,5 +352,18 @@ export const crewHandlers = [
     console.log('배틀 현황', crew_id);
 
     return HttpResponse.json(battleStatus, { status: 200 });
+  }),
+
+  //크루 생성
+  http.post(`${baseUrl}/crew`, ({ request }) => {
+    console.log('크루 생성 정보:', request);
+    console.log('크루 생성');
+    return HttpResponse.json({ status: 200, message: '크루 생성 성공' });
+  }),
+
+  http.get(`${baseUrl}/crew/:crewName/validate`, ({ params }) => {
+    const { crewName } = params;
+    console.log('크루명 중복 체크', crewName);
+    return HttpResponse.json({ status: 200, message: '사용 가능한 이름입니다.' });
   }),
 ];

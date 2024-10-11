@@ -70,15 +70,24 @@ export const exerciseHandlers = [
     return HttpResponse.json(exerciseCategory);
   }),
   //운동 추천 목록 조회
-  http.get(`${baseUrl}/users/excercise/recommendation`, () => {
+  http.get(`${baseUrl}/exercise/recommendation`, () => {
     return HttpResponse.json(exercises);
   }),
 
   // 특정 달의 운동 기록 조회
   http.get(`${baseUrl}/users/exercise-history/month`, async ({ request }) => {
-    console.log('request', request);
+    const url = new URL(request.url);
+    try {
+      const year = url.searchParams.get('year');
+      const month = url.searchParams.get('month');
+      const week = url.searchParams.get('week');
+      console.log(year, month, week);
 
-    return HttpResponse.json(exerciseHistoryList);
+      return HttpResponse.json(exerciseHistoryList);
+    } catch (error) {
+      console.error('MSW handler에서 에러 발생', error);
+      return HttpResponse.error();
+    }
   }),
 
   // 이번주 운동 기록 조회
@@ -87,8 +96,7 @@ export const exerciseHandlers = [
     try {
       const year = url.searchParams.get('year');
       const month = url.searchParams.get('month');
-      const week = url.searchParams.get('week');
-      console.log(year, month, week);
+      console.log(year, month);
 
       return HttpResponse.json({
         status: 200,

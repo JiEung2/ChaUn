@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Crew from '@/components/Crew/Crew';
 import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import { Line } from 'react-chartjs-2';
@@ -9,13 +9,8 @@ import { getUserCrewList } from '@/api/crew';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import queryKeys from '@/utils/querykeys';
 
-// interface UserProps {
-//   userId: number;
-// }
-
 export default function ProfilePage() {
-  // const { user_id } = useParams<{ user_id: string }>();
-  const userId = 1;
+  const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
 
   // 회원 디테일
@@ -40,7 +35,6 @@ export default function ProfilePage() {
   const { data: userCrewList } = useSuspenseQuery({
     queryKey: [queryKeys.USER_CREW_LIST, userId],
     queryFn: () => getUserCrewList(Number(userId)),
-    select: (response) => response.crewList || [],
   });
 
   // 6개월 전까지의 날짜 배열을 생성하는 함수
@@ -66,7 +60,7 @@ export default function ProfilePage() {
 
   // 체중 데이터 매핑 함수
   const fillWeightData = (weightDataList: { date: string; weight: number }[], chartLabels: string[]) => {
-    return chartLabels.map((label) => {
+    return chartLabels?.map((label) => {
       const foundData = weightDataList.find((data) => formatDateToYearMonth(data.date) === label);
       return foundData ? foundData.weight : null;
     });
@@ -76,7 +70,10 @@ export default function ProfilePage() {
   const formatExerciseTime = (timeInMs: number) => {
     const hours = Math.floor(timeInMs / (1000 * 60 * 60));
     const minutes = Math.floor((timeInMs % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
+    const hoursText = hours ? `${hours}h` : '0h';
+    const minutesText = minutes ? `${minutes}m` : '0m';
+
+    return `${hoursText} ${minutesText}`.trim();
   };
 
   // 차트 데이터 설정
@@ -85,7 +82,7 @@ export default function ProfilePage() {
     datasets: [
       {
         label: '체중 기록 (kg)',
-        data: fillWeightData(weight6Data?.data.weightDataList || [], chartLabels),
+        data: fillWeightData(weight6Data.weightDataList || [], chartLabels),
         backgroundColor: '#CDE0FF',
         fill: false,
         tension: 0.1,
@@ -136,33 +133,49 @@ export default function ProfilePage() {
   const handleCrewClick = (crewId: number) => {
     navigate(`/crew/crewDetail/${crewId}`);
   };
+
+  console.log(weight6Data);
+  const hasWeightData = weight6Data.weightDataList?.length > 0;
   return (
     <div className="profileContainer">
-      <p className="titles">{userDetailData?.nickname}님</p>
+      <p className="titles">{userDetailData.nickname}님</p>
       <div className="profileHeaderSection">
-        <CharacterCanvas glbUrl={userDetailData?.characterFileUrl || ''} gender={userDetailData?.gender || 'MAN'} />
+        <div className="userProfileInfo">
+          <CharacterCanvas glbUrl={userDetailData.characterFileUrl} gender={userDetailData.gender} />
+        </div>
+
         <div className="time">
           <p className="timeTitle">오늘의 운동 시간</p>
-          <span>{formatExerciseTime(exerciseTimeData?.data.dailyAccumulatedExerciseTime || 0)}</span>
+          <span>{formatExerciseTime(exerciseTimeData.dailyAccumulatedExerciseTime)}</span>
           <p className="timeTitle">이번 주 운동 시간</p>
-          <span>{formatExerciseTime(exerciseTimeData?.data.weeklyAccumulatedExerciseTime || 0)}</span>
+          <span>{formatExerciseTime(exerciseTimeData.weeklyAccumulatedExerciseTime)}</span>
         </div>
       </div>
 
       <div className="userChartContainer">
-        <Line data={chartData} options={options} />
+        <div className={`userChartContent ${!hasWeightData ? 'blurred' : ''}`}>
+          <Line data={chartData} options={options} />
+        </div>
+        {!hasWeightData && (
+          <div className="noWeightMessage">
+            <p>
+              지난 6개월 동안 <br />
+              입력된 체형 정보가 없습니다.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="crewContainer">
-        <p className="titles">닉네임님의 크루</p>
+        <p className="titles">{userDetailData.nickname}님의 크루</p>
 
         <div className="crewList">
-          {userCrewList && userCrewList.length > 0 ? (
-            userCrewList.map((crew: any) => (
+          {userCrewList && userCrewList.crewList?.length > 0 ? (
+            userCrewList.crewList?.map((crew: any) => (
               <Crew
                 key={crew.crewId}
                 imageUrl={crew.crewProfileImage}
-                name={crew.crewName}
+                crewName={crew.crewName}
                 tag={crew.exerciseName}
                 onClick={() => handleCrewClick(crew.crewId)}
               />

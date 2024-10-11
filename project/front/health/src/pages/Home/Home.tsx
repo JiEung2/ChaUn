@@ -6,15 +6,17 @@ import CalendarIcon from '../../assets/svg/calendar.svg';
 import StyledButton from '../../components/Button/StyledButton';
 import HomeIcon1 from '../../assets/svg/homeIcon1.svg';
 import HomeIcon2 from '../../assets/svg/homeIcon2.svg';
-import Character from '@/assets/image/model.png';
 import 'chart.js/auto';
 import Chart from 'chart.js/auto';
 import annotationPlugin from 'chartjs-plugin-annotation';
 import './Home.scss';
-import { exerciseTime, exerciseRecord } from '@/api/home';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getUserDetail } from '@/api/user';
+import { exerciseTime } from '@/api/home';
+import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
+import { patchDeviceToken } from '@/api/user';
+import CharacterCanvas from '@/components/Character/CharacterCanvas';
 import useUserStore from '@/store/userInfo';
+import { getAggregatedExerciseData } from '@/utils/exerciseUtils';
+
 Chart.register(annotationPlugin);
 
 interface ExerciseTimeResponse {
@@ -22,62 +24,37 @@ interface ExerciseTimeResponse {
   weeklyAccumulatedExerciseTime: number;
 }
 
-interface ChartData {
+interface AggregatedData {
   day: string;
-  time: number;
-  calories: number;
+  totalTime: number;
+  totalCalories: number;
 }
 
-interface ExerciseRecord {
-  createdAt: string;
-  exerciseDuration: number; // 초 단위의 운동 시간
-  burnedCalories: number; // 소모된 칼로리
-}
-
-async function getUserData() {
-  const { userId, setNickname, setHasCoin } = useUserStore();
-  try {
-    const response = await getUserDetail(userId);
-    setNickname(response.nickname);
-    setHasCoin(response.coin);
-  } catch (e) {
-    console.log('유저정보를 가져오던 중 에러', e);
-  }
-}
-// 데이터 fetch 함수
-function useExerciseTime() {
-  return useSuspenseQuery<ExerciseTimeResponse>({
-    queryKey: ['exerciseTime'],
-    queryFn: () => exerciseTime(),
-  });
-}
-
-function useExerciseRecord(year: number, month: number, week: number) {
-  return useSuspenseQuery<ExerciseRecord>({
-    queryKey: ['exerciseRecord', year, month, week],
-    queryFn: () => exerciseRecord(year, month, week),
-  });
-}
-
-function formatTime(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours}h ${mins}m`;
-}
+const formatTime = (timeInMs: number): string => {
+  const hours = Math.floor(timeInMs / (1000 * 60 * 60));
+  const minutes = Math.floor((timeInMs % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
+};
 
 // 운동 시간 표시 컴포넌트
-function ExerciseTimeDisplay() {
-  const { data: exerciseTimeData } = useExerciseTime();
+function ExerciseTimeDisplay({ nickname }: { nickname: string }) {
+  const { gender, characterFileUrl } = useUserStore();
+  const { data: exerciseTimeData } = useSuspenseQuery<ExerciseTimeResponse>({
+    queryKey: ['exerciseTime'],
+    queryFn: exerciseTime,
+  });
 
   const characterContent = {
-    nickname: '민영',
+    nickname: nickname,
     todayTime: formatTime(exerciseTimeData?.dailyAccumulatedExerciseTime || 0),
     weeklyTime: formatTime(exerciseTimeData?.weeklyAccumulatedExerciseTime || 0),
   };
 
   return (
     <div className="myInfo">
-      <img src={Character} alt="character" />
+      <div className="myProfileInfo">
+        <CharacterCanvas glbUrl={characterFileUrl} gender={gender} />
+      </div>
       <div className="time">
         <p className="timeTitle">오늘 운동 시간</p>
         <span>{characterContent.todayTime}</span>
@@ -90,17 +67,32 @@ function ExerciseTimeDisplay() {
 
 // 운동 기록 차트 컴포넌트
 function ExerciseRecordChart() {
-  const { data: exerciseRecordData } = useExerciseRecord(2024, 9, 3);
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1; // 월은 0부터 시작하므로 1을 더해줌
+  const currentWeek = Math.ceil(currentDate.getDate() / 7); // 날짜를 7로 나누어 몇 번째 주인지 계산
+
+  const [aggregatedData, setAggregatedData] = useState<AggregatedData[]>([]);
+
+  useEffect(() => {
+    const fetchAggregatedData = async () => {
+      const data = await getAggregatedExerciseData(currentYear, currentMonth, currentWeek);
+
+      console.log('날짜 정리한 데이터', data);
+      setAggregatedData(data);
+    };
+
+    fetchAggregatedData();
+  }, [currentYear, currentMonth, currentWeek]);
+
   const [selectedCalories, setSelectedCalories] = useState<number | null>(null);
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
-  const chartData = Array.isArray(exerciseRecordData)
-    ? exerciseRecordData.map((record: any) => ({
-        day: new Date(record.createdAt).toLocaleDateString('ko-KR', { weekday: 'short' }),
-        time: record.exerciseDuration / 60, // 초 단위를 분으로 변환
-        calories: record.burnedCalories,
-      }))
-    : [];
+  const chartData = aggregatedData.map((item) => ({
+    day: item.day,
+    time: item.totalTime || 0, // totalTime이 0이어도 차트에 표시될 수 있도록 수정
+    calories: item.totalCalories || 0, // totalCalories이 0이어도 표시될 수 있도록 수정
+  }));
 
   const handleChartClick = (_: any, elements: any) => {
     if (elements.length > 0) {
@@ -139,7 +131,7 @@ function ExerciseRecordChart() {
                   type: 'label' as const,
                   xValue: chartData[clickedIndex].day,
                   yValue: chartData[clickedIndex].time || 0,
-                  content: [`${chartData[clickedIndex].time || 0} 분`, `${selectedCalories || 0} kcal`],
+                  content: [`${formatTime(chartData[clickedIndex].time!) || 0}`, `${selectedCalories || 0} kcal`],
                   enabled: true,
                   font: {
                     size: 10,
@@ -151,7 +143,8 @@ function ExerciseRecordChart() {
                     left: 5,
                     right: 5,
                   },
-                  yAdjust: chartData[clickedIndex].time <= 100 ? -20 : 20,
+
+                  yAdjust: chartData[clickedIndex].time && chartData[clickedIndex].time <= 100 ? -100 : -100,
                   xAdjust: clickedIndex === 0 ? 20 : clickedIndex === chartData.length - 1 ? -20 : 0,
                 },
               ]
@@ -165,29 +158,30 @@ function ExerciseRecordChart() {
           display: false,
         },
       },
+
       time: {
         type: 'linear' as const,
         axis: 'y' as const,
         beginAtZero: true,
-        display: true,
-        ticks: {
-          stepSize: 10,
-          callback: function (value: string | number) {
-            return `${value}`;
-          },
-        },
-        min: 0,
-        max: 160,
+        display: false,
+        // ticks: {
+        //   stepSize: 10,
+        //   callback: function (value: string | number) {
+        //     return `${value}`;
+        //   },
+        // },
+        // min: Math.min(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / 24), 0),
+        // max: Math.max(...chartData.map((data) => (data.time % (1000 * 60 * 60)) / 24), 160), // 데이터의 최대 값에 맞춰 max 값 조정
       },
     },
   };
 
   const dataConfig = {
-    labels: chartData.map((data: ChartData) => data.day),
+    labels: chartData.map((data) => data.day),
     datasets: [
       {
         label: '운동 시간 (분)',
-        data: chartData.map((data: ChartData) => data.time),
+        data: chartData.map((data) => data.time),
         borderColor: '#FF6384',
         backgroundColor: '#FF6384',
         fill: false,
@@ -199,17 +193,30 @@ function ExerciseRecordChart() {
     ],
   };
 
+  if (!aggregatedData || aggregatedData.length === 0) {
+    return (
+      <div className="noChartDataContainer">
+        <div className={`noChartData blurred`}>
+          <Line data={dataConfig} options={options} />
+        </div>
+        <div className="noChartDataMessage">
+          <p>이번 주 운동 기록이 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
+
   return <Line data={dataConfig} options={options} />;
 }
 
-function HomePageContent() {
+function HomePageContent({ nickname }: { nickname: string }) {
   const navigate = useNavigate();
 
   return (
     <div className="homeContainer">
+      <p className="character">{nickname}님, 오늘 운동도 파이팅!</p>
       <div className="characterContainer">
         <div className="title">
-          <p className="character">민영님</p>
           <div className="iconWrapper">
             <div className="navIcon" onClick={() => navigate('/home/quest')}>
               <img src={QuestIcon} alt="Quest Icon" className="icon" />
@@ -220,15 +227,14 @@ function HomePageContent() {
           </div>
         </div>
 
-        {/* 운동 시간 Suspense로 감쌈 */}
         <Suspense fallback={<div>Loading exercise time...</div>}>
-          <ExerciseTimeDisplay />
+          <ExerciseTimeDisplay nickname={nickname} />
         </Suspense>
       </div>
 
       <div className="chartSection">
         <p className="chartTitle">이번 주 운동 그래프</p>
-        {/* 운동 기록 차트 Suspense로 감쌈 */}
+        <p className="snapshotdDescript">해당 기록을 누르면 운동 시간과 소모된 칼로리가 보여요</p>
         <Suspense fallback={<div>Loading chart...</div>}>
           <ExerciseRecordChart />
         </Suspense>
@@ -256,11 +262,45 @@ function HomePageContent() {
   );
 }
 
-// 전체 페이지에서 Suspense를 분리하여 사용
 export default function HomePage() {
-  // 초기 1회 유저 데이터 저장
+  const { userId, nickname } = useUserStore();
+  const [isTokenSent, setIsTokenSent] = useState(false);
+
+  const tokenMutation = useMutation({
+    mutationFn: (deviceToken: string) => patchDeviceToken(deviceToken),
+    onSuccess: () => {
+      setIsTokenSent(true);
+    },
+    onError: (error) => {
+      console.error('FCM 토큰 서버 전송 중 오류:', error);
+    },
+  });
+
+  const registerServiceWorker = () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/firebase-messaging-sw.js')
+        .then(() => {
+          console.log('서비스 워커가 등록되었습니다.');
+          const storedToken = sessionStorage.getItem('fcmToken');
+          console.log('세션 스토리지에서 가져온 FCM 토큰:', storedToken);
+          if (storedToken) {
+            tokenMutation.mutate(storedToken);
+          } else {
+            console.warn('세션 스토리지에 저장된 FCM 토큰이 없습니다.');
+          }
+        })
+        .catch((error) => {
+          console.error('서비스 워커 등록 실패:', error);
+        });
+    }
+  };
+
   useEffect(() => {
-    getUserData();
-  }, []);
-  return <HomePageContent />;
+    if (!isTokenSent && userId) {
+      registerServiceWorker();
+    }
+  }, [isTokenSent, userId, tokenMutation]);
+
+  return <HomePageContent nickname={nickname} />;
 }

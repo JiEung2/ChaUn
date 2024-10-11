@@ -15,7 +15,6 @@
     width: 100%;
     background-color: colors.$base;
     border-radius: 15px;
-    padding: 20px 0;
     margin: 0 10px;
     position: relative;
 
@@ -25,10 +24,12 @@
       gap: 220px;
       margin-left: 10px;
     }
+  }
 
-    .character {
-      @include typo.button;
-    }
+  .character {
+    display: flex;
+    margin-right: auto;
+    @include typo.button;
   }
 
   .iconWrapper {
@@ -56,6 +57,7 @@
   }
 
   .time {
+    margin-top: 60px;
     @include typo.sub;
 
     .timeTitle {
@@ -71,7 +73,7 @@
 
   .myInfo {
     display: flex;
-    gap: 30px;
+    padding: 20px 0;
   }
 
   .chartSection {
@@ -87,5 +89,36 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
+  }
+}
+
+.noChartDataContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .noChartData.blurred {
+    filter: blur(4px);
+  }
+}
+.noChartDataMessage {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  text-align: center;
+  @include typo.basic;
+}
+
+.myProfileInfo {
+  width: 150px; /* Canvas 크기를 줄임 */
+  height: 250px; /* Canvas 높이 설정 */
+  transform: translateX(-18px) translateY(-8px);
+  canvas {
+    width: 100% !important;
+    height: 100% !important;
   }
 }

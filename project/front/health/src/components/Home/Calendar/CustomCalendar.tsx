@@ -1,10 +1,9 @@
 import 'react-calendar/dist/Calendar.css';
-import { useCallback, useEffect, useState } from 'react';
 import { Calendar } from 'react-calendar';
 import './CustomCalendar.scss';
 
 interface CustomCalendarProps {
-  onDateChange: (date: Date) => void;
+  onDateChange?: (date: Date) => void;
   onMonthYearChange: (year: number, month: number) => void;
   exerciseDates: Date[]; // 운동 기록 날짜
   attendanceDates: Date[]; // 출석 체크 날짜
@@ -18,32 +17,9 @@ export default function CustomCalendar({
   attendanceDates,
   selectedDate,
 }: CustomCalendarProps) {
-  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-
   const normalizeDate = (date: Date) => {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0);
   };
-
-  const getStartOfWeek = (date: Date): Date => {
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    const startDate = new Date(date);
-    startDate.setDate(diff);
-    return new Date(startDate.setHours(0, 0, 0, 0));
-  };
-
-  const updateCurrentWeek = useCallback((date: Date) => {
-    const startOfWeek = getStartOfWeek(date);
-    const week = Array.from({ length: 7 }, (_, i) => new Date(startOfWeek.getTime() + i * 86400000));
-    setCurrentMonth(date);
-    console.log(week)
-  }, []);
-
-  useEffect(() => {
-    if (selectedDate) {
-      updateCurrentWeek(selectedDate);
-    }
-  }, [selectedDate, updateCurrentWeek]);
 
   const formatMonthYear = (_: string | undefined, date: Date) => {
     const year = date.getFullYear();
@@ -57,7 +33,9 @@ export default function CustomCalendar({
   };
 
   const onClickDay = (date: Date) => {
-    onDateChange(date);
+    if (onDateChange) {
+      onDateChange(date);
+    }
   };
 
   const getTileClassName = ({ date, view }: { date: Date; view: string }) => {
@@ -75,42 +53,42 @@ export default function CustomCalendar({
       if (selectedDate && normalizeDate(date).getTime() === normalizeDate(selectedDate).getTime()) {
         classes.push('selected');
       }
-      if (exerciseDates.some(exerciseDate => normalizeDate(exerciseDate).getTime() === normalizeDate(date).getTime())) {
+      if (
+        exerciseDates.some((exerciseDate) => normalizeDate(exerciseDate).getTime() === normalizeDate(date).getTime())
+      ) {
         classes.push('highlight');
       }
-      if (attendanceDates.some(attendanceDate => normalizeDate(attendanceDate).getTime() === normalizeDate(date).getTime())) {
+      if (
+        attendanceDates.some(
+          (attendanceDate) => normalizeDate(attendanceDate).getTime() === normalizeDate(date).getTime()
+        )
+      ) {
         classes.push('attendance');
       }
     }
     return classes.join(' ');
   };
 
-  // 날짜가 exerciseDates에 포함된 경우 점을 찍도록 설정
-  const tileContent = ({ date, view }: { date: Date, view: string }) => {
+  // 날짜가 exerciseDates에 포함된 경우 점을 찍러도록 설정
+  const tileContent = ({ date, view }: { date: Date; view: string }) => {
     if (view === 'month') {
       const isExerciseDate = exerciseDates.some(
-        (exerciseDate) => 
+        (exerciseDate) =>
           exerciseDate.getFullYear() === date.getFullYear() &&
           exerciseDate.getMonth() === date.getMonth() &&
           exerciseDate.getDate() === date.getDate()
       );
 
       if (isExerciseDate) {
-        return <div className="highlight-dot" />; // 점을 찍기 위한 요소
+        return <div className="highlight-dot" />; // 점을 찍기 위한 용소
       }
     }
     return null;
   };
 
   return (
-    <div className='customCalendarContainer'>
+    <div className="customCalendarContainer">
       <Calendar
-        activeStartDate={currentMonth}
-        onActiveStartDateChange={({ activeStartDate }) => {
-          const date = activeStartDate as Date;
-          setCurrentMonth(date);
-          onMonthYearChange(date.getFullYear(), date.getMonth() + 1);
-        }}
         locale="en-US"
         formatMonthYear={(_, date) => formatMonthYear(_, date)}
         tileClassName={getTileClassName}
@@ -121,6 +99,10 @@ export default function CustomCalendar({
         showNavigation={true}
         next2Label={null}
         prev2Label={null}
+        onActiveStartDateChange={({ activeStartDate }) => {
+          const date = activeStartDate as Date;
+          onMonthYearChange(date.getFullYear(), date.getMonth() + 1);
+        }}
       />
     </div>
   );

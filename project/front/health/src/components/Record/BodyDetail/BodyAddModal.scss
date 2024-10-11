@@ -18,13 +18,13 @@
   width: 100%;
   max-height: 79vh; // 모달의 최대 높이 설정
   overflow-y: auto; // 스크롤 활성화 (스크롤바는 항상 표시되지 않음)
-  z-index: 10000;
+  z-index: 99;
 
   .closeIcon {
-    position: absolute; 
+    position: absolute;
     top: 40px;
-    right: 30px; 
-    cursor: pointer; 
+    right: 30px;
+    cursor: pointer;
   }
 
   .description {
@@ -33,19 +33,21 @@
   }
 
   .scrollableContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
     transform: scale(0.85);
-    max-height: 70vh;
     overflow-y: auto; // 스크롤 활성화 (스크롤바는 항상 표시되지 않음)
     -ms-overflow-style: none; // IE와 Edge에서 스크롤바 숨기기
     scrollbar-width: none; // Firefox에서 스크롤바 숨기기
+    margin-top: -40px;
   }
 
   // 모든 웹킷 브라우저에서 스크롤바 숨기기
   &::-webkit-scrollbar {
     display: none;
-  }  
-  
-
+  }
 }
 
 .divider {
@@ -56,5 +58,8 @@
 }
 
 .completedButton {
-  @include typo.smallButton;
+  margin: 10px 0px 20px;
+  width: 150px;
+  font-size: 18px;
+  font-weight: 600;
 }

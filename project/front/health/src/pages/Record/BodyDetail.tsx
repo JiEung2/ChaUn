@@ -18,7 +18,7 @@ function BodyDetailContent({ year, month }: { year: number; month: number }) {
     queryKey: [queryKeys.MY_BODY_DETAIL, year, month],
     queryFn: () => getBodyRecord(year, month),
     select: (response) => {
-      const bodyHistoryDataList = response.data.data?.bodyHistoryDataList || [];
+      const bodyHistoryDataList = response.bodyHistoryDataList || [];
       return bodyHistoryDataList.map((item: any) => ({
         date: item.date,
         weight: item.weight,

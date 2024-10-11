@@ -9,8 +9,12 @@ import Finish from '../../assets/svg/finish.svg';
 import './Exercise.scss';
 import { postExerciseRecord } from '../../api/exercise';
 import { useMutation } from '@tanstack/react-query';
+import useUserStore from '@/store/userInfo';
+import CharacterCanvas from '@/components/Character/CharacterCanvas';
 
 Modal.setAppElement('#root');
+
+// 타이머 포맷팅 함수는 그대로 사용
 function formatTime(timer: number) {
   const hours = Math.floor(timer / 3600000)
     .toString()
@@ -21,17 +25,18 @@ function formatTime(timer: number) {
   const seconds = Math.floor((timer % 60000) / 1000)
     .toString()
     .padStart(2, '0');
-  const milliseconds = Math.floor((timer % 1000) / 100); // 밀리초를 0.1초 단위로 표시
+  const milliseconds = Math.floor((timer % 1000) / 100);
   return `${hours}:${minutes}:${seconds}:${milliseconds}`;
 }
-// interface ExerciseProps {
-//   exerciseId: number;
-//   exerciseTime: number;
-//   exerciseStartTime: string;
-//   exerciseEndTime: string;
-// }
+
+// KST로 시간을 반환하는 함수
+function getKSTDate() {
+  const currentDate = new Date();
+  return new Date(currentDate.getTime() + 9 * 60 * 60 * 1000); // UTC+9로 시간 설정
+}
 
 export default function Exercise() {
+  const baseUrl = 'https://c106-chaun.s3.ap-northeast-2.amazonaws.com/character_animation';
   const [showModal, setShowModal] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<{ id: number; name: string } | null>(null);
   const [timer, setTimer] = useState(0);
@@ -40,16 +45,21 @@ export default function Exercise() {
   const [isStopped, setIsStopped] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [calories, setCalories] = useState(0);
-  const navigate = useNavigate();
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const { characterFileUrl, gender } = useUserStore();
 
-  // 서버에 운동 기록을 전송하고, 성공하면 칼로리 값을 업데이트
+  const [characterState, setCharacterState] = useState(1);
+  //현재 캐릭터 파일
+  const [characterUrl, setCharacterUrl] = useState(characterFileUrl);
+  const navigate = useNavigate();
+  console.log('현재 캐릭터 url', characterFileUrl);
   const mutation = useMutation({
-    mutationFn: () =>
-      //TODO - 운동 시작시간, 끝나는 시간 수정 예정
-      postExerciseRecord(selectedExercise!.id, timer, new Date().toISOString(), new Date().toISOString()),
+    mutationFn: ({ startTime, endTime }: { startTime: string; endTime: string }) =>
+      postExerciseRecord(selectedExercise!.id, timer, startTime, endTime),
     onSuccess: (data) => {
+      console.log(startTime);
       console.log('운동기록 등록에 성공했습니다.', data);
-      setCalories(data.burnedCalories); // 서버에서 받아온 칼로리 값 저장
+      setCalories(data.burnedCalories);
     },
     onError: (error) => {
       console.error('운동기록 등록에 실패했습니다.', error);
@@ -58,14 +68,17 @@ export default function Exercise() {
 
   const startTimer = () => {
     setIsRunning(true);
+    setStartTime(getKSTDate()); // 운동 시작 시간을 KST로 설정
     const id = setInterval(() => {
-      setTimer((prev) => prev + 10); // 10ms 단위로 증가
-    }, 10); // 10ms마다 업데이트
+      setTimer((prev) => prev + 10);
+    }, 10);
+    setCharacterState(2); // 운동중 상태로 변경
     setIntervalId(id);
   };
 
   const handleStopTimer = () => {
     setIsRunning(false);
+    setCharacterState(3); // 휴식 상태로 변경
     if (intervalId) {
       clearInterval(intervalId);
       setIntervalId(null);
@@ -75,8 +88,16 @@ export default function Exercise() {
 
   const handleFinish = () => {
     handleStopTimer();
-
-    mutation.mutate(); // 운동 기록 서버 전송
+    const now = getKSTDate(); // 운동 끝나는 시간을 KST로 설정
+    setCharacterState(4); // 운동 완료 상태로 변경
+    if (startTime) {
+      mutation.mutate({
+        startTime: startTime.toISOString(),
+        endTime: now.toISOString(),
+      });
+    } else {
+      console.error('Start time is null');
+    }
     setIsFinished(true);
   };
 
@@ -101,6 +122,41 @@ export default function Exercise() {
     };
   }, [intervalId]);
 
+  // TODO - 캐릭터 상태에 따라 캐릭터 모델 변경
+  useEffect(() => {
+    switch (characterState) {
+      case 1: // 평소
+        // setCharacterUrl(`${baseUrl}/B5standing.glb`);
+        setCharacterUrl(characterFileUrl);
+        break;
+      case 2: // 운동중
+        // setCharacterUrl(`${baseUrl}/B5running.glb`);
+        const appliedParts = JSON.parse(localStorage.getItem('appliedParts') || '{}');
+        if (appliedParts['2']) {
+          // 바지 파츠를 장착
+          setCharacterUrl(`${baseUrl}/B5runningPants.glb`);
+        } else {
+          setCharacterUrl(`${baseUrl}/B5running.glb`);
+        }
+        break;
+      case 3: // 휴식
+        // setCharacterUrl(`${baseUrl}/B5sitting.glb`);
+        setCharacterUrl(characterFileUrl);
+
+        break;
+      case 4: // 운동 완료
+        // setCharacterUrl(`${baseUrl}/B5entry.glb`);
+        setCharacterUrl(characterFileUrl);
+
+        break;
+      default:
+        // setCharacterUrl(`${baseUrl}/B5standing.glb`);
+        setCharacterUrl(characterFileUrl);
+
+        break;
+    }
+  }, [characterState]);
+  // console.log(startTime,endTime);
   return (
     <div className="exerciseContainer">
       <div className="exerciseRecommendButton">
@@ -110,7 +166,9 @@ export default function Exercise() {
           운동 추천
         </GeneralButton>
       </div>
-      <div>{/* Image placeholder */}</div>
+      <div className="exerciseModel">
+        <CharacterCanvas glbUrl={characterUrl} gender={gender} />
+      </div>
       <GeneralButton
         buttonStyle={{ style: 'primary', size: 'large' }}
         onClick={() => setShowModal(true)}
@@ -118,15 +176,13 @@ export default function Exercise() {
         disabled={isRunning || isFinished || isStopped}>
         {selectedExercise?.name || '운동 선택'}
       </GeneralButton>
-
       <Modal
         isOpen={showModal}
         onRequestClose={handleCloseModal}
-        className="modalContent"
-        overlayClassName="modalOverlay">
+        className="exercisingModalContent"
+        overlayClassName="exercisingModalOverlay">
         <ExerciseModal onSelectExercise={handleSelectExercise} multiple={false} onClose={handleCloseModal} />
       </Modal>
-
       {!isFinished ? (
         <>
           <div className="timer">{formatTime(timer)}</div>
@@ -147,15 +203,13 @@ export default function Exercise() {
         </>
       ) : (
         <div>
-          <p className="finishMent">운동이 종료되었습니다!</p>
           <div className="recordContainer">
             <div className="recordItem">
               <p>⏱ 운동 시간</p>
-              <span className="time">{new Date(timer * 1000).toISOString().substr(11, 8)}</span>
+              <span className="time">{formatTime(timer)}</span>
             </div>
             <div className="recordItem">
               <p>🔥 칼로리</p>
-              {/* 서버에서 받아온 칼로리 값 표시 */}
               <span className="kcal">{calories} kcal</span>
             </div>
           </div>

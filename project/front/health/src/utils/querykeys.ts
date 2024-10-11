@@ -15,7 +15,7 @@ export default {
   CREW_SCORE: 'crewScore',
   BATTLE_RANKING: 'battleRanking',
   EXERCISE_RANKING: 'exerciseRanking',
-  CREW_MEMBER_EXCERCISE_TIME: 'crewMemberExerciseTime',
+  CREW_MEMBER_EXERCISE_TIME: 'crewMemberExerciseTime',
   CREW_RECOMMNED: 'crewRecommend',
   CREW_RECOMMNED_DETAIL: 'crewRecommendDetail',
   EXERCISE_HISTORY_WEEK: 'excerciseHistoryWeek',
@@ -26,5 +26,7 @@ export default {
   USER_QUEST: 'userQuest',
   CREW_QUEST: 'crewQuest',
   NOTIFICATION: 'notification',
-  PARTSLIST: 'partslist',
+  BATTLE_MATCHING: 'battleMatching',
+  PARTS_LIST: 'partslist',
+  SNAPSHOT_LIST: 'snapshotList',
 };

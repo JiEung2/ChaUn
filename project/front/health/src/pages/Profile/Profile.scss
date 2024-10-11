@@ -10,15 +10,25 @@
 
 .profileHeaderSection {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   width: 100%;
   background-color: #f0f4f8;
   border-radius: 15px;
   padding: 20px 0;
-  margin: 0 10px;
   position: relative;
+
+  .userProfileInfo {
+    width: 150px; /* Canvas 크기를 줄임 */
+    height: 250px; /* Canvas 높이 설정 */
+    transform: translateX(-20px); /* 왼쪽으로 약간 이동 */
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
 }
 
 .titles {
@@ -39,13 +49,33 @@
     @include typo.time;
   }
 }
-
 .userChartContainer {
+  width: 100%;
+  position: relative;
+}
+
+.userChartContent {
   padding: 15px;
   background-color: white;
   border-radius: 15px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   margin: 20px 0;
+}
+
+.blurred {
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+.noWeightMessage {
+  position: absolute;
+  width: 100%;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  text-align: center;
+  @include typo.basic;
 }
 .crewContainer {
   width: 100%;

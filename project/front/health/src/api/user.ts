@@ -14,17 +14,24 @@ export const getUserDetail = async (user_id: number) => {
 // 다른 사람의 이번주, 오늘 운동 시간
 export const getUserExerciseTime = async (userId: number) => {
   const response = await exportAxios.get(`${baseUrl}/users/${userId}/exercise-time`, { params: { userId } });
-  return response;
+  return response.data;
 };
 
 // 나의 이번주, 오늘 운동 시간
 export const getMyExerciseTime = async () => {
   const response = await exportAxios.get(`${baseUrl}/users/exercise-time`);
-  return response;
+  return response.data;
 };
 
 // 몸무게 6개월
 export const getUserWeight6 = async (userId: number) => {
   const response = await exportAxios.get(`${baseUrl}/users/${userId}/weight`, { params: { userId } });
+  return response.data;
+};
+
+// 기기 등록
+export const patchDeviceToken = async (deviceToken: string) => {
+  console.log('axios test:', deviceToken);
+  const response = await exportAxios.patch(`${baseUrl}/users/register-device`, { deviceToken });
   return response;
 };

@@ -5,25 +5,33 @@ import GeneralButton from '../Button/GeneralButton';
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 import { getCrewRecommendModal } from '@/api/crew';
 import { useEffect, useState } from 'react';
-// import Coin from '../Coin/Coin';
 import { useNavigate } from 'react-router-dom';
+
 interface CrewModalProps {
   crewId: number;
   onClose: () => void;
+  userScore: {
+    age: number;
+    bodyType: number;
+    basicScore: number;
+    activityScore: number;
+    intakeScore: number;
+  };
 }
 
 interface Crew {
+  crewId: number;
   crewName: string;
   exerciseName: string;
-  crewProfileImage: string;
   description: string;
-  bodyType: string;
-  age: number;
-  rank: number;
-  dailyCaloricIntake: number;
+  crewProfileImage: string;
+  crewCoins: number;
+  crewRanking: number;
+  averageAge: number;
+  averageBodyType: number;
   basicScore: number;
   activityScore: number;
-  coin: number;
+  intakeScore: number;
 }
 
 interface RadarData {
@@ -37,15 +45,15 @@ interface RadarData {
   }[];
 }
 
-export default function CrewModal({ onClose, crewId }: CrewModalProps) {
-  const [crewData, setCrewData] = useState<Crew | null>(null);
+export default function CrewModal({ onClose, crewId, userScore }: CrewModalProps) {
+  const [crewData, setCrewData] = useState<Crew>();
   const [radarData, setRadarData] = useState<RadarData | null>(null);
   const navigate = useNavigate();
+
   const getCrewData = async () => {
     try {
       const response = await getCrewRecommendModal(crewId);
-      // console.log('가져온 크루 데이터', response);
-      setCrewData(response.data);
+      setCrewData(response);
 
       const radarData: RadarData = {
         labels: ['체형', '기본 점수', '활동 점수', '식습관 점수', '나이'],
@@ -53,20 +61,32 @@ export default function CrewModal({ onClose, crewId }: CrewModalProps) {
           {
             label: '크루 점수',
             data: [
-              response.data.bodyType, // 예시로 bodyType 사용
-              response.data.basicScore,
-              response.data.activityScore,
-              45, // 식습관 점수는 예시로 45를 넣음
-              response.data.age,
+              response.averageBodyType,
+              response.basicScore,
+              response.activityScore,
+              response.intakeScore,
+              response.averageAge,
             ],
             backgroundColor: 'rgba(255, 99, 132, 0.2)',
             borderColor: 'rgba(255, 99, 132, 1)',
             borderWidth: 1,
           },
+          {
+            label: '유저 점수',
+            data: [
+              userScore.bodyType,
+              userScore.basicScore,
+              userScore.activityScore,
+              userScore.intakeScore,
+              userScore.age,
+            ],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1,
+          },
         ],
       };
 
-      // radarData를 상태로 설정
       setRadarData(radarData);
     } catch (error) {
       console.error('크루추천 리스트 불러오기 실패', error);
@@ -76,11 +96,13 @@ export default function CrewModal({ onClose, crewId }: CrewModalProps) {
   useEffect(() => {
     getCrewData();
   }, [crewId]);
+
   const moveCrewDetail = () => {
-    navigate(`/crew/detail/${crewId}`);
+    navigate(`/crew/crewDetail/${crewId}`);
   };
+
   if (!crewData || !radarData) {
-    return null; // crewData나 radarData가 없으면 모달을 렌더링하지 않음
+    return null; // 데이터가 없으면 모달을 렌더링하지 않음
   }
 
   return (
@@ -97,12 +119,7 @@ export default function CrewModal({ onClose, crewId }: CrewModalProps) {
             <p>{crewData.description}</p>
           </div>
         </div>
-        <div className="crew-stats">
-          <p>#런닝 크루 랭킹: {crewData.rank}위</p>
-          <div className="crew-points">{/* <Coin style="basic" amount={crewData.coin} /> */}</div>
-        </div>
         <div className="radar-chart-container">
-          {/* radarData를 Radar 컴포넌트에 전달 */}
           <Radar data={radarData} options={{ maintainAspectRatio: false }} />
         </div>
         <GeneralButton buttonStyle={{ style: 'primary', size: 'large' }} onClick={moveCrewDetail}>

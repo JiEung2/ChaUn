@@ -13,7 +13,7 @@ interface PersonalQuest {
 }
 
 export default function QuestPage() {
-  const { data } = useQuery({
+  const { data: userQuest } = useQuery({
     queryKey: [querykeys.USER_QUEST],
     queryFn: () => getQuest(),
   });
@@ -21,12 +21,14 @@ export default function QuestPage() {
   const [todayQuests, setTodayQuests] = useState<PersonalQuest[]>([]);
   const [monthlyQuests, setMonthlyQuests] = useState<PersonalQuest[]>([]);
 
+  console.log('data:', userQuest);
+  // console.log('daily:', daily);
   useEffect(() => {
-    if (data) {
+    if (userQuest) {
       startTransition(() => {
+        const quests: PersonalQuest[] = userQuest || [];
         const daily: PersonalQuest[] = [];
         const monthly: PersonalQuest[] = [];
-        const quests: PersonalQuest[] = data?.data?.todayQuests || [];
 
         quests.forEach((quest) => {
           if (quest.questPeriod === 'DAILY') {
@@ -40,7 +42,7 @@ export default function QuestPage() {
         setMonthlyQuests(monthly);
       });
     }
-  }, [data]);
+  }, [userQuest]);
 
   return (
     <div className="questList">

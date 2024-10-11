@@ -5,11 +5,13 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ExerciseInput from '@/components/Record/ExerciseInput';
 import { useSuspenseQuery, useMutation } from '@tanstack/react-query';
-import { getPredictBasic, getPredictExtra, postPredictExerciseDetail } from '@/api/record';
-import { getWeeklyExerciseRecord } from '@/api/exercise';
+import { getPredictBasic, postPredictExerciseDetail } from '@/api/record';
+import { exerciseRecord } from '@/api/home';
 import queryKeys from '@/utils/querykeys';
+import useUserStore from '@/store/userInfo';
 
 export default function RecordPage() {
+  const { nickname } = useUserStore();
   const navigate = useNavigate();
   const [exerciseId, setExerciseId] = useState<number | null>(null);
   const [duration, setDuration] = useState('');
@@ -17,17 +19,28 @@ export default function RecordPage() {
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [exerciseDays, setExerciseDays] = useState(0);
   const [showBodyWeightRecord, setShowBodyWeightRecord] = useState(false);
+  interface Prediction {
+    time: string;
+    weight: number; // weight를 숫자로 정의
+  }
 
-  // 날짜 상태 추가
+  interface PredictionData {
+    predictions: Prediction[];
+    current_image: string; // 이미지 경로는 문자열로 정의
+    p30_image: string;
+    p90_image: string;
+  }
+
+  const [exercisePredictionData, setExercisePredictionData] = useState<PredictionData | null>(null);
+
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [week, setWeek] = useState(1);
 
-  // 주차 계산 (월요일부터 일요일까지)
   useEffect(() => {
     const getMondayOfWeek = (date: Date) => {
       const day = date.getDay();
-      const diff = day === 0 ? -6 : 1 - day; // 일요일은 이전 월요일로
+      const diff = day === 0 ? -6 : 1 - day;
       const monday = new Date(date);
       monday.setDate(date.getDate() + diff);
       return monday;
@@ -47,29 +60,23 @@ export default function RecordPage() {
     };
 
     let lastWeekDate = getPreviousWeek();
-
-    // 저번 주의 주차 계산
     let lastWeek = calculateWeekOfMonth(lastWeekDate);
-
-    // 년과 월 변경 로직
     let updatedYear = lastWeekDate.getFullYear();
     let updatedMonth = lastWeekDate.getMonth() + 1;
 
-    // 1주차인 경우 전 달의 마지막 주차로 넘어감
     if (lastWeek === 1) {
       updatedMonth -= 1;
       if (updatedMonth === 0) {
         updatedMonth = 12;
         updatedYear -= 1;
       }
-      const lastDayOfPreviousMonth = new Date(updatedYear, updatedMonth, 0); // 전 달의 마지막 날
-      lastWeek = calculateWeekOfMonth(lastDayOfPreviousMonth); // 전 달의 마지막 주차 계산
+      const lastDayOfPreviousMonth = new Date(updatedYear, updatedMonth, 0);
+      lastWeek = calculateWeekOfMonth(lastDayOfPreviousMonth);
     } else {
-      lastWeek -= 1; // 그 외에는 단순히 1 주차 감소
+      lastWeek -= 1;
     }
 
-    console.log(`저번 주 주차: ${lastWeek}, 년: ${updatedYear}, 월: ${updatedMonth}`);
-    setWeek(lastWeek); // 저번 주의 주차로 설정
+    setWeek(lastWeek);
     setYear(updatedYear);
     setMonth(updatedMonth);
   }, []);
@@ -78,50 +85,55 @@ export default function RecordPage() {
   const mutation = useMutation({
     mutationFn: ({ exerciseId, day, duration }: { exerciseId: number; day: string; duration: string }) =>
       postPredictExerciseDetail(exerciseId, Number(day), Number(duration)),
-    onSuccess: () => {
-      console.log('운동 예측 요청 성공');
+    onSuccess: (response) => {
+      const { data } = response;
+
+      // 데이터를 가공하여 predictions 배열과 이미지를 포함한 객체로 변환
+      const formattedData = {
+        predictions: [
+          { time: '현재', weight: data.current },
+          { time: '1달 후', weight: data.p30 },
+          { time: '3달 후', weight: data.p90 },
+        ],
+        current_image: data.current_image,
+        p30_image: data.p30_image,
+        p90_image: data.p90_image,
+      };
+
+      console.log('운동 예측 요청 성공', formattedData);
+      setExercisePredictionData(formattedData); // 가공한 데이터를 상태로 저장
+      setShowBodyWeightRecord(true);
     },
     onError: (error) => {
       console.error(`운동 예측 요청 중 에러 발생: ${error}`);
     },
   });
-
   // 주간 운동 기록 데이터 요청
   const { data: weeklyExerciseTime } = useSuspenseQuery({
     queryKey: [queryKeys.EXERCISE_HISTORY_WEEK, year, month, week],
-    queryFn: () => getWeeklyExerciseRecord(year, month, week),
+    queryFn: () => exerciseRecord(year, month, week),
   });
 
-  console.log(year, month, week);
-  // 예측 데이터
   const { data: predictionData } = useSuspenseQuery({
     queryKey: [queryKeys.MY_BODY_PREDICT],
     queryFn: getPredictBasic,
     select: (response) => {
-      const { current, p30, p90 } = response.data.data;
-      return [
-        { time: '현재', weight: current },
-        { time: '1달 후', weight: p30 },
-        { time: '3달 후', weight: p90 },
-      ];
-    },
-  });
-
-  const { data: predictionExtraData } = useSuspenseQuery({
-    queryKey: [queryKeys.MY_BODY_PREDICT_EXTRA],
-    queryFn: getPredictExtra,
-    select: (response) => {
-      const { current, p30, p90 } = response.data.data;
-      return [
-        { time: '현재', weight: current },
-        { time: '1달 후', weight: p30 },
-        { time: '3달 후', weight: p90 },
-      ];
+      const { current, p30, p90, current_image, p30_image, p90_image } = response;
+      return {
+        predictions: [
+          { time: '현재', weight: current },
+          { time: '1달 후', weight: p30 },
+          { time: '3달 후', weight: p90 },
+        ],
+        current_image,
+        p30_image,
+        p90_image,
+      };
     },
   });
 
   useEffect(() => {
-    const weeklyExerciseCount = weeklyExerciseTime?.data?.data?.exerciseHistoryList?.length || 0;
+    const weeklyExerciseCount = weeklyExerciseTime.exerciseHistoryList?.length || 0;
     setExerciseDays(weeklyExerciseCount);
   }, [weeklyExerciseTime]);
 
@@ -133,9 +145,10 @@ export default function RecordPage() {
     }
   }, [exerciseId, day, duration]);
 
-  const handleShowBodyWeightRecord = (exerciseId: number, day: string, duration: string) => {
-    setShowBodyWeightRecord(true);
-    mutation.mutate({ exerciseId, day, duration });
+  const handleShowBodyWeightRecord = () => {
+    if (exerciseId && day && duration) {
+      mutation.mutate({ exerciseId, day, duration });
+    }
   };
 
   const handleResetInput = () => {
@@ -143,7 +156,9 @@ export default function RecordPage() {
     setExerciseId(null);
     setDuration('');
     setDay('');
+    setExercisePredictionData(null); // 운동 예측 데이터 초기화
   };
+
   return (
     <div className="recordsContainer">
       <GeneralButton
@@ -155,16 +170,22 @@ export default function RecordPage() {
 
       <div className="currentPrediction">
         <p className="predictionText">
-          <strong>민영님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
+          <strong>{nickname}님</strong>의 이번 주 운동을 유지했을 때, 체형 예측 결과예요
         </p>
-        <BodyWeightRecord data={predictionData} />
+        {predictionData !== undefined ? (
+          <BodyWeightRecord data={predictionData} />
+        ) : (
+          <p>
+            체형 예측 정보가 없습니다. <br /> 운동을 시작하면 예측을 받아볼 수 있습니다.
+          </p>
+        )}
       </div>
 
-      <div>
+      <div className="ExtraPrediction">
         {!showBodyWeightRecord && exerciseDays < 4 ? (
           <div className="exercisePrediction">
             <p className="predictionText">
-              <strong>민영님</strong>의 운동 강도를 높였을 때, 체형 예측 결과를 조회해보세요
+              <strong>{nickname}님</strong>의 운동 강도를 높였을 때, 체형 예측 결과를 조회해보세요
             </p>
             <ExerciseInput
               onShowPrediction={handleShowBodyWeightRecord}
@@ -180,11 +201,15 @@ export default function RecordPage() {
         ) : showBodyWeightRecord ? (
           <div className="predictionResult">
             <p className="predictionText">
-              <strong>민영님</strong>이 선택한 운동을 하루 <strong>{duration}분</strong>, <br />
-              <strong>총 {exerciseDays}일</strong> 추가로 진행했을 때 <br />
+              <strong>{nickname}님</strong>이 선택한 운동을 하루 <strong>{duration}분</strong>, <br />
+              <strong>총 {day}일</strong> 추가로 진행했을 때 <br />
               예측되는 체형을 알려드릴게요!
             </p>
-            <BodyWeightRecord data={predictionExtraData} />
+            {mutation.isSuccess && exercisePredictionData ? (
+              <BodyWeightRecord data={exercisePredictionData} />
+            ) : (
+              <p>운동에 따른 체형 예측 정보가 없습니다.</p>
+            )}
             <GeneralButton
               buttonStyle={{ style: 'primary', size: 'large' }}
               onClick={handleResetInput}
@@ -195,7 +220,7 @@ export default function RecordPage() {
         ) : (
           <div className="exerciseAdvice">
             <p className="adviceText">
-              <strong>민영님</strong>, <br />
+              <strong>{nickname}님</strong>, <br />
               저번 주 운동을 <strong>{exerciseDays}일</strong> 진행하셨군요!
               <p>
                 꾸준한 건강 관리 및 부상 방지를 위해 <br />

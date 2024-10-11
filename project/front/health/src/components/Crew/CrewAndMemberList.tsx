@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import styles from '@/pages/Crew/CrewDetail/CrewDetail.module.scss';
+import UserImg from '@/assets/image/userImg.png';
 
 interface Member {
   userId: number;
-  userProfileImage: string;
+  userProfileImage: string | null;
   nickname: string;
   exerciseTime: number;
 }
@@ -17,12 +18,7 @@ interface Crew {
   activityScore: number;
 }
 
-interface Props {
-  type: 'member' | 'crew';
-  data: Member[] | Crew[];
-}
-
-export default function CrewAndMemberList({ type, data }: Props) {
+export default function CrewAndMemberList({ type, data }: any) {
   const navigate = useNavigate();
 
   const formatExerciseTime = (timeInMs: number | undefined) => {
@@ -48,12 +44,12 @@ export default function CrewAndMemberList({ type, data }: Props) {
               <span>{index + 1}</span>
               <img
                 className={styles.memberProfileImageSmall}
-                src={member.userProfileImage}
+                src={member.userProfileImage || UserImg}
                 alt="memberProfile"
                 onClick={() => handleMemberClick(member.userId)}
                 style={{ cursor: 'pointer' }}
               />
-              <span>{member.nickname}</span>
+              <span className={styles.memberNickname}>{member.nickname}</span>
               <span className={styles.time}>{formatExerciseTime(member.exerciseTime)}</span>
             </div>
           </div>
@@ -80,8 +76,8 @@ export default function CrewAndMemberList({ type, data }: Props) {
                   onClick={() => handleCrewClick(crew.crewId)}
                   style={{ cursor: 'pointer' }}
                 />
-                <span>{crew.crewName}</span>
-                <span className={styles.basicScore}>{crew.basicScore + crew.activityScore || 0}</span>
+                <span className={styles.memberNickname}>{crew.crewName}</span>
+                <span className={styles.basicScore}>{Math.round(crew.basicScore + crew.activityScore || 0)}점</span>
               </div>
             </div>
           ))}

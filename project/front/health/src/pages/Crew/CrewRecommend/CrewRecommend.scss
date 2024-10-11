@@ -13,11 +13,12 @@ h3 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 60px;
 
   .crew-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr); /* 기본적으로 3열 레이아웃 */
-    gap: 15px;
+    gap: 30px;
     justify-items: center;
     padding: 0 10px; /* 화면에 꽉 차도록 패딩 조정 */
   }

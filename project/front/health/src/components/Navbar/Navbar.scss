@@ -4,6 +4,7 @@
 .navbar {
   display: flex;
   align-items: center;
+  z-index: 100;
 
   &__white {
     width: 100%;

@@ -28,36 +28,41 @@ export default function CrewRankingPage() {
     setShowModal(false);
   };
 
+  console.log(exerciseId);
+
   const { data: exerciseCrewRanking, isSuccess } = useQuery({
     queryKey: [querykeys.EXERCISE_RANKING, exerciseId],
     queryFn: () => getExerciseCrewRanking(Number(exerciseId)),
     enabled: !!exerciseId, // exerciseId가 있을 때만 실행
   });
 
+  console.log(exerciseCrewRanking);
+
   return (
     <div className="realTimeRankingContainer">
-      <p className="realTimeRankingTitle">실시간 크루 랭킹</p>
-
+      <h2 className="realTimeRankingTitle">실시간 크루 랭킹</h2>
       {showModal && (
         <ExerciseModal onSelectExercise={handleSelectExercise} multiple={false} onClose={handleCloseModal} />
       )}
-
       {!exerciseId ? (
         <GeneralButton
           buttonStyle={{ style: 'primary', size: 'large' }}
           onClick={() => setShowModal(true)}
-          className="selectExercise">
+          className="selectExercise"
+        >
           운동 종목 선택하기
         </GeneralButton>
       ) : (
-        isSuccess &&
-        (exerciseCrewRanking?.data?.data?.crewList?.length > 0 ? (
-          <CrewAndMemberList type="crew" data={exerciseCrewRanking.data.data.crewList} />
+        isSuccess && exerciseCrewRanking ? (
+          exerciseCrewRanking.crewList.length > 0 ? (
+            <CrewAndMemberList type="crew" data={exerciseCrewRanking.crewList} />
+          ) : (
+            <p>선택한 운동의 크루 랭킹이 없습니다.</p>
+          )
         ) : (
-          <p>선택한 운동의 크루 랭킹이 없습니다.</p>
-        ))
+          <p>데이터를 불러오는 중 오류가 발생했습니다.</p>
+        )
       )}
-
       <img src={RankingImg} alt="realTimeRankingBackground" className="realTimeRankingBackground" />
     </div>
   );

@@ -24,7 +24,21 @@ const exerciseHistoryList = [
   },
 ];
 
-export const homeHanders = [
+const quest = [
+  {
+    questId: 3,
+    title: '매일 몸무게 입력하기',
+    questPeriod: 'DAILY',
+    isCompleted: true,
+  },
+  {
+    questId: 6,
+    title: '하루 한 번 운동하기',
+    questPeriod: 'MONTHLY',
+    isCompleted: true,
+  },
+];
+export const homeHandlers = [
   http.get(`${baseUrl}/users/my/exercise-time`, () => {
     try {
       return HttpResponse.json(exerciseTime, { status: 200 });
@@ -46,5 +60,10 @@ export const homeHanders = [
     } catch (error) {
       console.error('msw: 홈화면에서 운동 기록을 가져오던 중 에러 발생', error);
     }
+  }),
+
+  // quest
+  http.get(`${baseUrl}/quest/get/user`, () => {
+    return HttpResponse.json(quest);
   }),
 ];

@@ -5,36 +5,41 @@ const baseUrl = import.meta.env.VITE_APP_BASE_URL;
 
 export const getPartsList = async () => {
   const response = await exportAxios.get(`${baseUrl}/parts`);
-  return response;
+  return response.data;
 };
 
 export const getUserCharacter = async (userId: number) => {
-  const response = await exportAxios.get(`${baseUrl}/users/:user_id/character`, { params: { userId } });
-  return response;
+  const response = await exportAxios.get(`${baseUrl}/users/${userId}/character`, { params: { userId } });
+  return response.data;
 };
 
 export const getMyCharacter = async () => {
   const response = await exportAxios.get(`${baseUrl}/users/my/character`);
-  return response;
+  return response.data;
 };
 
 export const patchPartsOnOff = async (parts_id: number) => {
-  const response = await exportAxios.get(`${baseUrl}/users/character/parts/:parts_id`, { params: { parts_id } });
-  return response;
+  const response = await exportAxios.patch(`${baseUrl}/users/character/parts/${parts_id}`, { parts_id });
+  return response.data;
 };
 
-export const postSnapshot = async (snapshot: string) => {
-  // FormData 객체 생성
-  const formData = new FormData();
-  formData.append('snapshot', snapshot);
+export const postSnapshot = async (formData: FormData) => {
+  console.log(formData);
+  try {
+    const response = await exportAxios.post(`${baseUrl}/character/snapshot`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
 
-  // POST 요청 보내기
-  const response = await exportAxios.post(`${baseUrl}/character/snapshot`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+    console.log('Snapshot successfully uploaded:', response);
+    return response;
+  } catch (error) {
+    console.log('API에서 에러 발생:', error);
+  }
+};
 
-  console.log(response);
-  return response;
+export const getSnapshotList = async () => {
+  const response = await exportAxios.get(`${baseUrl}/users/character/snapshot`);
+  return response.data;
 };

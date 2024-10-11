@@ -3,7 +3,7 @@ import App from './App.tsx';
 import './styles/global.scss';
 import { worker } from './mocks/browser';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 
@@ -32,7 +32,7 @@ function registerServiceWorker() {
   if (import.meta.env.VITE_APP_STATE === 'production' && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-        .register('/service-worker.js')
+        .register('/service-worker.js', { type: 'module' })
         .then((registration) => {
           console.log('서비스 워커가 다음과 같은 scope에서 등록되었습니다: ', registration.scope);
         })
@@ -56,7 +56,7 @@ async function startApp() {
   if (rootElement) {
     createRoot(rootElement).render(
       <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={true} />
+        {/* <ReactQueryDevtools initialIsOpen={true} /> */}
         <App />
       </QueryClientProvider>
     );

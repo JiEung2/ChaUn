@@ -3,14 +3,14 @@ import './ExerciseList.scss';
 
 interface ExerciseListProps {
   title: string;
-  items: { id: number; name: string }[];
-  selectedItems: { id: number; name: string }[];
-  onSelect: (items: { id: number; name: string }[]) => void;
+  items: { id: number; name: string; description: string }[];
+  selectedItems: { id: number; name: string; description: string }[];
+  onSelect: (items: { id: number; name: string; description: string }[]) => void;
   multiple?: boolean;
 }
 
 export default function ExerciseList({ title, items, selectedItems, onSelect, multiple = false }: ExerciseListProps) {
-  const handleItemClick = (item: { id: number; name: string }) => {
+  const handleItemClick = (item: { id: number; name: string; description: string }) => {
     if (multiple) {
       if (selectedItems.find((selected) => selected.id === item.id)) {
         onSelect(selectedItems.filter((selected) => selected.id !== item.id));
