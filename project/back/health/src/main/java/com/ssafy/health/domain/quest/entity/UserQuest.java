@@ -19,7 +19,8 @@ public class UserQuest extends BaseEntity {
     private Long id;
 
     @NotNull
-    private Boolean questCompleted;
+    @Enumerated(EnumType.STRING)
+    private QuestStatus status;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,8 +32,12 @@ public class UserQuest extends BaseEntity {
 
     @Builder
     public UserQuest(User user, Quest quest) {
-        this.questCompleted = Boolean.FALSE;
+        this.status = QuestStatus.CREATED;
         this.user = user;
         this.quest = quest;
+    }
+
+    public void updateStatus(QuestStatus status) {
+        this.status = status;
     }
 }

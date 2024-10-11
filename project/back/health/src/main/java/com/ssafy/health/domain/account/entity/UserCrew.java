@@ -3,12 +3,7 @@ package com.ssafy.health.domain.account.entity;
 import com.ssafy.health.common.entity.BaseEntity;
 import com.ssafy.health.domain.crew.entity.Crew;
 import com.ssafy.health.domain.crew.entity.CrewRole;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,6 +13,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id"),
+        @Index(name = "idx_crew_id", columnList = "crew_id")
+})
 public class UserCrew extends BaseEntity {
 
     @Id
@@ -25,8 +24,11 @@ public class UserCrew extends BaseEntity {
     private Long id;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private CrewRole role;
+
     private Float basicScore;
+
     private Float activityScore;
 
     @ManyToOne
@@ -42,6 +44,11 @@ public class UserCrew extends BaseEntity {
         this.user = user;
         this.crew = crew;
         this.role = role;
+        this.basicScore = 0F;
+        this.activityScore = 0F;
+    }
+
+    public void resetScores() {
         this.basicScore = 0F;
         this.activityScore = 0F;
     }

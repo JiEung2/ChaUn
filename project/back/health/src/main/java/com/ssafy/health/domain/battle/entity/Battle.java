@@ -1,16 +1,9 @@
 package com.ssafy.health.domain.battle.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import com.ssafy.health.domain.battle.dto.request.BattleRegisterDto;
 import com.ssafy.health.domain.crew.entity.Crew;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -27,6 +20,7 @@ public class Battle extends BaseEntity {
     private Long id;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private BattleStatus status;
 
     private Float homeCrewScore;
@@ -41,12 +35,16 @@ public class Battle extends BaseEntity {
     private Crew awayCrew;
 
     @Builder
-    public Battle(BattleRegisterDto battleRegisterDto) {
-        this.homeCrew = battleRegisterDto.getHomeCrew();
-        this.awayCrew = battleRegisterDto.getAwayCrew();
-        this.status = BattleStatus.WAITING;
+    public Battle(Crew homeCrew, Crew awayCrew) {
+        this.homeCrew = homeCrew;
+        this.awayCrew = awayCrew;
+        this.status = BattleStatus.STARTED;
         this.homeCrewScore = 0F;
         this.awayCrewScore = 0F;
+    }
+
+    public void finishBattle() {
+        this.status = BattleStatus.FINISHED;
     }
 
 }

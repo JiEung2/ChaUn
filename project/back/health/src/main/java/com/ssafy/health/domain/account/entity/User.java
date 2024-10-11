@@ -1,18 +1,15 @@
 package com.ssafy.health.domain.account.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
-import com.ssafy.health.domain.account.dto.request.UserRegisterDto;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.ssafy.health.domain.account.dto.request.UserLoginUpdateRequestDto;
+import com.ssafy.health.domain.account.dto.request.UserRegisterRequestDto;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Date;
+import java.time.LocalDate;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -30,11 +27,13 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String nickname;
 
-    @NotNull
     private String email;
 
-    private Date birthday;
+    private LocalDate birthday;
 
+    private String profileImage;
+
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @NotNull
@@ -44,19 +43,55 @@ public class User extends BaseEntity {
     private String sso;
 
     @NotNull
-    private Long coin;
+    private Integer coin;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    private Integer dailyCaloricIntake;
+
+    private String deviceToken;
+
     @Builder
-    public User(UserRegisterDto userRegisterDto) {
-        this.name = userRegisterDto.getUsername();
-        this.email = userRegisterDto.getEmail();
-        this.sso = userRegisterDto.getSso();
-        this.role = userRegisterDto.getRole();
+    public User(UserRegisterRequestDto userRegisterRequestDto) {
+        this.name = userRegisterRequestDto.getName();
+        this.email = userRegisterRequestDto.getEmail();
+        this.sso = userRegisterRequestDto.getSso();
+        this.role = userRegisterRequestDto.getRole();
         this.surveyCompleted = false;
-        this.coin = 0L;
+        this.coin = 0;
+    }
+
+    public void updateNameAndEmail(UserLoginUpdateRequestDto userLoginUpdateRequestDto) {
+        this.name = userLoginUpdateRequestDto.getName();
+        this.email = userLoginUpdateRequestDto.getEmail();
+    }
+
+    public void saveUserInfo(String nickname, LocalDate birthday, Gender gender) {
+        this.nickname = nickname;
+        this.birthday = birthday;
+        this.gender = gender;
+    }
+
+    public void updateSurveyCompleted() {
+        this.surveyCompleted = true;
+    }
+
+    public void saveDailyCaloricIntake(Integer dailyCaloricIntake) {
+        this.dailyCaloricIntake = dailyCaloricIntake;
+    }
+
+    public void increaseCoin(Integer coin) {
+        this.coin += coin;
+    }
+
+    public void decreaseCoin(Integer coin) {
+        this.coin -= coin;
+    }
+
+    public void updateUserDevice(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 
 }

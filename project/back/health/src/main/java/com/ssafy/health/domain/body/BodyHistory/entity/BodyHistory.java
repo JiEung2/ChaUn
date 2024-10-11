@@ -2,7 +2,6 @@ package com.ssafy.health.domain.body.BodyHistory.entity;
 
 import com.ssafy.health.common.entity.BaseEntity;
 import com.ssafy.health.domain.account.entity.User;
-import com.ssafy.health.domain.body.BodyHistory.dto.request.BodyHistoryRequestDto;
 import com.ssafy.health.domain.body.BodyType.entity.BodyType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,8 +12,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+        @Index(name = "idx_user_id", columnList = "user_id"),
+        @Index(name = "idx_created_At", columnList = "createdAt")
+})
 public class BodyHistory extends BaseEntity {
-    // TODO: 근육질인지 아닌지 어떻게 판단할 것인지 결정 필요
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +27,6 @@ public class BodyHistory extends BaseEntity {
     private Float skeletalMuscleMass;
     private Float bodyFatRatio;
     private Boolean isMuscle;
-    private Integer dailyCaloricIntake;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -36,14 +37,13 @@ public class BodyHistory extends BaseEntity {
     private BodyType bodyType;
 
     @Builder
-    public BodyHistory(BodyHistoryRequestDto bodyHistoryRequestDto) {
-        this.height = bodyHistoryRequestDto.getHeight();
-        this.weight = bodyHistoryRequestDto.getWeight();
-        this.skeletalMuscleMass = bodyHistoryRequestDto.getSkeletalMuscleMass();
-        this.bodyFatRatio = bodyHistoryRequestDto.getBodyFatRatio();
-//        this.isMuscle =
-        this.dailyCaloricIntake = bodyHistoryRequestDto.getDailyCaloricIntake();
-        this.user = bodyHistoryRequestDto.getUser();
-        this.bodyType = bodyHistoryRequestDto.getBodyType();
+    public BodyHistory(Float height, Float weight, Float skeletalMuscleMass, Float bodyFatRatio, User user, BodyType bodyType, Boolean isMuscle) {
+        this.height = height;
+        this.weight = weight;
+        this.skeletalMuscleMass = skeletalMuscleMass;
+        this.bodyFatRatio = bodyFatRatio;
+        this.isMuscle = isMuscle;
+        this.user = user;
+        this.bodyType = bodyType;
     }
 }

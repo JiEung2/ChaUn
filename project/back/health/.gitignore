@@ -6,7 +6,10 @@ build/
 !**/src/test/**/build/
 
 # Spring Boot application properties
-/src/main/resources/application.properties
+/src/main/resources/application*.properties
+
+# Firebase Admin Credential
+/src/main/resources/firebase-adminsdk.json
 
 ### STS ###
 .apt_generated
