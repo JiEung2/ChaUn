@@ -123,7 +123,7 @@
 <td align="center"><a href="https://github.com/MINJOO-KIM"><img src="https://avatars.githubusercontent.com/u/64532143?v=4" height="150" width="150" style="max-width: 100%;"> <br> @MINJOO-KIM</a></td>
 </tr>
 <tr>
-<td align="center"><b>팀장 | BE</td>
+<td align="center"><b>Leader | BE</td>
 <td align="center"><b>INFRA | BE</td>
 <td align="center"><b>DATA | AI</td>
 <td align="center"><b>FE | 3D</td>
